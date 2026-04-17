@@ -25,8 +25,16 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     """User login request"""
 
-    email: EmailStr
+    email: str  # 支持邮箱或用户名格式
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_or_username(cls, v: str) -> str:
+        # 允许用户名格式 (字母数字下划线) 或邮箱格式
+        if not v or len(v) < 3:
+            raise ValueError("用户名/邮箱至少3个字符")
+        return v.strip().lower()
 
 
 class APIKeyCreate(BaseModel):

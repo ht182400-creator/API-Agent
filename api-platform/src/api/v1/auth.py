@@ -16,6 +16,7 @@ from src.core.security import (
     verify_password,
 )
 from src.core.exceptions import AuthenticationError
+from src.services.auth_service import get_current_user
 
 router = APIRouter()
 
@@ -147,7 +148,7 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    User login
+    User login (支持邮箱或用户名)
     
     Args:
         login_data: Login credentials
@@ -156,24 +157,47 @@ async def login(
         JWT tokens
     """
     from src.models.user import User
-    from sqlalchemy import select
+    from sqlalchemy import select, or_
     
-    # Find user by email
-    result = await db.execute(
-        select(User).where(User.email == login_data.email)
-    )
+    # Find user by email or username (email contains @ is email, otherwise treat as username)
+    login_value = login_data.email
+    print(f"[DEBUG LOGIN] Attempt for: {login_value}")
+    
+    if "@" in login_value:
+        # 邮箱登录
+        result = await db.execute(
+            select(User).where(User.email == login_value)
+        )
+    else:
+        # 用户名登录 - 从email字段匹配 (例如 admin@platform.com)
+        result = await db.execute(
+            select(User).where(
+                or_(
+                    User.email == login_value,
+                    User.email.startswith(login_value + "@")
+                )
+            )
+        )
+    
     user = result.scalar_one_or_none()
+    print(f"[DEBUG LOGIN] User found: {user is not None}")
     
     if not user or not user.password_hash:
-        raise AuthenticationError("Invalid email or password")
+        print(f"[DEBUG LOGIN] User not found or no password hash")
+        raise AuthenticationError("用户名/邮箱或密码错误")
+    
+    print(f"[DEBUG LOGIN] Password hash starts with: {user.password_hash[:20]}...")
     
     # Verify password
     if not verify_password(login_data.password, user.password_hash):
-        raise AuthenticationError("Invalid email or password")
+        print(f"[DEBUG LOGIN] Password verification failed")
+        raise AuthenticationError("用户名/邮箱或密码错误")
     
     # Check user status
     if user.user_status != "active":
-        raise AuthenticationError("Account is disabled")
+        raise AuthenticationError("账户已被禁用")
+    
+    print(f"[DEBUG LOGIN] Login successful for: {login_value}")
     
     # Generate tokens
     access_token = create_access_token({"sub": str(user.id)})
@@ -185,4 +209,45 @@ async def login(
             refresh_token=refresh_token,
             expires_in=1800,
         )
+    )
+
+
+@router.get("/me", response_model=BaseResponse[dict])
+async def get_current_user_info(
+    current_user = Depends(get_current_user),
+):
+    """
+    获取当前登录用户信息
+    
+    Returns:
+        User information
+    """
+    return BaseResponse(
+        data={
+            "id": str(current_user.id),
+            "email": current_user.email,
+            "user_type": current_user.user_type,
+            "user_status": current_user.user_status,
+            "phone": current_user.phone,
+            "vip_level": current_user.vip_level,
+            "email_verified": current_user.email_verified,
+            "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
+            "last_login_at": current_user.last_login_at.isoformat() if current_user.last_login_at else None,
+        }
+    )
+
+
+@router.post("/logout", response_model=BaseResponse[dict])
+async def logout(
+    current_user = Depends(get_current_user),
+):
+    """
+    用户登出
+    
+    Returns:
+        Success message
+    """
+    return BaseResponse(
+        data={"message": "登出成功"},
+        message="登出成功"
     )

@@ -5,8 +5,8 @@
 | 属性 | 内容 |
 |------|------|
 | **文档编号** | API-PLATFORM-2026-001 |
-| **版本** | V1.0 |
-| **日期** | 2026-04-16 |
+| **版本** | V1.1 |
+| **日期** | 2026-04-18 |
 
 ---
 
@@ -352,7 +352,108 @@
 
 ## 3. 管理API（控制台）
 
-### 3.1 用户管理
+### 3.1 认证接口
+
+#### 3.1.1 用户登录
+
+```yaml
+接口: POST /api/v1/auth/login
+说明: 用户登录，获取访问令牌
+
+请求体:
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}
+
+响应:
+{
+  "code": 0,
+  "message": "登录成功",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
+    "token_type": "bearer",
+    "expires_in": 86400
+  }
+}
+
+错误响应:
+{
+  "code": 40101,
+  "message": "用户名或密码错误",
+  "data": null
+}
+```
+
+#### 3.1.2 获取当前用户信息
+
+```yaml
+接口: GET /api/v1/auth/me
+说明: 获取当前登录用户信息
+
+请求头:
+  Authorization: Bearer <access_token>
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "user_xxx",
+    "email": "user@example.com",
+    "user_type": "admin",
+    "user_status": "active",
+    "phone": "13800138000",
+    "vip_level": 3,
+    "email_verified": true,
+    "created_at": "2026-04-16T10:00:00Z",
+    "last_login_at": "2026-04-18T01:00:00Z"
+  }
+}
+```
+
+#### 3.1.3 用户登出
+
+```yaml
+接口: POST /api/v1/auth/logout
+说明: 用户登出，使令牌失效
+
+请求头:
+  Authorization: Bearer <access_token>
+
+响应:
+{
+  "code": 0,
+  "message": "登出成功",
+  "data": {
+    "message": "登出成功"
+  }
+}
+```
+
+#### 3.1.4 Token刷新
+
+```yaml
+接口: POST /api/v1/auth/refresh
+说明: 刷新JWT访问令牌
+
+请求头:
+  Authorization: Bearer <refresh_token>
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
+    "expires_in": 86400
+  }
+}
+```
+
+### 3.2 用户管理
 
 #### 3.1.1 用户注册
 

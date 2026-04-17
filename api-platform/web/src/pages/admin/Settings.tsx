@@ -2,14 +2,14 @@
  * 系统设置页面
  */
 
-import { Card, Form, Input, Button, Switch, Space, Typography, Divider, message, Slider, Link } from 'antd'
+import { Card, Form, Input, Button, Switch, Space, Typography, Divider, message, Slider } from 'antd'
 import { SaveOutlined, FolderOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getBackupConfig, updateBackupConfig, BackupConfig } from '../../api/adminLogs'
 import styles from './Settings.module.css'
 
-const { Title, Text } = Typography
+const { Title, Text, Link } = Typography
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(false)
