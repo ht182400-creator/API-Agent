@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用API服务平台 - 图表预览</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; background: #f5f5f5; color: #333; }
+        .header { background: linear-gradient(135deg, #01579b, #e65100); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .section { background: white; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .section-header { background: #e3f2fd; padding: 15px 20px; border-bottom: 1px solid #bbdefb; }
+        .section-header h2 { color: #01579b; font-size: 18px; }
+        .section-content { padding: 20px; }
+        .mermaid { display: flex; justify-content: center; margin: 20px 0; }
+        .diagram-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .diagram-title { font-size: 14px; color: #666; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
+        .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+        .nav { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
+        .nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .nav a { color: #01579b; text-decoration: none; padding: 8px 16px; background: #e3f2fd; border-radius: 20px; font-size: 13px; transition: all 0.2s; }
+        .nav a:hover { background: #01579b; color: white; }
+        .color-legend { display: flex; flex-wrap: wrap; gap: 15px; margin: 15px 0; padding: 15px; background: #fafafa; border-radius: 8px; }
+        .color-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .color-box { width: 20px; height: 20px; border-radius: 4px; border: 2px solid; }
+        .note { background: #fff3e0; border-left: 4px solid #e65100; padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; font-size: 14px; }
+        .highlight { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>通用API服务平台 - 架构图表</h1>
+        <p>Mermaid 规范图表 · 版本 V1.1</p>
+    </div>
+    
+    <div class="nav">
+        <ul>
+            <li><a href="#overview">平台概览</a></li>
+            <li><a href="#architecture">整体架构</a></li>
+            <li><a href="#internal">内部仓库</a></li>
+            <li><a href="#external">外部仓库</a></li>
+            <li><a href="#adapter">适配器架构</a></li>
+            <li><a href="#auth">认证流程</a></li>
+            <li><a href="#billing">计费流程</a></li>
+            <li><a href="#database">数据库ER图</a></li>
+            <li><a href="#deploy">部署架构</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- 配色规范 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>配色规范</h2>
+            </div>
+            <div class="section-content">
+                <div class="color-legend">
+                    <div class="color-item"><div class="color-box" style="background:#e1f5ff;border-color:#01579b"></div>接入层/网关</div>
+                    <div class="color-item"><div class="color-box" style="background:#fff3e0;border-color:#e65100"></div>核心服务</div>
+                    <div class="color-item"><div class="color-box" style="background:#e8f5e9;border-color:#2e7d32"></div>适配器层/仓库</div>
+                    <div class="color-item"><div class="color-box" style="background:#f3e5f5;border-color:#7b1fa2"></div>数据层</div>
+                    <div class="color-item"><div class="color-box" style="background:#ffebee;border-color:#c62828"></div>外部依赖</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 平台定位 -->
+        <div class="section" id="overview">
+            <div class="section-header">
+                <h2>1. 平台定位</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">通用API服务平台定位</div>
+                    <div class="mermaid">
+graph TB
+    subgraph Platform["通用API服务平台"]
+        direction TB
+        Title["定位：API聚合中转站，商业化API服务平台"]
+        
+        subgraph Value["核心价值"]
+            V1["1. 统一入口：一个API Key，调用所有仓库"]
+            V2["2. 统一认证：简化认证流程，降低集成成本"]
+            V3["3. 统一计费：一站式计费和配额管理"]
+            V4["4. 仓库发现：帮助优质仓库被发现和使用"]
+            V5["5. 热插拔：仓库可动态接入和下线"]
+        end
+    end
+
+    style Platform fill:#e1f5ff,stroke:#01579b
+    style Title fill:#fff9c4,stroke:#f9a825
+    style Value fill:#e8f5e9,stroke:#2e7d32
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 整体架构 -->
+        <div class="section" id="architecture">
+            <div class="section-header">
+                <h2>2. 平台整体架构</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">多层架构设计</div>
+                    <div class="mermaid">
+graph TB
+    subgraph Client["客户端层"]
+        Developer["开发者"]
+        Owner["仓库所有者"]
+        Admin["管理员"]
+    end
+
+    subgraph Gateway["接入层 (Gateway Layer)"]
+        APIGateway["API Gateway<br/>(APISIX)"]
+        WebSocketGW["WebSocket Gateway"]
+        AdminAPI["Admin API Gateway"]
+    end
+
+    subgraph Core["核心服务层 (Core Services)"]
+        AuthService["认证服务"]
+        RepoService["仓库服务"]
+        BillingService["计费服务"]
+        UserService["用户服务"]
+        LogService["日志服务"]
+        NotifyService["通知服务"]
+    end
+
+    subgraph Adapter["仓库适配层 (Adapter Layer)"]
+        HTTPAdapter["HTTP适配器"]
+        GRPCAdapter["gRPC适配器"]
+        WSAdapter["WebSocket适配器"]
+    end
+
+    subgraph Data["数据层 (Data Layer)"]
+        PostgreSQL["PostgreSQL"]
+        Redis["Redis"]
+        Kafka["Kafka"]
+    end
+
+    Developer -->|"API调用"| APIGateway
+    Owner -->|"管理操作"| AdminAPI
+    Admin -->|"运维管理"| AdminAPI
+
+    APIGateway --> AuthService
+    APIGateway --> RepoService
+    APIGateway --> BillingService
+
+    AuthService --> Redis
+    RepoService --> PostgreSQL
+    BillingService --> PostgreSQL
+    LogService --> Kafka
+
+    RepoService --> HTTPAdapter
+    RepoService --> GRPCAdapter
+    RepoService --> WSAdapter
+
+    HTTPAdapter -->|"内部仓库"| Internal["内部仓库"]
+    GRPCAdapter -->|"外部仓库"| ExternalA["外部仓库 A"]
+    WSAdapter -->|"外部仓库"| ExternalB["外部仓库 B"]
+
+    style Gateway fill:#e1f5ff,stroke:#01579b
+    style Core fill:#fff3e0,stroke:#e65100
+    style Adapter fill:#e8f5e9,stroke:#2e7d32
+    style Data fill:#f3e5f5,stroke:#7b1fa2
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内部仓库接入 -->
+        <div class="section" id="internal">
+            <div class="section-header">
+                <h2>3. 内部仓库接入架构</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">内部仓库直连模式（无需适配器）</div>
+                    <div class="mermaid">
+graph LR
+    subgraph Client["开发者"]
+        APIRequest["API请求"]
+    end
+
+    subgraph Gateway["API网关"]
+        Auth["认证模块"]
+        Route["路由模块"]
+        RateLimit["限流模块"]
+    end
+
+    subgraph Direct["直连调用"]
+        LB["负载均衡器"]
+        InternalRepo["内部仓库A<br/>REST API"]
+    end
+
+    APIRequest -->|"HTTPS"| Auth
+    Auth -->|"认证通过"| Route
+    Route -->|"路由分发"| RateLimit
+    RateLimit -->|"转发请求"| LB
+    LB -->|"内网调用"| InternalRepo
+
+    style Gateway fill:#e1f5ff,stroke:#01579b
+    style Direct fill:#e8f5e9,stroke:#2e7d32
+                    </div>
+                </div>
+                <div class="highlight">
+                    <strong>特点：</strong>
+                    <ul style="margin-left:20px;margin-top:10px;">
+                        <li>无需适配器，直接HTTP调用</li>
+                        <li>无需开发者客户端界面</li>
+                        <li>内网通信，高性能低延迟</li>
+                        <li>管理员控制台配置仓库</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 外部仓库接入 -->
+        <div class="section" id="external">
+            <div class="section-header">
+                <h2>4. 外部仓库接入架构</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">外部仓库适配器模式</div>
+                    <div class="mermaid">
+graph TB
+    subgraph Client["开发者"]
+        Request["API请求"]
+    end
+
+    subgraph Gateway["API网关"]
+        Auth["认证模块"]
+        Billing["计费模块"]
+    end
+
+    subgraph AdapterLayer["适配器层"]
+        AdapterMgr["适配器管理器"]
+        HTTPAdapter["HTTP适配器"]
+        GRPCAdapter["gRPC适配器"]
+        WSAdapter["WebSocket适配器"]
+    end
+
+    subgraph External["外部仓库"]
+        RepoA["外部仓库A<br/>REST"]
+        RepoB["外部仓库B<br/>gRPC"]
+        RepoC["外部仓库C<br/>WebSocket"]
+    end
+
+    Request -->|"HTTPS"| Auth
+    Auth -->|"认证通过"| Billing
+    Billing -->|"计费检查"| AdapterMgr
+    AdapterMgr --> HTTPAdapter
+    AdapterMgr --> GRPCAdapter
+    AdapterMgr --> WSAdapter
+
+    HTTPAdapter --> RepoA
+    GRPCAdapter --> RepoB
+    WSAdapter --> RepoC
+
+    style Gateway fill:#e1f5ff,stroke:#01579b
+    style AdapterLayer fill:#fff3e0,stroke:#e65100
+    style External fill:#ffebee,stroke:#c62828
+                    </div>
+                </div>
+                <div class="note">
+                    <strong>客户端需求：</strong>
+                    <ul style="margin-left:20px;margin-top:10px;">
+                        <li>仓库所有者管理控制台（必须）</li>
+                        <li>开发者API调用客户端（不需要）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 适配器架构 -->
+        <div class="section" id="adapter">
+            <div class="section-header">
+                <h2>5. 适配器架构详解</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">适配器内部结构</div>
+                    <div class="mermaid">
+graph TB
+    subgraph Platform["平台网关"]
+        PlatformReq["平台请求"]
+        PlatformResp["平台响应"]
+    end
+
+    subgraph Adapter["适配器层"]
+        ReqTransform["请求转换"]
+        RespTransform["响应转换"]
+        ErrorHandle["错误处理"]
+        Retry["重试策略"]
+    end
+
+    subgraph Vendor["外部仓库"]
+        VendorReq["仓库请求"]
+        VendorResp["仓库响应"]
+    end
+
+    PlatformReq --> ReqTransform
+    ReqTransform -->|"协议转换"| VendorReq
+    VendorReq --> Vendor["外部仓库"]
+    Vendor --> VendorResp
+    VendorResp --> RespTransform
+    RespTransform -->|"数据映射"| PlatformResp
+
+    VendorResp -.->|"异常"| ErrorHandle
+    ErrorHandle -.->|"可重试"| Retry
+    Retry -.->|"重试"| ReqTransform
+
+    style Adapter fill:#fff3e0,stroke:#e65100
+    style Vendor fill:#ffebee,stroke:#c62828
+                    </div>
+                </div>
+                <div class="diagram-card">
+                    <div class="diagram-title">适配器类型矩阵</div>
+                    <div class="mermaid">
+graph TB
+    subgraph Adapters["适配器类型"]
+        HA["HTTPAdapter<br/>REST API"]
+        GA["gRPCAdapter<br/>gRPC"]
+        WA["WebSocketAdapter<br/>WebSocket"]
+        SA["SOAPAdapter<br/>SOAP"]
+        GRA["GraphQLAdapter<br/>GraphQL"]
+        CA["CustomAdapter<br/>自定义协议"]
+    end
+
+    style HA fill:#e8f5e9,stroke:#2e7d32
+    style GA fill:#e8f5e9,stroke:#2e7d32
+    style WA fill:#e8f5e9,stroke:#2e7d32
+    style SA fill:#fff3e0,stroke:#e65100
+    style GRA fill:#fff3e0,stroke:#e65100
+    style CA fill:#ffebee,stroke:#c62828
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证流程 -->
+        <div class="section" id="auth">
+            <div class="section-header">
+                <h2>6. 统一认证流程</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">API Key认证时序图</div>
+                    <div class="mermaid">
+sequenceDiagram
+    participant Dev as 开发者
+    participant GW as API网关
+    participant Auth as 认证服务
+    participant DB as 数据库
+
+    Dev->>GW: API请求 + API Key
+    GW->>Auth: 验证请求
+    Auth->>DB: 查询Key信息
+    DB-->>Auth: Key详情
+    Auth->>Auth: 检查Key状态
+    Auth->>Auth: 检查配额
+    
+    alt 认证成功 & 配额充足
+        Auth-->>GW: 认证通过
+        GW->>GW: 处理请求
+        GW-->>Dev: 返回响应
+    else 认证失败
+        Auth-->>GW: 401 未授权
+        GW-->>Dev: 401 认证失败
+    else 配额不足
+        Auth-->>GW: 429 配额超限
+        GW-->>Dev: 429 配额不足
+    end
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 计费流程 -->
+        <div class="section" id="billing">
+            <div class="section-header">
+                <h2>7. 计费流程</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">API调用计费流程</div>
+                    <div class="mermaid">
+graph TD
+    Start["API调用"] --> CheckQuota{配额检查}
+    
+    CheckQuota -->|有配额| Execute["执行调用"]
+    CheckQuota -->|无配额| Reject["返回429<br/>配额超限"]
+    
+    Execute --> Record["记录用量"]
+    Record --> Calc["计算费用"]
+    Calc --> Deduct["扣减配额"]
+    
+    Deduct -->|成功| Response["返回响应"]
+    Deduct -->|失败| Rollback["回滚操作"]
+    Rollback --> Error["返回错误"]
+    
+    Response --> Complete["调用完成"]
+
+    style CheckQuota fill:#fff3e0,stroke:#e65100
+    style Reject fill:#ffebee,stroke:#c62828
+    style Execute fill:#e8f5e9,stroke:#2e7d32
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据库ER图 -->
+        <div class="section" id="database">
+            <div class="section-header">
+                <h2>8. 数据库ER图</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">核心实体关系图</div>
+                    <div class="mermaid">
+erDiagram
+    USERS ||--o{ API_KEYS : has
+    USERS ||--o{ REPOSITORIES : owns
+    USERS ||--o{ BILLS : has
+    USERS ||--o{ ACCOUNTS : has
+    
+    API_KEYS ||--o{ QUOTAS : has
+    API_KEYS ||--o{ CALL_LOGS : generates
+    
+    REPOSITORIES ||--o{ REPO_CONFIGS : has
+    REPOSITORIES ||--o{ REPO_PRICING : has
+    REPOSITORIES ||--o{ REPO_STATS : has
+    REPOSITORIES ||--o{ CALL_LOGS : generates
+    
+    REPOSITORIES }o--o{ ADAPTERS : uses
+    
+    USERS {
+        uuid id PK
+        string email UK
+        string user_type
+        string user_status
+        timestamp created_at
+    }
+    
+    API_KEYS {
+        uuid id PK
+        uuid user_id FK
+        string key_hash UK
+        string key_name
+        int rate_limit_rpm
+        string status
+    }
+    
+    REPOSITORIES {
+        uuid id PK
+        uuid owner_id FK
+        string name
+        string repo_type
+        string protocol
+        string status
+    }
+    
+    BILLS {
+        bigint id PK
+        uuid user_id FK
+        string bill_no UK
+        decimal amount
+        string bill_type
+        string status
+    }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 部署架构 -->
+        <div class="section" id="deploy">
+            <div class="section-header">
+                <h2>9. 部署架构</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">高可用部署架构</div>
+                    <div class="mermaid">
+graph TB
+    subgraph LB["负载均衡层"]
+        SLB["SLB负载均衡"]
+    end
+
+    subgraph Gateway["网关集群"]
+        GW1["API Gateway 1"]
+        GW2["API Gateway 2"]
+        GW3["API Gateway 3"]
+    end
+
+    subgraph Service["服务集群"]
+        AuthS["认证服务"]
+        RepoS["仓库服务"]
+        BillingS["计费服务"]
+        UserS["用户服务"]
+    end
+
+    subgraph Data["数据层"]
+        PG["PostgreSQL<br/>主从"]
+        RD["Redis<br/>集群"]
+        KK["Kafka"]
+    end
+
+    subgraph Repo["仓库层"]
+        Internal["内部仓库"]
+        Adapter1["适配器1"]
+        Adapter2["适配器2"]
+        External["外部仓库"]
+    end
+
+    SLB --> GW1
+    SLB --> GW2
+    SLB --> GW3
+
+    GW1 --> AuthS
+    GW2 --> RepoS
+    GW3 --> BillingS
+
+    AuthS --> UserS
+    RepoS --> Adapter1
+    RepoS --> Adapter2
+
+    AuthS --> PG
+    RepoS --> PG
+    BillingS --> RD
+
+    Adapter1 --> Internal
+    Adapter2 --> External
+
+    style LB fill:#e1f5ff,stroke:#01579b
+    style Gateway fill:#fff3e0,stroke:#e65100
+    style Service fill:#e8f5e9,stroke:#2e7d32
+    style Data fill:#f3e5f5,stroke:#7b1fa2
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 客户端需求总结 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>10. 客户端需求总结</h2>
+            </div>
+            <div class="section-content">
+                <div class="diagram-card">
+                    <div class="diagram-title">内部 vs 外部仓库客户端需求对比</div>
+                    <div class="mermaid">
+graph TB
+    subgraph ClientMatrix["客户端需求矩阵"]
+        direction TB
+        
+        subgraph Developer["开发者"]
+            D1["注册登录"]:::need
+            D2["Key管理"]:::need
+            D3["仓库市场"]:::need
+            D4["费用中心"]:::need
+            D5["API调用"]:::noneed
+        end
+
+        subgraph Owner["仓库所有者"]
+            O1["入驻申请"]:::need
+            O2["仓库配置"]:::need
+            O3["API管理"]:::need
+            O4["收益管理"]:::need
+            O5["数据分析"]:::need
+        end
+
+        subgraph Admin["管理员"]
+            A1["仓库审核"]:::need
+            A2["监控面板"]:::need
+            A3["用户管理"]:::need
+            A4["计费配置"]:::need
+        end
+    end
+
+    classDef need fill:#e1f5ff,stroke:#01579b
+    classDef noneed fill:#f5f5f5,stroke:#9e9e9e
+                    </div>
+                </div>
+                <div class="highlight">
+                    <strong>结论：</strong>
+                    <ul style="margin-left:20px;margin-top:10px;">
+                        <li>API调用不需要客户端 - 直接HTTP/SDK调用即可</li>
+                        <li>管理和运营需要客户端 - 用户认证、配置管理、收益管理等</li>
+                        <li>内部仓库：开发者无需客户端，管理员需要控制台</li>
+                        <li>外部仓库：开发者无需客户端，仓库所有者必须管理界面</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>通用API服务平台文档套件 · Mermaid 规范图表 · V1.1</p>
+        <p>文档位置：通用API服务平台文档/28_通用API服务平台图表规范.md</p>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true },
+            sequence: { useMaxWidth: true }
+        });
+    </script>
+</body>
+</html>
