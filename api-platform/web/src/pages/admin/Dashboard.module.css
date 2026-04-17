@@ -1,0 +1,38 @@
+.dashboard {
+  max-width: 1400px;
+}
+
+.stats {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tableCard,
+.alertCard {
+  border-radius: 8px;
+}
+
+.alertItem {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alertItem:last-child {
+  border-bottom: none;
+}
+
+.alertTime {
+  font-size: 12px;
+}

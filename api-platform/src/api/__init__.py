@@ -1,0 +1,12 @@
+"""API module - API路由"""
+
+from fastapi import APIRouter
+
+from .v1 import api_router as v1_router
+from .v1.admin_logs import router as admin_logs_router
+
+api_router = APIRouter()
+api_router.include_router(v1_router, tags=["v1"])
+api_router.include_router(admin_logs_router, tags=["admin-logs"])
+
+__all__ = ["api_router"]

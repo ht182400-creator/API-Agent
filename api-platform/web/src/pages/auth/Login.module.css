@@ -1,0 +1,61 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.content {
+  width: 100%;
+  max-width: 400px;
+}
+
+.card {
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card :global(.ant-card-body) {
+  padding: 40px 32px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: #666;
+  margin: 0;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register {
+  text-align: center;
+  color: #666;
+}
+
+.register a {
+  color: #1677ff;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}

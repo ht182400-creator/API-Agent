@@ -1,0 +1,38 @@
+.dashboard {
+  max-width: 1400px;
+}
+
+.stats {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  transition: box-shadow 0.3s;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chartCard {
+  border-radius: 8px;
+}
+
+.quotaCard {
+  border-radius: 8px;
+  height: 100%;
+}
+
+.quotaItem {
+  margin-bottom: 16px;
+}
+
+.quotaItem:last-child {
+  margin-bottom: 0;
+}
+
+.tableCard {
+  border-radius: 8px;
+  margin-top: 16px;
+}
