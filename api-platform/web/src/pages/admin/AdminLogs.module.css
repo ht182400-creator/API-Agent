@@ -1,0 +1,119 @@
+/* 管理员日志管理页面样式 */
+
+.container {
+  padding: 24px;
+}
+
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.actionBar {
+  margin-bottom: 16px;
+}
+
+.card {
+  margin-bottom: 16px;
+}
+
+/* 日志查看弹窗 */
+.filterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.logContent {
+  max-height: 600px;
+  overflow-y: auto;
+  background: #1e1e1e;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+}
+
+.logLine {
+  display: flex;
+  align-items: flex-start;
+  padding: 2px 8px;
+  margin: 0;
+  border-left: 3px solid;
+  background: #252526;
+  color: #d4d4d4;
+  line-height: 1.6;
+}
+
+.logLine:nth-child(odd) {
+  background: #2d2d2d;
+}
+
+.logLine:hover {
+  background: #3c3c3c;
+}
+
+.lineNumber {
+  display: inline-block;
+  min-width: 50px;
+  color: #858585;
+  text-align: right;
+  margin-right: 12px;
+  user-select: none;
+}
+
+.timestamp {
+  display: inline-block;
+  min-width: 150px;
+  color: #9cdcfe;
+  margin-right: 12px;
+}
+
+.module {
+  display: inline-block;
+  min-width: 100px;
+  color: #4ec9b0;
+  margin-right: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message {
+  flex: 1;
+  color: #d4d4d4;
+  word-break: break-all;
+}
+
+.loading,
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #858585;
+}
+
+/* 日志级别颜色 */
+.level-debug {
+  color: #1890ff;
+}
+
+.level-info {
+  color: #52c41a;
+}
+
+.level-warning {
+  color: #faad14;
+}
+
+.level-error {
+  color: #ff4d4f;
+}
+
+.level-critical {
+  color: #722ed1;
+}

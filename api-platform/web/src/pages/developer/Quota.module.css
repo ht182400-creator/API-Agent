@@ -1,0 +1,38 @@
+.container {
+  max-width: 1400px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.card {
+  border-radius: 8px;
+  text-align: center;
+}
+
+.quotaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.quotaDetail {
+  margin-top: 16px;
+}
+
+.chartCard {
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.tableCard {
+  border-radius: 8px;
+  margin-top: 16px;
+}
