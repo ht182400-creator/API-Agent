@@ -4,6 +4,7 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { useAuthStore } from '../stores/auth'
+import { logger } from '../utils/logger'
 
 // API基础URL
 const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -24,9 +25,11 @@ client.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    logger.debug(`[API Request] ${config.method?.toUpperCase()} ${config.url}`)
     return config
   },
   (error) => {
+    logger.error('[API Request Error]', error.message)
     return Promise.reject(error)
   }
 )
@@ -36,11 +39,14 @@ client.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data
     
+    logger.debug(`[API Response] ${response.config.url} - ${response.status}`, res)
+    
     // 统一处理错误码
     if (res.code !== 0 && res.code !== undefined) {
       const error = new Error(res.message || '请求失败')
       ;(error as any).code = res.code
       ;(error as any).request_id = res.request_id
+      logger.warn(`[API Error] ${response.config.url} - code:${res.code} ${res.message}`)
       return Promise.reject(error)
     }
     
@@ -50,29 +56,44 @@ client.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response
       
+      logger.error(`[API Error] ${error.config?.url || 'unknown'} - ${status}`, {
+        message: data?.message || data?.detail,
+        code: data?.code,
+        request_id: data?.request_id
+      })
+      
+      // 从响应中提取错误消息
+      let errorMessage = data?.message || data?.detail || ''
+      
       switch (status) {
         case 401:
-          // Token过期，清除登录状态
-          useAuthStore.getState().logout()
-          window.location.href = '/login'
+          // 401可能是Token过期或认证失败，保留错误消息用于显示
+          errorMessage = errorMessage || '登录已过期，请重新登录'
+          // 清除登录状态（仅在其他页面清除，登录页不跳转）
+          if (!window.location.pathname.includes('/login')) {
+            useAuthStore.getState().logout()
+          }
           break
         case 403:
-          error.message = data.message || '无权限访问'
+          errorMessage = errorMessage || '无权限访问'
           break
         case 404:
-          error.message = data.message || '资源不存在'
+          errorMessage = errorMessage || '资源不存在'
           break
         case 429:
-          error.message = data.message || '请求过于频繁'
+          errorMessage = errorMessage || '请求过于频繁，请稍后再试'
           break
         case 500:
-          error.message = data.message || '服务器错误'
+          errorMessage = errorMessage || '服务器错误，请稍后再试'
           break
         default:
-          error.message = data.message || '网络错误'
+          errorMessage = errorMessage || '请求失败'
       }
+      
+      error.message = errorMessage
     } else if (error.request) {
-      error.message = '网络连接失败'
+      error.message = '网络连接失败，请检查网络'
+      logger.error(`[API Network Error]`, error.message)
     }
     
     return Promise.reject(error)

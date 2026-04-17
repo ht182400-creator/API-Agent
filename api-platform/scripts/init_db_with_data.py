@@ -24,11 +24,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.config.database import async_engine, AsyncSessionLocal, Base
 from src.models import *  # noqa: F401, F403
-
-
-def hash_password(password: str) -> str:
-    """简单的密码哈希 (生产环境请使用 bcrypt)"""
-    return hashlib.sha256(password.encode()).hexdigest()
+from src.core.security import hash_password  # 使用统一的密码哈希
 
 
 async def create_extensions():

@@ -51,7 +51,19 @@ class Settings(BaseSettings):
     # Security
     secret_key: str = "your-application-secret-key"
     encryption_key: str = "your-encryption-key-32-bytes"
-
+    
+    # Password Hashing Configuration
+    # Supported modes: "bcrypt" (recommended), "sha256", "auto" (supports both)
+    password_hash_mode: str = "auto"
+    
+    @field_validator("password_hash_mode")
+    @classmethod
+    def validate_hash_mode(cls, v: str) -> str:
+        valid_modes = ["bcrypt", "sha256", "auto"]
+        if v.lower() not in valid_modes:
+            return "auto"
+        return v.lower()
+    
     @field_validator("log_level")
     @classmethod
     def validate_log_level(cls, v: str) -> str:

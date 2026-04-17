@@ -18,16 +18,27 @@ export default function Login() {
   const onFinish = async (values: { email: string; password: string; remember: boolean }) => {
     setLoading(true)
     try {
-      const { data } = await authApi.login({
+      const response = await authApi.login({
         email: values.email,
         password: values.password,
       })
       
-      // 获取用户信息
-      const { data: user } = await authApi.me()
+      // api.post 已经返回 res.data，所以 response 就是 { access_token, refresh_token, expires_in }
+      const tokenData = response
       
-      // 保存认证信息
-      setAuth(user, data.access_token, data.refresh_token)
+      if (!tokenData?.access_token) {
+        message.error('登录失败：未获取到访问令牌')
+        return
+      }
+      
+      // 先保存 token 到 store，这样后续请求可以携带 Authorization 头
+      setAuth({ id: '', email: values.email, user_type: 'developer', user_status: 'active', email_verified: false, vip_level: 0, created_at: '' }, tokenData.access_token, tokenData.refresh_token)
+      
+      // 获取用户信息 - api.get 已经返回 res.data，所以直接是用户对象
+      const user = await authApi.me()
+      
+      // 更新用户信息
+      setAuth(user, tokenData.access_token, tokenData.refresh_token)
       
       message.success('登录成功')
       
@@ -40,7 +51,10 @@ export default function Login() {
         navigate('/')
       }
     } catch (error: any) {
-      message.error(error.message || '登录失败')
+      console.error('登录错误:', error)
+      // 显示具体的错误消息
+      const errorMsg = error?.message || error?.response?.data?.message || '登录失败'
+      message.error(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -64,13 +78,13 @@ export default function Login() {
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: '请输入邮箱' },
-                { type: 'email', message: '请输入有效的邮箱地址' },
+                { required: true, message: '请输入用户名或邮箱' },
+                { min: 3, message: '至少3个字符' },
               ]}
             >
               <Input
                 prefix={<UserOutlined />}
-                placeholder="邮箱"
+                placeholder="用户名或邮箱"
               />
             </Form.Item>
 
@@ -81,6 +95,7 @@ export default function Login() {
               <Input.Password
                 prefix={<LockOutlined />}
                 placeholder="密码"
+                autoComplete="current-password"
               />
             </Form.Item>
 

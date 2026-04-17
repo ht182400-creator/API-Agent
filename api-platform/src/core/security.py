@@ -21,13 +21,56 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
+    """
+    Hash a password using configured algorithm.
+    
+    Algorithm selection based on settings.password_hash_mode:
+    - "bcrypt": Use bcrypt (recommended, default)
+    - "sha256": Use SHA256 (faster, less secure)
+    - "auto": Use bcrypt
+    """
+    mode = settings.password_hash_mode
+    
+    if mode == "sha256":
+        return hashlib.sha256(password.encode()).hexdigest()
+    else:
+        # bcrypt is recommended, auto also uses bcrypt
+        return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    """
+    Verify a password against a hash.
+    
+    Supports multiple hash formats:
+    - bcrypt (starts with $2)
+    - SHA256 (64 hex characters)
+    
+    Always tries bcrypt first, then falls back to SHA256.
+    """
+    if not hashed_password:
+        return False
+    
+    # 如果是 bcrypt 格式 (以 $2 开头)
+    if hashed_password.startswith('$2'):
+        try:
+            return pwd_context.verify(plain_password, hashed_password)
+        except Exception:
+            return False
+    
+    # 如果是 SHA256 格式 (64个字符的十六进制)
+    if len(hashed_password) == 64:
+        try:
+            hashed = hashlib.sha256(plain_password.encode()).hexdigest()
+            return hmac.compare_digest(hashed, hashed_password)
+        except Exception:
+            return False
+    
+    # 尝试 passlib 自动识别
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception:
+        return False
 
 
 def hash_api_key(api_key: str) -> str:

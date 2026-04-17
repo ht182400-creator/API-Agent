@@ -17,6 +17,7 @@ import AdminUsers from './pages/admin/Users'
 import AdminRepos from './pages/admin/Repos'
 import AdminSettings from './pages/admin/Settings'
 import AdminLogs from './pages/admin/AdminLogs'
+import DevTools from './pages/admin/DevTools'
 
 // 路由守卫
 const ProtectedRoute = ({ 
@@ -78,6 +79,7 @@ function App() {
           <Route path="repos" element={<AdminRepos />} />
           <Route path="logs" element={<AdminLogs />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="devtools" element={<DevTools />} />
         </Route>
       </Route>
       

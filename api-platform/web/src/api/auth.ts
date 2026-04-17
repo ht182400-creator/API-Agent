@@ -2,7 +2,7 @@
  * 认证API
  */
 
-import { api } from './client'
+import { api, ApiResponse } from './client'
 
 // 用户类型
 export interface User {
@@ -14,6 +14,7 @@ export interface User {
   email_verified: boolean
   vip_level: number
   created_at: string
+  last_login_at?: string
 }
 
 // 登录请求
@@ -40,27 +41,27 @@ export interface TokenResponse {
 export const authApi = {
   // 用户登录
   login: (data: LoginRequest) => {
-    return api.post<{ data: TokenResponse }>('/auth/login', data)
+    return api.post<ApiResponse<TokenResponse>>('/auth/login', data)
   },
   
   // 用户注册
   register: (data: RegisterRequest) => {
-    return api.post<{ data: User }>('/auth/register', data)
+    return api.post<ApiResponse<User>>('/auth/register', data)
   },
   
   // 刷新Token
   refresh: (refresh_token: string) => {
-    return api.post<{ data: TokenResponse }>('/auth/refresh', { refresh_token })
+    return api.post<ApiResponse<TokenResponse>>('/auth/refresh', { refresh_token })
   },
   
   // 获取当前用户信息
   me: () => {
-    return api.get<{ data: User }>('/auth/me')
+    return api.get<ApiResponse<User>>('/auth/me')
   },
   
   // 登出
   logout: () => {
-    return api.post('/auth/logout')
+    return api.post<ApiResponse<{ message: string }>>('/auth/logout')
   },
   
   // 修改密码
