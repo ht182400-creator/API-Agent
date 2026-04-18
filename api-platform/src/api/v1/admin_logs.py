@@ -115,9 +115,22 @@ async def get_log(
     支持分页、级别过滤和关键词搜索。
     仅限管理员访问。
     """
-    # 验证文件路径安全性
-    safe_path = LOG_DIR / Path(file_path).name
-    if not str(safe_path).startswith(str(LOG_DIR)):
+    from src.config.logging_config import MODULE_LOG_DIR
+
+    file_name = Path(file_path).name
+
+    # 检查主日志目录
+    safe_path = LOG_DIR / file_name
+    if safe_path.exists():
+        pass  # 文件在主目录
+    else:
+        # 检查模块日志目录
+        safe_path = MODULE_LOG_DIR / file_name
+        if not safe_path.exists():
+            raise HTTPException(status_code=404, detail="日志文件不存在")
+
+    # 验证路径安全性
+    if not (str(safe_path).startswith(str(LOG_DIR)) or str(safe_path).startswith(str(MODULE_LOG_DIR))):
         raise HTTPException(status_code=403, detail="非法文件路径")
 
     content = read_log_content(
@@ -289,3 +302,77 @@ async def manual_backup(
         return BaseResponse(message=f"备份成功: {backup_path.name}")
     else:
         raise HTTPException(status_code=500, detail="备份失败")
+
+
+@router.get("/export")
+async def export_log(
+    file_path: str = Query(..., description="日志文件路径"),
+    current_user: dict = Depends(get_current_admin_user),
+):
+    """
+    导出日志文件（完整内容）
+
+    下载指定日志文件的完整内容。
+    仅限管理员访问。
+    """
+    safe_path = LOG_DIR / Path(file_path).name
+    if not str(safe_path).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=403, detail="非法文件路径")
+
+    if not safe_path.exists():
+        raise HTTPException(status_code=404, detail="日志文件不存在")
+
+    return FileResponse(
+        path=safe_path,
+        filename=Path(file_path).name,
+        media_type="text/plain",
+    )
+
+
+@router.get("/backup-content")
+async def get_backup_content(
+    filename: str = Query(..., description="备份文件名"),
+    start_line: int = Query(0, ge=0, description="起始行号"),
+    max_lines: int = Query(500, ge=1, le=2000, description="最大读取行数"),
+    level: Optional[str] = Query(None, description="日志级别过滤 (DEBUG/INFO/WARNING/ERROR/CRITICAL)"),
+    keyword: Optional[str] = Query(None, description="关键词过滤"),
+    current_user: dict = Depends(get_current_admin_user),
+):
+    """
+    读取备份文件内容
+
+    支持分页、级别过滤和关键词搜索。
+    仅限管理员访问。
+    """
+    backup_path = BACKUP_DIR / filename
+    if not backup_path.exists():
+        raise HTTPException(status_code=404, detail="备份文件不存在")
+
+    content = read_log_content(
+        file_path=str(backup_path),
+        start_line=start_line,
+        max_lines=max_lines,
+        level_filter=level,
+        keyword=keyword,
+    )
+
+    if content.get("error"):
+        raise HTTPException(status_code=400, detail=content["error"])
+
+    # 转换为备份内容格式
+    lines = []
+    for line_data in content.get("lines", []):
+        lines.append({
+            "line_number": line_data.get("line_number", 0),
+            "content": line_data.get("raw", line_data.get("message", "")),
+            "timestamp": line_data.get("timestamp", ""),
+            "level": line_data.get("level", "INFO"),
+            "color": line_data.get("color", "#52c41a"),
+        })
+
+    return BaseResponse(data={
+        "lines": lines,
+        "total": content.get("total", 0),
+        "start_line": start_line,
+        "max_lines": max_lines,
+    })

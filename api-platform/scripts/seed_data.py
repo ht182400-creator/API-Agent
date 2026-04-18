@@ -24,6 +24,14 @@ async def seed_users():
     """Create test users"""
     print("Creating test users...")
     
+    # 默认权限配置
+    default_permissions = {
+        "admin": ["*"],  # 管理员拥有所有权限
+        "owner": ["user:read", "user:write", "api:read", "api:write", "repo:manage"],
+        "developer": ["user:read", "user:write", "api:read", "api:write"],
+        "user": ["user:read"],
+    }
+    
     async with AsyncSessionLocal() as db:
         # Check if users already exist
         result = await db.execute(select(User).limit(1))
@@ -33,30 +41,39 @@ async def seed_users():
         
         # Create admin user
         admin = User(
+            username="admin",
             email="admin@example.com",
             password_hash=hash_password("admin123"),
             user_type="admin",
             user_status="active",
+            role="admin",
+            permissions=default_permissions["admin"],
             email_verified=True,
         )
         db.add(admin)
         
         # Create developer user
         developer = User(
+            username="developer",
             email="developer@example.com",
             password_hash=hash_password("dev123456"),
             user_type="developer",
             user_status="active",
+            role="user",
+            permissions=default_permissions["developer"],
             email_verified=True,
         )
         db.add(developer)
         
         # Create owner user
         owner = User(
+            username="owner",
             email="owner@example.com",
             password_hash=hash_password("owner123456"),
             user_type="owner",
             user_status="active",
+            role="developer",
+            permissions=default_permissions["owner"],
             email_verified=True,
         )
         db.add(owner)
@@ -90,7 +107,10 @@ async def seed_users():
         
         await db.commit()
         
-        print(f"Created users: admin@example.com, developer@example.com, owner@example.com")
+        print(f"Created users:")
+        print(f"  - admin/admin@example.com (role: admin)")
+        print(f"  - developer/developer@example.com (role: user)")
+        print(f"  - owner/owner@example.com (role: developer)")
 
 
 async def seed_api_keys():

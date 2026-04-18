@@ -40,16 +40,16 @@ export default function DeveloperDashboard() {
     setLoading(true)
     try {
       const [accountRes, keysRes, quotaRes, consumptionRes] = await Promise.all([
-        billingApi.getAccount().catch(() => ({ data: { data: null } })),
-        quotaApi.getKeys({ page_size: 5 }).catch(() => ({ data: { data: { items: [] } } })),
-        quotaApi.getQuotaOverview().catch(() => ({ data: { data: [] } })),
-        billingApi.getConsumptionTrend(7).catch(() => ({ data: { data: [] } })),
+        billingApi.getAccount().catch(() => null),
+        quotaApi.getKeys({ page_size: 5 }).catch(() => ({ items: [], total: 0 })),
+        quotaApi.getQuotaOverview().catch(() => []),
+        billingApi.getConsumptionTrend(7).catch(() => []),
       ])
 
-      setAccount(accountRes.data.data)
-      setKeys(keysRes.data.data.items)
-      setQuotaOverview(quotaRes.data.data)
-      setConsumptionTrend(consumptionRes.data.data)
+      setAccount(accountRes)
+      setKeys(keysRes?.items || [])
+      setQuotaOverview(quotaRes || [])
+      setConsumptionTrend(consumptionRes || [])
     } catch (error) {
       console.error('获取数据失败:', error)
     } finally {

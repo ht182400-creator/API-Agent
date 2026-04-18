@@ -24,11 +24,12 @@ export default function OwnerSettlement() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const { data } = await billingApi.getAccount()
-      setAccount(data)
+      // api.get 已返回 res.data，所以直接是对象
+      const accountData = await billingApi.getAccount()
+      setAccount(accountData)
       
       // 获取结算记录
-      const { data: billsData } = await billingApi.getBills({ bill_type: 'settlement', page_size: 20 })
+      const billsData = await billingApi.getBills({ bill_type: 'settlement', page_size: 20 })
       setSettlementBills(billsData.items)
     } catch (error) {
       console.error('获取数据失败:', error)

@@ -16,6 +16,7 @@ from src.core.exceptions import (
     APIKeyDisabledError,
     APIKeyExpiredError,
     AuthenticationError,
+    TokenExpiredError,
 )
 from src.config.logging_config import get_logger
 from src.config.database import get_db
@@ -46,27 +47,18 @@ async def get_current_user(
     payload = verify_token(token)
     
     if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="无效的认证凭据",
-        )
+        raise TokenExpiredError("Token无效，请重新登录")
     
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="无效的认证凭据",
-        )
+        raise TokenExpiredError("Token无效，请重新登录")
     
     # 从数据库获取用户
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户不存在",
-        )
+        raise TokenExpiredError("用户不存在，请重新登录")
     
     if user.user_status != "active":
         raise HTTPException(

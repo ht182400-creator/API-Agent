@@ -19,10 +19,24 @@ class APIError(Exception):
 
 
 class AuthenticationError(APIError):
-    """Authentication failed"""
+    """Authentication failed - 认证失败"""
 
     def __init__(self, message: str = "Authentication failed", code: int = 40101):
         super().__init__(message, code, status_code=401)
+
+
+class TokenExpiredError(AuthenticationError):
+    """Token has expired - Token已过期"""
+
+    def __init__(self, message: str = "Token has expired, please login again"):
+        super().__init__(message, code=40102)
+
+
+class InvalidCredentialsError(AuthenticationError):
+    """Invalid username or password - 用户名或密码错误"""
+
+    def __init__(self, message: str = "Invalid username/email or password"):
+        super().__init__(message, code=40101)
 
 
 class InvalidAPIKeyError(AuthenticationError):
@@ -157,3 +171,10 @@ class ExternalServiceError(APIError):
         super().__init__(
             message, code=50001, details={"service": service}, status_code=502
         )
+
+
+class ServerError(APIError):
+    """Internal server error"""
+
+    def __init__(self, message: str = "Internal server error"):
+        super().__init__(message, code=50001, status_code=500)

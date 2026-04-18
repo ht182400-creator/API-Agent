@@ -25,6 +25,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.config.database import async_engine, AsyncSessionLocal, Base
 from src.models import *  # noqa: F401, F403
 from src.core.security import hash_password  # 使用统一的密码哈希
+from src.utils.crypto import encrypt_api_key  # 用于加密存储 API key
 
 
 async def create_extensions():
@@ -59,14 +60,25 @@ async def create_test_data(session: AsyncSession):
     now = datetime.now()
     
     # ==================== 用户数据 ====================
+    # 默认权限配置
+    default_permissions = {
+        "admin": ["*"],  # 管理员拥有所有权限
+        "owner": ["user:read", "user:write", "api:read", "api:write", "repo:manage"],
+        "developer": ["user:read", "user:write", "api:read", "api:write"],
+        "user": ["user:read"],
+    }
+    
     users = [
         User(
             id=uuid.UUID("11111111-1111-1111-1111-111111111111"),
+            username="admin",
             email="admin@example.com",
             password_hash=hash_password("admin123"),
             phone="13800000001",
             user_type="admin",
             user_status="active",
+            role="admin",  # 角色：管理员
+            permissions=default_permissions["admin"],
             email_verified=True,
             vip_level=3,
             vip_expire_at=now + timedelta(days=365),
@@ -75,11 +87,14 @@ async def create_test_data(session: AsyncSession):
         ),
         User(
             id=uuid.UUID("22222222-2222-2222-2222-222222222222"),
+            username="owner",
             email="owner@example.com",
             password_hash=hash_password("owner123"),
             phone="13800000002",
             user_type="owner",
             user_status="active",
+            role="developer",  # 角色：开发者（仓库所有者）
+            permissions=default_permissions["owner"],
             email_verified=True,
             vip_level=2,
             vip_expire_at=now + timedelta(days=180),
@@ -88,11 +103,14 @@ async def create_test_data(session: AsyncSession):
         ),
         User(
             id=uuid.UUID("33333333-3333-3333-3333-333333333333"),
+            username="developer",
             email="developer@example.com",
             password_hash=hash_password("dev123456"),
             phone="13800000003",
             user_type="developer",
             user_status="active",
+            role="user",  # 角色：普通用户
+            permissions=default_permissions["developer"],
             email_verified=True,
             vip_level=1,
             created_at=now - timedelta(days=15),
@@ -100,11 +118,14 @@ async def create_test_data(session: AsyncSession):
         ),
         User(
             id=uuid.UUID("44444444-4444-4444-4444-444444444444"),
+            username="test",
             email="test@example.com",
             password_hash=hash_password("test123"),
             phone="13800000004",
             user_type="developer",
             user_status="active",
+            role="user",  # 角色：普通用户
+            permissions=default_permissions["user"],
             email_verified=False,
             vip_level=0,
             created_at=now - timedelta(days=7),
@@ -225,13 +246,21 @@ async def create_test_data(session: AsyncSession):
         session.add(repo)
     
     # ==================== API Keys 数据 ====================
+    # 定义完整的 API key（用于加密存储）
+    test_keys = [
+        "sk_test_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",  # 32字节 hex
+        "sk_live_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",  # 32字节 hex
+        "sk_test_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",  # 32字节 hex
+    ]
+    
     api_keys = [
         APIKey(
             id=uuid.UUID("cccc1111-1111-1111-1111-111111111111"),
             user_id=users[2].id,
             key_name="开发环境 Key",
             key_prefix="sk_test_a",
-            key_hash=hashlib.sha256("sk_test_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".encode()).hexdigest(),
+            key_hash=hashlib.sha256(test_keys[0].encode()).hexdigest(),
+            encrypted_key=encrypt_api_key(test_keys[0]),  # 加密存储完整 key
             auth_type="api_key",
             rate_limit_rpm=100,
             rate_limit_rph=1000,
@@ -246,7 +275,8 @@ async def create_test_data(session: AsyncSession):
             user_id=users[2].id,
             key_name="生产环境 Key",
             key_prefix="sk_live_A",
-            key_hash=hashlib.sha256("sk_live_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".encode()).hexdigest(),
+            key_hash=hashlib.sha256(test_keys[1].encode()).hexdigest(),
+            encrypted_key=encrypt_api_key(test_keys[1]),  # 加密存储完整 key
             auth_type="api_key",
             rate_limit_rpm=500,
             rate_limit_rph=10000,
@@ -261,7 +291,8 @@ async def create_test_data(session: AsyncSession):
             user_id=users[3].id,
             key_name="测试 Key",
             key_prefix="sk_test_b",
-            key_hash=hashlib.sha256("sk_test_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".encode()).hexdigest(),
+            key_hash=hashlib.sha256(test_keys[2].encode()).hexdigest(),
+            encrypted_key=encrypt_api_key(test_keys[2]),  # 加密存储完整 key
             auth_type="api_key",
             rate_limit_rpm=50,
             rate_limit_rph=500,
@@ -409,21 +440,32 @@ async def create_test_data(session: AsyncSession):
 
 def print_test_accounts():
     """打印测试账户信息"""
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 80)
     print("TEST ACCOUNTS")
-    print("=" * 60)
-    print("\n| User Type | Email                   | Password    | VIP Level |")
-    print("|-----------|-------------------------|-------------|-----------|")
-    print("| Admin     | admin@example.com        | admin123    | 3         |")
-    print("| Owner     | owner@example.com        | owner123    | 2         |")
-    print("| Developer | developer@example.com    | dev123456   | 1         |")
-    print("| Test      | test@example.com        | test123     | 0         |")
-    print("\n" + "-" * 60)
-    print("API Keys (prefix only, hash stored in DB):")
-    print("  - sk_test_a*** (developer, GPT-4)")
-    print("  - sk_live_A*** (developer, GPT-4, production)")
-    print("  - sk_test_b*** (test user, Claude)")
-    print("=" * 60 + "\n")
+    print("=" * 80)
+    print("\n支持两种登录方式：username 或 email")
+    print("\n| User Type | Username   | Email                    | Password    | Role      | VIP |")
+    print("|-----------|------------|--------------------------|-------------|-----------|-----|")
+    print("| Admin     | admin      | admin@example.com        | admin123    | admin     | 3   |")
+    print("| Owner     | owner      | owner@example.com        | owner123    | developer | 2   |")
+    print("| Developer | developer  | developer@example.com    | dev123456   | user      | 1   |")
+    print("| Test      | test       | test@example.com         | test123     | user      | 0   |")
+    print("\n" + "-" * 80)
+    print("登录示例:")
+    print("  - 用户名登录: username=admin, password=admin123")
+    print("  - 邮箱登录:   email=admin@example.com, password=admin123")
+    print("\n" + "-" * 80)
+    print("角色说明:")
+    print("  - admin:     管理员，拥有所有权限 (*)")
+    print("  - developer: 开发者，拥有 API 读写权限")
+    print("  - user:      普通用户，仅有只读权限")
+    print("\n" + "-" * 80)
+    print("API Keys (完整 key，支持查看功能):")
+    print("  - sk_test_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (developer, GPT-4)")
+    print("  - sk_live_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA (developer, GPT-4, production)")
+    print("  - sk_test_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (test user, Claude)")
+    print("  注意：完整 key 可通过前端界面点击「查看」按钮获取")
+    print("=" * 80 + "\n")
 
 
 async def main(drop: bool = False, sample_data: bool = True):

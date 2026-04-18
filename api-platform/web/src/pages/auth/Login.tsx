@@ -4,43 +4,50 @@
 
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Form, Input, Button, Card, message, Checkbox } from 'antd'
+import { Form, Input, Button, Card, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
+import { useError } from '../../contexts/ErrorContext'
+import { logger } from '../../utils/logger'
 import styles from './Login.module.css'
 
 export default function Login() {
   const navigate = useNavigate()
   const { setAuth } = useAuthStore()
   const [loading, setLoading] = useState(false)
+  const { showError, showSuccess } = useError()
 
   const onFinish = async (values: { email: string; password: string; remember: boolean }) => {
     setLoading(true)
     try {
+      logger.info('[Login] Attempting login', { email: values.email })
+      
       const response = await authApi.login({
         email: values.email,
         password: values.password,
       })
       
-      // api.post 已经返回 res.data，所以 response 就是 { access_token, refresh_token, expires_in }
       const tokenData = response
       
       if (!tokenData?.access_token) {
-        message.error('登录失败：未获取到访问令牌')
-        return
+        throw new Error('登录失败：未获取到访问令牌')
       }
       
-      // 先保存 token 到 store，这样后续请求可以携带 Authorization 头
+      // 先保存 token 到 store
       setAuth({ id: '', email: values.email, user_type: 'developer', user_status: 'active', email_verified: false, vip_level: 0, created_at: '' }, tokenData.access_token, tokenData.refresh_token)
       
-      // 获取用户信息 - api.get 已经返回 res.data，所以直接是用户对象
+      // 获取用户信息
       const user = await authApi.me()
       
       // 更新用户信息
       setAuth(user, tokenData.access_token, tokenData.refresh_token)
       
-      message.success('登录成功')
+      // 设置日志用户ID
+      logger.setUserId(user.id)
+      
+      logger.info('[Login] Success', { userId: user.id, userType: user.user_type })
+      showSuccess('登录成功')
       
       // 根据用户类型跳转
       if (user.user_type === 'admin') {
@@ -51,10 +58,12 @@ export default function Login() {
         navigate('/')
       }
     } catch (error: any) {
-      console.error('登录错误:', error)
-      // 显示具体的错误消息
-      const errorMsg = error?.message || error?.response?.data?.message || '登录失败'
-      message.error(errorMsg)
+      logger.error('[Login] Failed', {
+        message: error.message,
+        email: values.email,
+      })
+      // 使用统一的错误处理
+      showError(error)
     } finally {
       setLoading(false)
     }

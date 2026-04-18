@@ -67,22 +67,22 @@ export interface CreateKeyRequest {
 export const quotaApi = {
   // 获取API Key列表
   getKeys: (params?: { page?: number; page_size?: number }) => {
-    return api.get<{ data: PaginatedResponse<APIKey> }>('/quota/keys', params)
+    return api.get<PaginatedResponse<APIKey>>('/quota/keys', params)
   },
   
   // 创建API Key
   createKey: (data: CreateKeyRequest) => {
-    return api.post<{ data: APIKey }>('/quota/keys', data)
+    return api.post<APIKey>('/quota/keys', data)
   },
   
   // 获取API Key详情
   getKey: (key_id: string) => {
-    return api.get<{ data: APIKey }>(`/quota/keys/${key_id}`)
+    return api.get<APIKey>(`/quota/keys/${key_id}`)
   },
   
   // 更新API Key
   updateKey: (key_id: string, data: Partial<CreateKeyRequest>) => {
-    return api.put<{ data: APIKey }>(`/quota/keys/${key_id}`, data)
+    return api.put<APIKey>(`/quota/keys/${key_id}`, data)
   },
   
   // 禁用API Key
@@ -102,12 +102,12 @@ export const quotaApi = {
   
   // 获取配额信息
   getQuota: (key_id: string) => {
-    return api.get<{ data: QuotaInfo }>(`/quota/info/${key_id}`)
+    return api.get<QuotaInfo>(`/quota/info/${key_id}`)
   },
   
   // 获取所有API Key的配额概览
   getQuotaOverview: () => {
-    return api.get<{ data: QuotaInfo[] }>('/quota/overview')
+    return api.get<QuotaInfo[]>('/quota/overview')
   },
   
   // 设置配额限制
@@ -124,12 +124,12 @@ export const quotaApi = {
     start_date?: string
     end_date?: string
   }) => {
-    return api.get<{ data: PaginatedResponse<APICallLog> }>('/quota/logs', params)
+    return api.get<PaginatedResponse<APICallLog>>('/quota/logs', params)
   },
   
   // 获取配额使用历史
   getUsageHistory: (key_id: string, period_type?: 'daily' | 'monthly', days?: number) => {
-    return api.get<{ data: { date: string; total_amount: number; call_count: number }[] }>(
+    return api.get<{ date: string; total_amount: number; call_count: number }[]>(
       `/quota/usage-history/${key_id}`,
       { period_type, days }
     )
@@ -137,9 +137,16 @@ export const quotaApi = {
   
   // 获取使用量最高的仓库
   getTopRepos: (key_id: string, limit?: number, days?: number) => {
-    return api.get<{ data: { repo_id: string; repo_name: string; total_amount: number; call_count: number }[] }>(
+    return api.get<{ repo_id: string; repo_name: string; total_amount: number; call_count: number }[]>(
       `/quota/top-repos/${key_id}`,
       { limit, days }
+    )
+  },
+
+  // 查看 API Key 明文
+  revealKey: (key_id: string) => {
+    return api.get<{ id: string; key_name: string; api_key: string; key_prefix: string }>(
+      `/quota/keys/${key_id}/reveal`
     )
   },
 }

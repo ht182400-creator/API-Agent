@@ -31,7 +31,8 @@ export default function OwnerDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const { data } = await repoApi.getMyRepos({ page_size: 10 })
+      // api.get 已返回 res.data，所以直接是 PaginatedResponse
+      const data = await repoApi.getMyRepos({ page_size: 10 })
       setRepos(data.items)
 
       // 获取每个仓库的统计
@@ -39,7 +40,7 @@ export default function OwnerDashboard() {
       await Promise.all(
         data.items.map(async (repo) => {
           try {
-            const { data: repoStats } = await repoApi.getStats(repo.id)
+            const repoStats = await repoApi.getStats(repo.id)
             statsMap[repo.id] = repoStats
           } catch (e) {}
         })

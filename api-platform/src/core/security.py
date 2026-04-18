@@ -14,6 +14,7 @@ from src.core.exceptions import (
     InvalidAPIKeyError,
     InvalidSignatureError,
     TimestampExpiredError,
+    TokenExpiredError,
 )
 
 # Password hashing context
@@ -137,7 +138,8 @@ def verify_token(token: str) -> dict:
         )
         return payload
     except JWTError as e:
-        raise InvalidAPIKeyError()
+        # JWT 解码失败，可能是 Token 无效或已过期
+        raise TokenExpiredError("Token无效或已过期，请重新登录")
 
 
 def verify_api_key(provided_key: str, stored_hash: str) -> bool:

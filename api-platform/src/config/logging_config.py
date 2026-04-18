@@ -83,8 +83,10 @@ class LogConfig:
 
     # 默认配置
     DEFAULT_LEVEL = "INFO"
-    DEFAULT_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s:%(lineno)d | %(message)s"
+    DEFAULT_FORMAT = "%(asctime)s.%(msecs)03d | [SERVER] | %(levelname)-8s | %(name)s:%(lineno)d | %(message)s"
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+    # 日志前缀
+    LOG_PREFIX = "[SERVER]"
 
     # 文件大小限制: 10MB (默认)
     MAX_BYTES = 10 * 1024 * 1024
@@ -169,10 +171,22 @@ class LogBackupManager:
         if not file_path.exists():
             return None
 
-        # 生成备份文件名: 原名_YYYYMMDD_HHMMSS.log
+        # 生成备份文件名: 原名_YYYYMMDD.log (简化格式，包含日期)
+        date_str = datetime.now().strftime("%Y%m%d")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         module_name = file_path.stem
-        backup_name = f"{module_name}_{timestamp}.log"
+        
+        # 检查当日是否已有备份文件
+        today_backup_pattern = f"{module_name}_{date_str}*.log"
+        existing_backups = list(BACKUP_DIR.glob(today_backup_pattern))
+        
+        # 如果当日已有备份，追加序号
+        if existing_backups:
+            backup_name = f"{module_name}_{timestamp}.log"
+        else:
+            # 当日第一份备份
+            backup_name = f"{module_name}_{date_str}.log"
+        
         backup_path = BACKUP_DIR / backup_name
 
         try:
@@ -349,10 +363,16 @@ def setup_module_loggers(
 
         # 控制台处理器
         if enable_console:
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(level)
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
+            try:
+                if sys.platform == 'win32':
+                    console_handler = logging.StreamHandler(sys.stdout.buffer if hasattr(sys.stdout, 'buffer') else open(os.devnull, 'w'))
+                else:
+                    console_handler = logging.StreamHandler(sys.stdout)
+                console_handler.setLevel(level)
+                console_handler.setFormatter(formatter)
+                logger.addHandler(console_handler)
+            except Exception:
+                pass
 
         # 模块文件处理器
         if enable_file:
@@ -376,6 +396,10 @@ def setup_logger(
     file_rotation: str = "size",
     setup_modules: bool = True,
 ) -> logging.Logger:
+    # 日志文件名加上日期和前缀
+    date_str = datetime.now().strftime("%Y%m%d")
+    # 文件名前缀
+    file_prefix = "server"
     """
     设置日志记录器
 
@@ -413,14 +437,21 @@ def setup_logger(
 
     # 控制台处理器
     if enable_console:
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(LogConfig.LEVELS.get(level.upper(), logging.INFO))
-        console_handler.setFormatter(colored_formatter)
-        logger.addHandler(console_handler)
+        try:
+            # Windows 异步环境兼容：使用 NullHandler 作为后备
+            if sys.platform == 'win32':
+                console_handler = logging.StreamHandler(sys.stdout.buffer if hasattr(sys.stdout, 'buffer') else open(os.devnull, 'w'))
+            else:
+                console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setLevel(LogConfig.LEVELS.get(level.upper(), logging.INFO))
+            console_handler.setFormatter(colored_formatter)
+            logger.addHandler(console_handler)
+        except Exception:
+            pass
 
     # 文件处理器
     if enable_file:
-        log_file = log_file or str(LOG_DIR / f"{name}.log")
+        log_file = log_file or str(LOG_DIR / f"{file_prefix}_{name}_{date_str}.log")
         Path(log_file).parent.mkdir(parents=True, exist_ok=True)
 
         if file_rotation == "time":
@@ -486,18 +517,43 @@ def get_log_files() -> List[Dict[str, Any]]:
     """获取所有日志文件信息"""
     files = []
     
-    # 主日志文件
-    main_log = LOG_DIR / "api_platform.log"
+    # 主日志文件 (带日期和前缀)
+    today = datetime.now().strftime("%Y%m%d")
+    main_log = LOG_DIR / f"server_api_platform_{today}.log"
     if main_log.exists():
         stat = main_log.stat()
         files.append({
-            "name": "api_platform.log",
+            "name": f"server_api_platform_{today}.log",
             "path": str(main_log),
             "module": "main",
             "size": stat.st_size,
             "size_formatted": _format_size(stat.st_size),
             "modified_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
         })
+    else:
+        # 兼容旧文件名
+        old_main_log = LOG_DIR / "api_platform.log"
+        old_main_log_new = LOG_DIR / f"api_platform_{today}.log"
+        if old_main_log.exists():
+            stat = old_main_log.stat()
+            files.append({
+                "name": "api_platform.log",
+                "path": str(old_main_log),
+                "module": "main",
+                "size": stat.st_size,
+                "size_formatted": _format_size(stat.st_size),
+                "modified_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
+            })
+        elif old_main_log_new.exists():
+            stat = old_main_log_new.stat()
+            files.append({
+                "name": f"api_platform_{today}.log",
+                "path": str(old_main_log_new),
+                "module": "main",
+                "size": stat.st_size,
+                "size_formatted": _format_size(stat.st_size),
+                "modified_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
+            })
     
     # 模块日志文件
     for f in MODULE_LOG_DIR.glob("*.log"):
@@ -582,16 +638,16 @@ def read_log_content(
 
 def _parse_log_line(line: str, line_number: int) -> Optional[Dict[str, Any]]:
     """解析单行日志"""
-    if not line.strip():
+    stripped = line.strip()
+    if not stripped:
         return None
 
-    # 匹配格式: 2024-01-01 12:00:00 | LEVEL | module:line | message
-    pattern = r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s*\|\s*(\w+)\s*\|\s*([^|]+):(\d+)\s*\|\s*(.*)$'
-    match = re.match(pattern, line.strip())
+    # 匹配实际格式: 2024-01-01 12:00:00 | [SERVER] | LEVEL     | module:line | message
+    pattern = r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?)\s*\|\s*\[SERVER\]\s*\|\s*(\w+)\s*\|\s*([^|]+):(\d+)\s*\|\s*(.*)$'
+    match = re.match(pattern, stripped)
 
     if match:
         timestamp, level, module_info, line_num, message = match.groups()
-        # 模块信息格式: name (如 auth_service:123)
         module_name = module_info.strip()
         return {
             "line_number": line_number,
@@ -599,18 +655,33 @@ def _parse_log_line(line: str, line_number: int) -> Optional[Dict[str, Any]]:
             "level": level,
             "module": module_name,
             "message": message.strip(),
-            "raw": line.strip(),
+            "raw": stripped,
             "color": LogConfig.LEVEL_COLORS.get(level, "#000000"),
         }
 
-    # 其他格式
+    # 尝试简化格式: timestamp | LEVEL | message (无module)
+    simple_pattern = r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?)\s*\|\s*(\w+)\s*\|\s*(.*)$'
+    simple_match = re.match(simple_pattern, stripped)
+    if simple_match:
+        timestamp, level, message = simple_match.groups()
+        return {
+            "line_number": line_number,
+            "timestamp": timestamp,
+            "level": level,
+            "module": "",
+            "message": message.strip(),
+            "raw": stripped,
+            "color": LogConfig.LEVEL_COLORS.get(level, "#000000"),
+        }
+
+    # 其他格式 - 直接返回原行内容
     return {
         "line_number": line_number,
         "timestamp": "",
         "level": "INFO",
         "module": "",
-        "message": line.strip(),
-        "raw": line.strip(),
+        "message": stripped,
+        "raw": stripped,
         "color": "#52c41a",
     }
 

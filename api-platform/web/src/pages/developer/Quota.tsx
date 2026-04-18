@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic } from 'antd'
 import { PieChartOutlined, BarChartOutlined } from '@ant-design/icons'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
+import { useErrorModal } from '../../components/ErrorModal'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Quota.module.css'
@@ -20,6 +21,9 @@ export default function DeveloperQuota() {
   const [usageHistory, setUsageHistory] = useState<any[]>([])
   const [topRepos, setTopRepos] = useState<any[]>([])
 
+  // 使用统一的错误提示
+  const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
+
   useEffect(() => {
     fetchKeys()
   }, [])
@@ -32,13 +36,14 @@ export default function DeveloperQuota() {
 
   const fetchKeys = async () => {
     try {
-      const { data } = await quotaApi.getKeys({ page_size: 100 })
+      // api.get 已返回 res.data，所以直接是 PaginatedResponse
+      const data = await quotaApi.getKeys({ page_size: 100 })
       setKeys(data.items)
       if (data.items.length > 0) {
         setSelectedKey(data.items[0].id)
       }
-    } catch (error) {
-      console.error('获取Keys失败:', error)
+    } catch (error: any) {
+      showError(error, () => fetchKeys())
     }
   }
 
@@ -51,11 +56,11 @@ export default function DeveloperQuota() {
         quotaApi.getTopRepos(keyId, 10, 14),
       ])
 
-      setQuota(quotaRes.data)
-      setUsageHistory(historyRes.data)
-      setTopRepos(reposRes.data)
-    } catch (error) {
-      console.error('获取配额数据失败:', error)
+      setQuota(quotaRes)
+      setUsageHistory(historyRes)
+      setTopRepos(reposRes)
+    } catch (error: any) {
+      showError(error, () => fetchQuotaData(keyId))
     } finally {
       setLoading(false)
     }
@@ -71,6 +76,9 @@ export default function DeveloperQuota() {
 
   return (
     <div className={styles.container}>
+      {/* 统一的错误提示组件 */}
+      <ErrorModalComponent />
+
       <div className={styles.header}>
         <Title level={4}>配额使用情况</Title>
         <Select
