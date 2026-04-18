@@ -12,6 +12,7 @@ import {
   ReloadOutlined 
 } from '@ant-design/icons'
 import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
+import { useErrorModal } from '../../components/ErrorModal'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Billing.module.css'
@@ -31,6 +32,9 @@ export default function DeveloperBilling() {
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [balanceHistory, setBalanceHistory] = useState<any[]>([])
 
+  // 使用统一的错误提示
+  const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -38,18 +42,18 @@ export default function DeveloperBilling() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [accountRes, summaryRes, historyRes] = await Promise.all([
+      const [accountData, summaryData, historyData] = await Promise.all([
         billingApi.getAccount(),
         billingApi.getMonthlySummary(),
         billingApi.getBalanceHistory(30),
       ])
 
-      setAccount(accountRes.data)
-      setSummary(summaryRes.data)
-      setBalanceHistory(historyRes.data)
+      setAccount(accountData)
+      setSummary(summaryData)
+      setBalanceHistory(historyData)
       fetchBills()
-    } catch (error) {
-      console.error('获取数据失败:', error)
+    } catch (error: any) {
+      showError(error, () => fetchData())
     } finally {
       setLoading(false)
     }
@@ -57,11 +61,12 @@ export default function DeveloperBilling() {
 
   const fetchBills = async (params?: any) => {
     try {
-      const { data } = await billingApi.getBills({ page, page_size: pageSize, ...params })
+      // api.get 已返回 res.data，所以直接是 PaginatedResponse
+      const data = await billingApi.getBills({ page, page_size: pageSize, ...params })
       setBills(data.items)
-      setTotal(data.total)
-    } catch (error) {
-      console.error('获取账单失败:', error)
+      setTotal(data.pagination.total)
+    } catch (error: any) {
+      showError(error, () => fetchBills(params))
     }
   }
 
@@ -128,6 +133,9 @@ export default function DeveloperBilling() {
 
   return (
     <div className={styles.container}>
+      {/* 统一的错误提示组件 */}
+      <ErrorModalComponent />
+
       <div className={styles.header}>
         <Title level={4}>账单中心</Title>
         <Space>

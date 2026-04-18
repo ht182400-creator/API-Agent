@@ -17,13 +17,24 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # 登录凭证
+    username = Column(String(50), unique=True, nullable=True, index=True)  # 用户名（唯一，可选）
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=True)
     phone = Column(String(20), nullable=True)
 
-    # User type: developer, owner, admin
+    # 用户类型：developer（开发者）、owner（仓库所有者）、admin（管理员）
     user_type = Column(String(20), nullable=False, default="developer")
+    
+    # 用户状态：active（正常）、disabled（禁用）、deleted（已删除）
     user_status = Column(String(20), nullable=False, default="active")
+    
+    # 角色：super_admin（超级管理员）、admin（管理员）、developer（开发者）、user（普通用户）
+    role = Column(String(20), nullable=False, default="user")
+    
+    # 细粒度权限列表，如 ["user:read", "user:write", "api:manage"]
+    permissions = Column(JSONB, default=list)
 
     # OAuth information
     oauth_provider = Column(String(50), nullable=True)

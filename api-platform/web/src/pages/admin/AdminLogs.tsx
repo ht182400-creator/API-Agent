@@ -51,11 +51,14 @@ import {
   updateBackupConfig,
   manualBackup,
   downloadBackup,
+  exportLog,
+  getBackupContent,
   LogFileInfo,
   LogLine,
   LogStats,
   BackupFileInfo,
   BackupConfig,
+  BackupContentLine,
   LogLevel,
   LOG_LEVELS,
   getLevelColor,
@@ -95,6 +98,17 @@ export default function AdminLogs() {
   
   // 日志查看弹窗
   const [viewVisible, setViewVisible] = useState(false)
+
+  // 备份查看弹窗
+  const [backupViewVisible, setBackupViewVisible] = useState(false)
+  const [selectedBackup, setSelectedBackup] = useState<string | null>(null)
+  const [backupContent, setBackupContent] = useState<BackupContentLine[]>([])
+  const [backupTotal, setBackupTotal] = useState(0)
+  const [backupPage, setBackupPage] = useState(0)
+  const [backupLoading, setBackupLoading] = useState(false)
+  const [backupLevelFilter, setBackupLevelFilter] = useState<LogLevel | null>(null)
+  const [backupKeyword, setBackupKeyword] = useState('')
+  const BACKUP_PAGE_SIZE = 500
   
   // 加载日志文件列表
   const loadFiles = useCallback(async () => {
@@ -255,6 +269,56 @@ export default function AdminLogs() {
       setConfig({ ...config, [key]: value })
     }
   }
+
+  // 查看备份内容
+  const handleViewBackup = async (filename: string) => {
+    setSelectedBackup(filename)
+    setBackupPage(0)
+    setBackupContent([])
+    setBackupViewVisible(true)
+    await loadBackupContent(filename, 0)
+  }
+
+  // 加载备份内容
+  const loadBackupContent = async (filename: string, page: number) => {
+    setBackupLoading(true)
+    try {
+      const data = await getBackupContent(filename, {
+        startLine: page * BACKUP_PAGE_SIZE,
+        maxLines: BACKUP_PAGE_SIZE,
+        level: backupLevelFilter,
+        keyword: backupKeyword || null,
+      })
+      if (page === 0) {
+        setBackupContent(data.lines)
+      } else {
+        setBackupContent(prev => [...prev, ...data.lines])
+      }
+      setBackupTotal(data.total)
+    } catch (error) {
+      message.error('加载备份内容失败')
+    } finally {
+      setBackupLoading(false)
+    }
+  }
+
+  // 备份搜索
+  const handleBackupSearch = () => {
+    setBackupPage(0)
+    setBackupContent([])
+    if (selectedBackup) {
+      loadBackupContent(selectedBackup, 0)
+    }
+  }
+
+  // 加载更多备份内容
+  const loadMoreBackupContent = () => {
+    if (selectedBackup) {
+      const nextPage = backupPage + 1
+      setBackupPage(nextPage)
+      loadBackupContent(selectedBackup, nextPage)
+    }
+  }
   
   // 日志文件表格列
   const fileColumns: ColumnsType<LogFileInfo> = [
@@ -288,9 +352,18 @@ export default function AdminLogs() {
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: 250,
       render: (_, record) => (
         <Space>
+          <Button
+            type="link"
+            size="small"
+            icon={<DownloadOutlined />}
+            href={exportLog(record.name)}
+            target="_blank"
+          >
+            导出
+          </Button>
           <Button
             type="link"
             size="small"
@@ -332,9 +405,17 @@ export default function AdminLogs() {
     {
       title: '操作',
       key: 'action',
-      width: 150,
+      width: 200,
       render: (_, record) => (
         <Space>
+          <Button
+            type="link"
+            size="small"
+            icon={<FileTextOutlined />}
+            onClick={() => handleViewBackup(record.name)}
+          >
+            查看
+          </Button>
           <Button
             type="link"
             size="small"
@@ -597,7 +678,7 @@ export default function AdminLogs() {
                 onChange={(checked) => handleConfigChange('enabled', checked)}
               />
             </Form.Item>
-            
+
             <Form.Item label={`文件大小限制: ${config.max_file_size_mb} MB`}>
               <Slider
                 min={1}
@@ -615,7 +696,7 @@ export default function AdminLogs() {
                 单个日志文件超过此大小后将自动备份并创建新文件
               </Text>
             </Form.Item>
-            
+
             <Form.Item label={`最大备份数量: ${config.max_backup_files}`}>
               <Slider
                 min={10}
@@ -634,7 +715,7 @@ export default function AdminLogs() {
                 超过此数量的备份文件将被自动清理
               </Text>
             </Form.Item>
-            
+
             <Form.Item label={`自动清理: ${config.auto_cleanup ? '启用' : '禁用'}`}>
               <Switch
                 checked={config.auto_cleanup}
@@ -642,7 +723,7 @@ export default function AdminLogs() {
                 disabled={!config.enabled}
               />
             </Form.Item>
-            
+
             <Form.Item label={`清理阈值: ${config.cleanup_threshold}%`}>
               <Slider
                 min={50}
@@ -662,6 +743,102 @@ export default function AdminLogs() {
             </Form.Item>
           </Form>
         )}
+      </Modal>
+
+      {/* 备份查看弹窗 */}
+      <Modal
+        title={`查看备份 - ${selectedBackup}`}
+        open={backupViewVisible}
+        onCancel={() => setBackupViewVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setBackupViewVisible(false)}>
+            关闭
+          </Button>,
+        ]}
+        width={1000}
+        style={{ top: 20 }}
+      >
+        {/* 过滤工具栏 */}
+        <div className={styles.filterBar}>
+          <Space wrap>
+            <Select
+              placeholder="日志级别"
+              allowClear
+              style={{ width: 120 }}
+              value={backupLevelFilter}
+              onChange={(value) => {
+                setBackupLevelFilter(value)
+                setBackupPage(0)
+                setBackupContent([])
+                if (selectedBackup) {
+                  loadBackupContent(selectedBackup, 0)
+                }
+              }}
+            >
+              {LOG_LEVELS.map((level) => (
+                <Option key={level.value} value={level.value}>
+                  <Tag color={level.color} style={{ margin: 0 }}>
+                    {level.label}
+                  </Tag>
+                </Option>
+              ))}
+            </Select>
+            <Input
+              placeholder="搜索关键词"
+              prefix={<SearchOutlined />}
+              value={backupKeyword}
+              onChange={(e) => setBackupKeyword(e.target.value)}
+              onPressEnter={handleBackupSearch}
+              style={{ width: 200 }}
+              allowClear
+            />
+            <Button type="primary" onClick={handleBackupSearch}>
+              搜索
+            </Button>
+          </Space>
+          <Text type="secondary">
+            共 {backupTotal} 行，当前显示 {backupContent.length} 行
+          </Text>
+        </div>
+
+        <div className={styles.logContent}>
+          {backupLoading ? (
+            <div className={styles.loading}>加载中...</div>
+          ) : backupContent.length === 0 ? (
+            <div className={styles.empty}>暂无内容</div>
+          ) : (
+            <>
+              {backupContent.map((line, index) => (
+                <div
+                  key={index}
+                  className={styles.logLine}
+                  style={{ borderLeftColor: line.color || '#1890ff' }}
+                >
+                  <span className={styles.lineNumber}>{line.line_number}</span>
+                  {line.timestamp && (
+                    <span className={styles.timestamp}>{line.timestamp}</span>
+                  )}
+                  {line.level && (
+                    <Tag color={line.level === 'DEBUG' ? 'blue' : line.level === 'INFO' ? 'green' : line.level === 'WARNING' ? 'orange' : 'red'}>
+                      {line.level}
+                    </Tag>
+                  )}
+                  <span className={styles.message}>{line.content}</span>
+                </div>
+              ))}
+              {backupTotal > backupContent.length && (
+                <Button
+                  type="link"
+                  onClick={loadMoreBackupContent}
+                  block
+                  loading={backupLoading}
+                >
+                  加载更多...
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </Modal>
     </div>
   )

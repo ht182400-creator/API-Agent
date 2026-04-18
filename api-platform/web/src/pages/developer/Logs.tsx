@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Table, Card, Select, DatePicker, Button, Typography, Tag, Space } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import { quotaApi, APICallLog } from '../../api/quota'
+import { useErrorModal } from '../../components/ErrorModal'
 import dayjs from 'dayjs'
 import styles from './Logs.module.css'
 
@@ -25,6 +26,9 @@ export default function DeveloperLogs() {
     end_date: undefined as string | undefined,
   })
 
+  // 使用统一的错误提示
+  const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
+
   useEffect(() => {
     fetchLogs()
   }, [page, pageSize, filters])
@@ -32,15 +36,16 @@ export default function DeveloperLogs() {
   const fetchLogs = async () => {
     setLoading(true)
     try {
-      const { data } = await quotaApi.getLogs({
+      // api.get 已返回 res.data，所以直接是 PaginatedResponse
+      const data = await quotaApi.getLogs({
         page,
         page_size: pageSize,
         ...filters,
       })
       setLogs(data.items)
-      setTotal(data.total)
-    } catch (error) {
-      console.error('获取日志失败:', error)
+      setTotal(data.pagination.total)
+    } catch (error: any) {
+      showError(error, () => fetchLogs())
     } finally {
       setLoading(false)
     }
@@ -144,6 +149,9 @@ export default function DeveloperLogs() {
 
   return (
     <div className={styles.container}>
+      {/* 统一的错误提示组件 */}
+      <ErrorModalComponent />
+
       <div className={styles.header}>
         <Title level={4}>调用日志</Title>
         <Button icon={<ReloadOutlined />} onClick={fetchLogs}>

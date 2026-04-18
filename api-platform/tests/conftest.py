@@ -88,15 +88,39 @@ async def test_user(db_session: AsyncSession):
     from src.core.security import hash_password
     
     user = User(
+        username="testuser",
         email="test@example.com",
         password_hash=hash_password("testpassword"),
         user_type="developer",
         user_status="active",
+        role="user",
+        permissions=["user:read", "user:write", "api:read", "api:write"],
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
     return user
+
+
+@pytest.fixture
+async def test_admin(db_session: AsyncSession):
+    """Create test admin user"""
+    from src.models.user import User
+    from src.core.security import hash_password
+    
+    admin = User(
+        username="testadmin",
+        email="admin@test.com",
+        password_hash=hash_password("admin123"),
+        user_type="admin",
+        user_status="active",
+        role="admin",
+        permissions=["*"],
+    )
+    db_session.add(admin)
+    await db_session.commit()
+    await db_session.refresh(admin)
+    return admin
 
 
 @pytest.fixture

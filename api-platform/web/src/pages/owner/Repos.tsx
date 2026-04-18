@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Table, Button, Modal, Form, Input, Select, Switch, Card, message, Tag, Popconfirm, Space, Typography } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined } from '@ant-design/icons'
 import { repoApi, Repository, CreateRepoRequest } from '../../api/repo'
+import { useError } from '../../contexts/ErrorContext'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 
@@ -22,6 +23,9 @@ export default function OwnerRepos() {
   const [createLoading, setCreateLoading] = useState(false)
   const [form] = Form.useForm()
 
+  // 使用统一错误处理
+  const { showError, showSuccess } = useError()
+
   useEffect(() => {
     fetchRepos()
   }, [page, pageSize])
@@ -29,11 +33,11 @@ export default function OwnerRepos() {
   const fetchRepos = async () => {
     setLoading(true)
     try {
-      const { data } = await repoApi.getMyRepos({ page, page_size: pageSize })
+      const data = await repoApi.getMyRepos({ page, page_size: pageSize })
       setRepos(data.items)
-      setTotal(data.total)
+      setTotal(data.pagination.total)
     } catch (error: any) {
-      message.error(error.message || '获取仓库失败')
+      showError(error, fetchRepos)
     } finally {
       setLoading(false)
     }
@@ -44,17 +48,17 @@ export default function OwnerRepos() {
     try {
       if (editingRepo) {
         await repoApi.update(editingRepo.id, values)
-        message.success('仓库更新成功')
+        showSuccess('仓库更新成功')
       } else {
         await repoApi.create(values)
-        message.success('仓库创建成功')
+        showSuccess('仓库创建成功')
       }
       setModalVisible(false)
       form.resetFields()
       setEditingRepo(null)
       fetchRepos()
     } catch (error: any) {
-      message.error(error.message || '操作失败')
+      showError(error, () => handleCreate(values))
     } finally {
       setCreateLoading(false)
     }
@@ -77,10 +81,10 @@ export default function OwnerRepos() {
   const handleDelete = async (repoId: string) => {
     try {
       await repoApi.delete(repoId)
-      message.success('仓库已删除')
+      showSuccess('仓库已删除')
       fetchRepos()
     } catch (error: any) {
-      message.error(error.message || '删除失败')
+      showError(error, () => handleDelete(repoId))
     }
   }
 
@@ -91,10 +95,10 @@ export default function OwnerRepos() {
       } else {
         await repoApi.activate(repo.id)
       }
-      message.success(repo.status === 'active' ? '仓库已下线' : '仓库已上线')
+      showSuccess(repo.status === 'active' ? '仓库已下线' : '仓库已上线')
       fetchRepos()
     } catch (error: any) {
-      message.error(error.message || '操作失败')
+      showError(error, () => handleToggleStatus(repo))
     }
   }
 

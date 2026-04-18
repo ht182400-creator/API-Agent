@@ -180,3 +180,50 @@ export function getLevelColor(level: string): string {
   const config = LOG_LEVELS.find(l => l.value === level)
   return config?.color || '#000000'
 }
+
+// 备份内容行
+export interface BackupContentLine {
+  line_number: number
+  content: string
+  timestamp?: string
+  level?: string
+  color?: string
+}
+
+// 备份内容响应
+export interface BackupContentResponse {
+  lines: BackupContentLine[]
+  total: number
+  start_line: number
+  max_lines: number
+}
+
+/**
+ * 导出日志文件
+ */
+export function exportLog(filename: string): string {
+  const baseURL = import.meta.env.VITE_API_URL || '/api/v1'
+  return `${baseURL}/admin/logs/export?file_path=${encodeURIComponent(filename)}`
+}
+
+/**
+ * 获取备份文件内容
+ */
+export async function getBackupContent(
+  filename: string,
+  options?: {
+    startLine?: number
+    maxLines?: number
+    level?: LogLevel | null
+    keyword?: string | null
+  }
+): Promise<BackupContentResponse> {
+  const params: Record<string, any> = { filename }
+
+  if (options?.startLine !== undefined) params.start_line = options.startLine
+  if (options?.maxLines !== undefined) params.max_lines = options.maxLines
+  if (options?.level) params.level = options.level
+  if (options?.keyword) params.keyword = options.keyword
+
+  return api.get('/admin/logs/backup-content', params)
+}

@@ -95,9 +95,11 @@ class TestAuthAPI:
         response = await client.post(
             "/api/v1/auth/register",
             json={
+                "username": "newuser",
                 "email": "newuser@example.com",
                 "password": "password123",
                 "user_type": "developer",
+                "role": "user",
             },
         )
         
@@ -105,6 +107,8 @@ class TestAuthAPI:
         data = response.json()
         assert data["code"] == 0
         assert data["data"]["email"] == "newuser@example.com"
+        assert data["data"]["username"] == "newuser"
+        assert data["data"]["role"] == "user"
 
     async def test_register_duplicate_email(self, client: AsyncClient, test_user):
         """Test registration with duplicate email"""
@@ -118,8 +122,8 @@ class TestAuthAPI:
         
         assert response.status_code == 401
 
-    async def test_login(self, client: AsyncClient, test_user):
-        """Test user login"""
+    async def test_login_with_email(self, client: AsyncClient, test_user):
+        """Test user login with email"""
         response = await client.post(
             "/api/v1/auth/login",
             json={
@@ -133,6 +137,21 @@ class TestAuthAPI:
         assert data["code"] == 0
         assert "access_token" in data["data"]
         assert "refresh_token" in data["data"]
+
+    async def test_login_with_username(self, client: AsyncClient, test_user):
+        """Test user login with username"""
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={
+                "username": test_user.username,
+                "password": "testpassword",
+            },
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["code"] == 0
+        assert "access_token" in data["data"]
 
     async def test_login_wrong_password(self, client: AsyncClient, test_user):
         """Test login with wrong password"""

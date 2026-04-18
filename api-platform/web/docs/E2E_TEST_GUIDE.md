@@ -154,7 +154,9 @@ web/
 ├── e2e/
 │   ├── auth.spec.ts        # 认证测试
 │   ├── navigation.spec.ts  # 导航测试
-│   └── components.spec.ts  # 组件测试
+│   ├── components.spec.ts  # 组件测试
+│   ├── adminLogs.spec.ts   # 日志管理测试
+│   └── keys.spec.ts        # API Keys 管理测试
 ├── playwright.config.ts    # Playwright 配置
 └── package.json
 ```
@@ -456,3 +458,60 @@ jobs:
 - [Windows 后端测试环境](./WINDOWS_TEST_ENVIRONMENT.md)
 - [测试报告](./TEST_REPORT.md)
 - [API 文档](../api/)
+
+---
+
+## 附录：错误处理测试
+
+### 测试统一错误提示 UI
+
+```typescript
+// e2e/error-handling.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('统一错误处理测试', () => {
+  test('API 401 错误显示登录提示', async ({ page }) => {
+    await page.goto('/developer/keys')
+    
+    // 等待错误弹窗出现
+    await expect(page.getByText('登录已过期')).toBeVisible()
+    await expect(page.getByText('请重新登录后继续操作')).toBeVisible()
+  })
+
+  test('网络错误显示网络提示', async ({ page, context }) => {
+    // 模拟离线状态
+    await context.setOffline(true)
+    
+    await page.goto('/developer/keys')
+    await page.waitForTimeout(1000)
+    
+    // 检查错误提示
+    await expect(page.getByText('网络连接失败')).toBeVisible()
+  })
+
+  test('重试按钮功能', async ({ page }) => {
+    // 模拟 API 失败
+    await page.route('**/api/v1/quota/keys', route => {
+      route.fulfill({ status: 500, body: 'Server Error' })
+    })
+    
+    await page.goto('/developer/keys')
+    
+    // 点击重试
+    const retryButton = page.getByRole('button', { name: '重试' })
+    await expect(retryButton).toBeVisible()
+  })
+})
+```
+
+### 错误场景测试清单
+
+| 错误类型 | 触发场景 | 预期结果 |
+|----------|----------|----------|
+| 401 认证失败 | Token 过期 | 显示"登录已过期"，提供重新登录按钮 |
+| 403 权限不足 | 无权限操作 | 显示"您没有权限执行此操作" |
+| 404 资源不存在 | 访问不存在的资源 | 显示"资源不存在" |
+| 422 验证失败 | 提交无效数据 | 显示"数据验证失败" |
+| 429 请求限流 | 频繁请求 | 显示"请求过于频繁" |
+| 500 服务器错误 | 后端异常 | 显示"服务器开小差了" |
+| 0 网络错误 | 离线状态 | 显示"网络连接失败" |

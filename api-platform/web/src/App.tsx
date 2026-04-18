@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './stores/auth'
+import { ErrorProvider } from './contexts/ErrorContext'
 import Layout from './components/Layout'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -42,6 +43,7 @@ const ProtectedRoute = ({
 
 function App() {
   return (
+    <ErrorProvider>
     <Routes>
       {/* 公共路由 */}
       <Route path="/login" element={<Login />} />
@@ -86,6 +88,7 @@ function App() {
       {/* 默认重定向 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </ErrorProvider>
   )
 }
 

@@ -45,11 +45,11 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         }
 
         if response.status_code >= 500:
-            logger.error("Request completed with error: %s", log_data)
+            logger.error("[SRV-API] Request completed with error: %s", log_data)
         elif response.status_code >= 400:
-            logger.warning("Request completed with warning: %s", log_data)
+            logger.warning("[SRV-API] Request completed with warning: %s", log_data)
         else:
-            logger.info("Request completed: %s %s -> %s (%.2fms)",
+            logger.info("[SRV-API] Request completed: %s %s -> %s (%.2fms)",
                 request.method, request.url.path, response.status_code, process_time * 1000)
 
         return response

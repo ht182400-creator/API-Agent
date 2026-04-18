@@ -102,13 +102,21 @@ async def register(
     Register a new user account
     
     Args:
-        user_data: User registration data
+        user_data: User registration data (username, email, password, role)
     
     Returns:
         Created user information
     """
     from src.models.user import User
-    from sqlalchemy import select
+    from sqlalchemy import select, or_
+    
+    # 检查用户名是否已存在（如果提供了 username）
+    if user_data.username:
+        result = await db.execute(
+            select(User).where(User.username == user_data.username)
+        )
+        if result.scalar_one_or_none():
+            raise AuthenticationError("用户名已被注册")
     
     # Check if email already exists
     result = await db.execute(
@@ -117,14 +125,30 @@ async def register(
     existing_user = result.scalar_one_or_none()
     
     if existing_user:
-        raise AuthenticationError("Email already registered")
+        raise AuthenticationError("邮箱已被注册")
+    
+    # Validate role
+    valid_roles = ["user", "developer", "admin", "super_admin"]
+    if user_data.role not in valid_roles:
+        raise AuthenticationError(f"无效的角色，可选值: {', '.join(valid_roles)}")
+    
+    # 设置默认权限
+    default_permissions = {
+        "user": ["user:read"],
+        "developer": ["user:read", "user:write", "api:read", "api:write"],
+        "admin": ["user:read", "user:write", "user:delete", "api:read", "api:write", "api:delete", "quota:manage"],
+        "super_admin": ["*"]  # 所有权限
+    }
     
     # Create new user
     hashed_password = hash_password(user_data.password)
     new_user = User(
+        username=user_data.username,  # 可能为 None
         email=user_data.email,
         password_hash=hashed_password,
         user_type=user_data.user_type,
+        role=user_data.role,
+        permissions=default_permissions.get(user_data.role, ["user:read"]),
         email_verified=False,
     )
     
@@ -135,8 +159,10 @@ async def register(
     return BaseResponse(
         data={
             "id": str(new_user.id),
+            "username": new_user.username,
             "email": new_user.email,
             "user_type": new_user.user_type,
+            "role": new_user.role,
             "created_at": new_user.created_at.isoformat(),
         }
     )
@@ -148,10 +174,10 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    User login (支持邮箱或用户名)
+    User login (支持用户名或邮箱)
     
     Args:
-        login_data: Login credentials
+        login_data: Login credentials (username 或 email)
     
     Returns:
         JWT tokens
@@ -159,9 +185,8 @@ async def login(
     from src.models.user import User
     from sqlalchemy import select, or_
     
-    # Find user by email or username (email contains @ is email, otherwise treat as username)
-    login_value = login_data.email
-    print(f"[DEBUG LOGIN] Attempt for: {login_value}")
+    # Find user by username or email
+    login_value = login_data.username or login_data.email
     
     if "@" in login_value:
         # 邮箱登录
@@ -169,38 +194,31 @@ async def login(
             select(User).where(User.email == login_value)
         )
     else:
-        # 用户名登录 - 从email字段匹配 (例如 admin@platform.com)
+        # 用户名登录 - 查询 username 字段
         result = await db.execute(
-            select(User).where(
-                or_(
-                    User.email == login_value,
-                    User.email.startswith(login_value + "@")
-                )
-            )
+            select(User).where(User.username == login_value)
         )
     
     user = result.scalar_one_or_none()
-    print(f"[DEBUG LOGIN] User found: {user is not None}")
     
     if not user or not user.password_hash:
-        print(f"[DEBUG LOGIN] User not found or no password hash")
         raise AuthenticationError("用户名/邮箱或密码错误")
-    
-    print(f"[DEBUG LOGIN] Password hash starts with: {user.password_hash[:20]}...")
     
     # Verify password
     if not verify_password(login_data.password, user.password_hash):
-        print(f"[DEBUG LOGIN] Password verification failed")
         raise AuthenticationError("用户名/邮箱或密码错误")
     
     # Check user status
     if user.user_status != "active":
         raise AuthenticationError("账户已被禁用")
     
-    print(f"[DEBUG LOGIN] Login successful for: {login_value}")
-    
-    # Generate tokens
-    access_token = create_access_token({"sub": str(user.id)})
+    # Generate tokens (包含用户角色信息)
+    token_data = {
+        "sub": str(user.id),
+        "role": user.role,
+        "user_type": user.user_type,
+    }
+    access_token = create_access_token(token_data)
     refresh_token = create_refresh_token({"sub": str(user.id)})
     
     return BaseResponse(
@@ -220,14 +238,17 @@ async def get_current_user_info(
     获取当前登录用户信息
     
     Returns:
-        User information
+        User information (包含 username, role, permissions)
     """
     return BaseResponse(
         data={
             "id": str(current_user.id),
+            "username": current_user.username,
             "email": current_user.email,
             "user_type": current_user.user_type,
             "user_status": current_user.user_status,
+            "role": current_user.role,
+            "permissions": current_user.permissions or [],
             "phone": current_user.phone,
             "vip_level": current_user.vip_level,
             "email_verified": current_user.email_verified,

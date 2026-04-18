@@ -5,8 +5,9 @@
 | 属性 | 内容 |
 |------|------|
 | **文档编号** | API-PLATFORM-2026-001 |
-| **版本** | V1.1 |
+| **版本** | V1.4 |
 | **日期** | 2026-04-18 |
+| **更新说明** | 新增 username、role、permissions 字段，支持用户名登录和权限管理 |
 
 ---
 
@@ -153,10 +154,11 @@
 | 40001 | BAD_REQUEST | 请求参数错误 |
 | 40002 | INVALID_SIGNATURE | 签名无效 |
 | 40003 | TIMESTAMP_EXPIRED | 时间戳过期 |
-| 40101 | UNAUTHORIZED | 未认证 |
-| 40102 | INVALID_KEY | API Key无效 |
+| 40101 | INVALID_CREDENTIALS | 用户名/邮箱或密码错误 |
+| 40102 | TOKEN_EXPIRED | Token无效或已过期 |
 | 40103 | KEY_DISABLED | Key已禁用 |
 | 40104 | KEY_EXPIRED | Key已过期 |
+| 40105 | INVALID_KEY | API Key无效 |
 | 40301 | ACCESS_DENIED | 无权访问 |
 | 40302 | REPO_NOT_ALLOWED | 未授权访问此仓库 |
 | 40401 | REPO_NOT_FOUND | 仓库不存在 |
@@ -309,42 +311,421 @@
 }
 ```
 
-### 2.5 配额查询API
+### 2.5 配额管理API（控制台）
 
-#### 2.5.1 配额信息
+#### 2.5.1 获取API Keys列表
 
 ```yaml
-接口: GET /v1/quota
-说明: 查询当前配额使用情况
+接口: GET /api/v1/quota/keys
+说明: 获取当前用户的API Keys列表
+认证: Bearer Token
+
+查询参数:
+  page: int, 页码，默认1
+  page_size: int, 每页数量，默认20
 
 响应:
 {
   "code": 0,
   "message": "success",
   "data": {
-    "rpm": {
-      "limit": 1000,
-      "used": 150,
-      "remaining": 850,
-      "reset_at": 1640000000
-    },
-    "rph": {
-      "limit": 10000,
-      "used": 5000,
-      "remaining": 5000,
-      "reset_at": 1640080000
-    },
-    "daily": {
-      "limit": 100000,
-      "used": 50000,
-      "remaining": 50000,
-      "reset_at": 1640124800
-    },
-    "balance": {
-      "amount": 100.00,
-      "currency": "CNY"
+    "items": [
+      {
+        "id": "uuid",
+        "key_name": "生产环境Key",
+        "key_prefix": "sk_live_xxxx",
+        "status": "active",
+        "auth_type": "api_key",
+        "rate_limit_rpm": 1000,
+        "rate_limit_rph": 10000,
+        "daily_quota": 100000,
+        "monthly_quota": null,
+        "last_used_at": "2026-04-17T10:00:00",
+        "created_at": "2026-04-01T10:00:00",
+        "expires_at": null
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total": 5,
+      "total_pages": 1
     }
   }
+}
+```
+
+#### 2.5.2 创建API Key
+
+```yaml
+接口: POST /api/v1/quota/keys
+说明: 创建新的API Key
+认证: Bearer Token
+
+请求体:
+{
+  "name": "测试Key",
+  "auth_type": "api_key",
+  "rate_limit_rpm": 1000,
+  "rate_limit_rph": 10000,
+  "daily_quota": null,
+  "monthly_quota": null
+}
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "key_name": "测试Key",
+    "key_prefix": "sk_test_xxxx",
+    "api_key": "sk_test_xxxx_yyyy...",  // 仅创建时返回完整key
+    "secret": "zzzz...",  // 仅创建时返回
+    "status": "active",
+    "created_at": "2026-04-18T10:00:00"
+  }
+}
+```
+
+#### 2.5.3 获取Key详情
+
+```yaml
+接口: GET /api/v1/quota/keys/{key_id}
+说明: 获取API Key详情
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "key_name": "生产环境Key",
+    "key_prefix": "sk_live_xxxx",
+    "status": "active",
+    "auth_type": "api_key",
+    "rate_limit_rpm": 1000,
+    "rate_limit_rph": 10000,
+    "daily_quota": 100000,
+    "monthly_quota": null,
+    "last_used_at": "2026-04-17T10:00:00",
+    "created_at": "2026-04-01T10:00:00",
+    "expires_at": null
+  }
+}
+```
+
+#### 2.5.4 更新API Key
+
+```yaml
+接口: PUT /api/v1/quota/keys/{key_id}
+说明: 更新API Key信息
+认证: Bearer Token
+
+请求体:
+{
+  "name": "新名称",
+  "rate_limit_rpm": 2000,
+  "daily_quota": 200000
+}
+
+响应:
+{
+  "code": 0,
+  "message": "更新成功",
+  "data": {...}
+}
+```
+
+#### 2.5.5 禁用/启用API Key
+
+```yaml
+// 禁用
+接口: POST /api/v1/quota/keys/{key_id}/disable
+说明: 禁用API Key
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "status": "disabled"
+  }
+}
+
+// 启用
+接口: POST /api/v1/quota/keys/{key_id}/enable
+说明: 启用API Key
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "status": "active"
+  }
+}
+```
+
+#### 2.5.6 删除API Key
+
+```yaml
+接口: DELETE /api/v1/quota/keys/{key_id}
+说明: 删除API Key
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+#### 2.5.7 获取配额概览
+
+```yaml
+接口: GET /api/v1/quota/overview
+说明: 获取所有API Key的配额概览
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "api_key_id": "uuid",
+      "daily": {
+        "used": 5000,
+        "limit": 100000,
+        "remaining": 95000
+      },
+      "monthly": {
+        "used": 50000,
+        "limit": null,
+        "remaining": null
+      }
+    }
+  ]
+}
+```
+
+#### 2.5.8 获取配额使用历史
+
+```yaml
+接口: GET /api/v1/quota/usage-history/{key_id}
+说明: 获取配额使用历史
+认证: Bearer Token
+
+查询参数:
+  period_type: string, 周期类型 (daily/monthly)，默认daily
+  days: int, 查询天数，默认14
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {"date": "2026-04-11", "total_amount": 10.5, "call_count": 105},
+    {"date": "2026-04-12", "total_amount": 15.2, "call_count": 152},
+    {"date": "2026-04-13", "total_amount": 8.3, "call_count": 83}
+  ]
+}
+```
+
+#### 2.5.9 获取调用日志
+
+```yaml
+接口: GET /api/v1/quota/logs
+说明: 获取API调用日志
+认证: Bearer Token
+
+查询参数:
+  page: int, 页码
+  page_size: int, 每页数量
+  key_id: string, API Key ID (可选)
+  repo_id: string, 仓库ID (可选)
+  start_date: string, 开始日期 (可选)
+  end_date: string, 结束日期 (可选)
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": "log_uuid",
+        "request_id": "req_xxx",
+        "api_key_id": "key_uuid",
+        "api_key_name": "测试Key",
+        "repo_id": "repo_xxx",
+        "repo_name": "心理问答",
+        "endpoint": "/chat",
+        "method": "POST",
+        "request_params": {...},
+        "response_status": 200,
+        "latency_ms": 150,
+        "tokens_used": 100,
+        "cost": 0.01,
+        "ip_address": "1.2.3.4",
+        "user_agent": "Mozilla/5.0...",
+        "error_message": null,
+        "created_at": "2026-04-17T10:00:00"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total": 100,
+      "total_pages": 5
+    }
+  }
+}
+```
+
+### 2.6 账单管理API（控制台）
+
+#### 2.6.1 获取账户信息
+
+```yaml
+接口: GET /api/v1/billing/account
+说明: 获取当前用户的账户信息
+认证: Bearer Token
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "account_uuid",
+    "user_id": "user_uuid",
+    "balance": 100.00,
+    "currency": "CNY",
+    "status": "active",
+    "created_at": "2026-04-01T10:00:00",
+    "updated_at": "2026-04-18T10:00:00"
+  }
+}
+```
+
+#### 2.6.2 账户充值
+
+```yaml
+接口: POST /api/v1/billing/recharge
+说明: 账户充值
+认证: Bearer Token
+
+请求体:
+{
+  "amount": 100.00,
+  "payment_method": "alipay",
+  "remark": "充值备注"
+}
+
+响应:
+{
+  "code": 0,
+  "message": "充值成功",
+  "data": {
+    "bill_no": "BILL202604180001",
+    "amount": 100.00,
+    "balance_before": 0.00,
+    "balance_after": 100.00,
+    "payment_status": "pending",
+    "created_at": "2026-04-18T10:00:00"
+  }
+}
+```
+
+#### 2.6.3 获取账单列表
+
+```yaml
+接口: GET /api/v1/billing/bills
+说明: 获取账单列表
+认证: Bearer Token
+
+查询参数:
+  page: int, 页码，默认1
+  page_size: int, 每页数量，默认20
+  bill_type: string, 账单类型 (recharge/consumption)，可选
+  start_date: string, 开始日期，可选
+  end_date: string, 结束日期，可选
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": "bill_uuid",
+        "bill_no": "BILL202604180001",
+        "account_id": "account_uuid",
+        "bill_type": "recharge",
+        "amount": 100.00,
+        "balance_before": 0.00,
+        "balance_after": 100.00,
+        "payment_method": "alipay",
+        "payment_status": "completed",
+        "transaction_no": "ALIPAY20260418001",
+        "remark": "充值备注",
+        "created_at": "2026-04-18T10:00:00"
+      },
+      {
+        "id": "bill_uuid2",
+        "bill_no": "BILL202604170002",
+        "account_id": "account_uuid",
+        "bill_type": "consumption",
+        "amount": -10.50,
+        "balance_before": 110.50,
+        "balance_after": 100.00,
+        "payment_method": null,
+        "payment_status": "completed",
+        "transaction_no": null,
+        "remark": "API调用消费",
+        "created_at": "2026-04-17T23:59:59"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total": 50,
+      "total_pages": 3
+    }
+  }
+}
+```
+
+#### 2.6.4 获取消费趋势
+
+```yaml
+接口: GET /api/v1/billing/consumption-trend
+说明: 获取消费趋势
+认证: Bearer Token
+
+查询参数:
+  days: int, 查询天数，默认7
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {"date": "2026-04-11", "total_amount": 50.00, "call_count": 500},
+    {"date": "2026-04-12", "total_amount": 75.00, "call_count": 750},
+    {"date": "2026-04-13", "total_amount": 45.00, "call_count": 450},
+    {"date": "2026-04-14", "total_amount": 80.00, "call_count": 800},
+    {"date": "2026-04-15", "total_amount": 60.00, "call_count": 600},
+    {"date": "2026-04-16", "total_amount": 55.00, "call_count": 550},
+    {"date": "2026-04-17", "total_amount": 70.00, "call_count": 700}
+  ]
 }
 ```
 
@@ -358,11 +739,12 @@
 
 ```yaml
 接口: POST /api/v1/auth/login
-说明: 用户登录，获取访问令牌
+说明: 用户登录，获取访问令牌（支持用户名或邮箱）
 
-请求体:
+请求体（二选一）:
 {
-  "email": "user@example.com",
+  "username": "admin",              # 用户名登录（可选）
+  "email": "user@example.com",     # 邮箱登录（可选，与 username 二选一）
   "password": "your_password"
 }
 
@@ -374,23 +756,35 @@
     "access_token": "eyJhbGciOiJIUzI1NiIs...",
     "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
     "token_type": "bearer",
-    "expires_in": 86400
+    "expires_in": 1800
   }
 }
 
-错误响应:
+错误响应 - 用户名/邮箱或密码错误:
 {
   "code": 40101,
-  "message": "用户名或密码错误",
+  "message": "用户名/邮箱或密码错误",
   "data": null
 }
 ```
+
+#### 认证错误响应说明
+
+| 场景 | 错误码 | 消息 | 前端显示标题 |
+|------|--------|------|-------------|
+| 用户名/邮箱或密码错误 | 40101 | "用户名/邮箱或密码错误" | 登录失败 |
+| Token无效或已过期 | 40102 | "Token无效或已过期，请重新登录" | 登录已过期 |
+| API Key已禁用 | 40103 | "API Key已禁用" | API Key已禁用 |
+| API Key已过期 | 40104 | "API Key已过期" | API Key已过期 |
+| API Key无效 | 40105 | "API Key无效" | API Key无效 |
+
+**注意**: 前端应根据 `code` 值判断具体错误类型并显示相应的标题和消息。
 
 #### 3.1.2 获取当前用户信息
 
 ```yaml
 接口: GET /api/v1/auth/me
-说明: 获取当前登录用户信息
+说明: 获取当前登录用户信息（包含 username, role, permissions）
 
 请求头:
   Authorization: Bearer <access_token>
@@ -401,15 +795,25 @@
   "message": "success",
   "data": {
     "id": "user_xxx",
+    "username": "admin",
     "email": "user@example.com",
     "user_type": "admin",
     "user_status": "active",
+    "role": "admin",
+    "permissions": ["*"],
     "phone": "13800138000",
     "vip_level": 3,
     "email_verified": true,
     "created_at": "2026-04-16T10:00:00Z",
     "last_login_at": "2026-04-18T01:00:00Z"
   }
+}
+
+错误响应 - Token无效或已过期:
+{
+  "code": 40102,
+  "message": "Token无效或已过期，请重新登录",
+  "data": null
 }
 ```
 
@@ -455,27 +859,36 @@
 
 ### 3.2 用户管理
 
-#### 3.1.1 用户注册
+#### 3.2.1 用户注册
 
 ```yaml
-接口: POST /v1/admin/users
-说明: 创建用户（管理后台）
-
-请求头:
-  Authorization: Bearer <admin_token>
+接口: POST /api/v1/auth/register
+说明: 注册新用户（支持 username 和 role）
 
 请求体:
 {
-  "email": "user@example.com",
-  "password": "xxxx",
-  "user_type": "developer",
-  "nickname": "张三"
+  "username": "newuser",           # 用户名（可选，唯一）
+  "email": "user@example.com",     # 邮箱（必填，唯一）
+  "password": "xxxx",              # 密码（至少8位）
+  "user_type": "developer",       # 用户类型
+  "role": "developer",            # 角色：user/developer/admin/super_admin
+  "nickname": "张三"               # 昵称（可选）
 }
 
 响应:
 {
   "code": 0,
-  "message": "success",
+  "message": "注册成功",
+  "data": {
+    "id": "user_xxx",
+    "username": "newuser",
+    "email": "user@example.com",
+    "user_type": "developer",
+    "role": "developer",
+    "created_at": "2026-04-18T15:00:00Z"
+  }
+}
+```
   "data": {
     "id": "user_xxx",
     "email": "user@example.com",

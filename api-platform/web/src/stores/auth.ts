@@ -5,6 +5,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User } from '../api/auth'
+import { logger } from '../utils/logger'
 
 interface AuthState {
   user: User | null
@@ -34,10 +35,14 @@ export const useAuthStore = create<AuthState>()(
           refreshToken,
           isAuthenticated: true,
         })
+        // 设置日志用户ID
+        logger.setUserId(user.id)
+        logger.info('[Auth] User authenticated', { userId: user.id, userType: user.user_type })
       },
       
       setUser: (user) => {
         set({ user })
+        logger.setUserId(user.id)
       },
       
       setTokens: (accessToken, refreshToken) => {
@@ -45,12 +50,16 @@ export const useAuthStore = create<AuthState>()(
       },
       
       logout: () => {
+        const currentUserId = useAuthStore.getState().user?.id
         set({
           user: null,
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
         })
+        // 清除日志用户ID
+        logger.clearUserId()
+        logger.info('[Auth] User logged out', { userId: currentUserId })
       },
     }),
     {

@@ -24,6 +24,7 @@ class APIKey(Base):
     key_prefix = Column(String(20), nullable=False, index=True)  # sk_test_xxxxx
     key_hash = Column(String(64), nullable=False, unique=True)  # SHA256 hash
     secret_hash = Column(String(128), nullable=True)  # HMAC secret hash
+    encrypted_key = Column(Text, nullable=True)  # 加密存储的原始 key，用于查看
 
     # Authentication configuration
     auth_type = Column(String(20), default="api_key")  # api_key, hmac, jwt

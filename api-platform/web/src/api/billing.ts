@@ -60,12 +60,12 @@ export interface RechargeRequest {
 export const billingApi = {
   // 获取账户信息
   getAccount: () => {
-    return api.get<{ data: Account }>('/billing/account')
+    return api.get<Account>('/billing/account')
   },
   
   // 充值
   recharge: (data: RechargeRequest) => {
-    return api.post<{ data: { order_id: string; pay_url: string } }>('/billing/recharge', data)
+    return api.post<{ order_id: string; pay_url: string }>('/billing/recharge', data)
   },
   
   // 获取账单列表
@@ -76,17 +76,17 @@ export const billingApi = {
     start_date?: string
     end_date?: string
   }) => {
-    return api.get<{ data: PaginatedResponse<Bill> }>('/billing/bills', params)
+    return api.get<PaginatedResponse<Bill>>('/billing/bills', params)
   },
   
   // 获取月度汇总
   getMonthlySummary: (year?: number, month?: number) => {
-    return api.get<{ data: MonthlySummary }>('/billing/monthly-summary', { year, month })
+    return api.get<MonthlySummary>('/billing/monthly-summary', { year, month })
   },
   
   // 获取余额历史
   getBalanceHistory: (days?: number) => {
-    return api.get<{ data: { date: string; daily_change: number; balance: number }[] }>(
+    return api.get<{ date: string; daily_change: number; balance: number }[]>(
       '/billing/balance-history',
       { days }
     )
@@ -94,6 +94,6 @@ export const billingApi = {
   
   // 获取消费趋势
   getConsumptionTrend: (days?: number) => {
-    return api.get<{ data: { date: string; amount: number }[] }>('/billing/consumption-trend', { days })
+    return api.get<{ date: string; amount: number }[]>('/billing/consumption-trend', { days })
   },
 }

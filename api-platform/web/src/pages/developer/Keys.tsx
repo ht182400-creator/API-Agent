@@ -4,8 +4,9 @@
 
 import { useState, useEffect } from 'react'
 import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography } from 'antd'
-import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import { quotaApi, APIKey, CreateKeyRequest } from '../../api/quota'
+import { useErrorModal, extractErrorMessage, parseErrorType } from '../../components/ErrorModal'
 import dayjs from 'dayjs'
 import styles from './Keys.module.css'
 
@@ -20,7 +21,13 @@ export default function DeveloperKeys() {
   const [modalVisible, setModalVisible] = useState(false)
   const [createLoading, setCreateLoading] = useState(false)
   const [newKeyData, setNewKeyData] = useState<APIKey | null>(null)
+  const [revealModalVisible, setRevealModalVisible] = useState(false)
+  const [revealLoading, setRevealLoading] = useState(false)
+  const [revealKeyData, setRevealKeyData] = useState<{ key_name: string; api_key: string } | null>(null)
   const [form] = Form.useForm()
+
+  // 使用统一的错误提示
+  const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
 
   useEffect(() => {
     fetchKeys()
@@ -29,11 +36,13 @@ export default function DeveloperKeys() {
   const fetchKeys = async () => {
     setLoading(true)
     try {
-      const { data } = await quotaApi.getKeys({ page, page_size: pageSize })
+      // api.get 已返回 res.data，所以直接是 PaginatedResponse
+      const data = await quotaApi.getKeys({ page, page_size: pageSize })
       setKeys(data.items)
-      setTotal(data.total)
+      setTotal(data.pagination.total)
     } catch (error: any) {
-      message.error(error.message || '获取API Keys失败')
+      // 使用友好的错误提示
+      showError(error, () => fetchKeys())
     } finally {
       setLoading(false)
     }
@@ -42,14 +51,16 @@ export default function DeveloperKeys() {
   const handleCreate = async (values: CreateKeyRequest) => {
     setCreateLoading(true)
     try {
-      const { data } = await quotaApi.createKey(values)
-      setNewKeyData(data)
+      // api.post 已返回 res.data，所以直接是 APIKey 对象
+      const newKey = await quotaApi.createKey(values)
+      setNewKeyData(newKey)
       setModalVisible(false)
       form.resetFields()
       message.success('API Key创建成功')
       fetchKeys()
     } catch (error: any) {
-      message.error(error.message || '创建失败')
+      // 使用友好的错误提示
+      showError(error, () => handleCreate(values))
     } finally {
       setCreateLoading(false)
     }
@@ -61,7 +72,7 @@ export default function DeveloperKeys() {
       message.success('API Key已禁用')
       fetchKeys()
     } catch (error: any) {
-      message.error(error.message || '操作失败')
+      showError(error, () => handleDisable(keyId))
     }
   }
 
@@ -71,7 +82,7 @@ export default function DeveloperKeys() {
       message.success('API Key已启用')
       fetchKeys()
     } catch (error: any) {
-      message.error(error.message || '操作失败')
+      showError(error, () => handleEnable(keyId))
     }
   }
 
@@ -81,7 +92,20 @@ export default function DeveloperKeys() {
       message.success('API Key已删除')
       fetchKeys()
     } catch (error: any) {
-      message.error(error.message || '删除失败')
+      showError(error, () => handleDelete(keyId))
+    }
+  }
+
+  const handleReveal = async (keyId: string) => {
+    setRevealLoading(true)
+    try {
+      const data = await quotaApi.revealKey(keyId)
+      setRevealKeyData(data)
+      setRevealModalVisible(true)
+    } catch (error: any) {
+      showError(error, () => handleReveal(keyId))
+    } finally {
+      setRevealLoading(false)
     }
   }
 
@@ -150,6 +174,15 @@ export default function DeveloperKeys() {
       key: 'action',
       render: (_: any, record: APIKey) => (
         <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleReveal(record.id)}
+            loading={revealLoading}
+          >
+            查看
+          </Button>
           {record.status === 'active' ? (
             <Button
               type="text"
@@ -188,6 +221,9 @@ export default function DeveloperKeys() {
 
   return (
     <div className={styles.container}>
+      {/* 统一的错误提示组件 */}
+      <ErrorModalComponent />
+
       <div className={styles.header}>
         <Title level={4}>API Keys管理</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
@@ -273,6 +309,34 @@ export default function DeveloperKeys() {
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* 查看完整Key弹窗 */}
+      <Modal
+        title="查看 API Key"
+        open={revealModalVisible}
+        onCancel={() => {
+          setRevealModalVisible(false)
+          setRevealKeyData(null)
+        }}
+        footer={[
+          <Button key="close" type="primary" onClick={() => {
+            setRevealModalVisible(false)
+            setRevealKeyData(null)
+          }}>
+            我已保存
+          </Button>
+        ]}
+      >
+        {revealKeyData && (
+          <div className={styles.keyDisplay}>
+            <Text type="secondary">Key名称：{revealKeyData.key_name}</Text>
+            <div className={styles.keyBox}>
+              <KeyOutlined /> {revealKeyData.api_key}
+            </div>
+            <Text type="warning">请妥善保管，关闭后将无法再次查看完整内容</Text>
+          </div>
+        )}
       </Modal>
 
       {/* 新Key展示弹窗 */}

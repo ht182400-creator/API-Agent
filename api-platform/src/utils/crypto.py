@@ -3,6 +3,59 @@
 import hashlib
 import secrets
 import base64
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+
+from src.config.settings import get_settings
+
+
+def get_encryption_key() -> bytes:
+    """
+    获取加密密钥，从配置或环境变量获取
+    """
+    settings = get_settings()
+    secret = settings.api_key_encryption_secret
+    # 使用 PBKDF2 派生固定长度的密钥
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=b"api_key_salt_v1",
+        iterations=100000,
+        backend=default_backend()
+    )
+    return base64.urlsafe_b64encode(kdf.derive(secret.encode()))
+
+
+def encrypt_api_key(api_key: str) -> str:
+    """
+    加密 API key 用于存储
+    
+    Args:
+        api_key: 原始 API key
+        
+    Returns:
+        Base64 编码的加密字符串
+    """
+    fernet = Fernet(get_encryption_key())
+    encrypted = fernet.encrypt(api_key.encode())
+    return base64.urlsafe_b64encode(encrypted).decode()
+
+
+def decrypt_api_key(encrypted_key: str) -> str:
+    """
+    解密 API key
+    
+    Args:
+        encrypted_key: Base64 编码的加密字符串
+        
+    Returns:
+        原始 API key
+    """
+    fernet = Fernet(get_encryption_key())
+    encrypted = base64.urlsafe_b64decode(encrypted_key.encode())
+    return fernet.decrypt(encrypted).decode()
 
 
 def generate_random_string(length: int = 32) -> str:
@@ -55,6 +108,19 @@ def sha256_hash(data: str) -> str:
         SHA256 hash hex string
     """
     return hashlib.sha256(data.encode()).hexdigest()
+
+
+def hash_api_key(api_key: str) -> str:
+    """
+    Hash an API key for secure storage
+    
+    Args:
+        api_key: The API key to hash
+    
+    Returns:
+        SHA256 hash hex string
+    """
+    return sha256_hash(api_key)
 
 
 def sha512_hash(data: str) -> str:

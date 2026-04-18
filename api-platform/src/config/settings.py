@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     secret_key: str = "your-application-secret-key"
     encryption_key: str = "your-encryption-key-32-bytes"
     
+    # API Key 加密密钥 (用于查看 API Key 明文功能)
+    api_key_encryption_secret: str = "default-dev-secret-change-in-production"
+    
     # Password Hashing Configuration
     # Supported modes: "bcrypt" (recommended), "sha256", "auto" (supports both)
     password_hash_mode: str = "auto"
