@@ -5,8 +5,8 @@
 | 属性 | 内容 |
 |------|------|
 | **文档编号** | DB-PLATFORM-2026-001 |
-| **版本** | V1.1 |
-| **日期** | 2026-04-16 |
+| **版本** | V1.2 |
+| **日期** | 2026-04-19 |
 
 ---
 
@@ -907,3 +907,94 @@ CREATE POLICY key_access_policy ON api_keys
 ### 7.3 图表规范参考
 
 本文档中的ER图采用 **Mermaid** 语法绘制，与标准图表规范文档（28_通用API服务平台图表规范.md）保持一致。
+
+### 7.4 通知模块（V1.2新增）
+
+#### 7.4.1 通知表 (notifications)
+
+```sql
+-- 通知表
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    notification_type VARCHAR(30) NOT NULL DEFAULT 'system',
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    extra_data JSONB DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'unread',
+    is_deleted BOOLEAN DEFAULT false,
+    priority VARCHAR(20) DEFAULT 'normal',
+    expire_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    read_at TIMESTAMPTZ
+);
+
+-- 索引
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_status ON notifications(status, is_deleted);
+CREATE INDEX idx_notifications_created ON notifications(created_at DESC);
+```
+
+#### 7.4.2 用户通知偏好表 (notification_preferences)
+
+```sql
+-- 用户通知偏好表
+CREATE TABLE notification_preferences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id),
+    email_enabled BOOLEAN DEFAULT true,
+    in_app_enabled BOOLEAN DEFAULT true,
+    push_enabled BOOLEAN DEFAULT false,
+    preferences JSONB DEFAULT '{"system": true, "billing": true, "api": true, "security": true}',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 索引
+CREATE INDEX idx_preferences_user_id ON notification_preferences(user_id);
+```
+
+#### 7.4.3 通知类型枚举
+
+| 类型 | 说明 | 默认优先级 |
+|------|------|----------|
+| system | 系统通知 | normal |
+| billing | 账单通知 | high |
+| api | API相关通知 | normal |
+| security | 安全通知 | high/urgent |
+
+#### 7.4.4 通知状态枚举
+
+| 状态 | 说明 |
+|------|------|
+| unread | 未读 |
+| read | 已读 |
+| deleted | 已删除 |
+
+#### 7.4.5 ER关系
+
+```mermaid
+erDiagram
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--|| NOTIFICATION_PREFERENCES : has
+    NOTIFICATIONS {
+        uuid id PK
+        uuid user_id FK
+        varchar type
+        varchar title
+        text content
+        jsonb extra_data
+        varchar status
+        varchar priority
+        timestamptz created_at
+        timestamptz read_at
+    }
+    NOTIFICATION_PREFERENCES {
+        uuid id PK
+        uuid user_id FK
+        boolean email_enabled
+        boolean in_app_enabled
+        boolean push_enabled
+        jsonb preferences
+    }
+```

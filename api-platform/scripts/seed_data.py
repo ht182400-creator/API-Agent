@@ -17,6 +17,7 @@ from src.config.database import AsyncSessionLocal
 from src.models.user import User, UserProfile
 from src.models.api_key import APIKey
 from src.models.repository import Repository, RepoPricing
+from src.models.notification import Notification, NotificationPreference
 from src.core.security import hash_password, generate_api_key, generate_api_secret
 
 
@@ -26,7 +27,8 @@ async def seed_users():
     
     # 默认权限配置
     default_permissions = {
-        "admin": ["*"],  # 管理员拥有所有权限
+        "super_admin": ["*"],  # 超级管理员拥有所有权限
+        "admin": ["*"],  # 管理员拥有大部分权限
         "owner": ["user:read", "user:write", "api:read", "api:write", "repo:manage"],
         "developer": ["user:read", "user:write", "api:read", "api:write"],
         "user": ["user:read"],
@@ -38,6 +40,19 @@ async def seed_users():
         if result.scalar_one_or_none():
             print("Users already exist, skipping...")
             return
+        
+        # Create super_admin user
+        super_admin = User(
+            username="superadmin",
+            email="superadmin@example.com",
+            password_hash=hash_password("super123456"),
+            user_type="super_admin",
+            user_status="active",
+            role="super_admin",
+            permissions=default_permissions["super_admin"],
+            email_verified=True,
+        )
+        db.add(super_admin)
         
         # Create admin user
         admin = User(
@@ -78,10 +93,29 @@ async def seed_users():
         )
         db.add(owner)
         
+        # Create regular user
+        user = User(
+            username="testuser",
+            email="testuser@example.com",
+            password_hash=hash_password("test123456"),
+            user_type="user",
+            user_status="active",
+            role="user",
+            permissions=default_permissions["user"],
+            email_verified=True,
+        )
+        db.add(user)
+        
         await db.flush()
         
         # Create profiles
         profiles = [
+            UserProfile(
+                user_id=super_admin.id,
+                nickname="Super Admin",
+                real_name="System Super Administrator",
+                company="API Platform HQ",
+            ),
             UserProfile(
                 user_id=admin.id,
                 nickname="Admin",
@@ -100,6 +134,12 @@ async def seed_users():
                 real_name="Repository Owner",
                 company="Owner's Business",
             ),
+            UserProfile(
+                user_id=user.id,
+                nickname="Test User",
+                real_name="Test User",
+                company="Test",
+            ),
         ]
         
         for profile in profiles:
@@ -108,9 +148,11 @@ async def seed_users():
         await db.commit()
         
         print(f"Created users:")
-        print(f"  - admin/admin@example.com (role: admin)")
-        print(f"  - developer/developer@example.com (role: user)")
-        print(f"  - owner/owner@example.com (role: developer)")
+        print(f"  - superadmin/superadmin@example.com (type: super_admin, role: super_admin) - 密码: super123456")
+        print(f"  - admin/admin@example.com (type: admin, role: admin) - 密码: admin123")
+        print(f"  - developer/developer@example.com (type: developer, role: user) - 密码: dev123456")
+        print(f"  - owner/owner@example.com (type: owner, role: developer) - 密码: owner123456")
+        print(f"  - testuser/testuser@example.com (type: user, role: user) - 密码: test123456")
 
 
 async def seed_api_keys():
@@ -166,9 +208,13 @@ async def seed_repositories():
         
         # Get owner user
         result = await db.execute(
-            select(User).where(User.email == "admin@example.com")
+            select(User).where(User.email == "owner@example.com")
         )
-        admin = result.scalar_one_or_none()
+        owner = result.scalar_one_or_none()
+        
+        if not owner:
+            print("Owner user not found, skipping repositories...")
+            return
         
         # Create internal repositories
         repos = [
@@ -203,7 +249,7 @@ async def seed_repositories():
         
         for repo_data in repos:
             repo = Repository(
-                owner_id=admin.id,
+                owner_id=owner.id,
                 owner_type="internal",
                 status="online",
                 online_at=datetime.utcnow(),
@@ -229,15 +275,146 @@ async def seed_repositories():
         print("Created repositories: psychology, translation, vision")
 
 
+async def seed_notifications():
+    """Create test notifications for users"""
+    print("Creating test notifications...")
+    
+    from datetime import timedelta
+    
+    async with AsyncSessionLocal() as db:
+        # Check if notifications already exist
+        result = await db.execute(select(Notification).limit(1))
+        if result.scalar_one_or_none():
+            print("Notifications already exist, skipping...")
+            return
+        
+        # Get all active users
+        result = await db.execute(
+            select(User).where(User.user_status == "active")
+        )
+        users = result.scalars().all()
+        
+        if not users:
+            print("No users found, skipping notifications...")
+            return
+        
+        # Notification templates
+        notification_templates = [
+            # 系统通知
+            {
+                "title": "欢迎使用API服务平台",
+                "content": "感谢您注册成为我们的用户。平台提供丰富的API接口供您使用，如有疑问请联系客服。",
+                "notification_type": "system",
+                "priority": "normal",
+                "is_unread": False,
+            },
+            {
+                "title": "系统升级通知",
+                "content": "平台将于本周日凌晨2:00-4:00进行系统升级，届时服务可能暂时不可用，请提前做好准备。",
+                "notification_type": "system",
+                "priority": "high",
+                "is_unread": True,
+            },
+            # 账单通知
+            {
+                "title": "账单已生成",
+                "content": "您2026年4月的账单已生成，当前应支付金额为 ¥128.50，请及时支付以保持服务正常运行。",
+                "notification_type": "billing",
+                "priority": "high",
+                "is_unread": True,
+            },
+            {
+                "title": "配额使用提醒",
+                "content": "您的API配额已使用80%，剩余配额约可支持3天使用。建议您及时充值以避免服务中断。",
+                "notification_type": "billing",
+                "priority": "high",
+                "is_unread": False,
+            },
+            # API通知
+            {
+                "title": "API Key创建成功",
+                "content": "您的新API Key已成功创建。请妥善保管，不要在公开场合泄露您的密钥。",
+                "notification_type": "api",
+                "priority": "normal",
+                "is_unread": False,
+            },
+            {
+                "title": "API调用异常提醒",
+                "content": "检测到您的API在过去1小时内有较高错误率(>5%)，请检查您的调用代码或密钥配置。",
+                "notification_type": "api",
+                "priority": "high",
+                "is_unread": True,
+            },
+            # 安全通知
+            {
+                "title": "异地登录提醒",
+                "content": "检测到您的账号在新的IP地址登录。如果这不是您本人的操作，请立即修改密码并联系客服。",
+                "notification_type": "security",
+                "priority": "urgent",
+                "is_unread": True,
+            },
+        ]
+        
+        count = 0
+        for user in users:
+            # 为每个用户创建通知
+            for i, template in enumerate(notification_templates):
+                notification = Notification(
+                    user_id=user.id,
+                    title=template["title"],
+                    content=template["content"],
+                    notification_type=template["notification_type"],
+                    priority=template["priority"],
+                    status="read" if not template["is_unread"] else "unread",
+                    read_at=datetime.utcnow() - timedelta(days=2) if not template["is_unread"] else None,
+                    created_at=datetime.utcnow() - timedelta(hours=i * 3 + 1),
+                )
+                db.add(notification)
+                count += 1
+            
+            # 创建通知偏好设置
+            preference = NotificationPreference(
+                user_id=user.id,
+                email_enabled=True,
+                in_app_enabled=True,
+                push_enabled=False,
+                preferences={
+                    "system": True,
+                    "billing": True,
+                    "api": True,
+                    "security": True,
+                },
+            )
+            db.add(preference)
+        
+        await db.commit()
+        print(f"Created {count} notifications for {len(users)} users")
+
+
 async def main():
     """Main function"""
     print("Seeding test data...")
+    print("=" * 50)
     
     await seed_users()
     await seed_api_keys()
     await seed_repositories()
+    await seed_notifications()
     
+    print("=" * 50)
     print("Test data seeded successfully!")
+    print()
+    print("=" * 50)
+    print("测试账户列表:")
+    print("=" * 50)
+    print("| 用户类型      | 用户名      | 邮箱                      | 密码        |")
+    print("|--------------|------------|---------------------------|-------------|")
+    print("| 超级管理员    | superadmin | superadmin@example.com    | super123456 |")
+    print("| 管理员        | admin      | admin@example.com         | admin123    |")
+    print("| 仓库所有者    | owner      | owner@example.com         | owner123456 |")
+    print("| 开发者        | developer  | developer@example.com     | dev123456   |")
+    print("| 普通用户      | testuser   | testuser@example.com     | test123456  |")
+    print("=" * 50)
 
 
 if __name__ == "__main__":

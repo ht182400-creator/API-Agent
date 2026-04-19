@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Statistic, Table, Progress, Typography, Space, Tag } from 'antd'
+import { Row, Col, Card, Statistic, Table, Progress, Typography, Space, Tag, Empty } from 'antd'
 import {
   RiseOutlined,
   FallOutlined,
@@ -141,54 +141,61 @@ export default function DeveloperDashboard() {
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
           <Card title="消费趋势（近7天）" className={styles.chartCard}>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={consumptionTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
-                  tickFormatter={(val) => dayjs(val).format('MM-DD')}
-                />
-                <YAxis />
-                <Tooltip 
-                  labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
-                  formatter={(value: number) => [`¥${value.toFixed(2)}`, '消费']}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="amount" 
-                  stroke="#1677ff" 
-                  strokeWidth={2}
-                  dot={{ fill: '#1677ff' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {consumptionTrend.length === 0 ? (
+              <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Empty description="暂无消费数据，开始调用API后将在此处显示趋势" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={consumptionTrend}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(val) => dayjs(val).format('MM-DD')}
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
+                    formatter={(value: number) => [`¥${value.toFixed(2)}`, '消费']}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#1677ff" 
+                    strokeWidth={2}
+                    dot={{ fill: '#1677ff' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </Card>
         </Col>
 
         <Col xs={24} lg={8}>
           <Card title="配额使用情况" className={styles.quotaCard}>
-            {quotaOverview.slice(0, 3).map((q, index) => {
-              const dailyPercent = q.daily.limit 
-                ? Math.round((q.daily.used / q.daily.limit) * 100) 
-                : 0
-              const monthlyPercent = q.monthly.limit 
-                ? Math.round((q.monthly.used / q.monthly.limit) * 100) 
-                : 0
-              
-              return (
-                <div key={index} className={styles.quotaItem}>
-                  <Text>Key {index + 1}</Text>
-                  <Progress
-                    percent={dailyPercent}
-                    size="small"
-                    format={(p) => `${p}%`}
-                    status={dailyPercent > 80 ? 'exception' : 'active'}
-                  />
-                </div>
-              )
-            })}
-            {quotaOverview.length === 0 && (
-              <Text type="secondary">暂无配额数据</Text>
+            {quotaOverview.length === 0 ? (
+              <Empty description="暂无配额数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            ) : (
+              quotaOverview.slice(0, 3).map((q, index) => {
+                const dailyPercent = q.daily.limit 
+                  ? Math.round((q.daily.used / q.daily.limit) * 100) 
+                  : 0
+                const monthlyPercent = q.monthly.limit 
+                  ? Math.round((q.monthly.used / q.monthly.limit) * 100) 
+                  : 0
+                
+                return (
+                  <div key={index} className={styles.quotaItem}>
+                    <Text>Key {index + 1}</Text>
+                    <Progress
+                      percent={dailyPercent}
+                      size="small"
+                      format={(p) => `${p}%`}
+                      status={dailyPercent > 80 ? 'exception' : 'active'}
+                    />
+                  </div>
+                )
+              })
             )}
           </Card>
         </Col>

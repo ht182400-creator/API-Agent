@@ -51,19 +51,31 @@ export const useAuthStore = create<AuthState>()(
       
       logout: () => {
         const currentUserId = useAuthStore.getState().user?.id
+        
+        // 清除所有敏感数据
         set({
           user: null,
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
         })
+        
         // 清除日志用户ID
         logger.clearUserId()
+        
+        // 清除 localStorage 中的认证数据
+        try {
+          localStorage.removeItem('auth-storage')
+        } catch (e) {
+          // 忽略错误
+        }
+        
         logger.info('[Auth] User logged out', { userId: currentUserId })
       },
     }),
     {
       name: 'auth-storage',
+      // 注意：这里只持久化必要的认证状态，不存储密码
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,

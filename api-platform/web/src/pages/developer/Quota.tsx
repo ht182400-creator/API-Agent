@@ -3,8 +3,9 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic } from 'antd'
-import { PieChartOutlined, BarChartOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button } from 'antd'
+import { PieChartOutlined, BarChartOutlined, PlusOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
@@ -14,6 +15,7 @@ import styles from './Quota.module.css'
 const { Title, Text } = Typography
 
 export default function DeveloperQuota() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [selectedKey, setSelectedKey] = useState<string>('')
@@ -151,21 +153,27 @@ export default function DeveloperQuota() {
 
           {/* 使用趋势 */}
           <Card title="每日调用趋势（近14天）" className={styles.chartCard}>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={usageHistory}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date"
-                  tickFormatter={(val) => dayjs(val).format('MM-DD')}
-                />
-                <YAxis />
-                <Tooltip 
-                  labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
-                  formatter={(value: number) => [`${value}次`, '调用次数']}
-                />
-                <Bar dataKey="call_count" fill="#1677ff" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {usageHistory.length === 0 ? (
+              <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Empty description="暂无调用记录，开始使用API后将显示趋势图" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={usageHistory}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date"
+                    tickFormatter={(val) => dayjs(val).format('MM-DD')}
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
+                    formatter={(value: number) => [`${value}次`, '调用次数']}
+                  />
+                  <Bar dataKey="call_count" fill="#1677ff" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </Card>
 
           {/* Top仓库 */}
@@ -174,6 +182,7 @@ export default function DeveloperQuota() {
               dataSource={topRepos}
               rowKey="repo_id"
               pagination={false}
+              locale={{ emptyText: <Empty description="暂无仓库调用记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
               columns={[
                 { 
                   title: '排名', 
@@ -206,6 +215,20 @@ export default function DeveloperQuota() {
             />
           </Card>
         </>
+      )}
+
+      {/* 无API Key时的提示 */}
+      {keys.length === 0 && (
+        <Card className={styles.card}>
+          <Empty 
+            description="暂无API Key，请先创建API Key"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/developer/keys')}>
+              创建API Key
+            </Button>
+          </Empty>
+        </Card>
       )}
     </div>
   )

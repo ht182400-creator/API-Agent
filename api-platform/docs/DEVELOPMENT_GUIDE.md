@@ -22,7 +22,7 @@ $env:DATABASE_URL = "postgresql+asyncpg://api_user:api_password@localhost:5432/a
 python scripts/init_db_with_data.py --drop
 
 # 4. 启动后端服务
-python -m uvicorn src.main:app --reload --port 8080
+python -m uvicorn src.main:app --reload --port 8000
 ```
 
 ### 1.2 测试数据说明
@@ -111,8 +111,8 @@ npm run test:e2e:ui
 | 服务 | 地址 | 说明 |
 |------|------|------|
 | 前端 | http://localhost:3000 | Web 控制台 |
-| 后端 API | http://localhost:8080 | REST API |
-| API 文档 | http://localhost:8080/docs | Swagger 文档 |
+| 后端 API | http://localhost:8000 | REST API |
+| API 文档 | http://localhost:8000/docs | Swagger 文档 |
 
 ---
 

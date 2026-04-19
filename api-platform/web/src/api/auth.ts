@@ -5,32 +5,38 @@
 import { api } from './client'
 
 // 用户类型
+export type UserType = 'super_admin' | 'admin' | 'owner' | 'developer' | 'user'
+
+// 用户接口
 export interface User {
   id: string
   username?: string      // 用户名
   email: string
   phone?: string
-  user_type: 'developer' | 'owner' | 'admin'
+  user_type: UserType
   user_status: string
-  role: string          // 角色
+  role: string          // 角色: super_admin, admin, developer, user
   permissions: string[] // 权限列表
   email_verified: boolean
   vip_level: number
   created_at: string
   last_login_at?: string
+  avatar_url?: string
 }
 
-// 登录请求
+// 登录请求（支持用户名或邮箱）
 export interface LoginRequest {
-  email: string
+  username?: string  // 用户名登录
+  email?: string    // 邮箱登录
   password: string
 }
 
 // 注册请求
 export interface RegisterRequest {
+  username: string
   email: string
   password: string
-  user_type?: 'developer' | 'owner'
+  user_type?: 'user' | 'developer' | 'owner'
 }
 
 // Token响应
