@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | 文档编号 | FAQ-API-2026-001 |
-| 版本号 | V1.8 |
+| 版本号 | V1.9 |
 | 创建日期 | 2026-04-16 |
 | 更新日期 | 2026-04-19 |
 
@@ -62,6 +62,11 @@
 | Q39 | 账单中心报错：function sum(character varying) does not exist | 账单、PostgreSQL、Bug | P0 | ✅ |
 | Q40 | 账单中心按月统计报错：timestamp | string comparison not supported | 账单、timestamp、datetime | P0 | ✅ |
 | Q41 | 日志管理功能使用指南 | 日志、查看、导出、备份 | P1 | ✅ |
+| Q42 | 不同用户角色登录后看到不同的界面吗？ | 用户角色、权限、界面 | P1 | ✅ |
+| Q43 | 如何创建和分配不同角色的用户？ | 角色分配、用户管理 | P1 | ✅ |
+| Q46 | 浏览器自动填充导致登录页面显示密码 | 浏览器、自动填充、密码 | P1 | ✅ |
+| Q48 | 通知功能缺失（基础版） | 通知、通知中心、下拉面板 | P1 | ✅ |
+| Q49 | 通知功能完善（完整版） | 通知、数据库、API、已读状态 | P0 | ✅ |
 
 
 **详细说明**：详见 [33_FAQ_登录错误提示问题详解.md](33_FAQ_登录错误提示问题详解.md)
@@ -843,16 +848,18 @@ python scripts/seed_data.py
 **4. 启动 API 服务**
 
 ```powershell
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **测试账号**：
 
-| 角色 | 邮箱 | 密码 |
-|------|------|------|
-| 管理员 | admin@example.com | admin123 |
-| 开发者 | developer@example.com | dev123456 |
-| 仓库所有者 | owner@example.com | owner123456 |
+| 用户类型 | 用户名 | 邮箱 | 密码 |
+|---------|--------|------|------|
+| 超级管理员 | superadmin | superadmin@example.com | super123456 |
+| 管理员 | admin | admin@example.com | admin123 |
+| 仓库所有者 | owner | owner@example.com | owner123 |
+| 开发者 | developer | developer@example.com | dev123456 |
+| 普通用户 | test | test@example.com | test123 |
 
 ---
 
@@ -1201,6 +1208,333 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 
 ---
 
+### Q42: 不同用户角色登录后看到不同的界面吗？
+
+**问题描述**：
+系统有多种用户类型（超级管理员、管理员、仓库所有者、开发者、普通用户），登录后看到的界面是否不同？
+
+**解答**：
+
+是的！系统实现了完整的**角色权限系统(RBAC)**，不同用户类型登录后会看到完全不同的界面和功能。
+
+**用户类型与界面对照**：
+
+| 用户类型 | 登录入口 | 专属界面 | 主要功能 |
+|---------|---------|---------|---------|
+| **超级管理员** | `/superadmin` | 超级管理员控制台 | 全局用户管理、角色权限配置、系统配置 |
+| **管理员** | `/admin` | 管理员面板 | 用户管理、仓库审核、日志管理、系统设置 |
+| **仓库所有者** | `/owner` | 仓库管理后台 | 仓库管理、数据分析、收益结算 |
+| **开发者** | `/` | 开发者仪表板 | API Keys、配额、日志、账单 |
+| **普通用户** | `/` | 用户仪表板 | 基础功能（受限） |
+
+**详细说明**：请参阅 [角色权限系统设计文档](../api-platform/docs/ROLE_PERMISSION_GUIDE.md)
+
+---
+
+### Q43: 如何创建和分配不同角色的用户？
+
+**问题描述**：
+如何创建新用户并分配不同的用户类型/角色？
+
+**解答**：
+
+**方法一：通过注册页面注册（普通用户）**
+
+1. 访问注册页面：`/register`
+2. 填写用户名、邮箱、密码
+3. 选择账号类型：普通用户/开发者/仓库所有者
+4. 点击注册
+
+**方法二：通过后台创建用户（管理员/超级管理员）**
+
+1. 使用管理员账号登录
+2. 进入用户管理页面
+3. 点击"创建用户"或"编辑"按钮
+4. 设置用户类型：
+   - `super_admin`：超级管理员（仅超级管理员可分配）
+   - `admin`：管理员
+   - `owner`：仓库所有者
+   - `developer`：开发者
+   - `user`：普通用户
+
+**测试账户**：
+
+| 用户类型 | 用户名 | 邮箱 | 密码 |
+|---------|--------|------|------|
+| 超级管理员 | superadmin | superadmin@example.com | super123456 |
+| 管理员 | admin | admin@example.com | admin123 |
+| 仓库所有者 | owner | owner@example.com | owner123 |
+| 开发者 | developer | developer@example.com | dev123456 |
+| 普通用户 | test | test@example.com | test123 |
+
+> **说明**：开发者可以创建 API Keys，普通用户只能查看。
+
+**运行种子脚本添加测试用户**：
+```bash
+cd api-platform
+python scripts/init_db_with_data.py --drop
+```
+
+> 注意：使用 `--drop` 参数会删除现有数据库并重新创建，确保测试数据与文档一致。
+
+---
+
+### Q44: 退出登录后，为什么密码字段会被清空？
+
+**问题描述**：
+退出登录后再次打开登录页面，发现密码输入框是空的。这是正常的吗？
+
+**解答**：
+这是**正常且安全**的设计！系统出于安全考虑，会在以下情况自动清空密码字段：
+
+**清空时机**：
+1. ✅ 用户退出登录后
+2. ✅ 用户从注册页面跳转到登录页面
+3. ✅ 登录/注册页面重新挂载时
+
+**清空的敏感数据包括**：
+- 表单中的密码字段
+- 浏览器自动填充的密码数据
+- sessionStorage 中可能残留的敏感信息
+- 剪贴板中可能存在的密码内容
+
+**为什么这样设计？**
+- **防止信息泄露**：多人共用设备时，防止他人看到之前的密码
+- **防止自动填充**：浏览器的密码自动填充可能带来安全风险
+- **最佳实践**：金融类、政务类应用普遍采用的安全策略
+
+**相关安全措施**：
+- 密码输入框支持可见/隐藏切换
+- 登录失败不会自动重试（防止暴力破解）
+- Token 过期后需要重新登录
+
+---
+
+### Q45: 系统有哪些安全防护措施？
+
+**问题描述**：
+系统提供了哪些安全保障措施？
+
+**解答**：
+
+**前端安全措施**：
+| 措施 | 说明 |
+|------|------|
+| 密码清空 | 退出登录后自动清空敏感数据 |
+| Token 管理 | Access Token 和 Refresh Token 分离 |
+| 路由守卫 | 未登录用户无法访问受保护页面 |
+| 角色权限 | 不同角色看到不同的界面和功能 |
+
+**后端安全措施**：
+| 措施 | 说明 |
+|------|------|
+| 密码加密 | 使用 bcrypt 加密存储，不可逆 |
+| 错误码区分 | 40101（密码错误）vs 40102（Token过期） |
+| 请求限流 | 防止暴力破解 |
+| HTTPS | 全站强制 HTTPS |
+| CORS | 跨域访问控制 |
+
+**建议用户**：
+1. 定期更换密码
+2. 不在公共设备保存密码
+3. 使用强密码（8位以上，字母+数字+特殊字符）
+4. 发现异常登录及时修改密码
+
+---
+
+### Q46: 浏览器自动填充导致登录页面显示密码
+
+**问题描述**：
+首次打开登录页面 `localhost:3000` 时，密码输入框中已经显示了之前保存的密码（带圆点遮罩）。退出登录后重新打开，密码框仍有残留数据。
+
+**原因分析**：
+这不是代码 Bug，而是**浏览器的自动填充功能**导致的：
+1. 用户之前登录时，浏览器提示"保存密码"，用户点击了"保存"
+2. 浏览器会在同源的登录页面自动填充保存的凭据
+3. 浏览器的填充时机在 JavaScript 之后，导致代码清空的值被覆盖
+
+**解决方案**：
+
+**方法一：清除浏览器保存的密码**
+```
+Chrome: 设置 → 密码 → 已保存的密码 → 删除
+Firefox: 设置 → 隐私与安全 → 已保存的登录信息 → 删除
+Edge: 设置 → 密码 → 管理密码 → 删除
+```
+
+**方法二：使用隐私/无痕模式**
+```
+Chrome: Ctrl + Shift + N
+Firefox: Ctrl + Shift + P
+Edge: Ctrl + Shift + N
+```
+
+**方法三：代码已做的改进**
+系统代码已添加多重安全措施：
+1. `autoComplete="off/new-password"` - 禁用浏览器自动填充
+2. `MutationObserver` - 持续监听DOM变化，捕获延迟填充
+3. 多次延迟清空（300ms/1s/2s/3s）- 兜底策略处理极端情况
+4. 退出登录时清除所有敏感数据（包括剪贴板、sessionStorage）
+
+**详细说明**：请参阅 [33_FAQ_登录错误提示问题详解.md](33_FAQ_登录错误提示问题详解.md) - 问题44
+
+---
+
+### Q48: 通知功能缺失 - 点击通知图标无响应
+
+**问题描述**：
+用户点击右上角的**通知图标**（铃铛图标）时：
+1. 没有任何下拉面板弹出
+2. 点击"查看全部通知"也没有任何反馈
+
+**原因分析**：
+发现两个问题：
+1. **通知图标缺少点击事件**：代码中通知图标只是一个 UI 展示，缺少 `Dropdown` 包裹
+2. **通知页面路由不存在**：点击"查看全部通知"时导航到 `/notifications`，但该路由未在 `App.tsx` 中定义
+
+**解决方案**：
+
+**1. 添加通知下拉面板** (`Layout.tsx`)
+
+使用 Ant Design 的 `Dropdown` 组件为通知图标添加下拉面板：
+
+```tsx
+<Dropdown
+  trigger={['click']}
+  placement="bottomRight"
+  overlay={
+    <div className={styles.notificationPanel}>
+      <div className={styles.notificationHeader}>
+        <span>通知中心</span>
+        <span className={styles.notificationCount}>5 条未读</span>
+      </div>
+      <div className={styles.notificationList}>
+        {/* 通知项... */}
+      </div>
+      <div className={styles.notificationFooter}>
+        <span onClick={() => navigate('/notifications')}>查看全部通知</span>
+      </div>
+    </div>
+  }
+>
+  <Badge count={5} size="small">
+    <BellOutlined className={styles.headerIcon} />
+  </Badge>
+</Dropdown>
+```
+
+**2. 创建通知页面** (`pages/notifications/Notifications.tsx`)
+
+创建通知列表页面，支持全部通知/未读通知 Tab 切换。
+
+**3. 添加路由配置** (`App.tsx`)
+
+```tsx
+import Notifications from './pages/notifications/Notifications'
+
+// 添加路由
+<Route path="notifications" element={<Notifications />} />
+```
+
+**涉及文件**：
+
+| 文件 | 修改/新增内容 |
+|------|--------------|
+| `web/src/components/Layout.tsx` | 添加通知下拉面板 Dropdown |
+| `web/src/components/Layout.module.css` | 添加通知面板样式 |
+| `web/src/pages/notifications/Notifications.tsx` | **新增**：通知列表页面 |
+| `web/src/pages/notifications/Notifications.module.css` | **新增**：通知页面样式 |
+| `web/src/App.tsx` | 添加 `/notifications` 路由 |
+
+**功能说明**：
+- 点击铃铛图标显示通知下拉面板
+- 面板显示最新3条通知摘要
+- 支持"查看全部通知"跳转到完整通知列表页面
+- 通知列表页面支持全部/未读 Tab 切换
+
+**待完善功能**（后续迭代）：
+- 后端通知接口（目前使用模拟数据）
+- 实时通知推送（WebSocket/SSE）
+- 通知分类管理
+- 通知标记已读
+- 通知偏好设置
+
+**补充说明 - 路由路径问题修复**：
+
+点击"查看全部通知"后页面闪烁不显示内容，这是因为导航路径与用户类型不匹配。
+
+**原因**：不同用户类型的路由基础路径不同：
+- 开发者用户：`/notifications` ✓
+- 管理员：`/admin/notifications`
+- 仓库所有者：`/owner/notifications`
+- 超级管理员：`/superadmin/notifications`
+
+使用绝对路径 `/notifications` 会导致非开发者用户无法正确导航。
+
+**解决方案**：根据用户类型使用正确的绝对路径：
+```tsx
+const basePath = user?.user_type === 'super_admin' ? '/superadmin' 
+  : user?.user_type === 'admin' ? '/admin' 
+  : user?.user_type === 'owner' ? '/owner' 
+  : ''
+navigate(`${basePath}/notifications`)
+```
+
+**详细说明**：请参阅 [33_FAQ_开发过程中的FAQ_更新.md](33_FAQ_开发过程中的FAQ_更新.md) - 问题48
+
+---
+
+### Q49: 通知功能完善（完整版）
+
+**问题描述**：
+
+Q48实现的通知功能存在以下问题：
+1. 模拟数据硬编码在代码中，未从数据库获取
+2. 点击下拉菜单后不会自动关闭
+3. 刷新页面后已读状态丢失
+4. 功能不完整，缺少主流通知系统的常用功能
+
+**问题分析**：
+
+| 问题 | 原因 | 解决方案 |
+|------|------|----------|
+| 模拟数据 | 缺少后端API和数据库表 | 创建通知模型和服务 |
+| 菜单不关闭 | Dropdown overlay点击事件冒泡 | 添加 `onClick={e => e.stopPropagation()}` |
+| 状态不持久 | 无数据库存储 | 创建 `notifications` 表存储 |
+| 功能缺失 | 设计不完善 | 完善API和前端功能 |
+
+**解决方案概述**：
+
+**1. 后端实现**
+- 创建 `Notification` 数据模型（通知表）
+- 创建 `NotificationPreference` 数据模型（用户偏好设置）
+- 创建 `NotificationService` 服务层
+- 创建通知API接口（CRUD + 标记已读 + 批量操作）
+
+**2. 前端实现**
+- 创建 `notification.ts` API服务
+- 修改 `Layout.tsx` 通知下拉面板，使用真实API
+- 修复下拉菜单关闭问题（阻止事件冒泡）
+- 修改 `Notifications.tsx` 通知列表页面，支持完整功能
+
+**3. 数据库**
+- 创建 `scripts/migrate_notifications.py` 迁移脚本
+- 自动为现有用户创建测试通知
+
+**功能清单**：
+- ✅ 通知列表（分页）
+- ✅ 未读/已读分类（Tab切换）
+- ✅ 标记已读（单条/全部）
+- ✅ 删除通知（单条/删除已读）
+- ✅ 下拉面板（快速查看）
+- ✅ 未读数Badge（实时更新）
+- ✅ 通知偏好设置
+- ✅ 广播通知（管理员功能）
+
+**详细说明**：请参阅 [33_FAQ_开发过程中的FAQ_更新.md](33_FAQ_开发过程中的FAQ_更新.md) - 问题49
+
+---
+
 **FAQ文档结束**
 
 | 版本 | 日期 | 更新内容 | 作者 |
@@ -1208,5 +1542,12 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 | V1.0 | 2026-04-16 | 初始版本 | - |
 | V1.1 | 2026-04-18 | 新增第六章：部署环境问题（Q19-Q25）| AI Assistant |
 | V1.2 | 2026-04-18 | 新增FAQ汇总列表、Q26登录失败提示说明 | AI Assistant |
+| V1.3 | 2026-04-19 | 新增Q42-Q43角色权限FAQ | AI Assistant |
+| V1.4 | 2026-04-19 | 新增Q44-Q45密码安全FAQ | AI Assistant |
+| V1.5 | 2026-04-19 | 新增Q46浏览器自动填充FAQ | AI Assistant |
+| V1.6 | 2026-04-19 | Q46增强：MutationObserver持续监听方案 | AI Assistant |
+| V1.7 | 2026-04-19 | 新增Q48：通知功能缺失FAQ - 添加通知下拉面板和通知中心页面 | AI Assistant |
+| V1.8 | 2026-04-19 | Q48补充：修复通知路由路径问题 - 根据用户类型使用正确的绝对路径导航 | AI Assistant |
+| V1.9 | 2026-04-19 | 新增Q49：通知功能完善（完整版）- 后端数据库模型、API接口、前端真实数据、下拉菜单修复、已读状态管理 | AI Assistant |
 
 如需补充问题，请联系项目组。

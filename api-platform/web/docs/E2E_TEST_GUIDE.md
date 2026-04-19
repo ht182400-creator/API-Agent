@@ -94,12 +94,12 @@ npx playwright install --with-deps
 
 ### 1. 确保后端服务运行
 
-如果需要 API 代理，确保后端服务在 `http://localhost:8080` 运行。
+如果需要 API 代理，确保后端服务在 `http://localhost:8000` 运行。
 
 ```powershell
 # 在后端目录启动
 cd d:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --port 8080
+python -m uvicorn src.main:app --reload --port 8000
 ```
 
 ### 2. 启动前端开发服务器
@@ -116,7 +116,7 @@ npm run dev
 
   ➜  Local:   http://localhost:3000/
   ➜  Network: http://192.168.x.x:3000/
-  ➜  API:     http://localhost:8080/api/v1
+  ➜  API:     http://localhost:8000/api/v1
 ```
 
 ### 3. 访问应用
@@ -171,7 +171,7 @@ server: {
   port: 3000,
   proxy: {
     '/api': {
-      target: 'http://localhost:8080',
+      target: 'http://localhost:8000',
       changeOrigin: true,
     },
   },
@@ -314,7 +314,7 @@ npx playwright install --with-deps
 
 # 3. 启动后端 (新终端)
 cd d:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --port 8080
+python -m uvicorn src.main:app --reload --port 8000
 
 # 4. 启动前端 (新终端)
 cd d:\Work_Area\AI\API-Agent\api-platform\web

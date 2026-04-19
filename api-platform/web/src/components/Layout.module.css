@@ -49,6 +49,11 @@
   white-space: nowrap;
 }
 
+.userTypeTag {
+  padding: 8px 16px;
+  text-align: center;
+}
+
 .menu {
   border-right: none !important;
 }
@@ -142,4 +147,133 @@
   .content {
     margin-left: 0;
   }
+}
+
+/* 通知面板样式 */
+.notificationPanel {
+  width: 360px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.notificationHeader {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 500;
+  background: #fafafa;
+}
+
+.notificationCount {
+  font-size: 12px;
+  color: #1677ff;
+  font-weight: normal;
+  background: #e6f4ff;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.notificationList {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.notificationEmpty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.notificationItem {
+  position: relative;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notificationItem:hover {
+  background: #fafafa;
+}
+
+.notificationItem.unread {
+  background: #f0f7ff;
+}
+
+.notificationItem.unread:hover {
+  background: #e6f0ff;
+}
+
+.notificationContent {
+  padding-right: 16px;
+}
+
+.notificationTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.notificationDesc {
+  font-size: 12px;
+  color: #8c8c8c;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.notificationTime {
+  font-size: 12px;
+  color: #bfbfbf;
+}
+
+.unreadDot {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #1677ff;
+  border-radius: 50%;
+}
+
+.notificationFooter {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.markAllRead {
+  color: #1677ff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.markAllRead:hover {
+  color: #4096ff;
+}
+
+.viewAll {
+  color: #1677ff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.viewAll:hover {
+  color: #4096ff;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
 }

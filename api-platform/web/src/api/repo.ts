@@ -74,51 +74,51 @@ export const repoApi = {
     is_public?: boolean
     owner_id?: string
   }) => {
-    return api.get<PaginatedResponse<Repository>>('/repos', params)
+    return api.get<PaginatedResponse<Repository>>('/repositories', params)
   },
   
   // 获取仓库详情
   get: (repo_id: string) => {
-    return api.get<Repository>(`/repos/${repo_id}`)
+    return api.get<Repository>(`/repositories/${repo_id}`)
   },
   
   // 获取仓库统计
   getStats: (repo_id: string) => {
-    return api.get<RepoStats>(`/repos/${repo_id}/stats`)
+    return api.get<RepoStats>(`/repositories/${repo_id}/stats`)
   },
   
   // 创建仓库
   create: (data: CreateRepoRequest) => {
-    return api.post<Repository>('/repos', data)
+    return api.post<Repository>('/repositories', data)
   },
   
   // 更新仓库
   update: (repo_id: string, data: Partial<CreateRepoRequest>) => {
-    return api.put<Repository>(`/repos/${repo_id}`, data)
+    return api.put<Repository>(`/repositories/${repo_id}`, data)
   },
   
   // 删除仓库
   delete: (repo_id: string) => {
-    return api.delete(`/repos/${repo_id}`)
+    return api.delete(`/repositories/${repo_id}`)
   },
   
   // 上线仓库
   activate: (repo_id: string) => {
-    return api.post(`/repos/${repo_id}/activate`)
+    return api.put<Repository>(`/repositories/${repo_id}`, { status: 'online' })
   },
   
   // 下线仓库
   deactivate: (repo_id: string) => {
-    return api.post(`/repos/${repo_id}/deactivate`)
+    return api.put<Repository>(`/repositories/${repo_id}`, { status: 'offline' })
   },
   
   // 获取仓库分类
   getCategories: () => {
-    return api.get<string[]>('/repos/categories')
+    return api.get<string[]>('/repositories/categories')
   },
   
   // 获取我创建的仓库
   getMyRepos: (params?: { page?: number; page_size?: number }) => {
-    return api.get<PaginatedResponse<Repository>>('/repos/my', params)
+    return api.get<PaginatedResponse<Repository>>('/repositories/my', params)
   },
 }

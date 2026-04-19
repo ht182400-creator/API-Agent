@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Table, DatePicker, Select, Button, Typography, Statistic, Space, Tag } from 'antd'
+import { Row, Col, Card, Table, DatePicker, Select, Button, Typography, Statistic, Space, Tag, Empty } from 'antd'
 import { 
   WalletOutlined, 
   RiseOutlined, 
@@ -196,26 +196,32 @@ export default function DeveloperBilling() {
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
           <Card title="余额变化趋势（近30天）" className={styles.chartCard}>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={balanceHistory}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date"
-                  tickFormatter={(val) => dayjs(val).format('MM-DD')}
-                />
-                <YAxis />
-                <Tooltip 
-                  labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
-                  formatter={(value: number) => [`¥${value.toFixed(2)}`, '余额']}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="balance" 
-                  stroke="#1677ff" 
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {balanceHistory.length === 0 ? (
+              <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Empty description="暂无余额变化记录" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={balanceHistory}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date"
+                    tickFormatter={(val) => dayjs(val).format('MM-DD')}
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
+                    formatter={(value: number) => [`¥${value.toFixed(2)}`, '余额']}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="balance" 
+                    stroke="#1677ff" 
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </Card>
         </Col>
         <Col xs={24} lg={8}>
@@ -240,7 +246,9 @@ export default function DeveloperBilling() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className={styles.emptyPie}>暂无数据</div>
+              <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Empty description="暂无消费数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
             )}
           </Card>
         </Col>
@@ -253,6 +261,7 @@ export default function DeveloperBilling() {
           columns={columns}
           rowKey="id"
           loading={loading}
+          locale={{ emptyText: <Empty description="暂无账单记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
           pagination={{
             current: page,
             pageSize,

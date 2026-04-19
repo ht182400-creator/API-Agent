@@ -86,8 +86,34 @@ async def get_current_admin_user(
     # 返回用户信息字典
     return {
         "id": str(current_user.id),
+        "username": current_user.username,
         "email": current_user.email,
         "user_type": current_user.user_type,
+        "role": current_user.role,
+    }
+
+
+async def get_current_super_admin_user(
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """
+    获取当前超级管理员用户
+    
+    验证当前用户是否为超级管理员
+    """
+    if current_user.user_type != "super_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="需要超级管理员权限",
+        )
+    
+    # 返回用户信息字典
+    return {
+        "id": str(current_user.id),
+        "username": current_user.username,
+        "email": current_user.email,
+        "user_type": current_user.user_type,
+        "role": current_user.role,
     }
 
 

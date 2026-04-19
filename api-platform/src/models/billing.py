@@ -124,3 +124,44 @@ class Quota(Base):
     def is_exceeded(self) -> bool:
         """Check if quota is exceeded"""
         return self.quota_used >= self.quota_limit
+
+
+class APICallLog(Base):
+    """API Call Log model - API调用日志表"""
+
+    __tablename__ = "api_call_logs"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    # Foreign keys
+    repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, index=True)
+    api_key_id = Column(UUID(as_uuid=True), ForeignKey("api_keys.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    # Request information
+    endpoint = Column(String(255), nullable=True)
+    method = Column(String(10), nullable=True)
+    request_path = Column(String(500), nullable=True)
+    request_method = Column(String(10), nullable=True)
+
+    # Response information
+    status_code = Column(BigInteger, nullable=True)
+    response_time = Column(String(20), nullable=True)  # ms
+
+    # Usage information
+    tokens_used = Column(BigInteger, default=0)
+    cost = Column(String(20), default="0")
+
+    # Source/Client information
+    source = Column(String(50), nullable=True)  # web, ios, android, api
+    ip_address = Column(String(50), nullable=True)
+    user_agent = Column(String(500), nullable=True)
+
+    # Error information
+    error_message = Column(Text, nullable=True)
+
+    # Audit fields
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return f"<APICallLog {self.id}:{self.endpoint}>"

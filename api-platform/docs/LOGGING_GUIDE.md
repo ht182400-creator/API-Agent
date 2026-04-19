@@ -220,21 +220,21 @@ GET /api/v1/admin/logs/backup-content
 ```bash
 # 获取日志文件列表
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/admin/logs/files
+  http://localhost:8000/api/v1/admin/logs/files
 
 # 获取日志内容（支持分页和过滤）
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8080/api/v1/admin/logs/content?file_path=auth.log&level=ERROR&keyword=failed&start_line=0&max_lines=100"
+  "http://localhost:8000/api/v1/admin/logs/content?file_path=auth.log&level=ERROR&keyword=failed&start_line=0&max_lines=100"
 
 # 获取统计信息
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/admin/logs/stats
+  http://localhost:8000/api/v1/admin/logs/stats
 
 # 更新备份配置
 curl -X PUT -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"max_file_size_mb": 20, "max_backup_files": 50}' \
-  http://localhost:8080/api/v1/admin/logs/config
+  http://localhost:8000/api/v1/admin/logs/config
 ```
 
 ---

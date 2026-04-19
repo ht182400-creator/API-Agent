@@ -123,7 +123,7 @@ server: {
   host: 'localhost',
   proxy: {
     '/api': {
-      target: 'http://localhost:8080',
+      target: 'http://localhost:8000',
       changeOrigin: true,
     },
   },
@@ -224,7 +224,7 @@ npm run dev
 VITE v5.x.x  ready in xxx ms
 
 ➜  Local:   http://localhost:3000/
-➜  API:     http://localhost:8080/api/v1
+➜  API:     http://localhost:8000/api/v1
 ```
 
 ### 4. 验证构建结果

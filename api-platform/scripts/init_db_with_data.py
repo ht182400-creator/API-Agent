@@ -70,6 +70,22 @@ async def create_test_data(session: AsyncSession):
     
     users = [
         User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+            username="superadmin",
+            email="superadmin@example.com",
+            password_hash=hash_password("super123456"),
+            phone="13800000000",
+            user_type="super_admin",
+            user_status="active",
+            role="super_admin",  # 角色：超级管理员
+            permissions=["*"],  # 拥有所有权限
+            email_verified=True,
+            vip_level=3,
+            vip_expire_at=now + timedelta(days=365),
+            created_at=now,
+            last_login_at=now,
+        ),
+        User(
             id=uuid.UUID("11111111-1111-1111-1111-111111111111"),
             username="admin",
             email="admin@example.com",
@@ -122,7 +138,7 @@ async def create_test_data(session: AsyncSession):
             email="test@example.com",
             password_hash=hash_password("test123"),
             phone="13800000004",
-            user_type="developer",
+            user_type="user",  # 普通用户
             user_status="active",
             role="user",  # 角色：普通用户
             permissions=default_permissions["user"],
@@ -286,21 +302,7 @@ async def create_test_data(session: AsyncSession):
             last_call_at=now - timedelta(hours=1),
             created_at=now - timedelta(days=5),
         ),
-        APIKey(
-            id=uuid.UUID("cccc3333-3333-3333-3333-333333333333"),
-            user_id=users[3].id,
-            key_name="测试 Key",
-            key_prefix="sk_test_b",
-            key_hash=hashlib.sha256(test_keys[2].encode()).hexdigest(),
-            encrypted_key=encrypt_api_key(test_keys[2]),  # 加密存储完整 key
-            auth_type="api_key",
-            rate_limit_rpm=50,
-            rate_limit_rph=500,
-            daily_quota=500,
-            status="active",
-            total_calls=20,
-            created_at=now - timedelta(days=3),
-        ),
+        # test 用户是普通用户，不分配 API Key
     ]
     
     for key in api_keys:
@@ -333,19 +335,7 @@ async def create_test_data(session: AsyncSession):
             source_type="manual",
             created_at=now - timedelta(days=15),
         ),
-        Bill(
-            bill_no="BILL20240417003",
-            user_id=users[3].id,
-            bill_type="consume",
-            amount="-2.00",
-            balance_before="52.00",
-            balance_after="50.00",
-            status="completed",
-            description="API 调用消费",
-            source_type="api_call",
-            source_id=str(api_keys[2].id),
-            created_at=now - timedelta(hours=12),
-        ),
+        # test 用户是普通用户，无 API Key，无消费账单
     ]
     
     for bill in bills:
@@ -415,24 +405,237 @@ async def create_test_data(session: AsyncSession):
             user_agent="Python/3.11 httpx/1.0",
             created_at=now - timedelta(hours=1),
         ),
-        KeyUsageLog(
-            key_id=api_keys[2].id,
-            user_id=users[3].id,
-            repo_id=repositories[1].id,
-            endpoint="/v1/messages",
-            method="POST",
-            status_code=200,
-            latency_ms=3500,
-            tokens_used=2000,
-            cost="0.50",
-            ip_address="192.168.1.101",
-            user_agent="Claude-SDK/1.0",
-            created_at=now - timedelta(hours=2),
-        ),
+        # test 用户是普通用户，不分配 API Key，无调用日志
     ]
     
     for log in usage_logs:
         session.add(log)
+    
+    # ==================== 角色数据 ====================
+    roles = [
+        Role(
+            id=uuid.UUID("dddd1111-1111-1111-1111-111111111111"),
+            name="super_admin",
+            display_name="超级管理员",
+            description="系统最高权限，拥有所有功能",
+            permissions=["*"],
+            is_system=True,
+            is_active=True,
+            priority=100,
+            created_at=now,
+        ),
+        Role(
+            id=uuid.UUID("dddd2222-2222-2222-2222-222222222222"),
+            name="admin",
+            display_name="管理员",
+            description="日常运营管理权限",
+            permissions=[
+                "user:read", "user:write", "user:delete", "user:manage",
+                "api:read", "api:write", "api:delete", "api:manage",
+                "repo:read", "repo:write", "repo:delete", "repo:approve", "repo:manage",
+                "billing:read", "billing:write", "billing:manage", "billing:recharge",
+                "log:read", "log:all",
+                "system:settings", "system:logs",
+                "dev:apikeys", "dev:quota", "dev:billing",
+                "owner:repo", "owner:analytics", "owner:settlement",
+            ],
+            is_system=True,
+            is_active=True,
+            priority=80,
+            created_at=now,
+        ),
+        Role(
+            id=uuid.UUID("dddd3333-3333-3333-3333-333333333333"),
+            name="owner",
+            display_name="仓库所有者",
+            description="API仓库所有者，可管理自己的仓库",
+            permissions=[
+                "repo:read", "repo:write", "repo:delete",
+                "owner:repo", "owner:analytics", "owner:settlement",
+                "billing:read", "billing:manage",
+                "log:read",
+            ],
+            is_system=True,
+            is_active=True,
+            priority=60,
+            created_at=now,
+        ),
+        Role(
+            id=uuid.UUID("dddd4444-4444-4444-4444-444444444444"),
+            name="developer",
+            display_name="开发者",
+            description="可创建API Keys，使用API服务",
+            permissions=[
+                "dev:apikeys", "dev:quota", "dev:billing",
+                "billing:read",
+                "log:read",
+                "repo:read",
+            ],
+            is_system=True,
+            is_active=True,
+            priority=40,
+            created_at=now,
+        ),
+        Role(
+            id=uuid.UUID("dddd5555-5555-5555-5555-555555555555"),
+            name="user",
+            display_name="普通用户",
+            description="受限权限，仅能查看",
+            permissions=[
+                "dev:quota",
+                "billing:read",
+                "repo:read",
+            ],
+            is_system=True,
+            is_active=True,
+            priority=20,
+            created_at=now,
+        ),
+    ]
+    
+    for role in roles:
+        session.add(role)
+    
+    # ==================== 系统配置数据 ====================
+    configs = [
+        # 通用设置
+        SystemConfig(category="general", key="site_name", value="API Platform", value_type="string", label="平台名称", is_system=True),
+        SystemConfig(category="general", key="site_url", value="https://api.example.com", value_type="string", label="平台地址", is_system=True),
+        SystemConfig(category="general", key="support_email", value="support@example.com", value_type="string", label="支持邮箱", is_system=True),
+        SystemConfig(category="general", key="timezone", value="Asia/Shanghai", value_type="string", label="时区", options=["Asia/Shanghai", "America/New_York", "Europe/London"], is_system=True),
+        SystemConfig(category="general", key="language", value="zh-CN", value_type="string", label="默认语言", options=["zh-CN", "en-US"], is_system=True),
+        
+        # 安全设置
+        SystemConfig(category="security", key="password_min_length", value="8", value_type="number", label="密码最小长度", is_system=True),
+        SystemConfig(category="security", key="password_require_uppercase", value="true", value_type="boolean", label="必须包含大写字母", is_system=True),
+        SystemConfig(category="security", key="password_require_number", value="true", value_type="boolean", label="必须包含数字", is_system=True),
+        SystemConfig(category="security", key="password_require_special", value="true", value_type="boolean", label="必须包含特殊字符", is_system=True),
+        SystemConfig(category="security", key="session_timeout", value="30", value_type="number", label="会话超时时间(分钟)", is_system=True),
+        SystemConfig(category="security", key="max_login_attempts", value="5", value_type="number", label="最大登录失败次数", is_system=True),
+        SystemConfig(category="security", key="enable_mfa", value="false", value_type="boolean", label="启用双因素认证", is_system=True),
+        SystemConfig(category="security", key="enable_captcha", value="true", value_type="boolean", label="启用验证码", is_system=True),
+        
+        # API设置
+        SystemConfig(category="api", key="default_rate_limit_rpm", value="60", value_type="number", label="默认API限流(RPM)", is_system=True),
+        SystemConfig(category="api", key="default_daily_quota", value="1000", value_type="number", label="默认每日配额", is_system=True),
+        SystemConfig(category="api", key="key_prefix", value="sk", value_type="string", label="API Key前缀", is_system=True),
+        SystemConfig(category="api", key="key_length", value="32", value_type="number", label="API Key长度", is_system=True),
+        
+        # 日志设置
+        SystemConfig(category="logging", key="level", value="INFO", value_type="string", label="日志级别", options=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], is_system=True),
+        SystemConfig(category="logging", key="retention_days", value="30", value_type="number", label="日志保留天数", is_system=True),
+        SystemConfig(category="logging", key="enable_audit", value="true", value_type="boolean", label="启用审计日志", is_system=True),
+        SystemConfig(category="logging", key="enable_metrics", value="true", value_type="boolean", label="启用性能指标", is_system=True),
+        
+        # 缓存设置
+        SystemConfig(category="cache", key="type", value="memory", value_type="string", label="缓存类型", options=["redis", "memcached", "memory"], is_system=True),
+        SystemConfig(category="cache", key="ttl", value="3600", value_type="number", label="缓存TTL(秒)", is_system=True),
+        
+        # 限流设置
+        SystemConfig(category="rate_limit", key="enabled", value="true", value_type="boolean", label="启用限流", is_system=True),
+        SystemConfig(category="rate_limit", key="default_rpm", value="60", value_type="number", label="默认RPM", is_system=True),
+        SystemConfig(category="rate_limit", key="default_rph", value="1000", value_type="number", label="默认RPH", is_system=True),
+    ]
+    
+    for config in configs:
+        session.add(config)
+    
+    # ==================== 审计日志数据 ====================
+    audit_logs = [
+        AuditLog(
+            id=uuid.UUID("eeee1111-1111-1111-1111-111111111111"),
+            user_id=users[0].id,
+            username="superadmin",
+            user_type="super_admin",
+            action="user:login",
+            resource_type="system",
+            description="超级管理员登录系统",
+            ip_address="192.168.1.1",
+            status="success",
+            created_at=now - timedelta(minutes=5),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee2222-2222-2222-2222-222222222222"),
+            user_id=users[0].id,
+            username="superadmin",
+            user_type="super_admin",
+            action="user:create",
+            resource_type="user",
+            resource_id=str(users[1].id),
+            description="创建管理员账户 admin@example.com",
+            ip_address="192.168.1.1",
+            status="success",
+            created_at=now - timedelta(minutes=4),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee3333-3333-3333-3333-333333333333"),
+            user_id=users[1].id,
+            username="admin",
+            user_type="admin",
+            action="user:update",
+            resource_type="user",
+            resource_id=str(users[3].id),
+            description="更新开发者 developer 的VIP等级为1",
+            ip_address="192.168.1.2",
+            status="success",
+            created_at=now - timedelta(hours=1),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee4444-4444-4444-4444-444444444444"),
+            user_id=users[1].id,
+            username="admin",
+            user_type="admin",
+            action="repo:approve",
+            resource_type="repository",
+            resource_id=str(repositories[0].id),
+            description="审核通过仓库 OpenAI GPT-4 API",
+            ip_address="192.168.1.2",
+            status="success",
+            created_at=now - timedelta(hours=2),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee5555-5555-5555-5555-555555555555"),
+            user_id=users[2].id,
+            username="owner",
+            user_type="owner",
+            action="api_key:create",
+            resource_type="api_key",
+            resource_id=str(api_keys[0].id),
+            description="创建 API Key: 开发环境 Key",
+            ip_address="192.168.1.3",
+            status="success",
+            created_at=now - timedelta(days=10),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee6666-6666-6666-6666-666666666666"),
+            user_id=users[0].id,
+            username="superadmin",
+            user_type="super_admin",
+            action="system:config_update",
+            resource_type="system",
+            description="更新系统配置: 日志级别为 INFO",
+            old_data={"logging.level": "DEBUG"},
+            new_data={"logging.level": "INFO"},
+            ip_address="192.168.1.1",
+            status="success",
+            created_at=now - timedelta(hours=6),
+        ),
+        AuditLog(
+            id=uuid.UUID("eeee7777-7777-7777-7777-777777777777"),
+            user_id=users[3].id,
+            username="developer",
+            user_type="developer",
+            action="billing:recharge",
+            resource_type="bill",
+            description="账户充值 50.00 元",
+            ip_address="192.168.1.4",
+            status="success",
+            created_at=now - timedelta(days=7),
+        ),
+    ]
+    
+    for audit_log in audit_logs:
+        session.add(audit_log)
     
     await session.commit()
     print("Test data created successfully!")
@@ -444,26 +647,28 @@ def print_test_accounts():
     print("TEST ACCOUNTS")
     print("=" * 80)
     print("\n支持两种登录方式：username 或 email")
-    print("\n| User Type | Username   | Email                    | Password    | Role      | VIP |")
-    print("|-----------|------------|--------------------------|-------------|-----------|-----|")
-    print("| Admin     | admin      | admin@example.com        | admin123    | admin     | 3   |")
-    print("| Owner     | owner      | owner@example.com        | owner123    | developer | 2   |")
-    print("| Developer | developer  | developer@example.com    | dev123456   | user      | 1   |")
-    print("| Test      | test       | test@example.com         | test123     | user      | 0   |")
+    print("\n| User Type | Username    | Email                      | Password     | Role        | VIP |")
+    print("|-----------|-------------|----------------------------|--------------|-------------|-----|")
+    print("| SuperAdmin| superadmin  | superadmin@example.com     | super123456  | super_admin | 3   |")
+    print("| Admin     | admin       | admin@example.com         | admin123     | admin       | 3   |")
+    print("| Owner     | owner       | owner@example.com         | owner123     | developer   | 2   |")
+    print("| Developer | developer   | developer@example.com     | dev123456    | user        | 1   |")
+    print("| Test      | test        | test@example.com          | test123      | user        | 0   |")
     print("\n" + "-" * 80)
     print("登录示例:")
-    print("  - 用户名登录: username=admin, password=admin123")
-    print("  - 邮箱登录:   email=admin@example.com, password=admin123")
+    print("  - 用户名登录: username=superadmin, password=super123456")
+    print("  - 邮箱登录:   email=superadmin@example.com, password=super123456")
     print("\n" + "-" * 80)
-    print("角色说明:")
-    print("  - admin:     管理员，拥有所有权限 (*)")
-    print("  - developer: 开发者，拥有 API 读写权限")
-    print("  - user:      普通用户，仅有只读权限")
+    print("用户类型说明:")
+    print("  - super_admin: 超级管理员，系统最高权限")
+    print("  - admin:       管理员，拥有大部分管理权限")
+    print("  - owner:       仓库所有者，管理 API 仓库")
+    print("  - developer:   开发者，可创建 API Keys、使用 API")
+    print("  - user:        普通用户，仅能查看，不能创建 API Keys")
     print("\n" + "-" * 80)
     print("API Keys (完整 key，支持查看功能):")
     print("  - sk_test_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (developer, GPT-4)")
     print("  - sk_live_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA (developer, GPT-4, production)")
-    print("  - sk_test_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (test user, Claude)")
     print("  注意：完整 key 可通过前端界面点击「查看」按钮获取")
     print("=" * 80 + "\n")
 

@@ -277,7 +277,7 @@ taskkill /F /IM python.exe
 
 # 重启后端
 cd d:/Work_Area/AI/API-Agent/api-platform
-python -m uvicorn src.main:app --host 0.0.0.0 --port 8080 --reload
+python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
 # 重启前端（另一个终端）
 cd d:/Work_Area/AI/API-Agent/api-platform/web

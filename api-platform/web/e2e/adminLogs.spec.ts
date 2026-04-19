@@ -75,12 +75,12 @@ test.describe('日志管理模块', () => {
 
   test('API 日志端点连通性', async ({ page }) => {
     // 测试后端 API
-    const response = await page.request.get('http://localhost:8080/api/v1/health')
+    const response = await page.request.get('http://localhost:8000/api/v1/health')
     
     // 如果 health 端点不存在，尝试其他方式验证
     if (response.status() === 404) {
       // 尝试访问 Swagger
-      const swaggerResponse = await page.request.get('http://localhost:8080/docs')
+      const swaggerResponse = await page.request.get('http://localhost:8000/docs')
       expect(swaggerResponse.ok() || swaggerResponse.status() === 200).toBeTruthy()
     } else {
       expect(response.ok()).toBeTruthy()
@@ -92,7 +92,7 @@ test.describe('日志管理 - API 直接测试', () => {
   
   test('获取日志文件列表', async ({ request }) => {
     // 获取日志文件列表
-    const response = await request.get('http://localhost:8080/api/v1/admin/logs/files')
+    const response = await request.get('http://localhost:8000/api/v1/admin/logs/files')
     
     // 验证响应
     expect([200, 401, 403]).toContain(response.status())
@@ -104,7 +104,7 @@ test.describe('日志管理 - API 直接测试', () => {
   })
 
   test('获取日志统计信息', async ({ request }) => {
-    const response = await request.get('http://localhost:8080/api/v1/admin/logs/stats')
+    const response = await request.get('http://localhost:8000/api/v1/admin/logs/stats')
     
     expect([200, 401, 403]).toContain(response.status())
     
@@ -115,7 +115,7 @@ test.describe('日志管理 - API 直接测试', () => {
   })
 
   test('获取备份配置', async ({ request }) => {
-    const response = await request.get('http://localhost:8080/api/v1/admin/logs/config')
+    const response = await request.get('http://localhost:8000/api/v1/admin/logs/config')
     
     expect([200, 401, 403]).toContain(response.status())
     

@@ -2,18 +2,56 @@
  * 注册页面
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Form, Input, Button, Card, message, Radio } from 'antd'
-import { MailOutlined, LockOutlined, UserOutlined } from '@ant-design/icons'
+import { MailOutlined, LockOutlined, UserOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import { authApi } from '../../api/auth'
 import styles from './Register.module.css'
 
 export default function Register() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [form] = Form.useForm()
+
+  // 清除输入框中的浏览器自动填充数据
+  const clearAutofillData = useCallback(() => {
+    // 清除所有密码输入框
+    const passwordInputs = document.querySelectorAll('input[type="password"]')
+    passwordInputs.forEach((input) => {
+      if (input instanceof HTMLInputElement && input.value) {
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+        input.dispatchEvent(new Event('change', { bubbles: true }))
+      }
+    })
+  }, [])
+
+  // 组件挂载时清空表单（包括密码字段）
+  useEffect(() => {
+    // 清空整个表单，包括密码等敏感字段
+    form.resetFields()
+    
+    // 使用多个延迟清空任务，覆盖浏览器延迟填充的时机
+    const timers = [
+      setTimeout(() => clearAutofillData(), 300),
+      setTimeout(() => clearAutofillData(), 1000),
+      setTimeout(() => clearAutofillData(), 2000),
+    ]
+    
+    // 清除 sessionStorage 中的敏感信息
+    try {
+      sessionStorage.removeItem('pending_password')
+      sessionStorage.removeItem('register_password')
+    } catch (e) {}
+    
+    return () => {
+      timers.forEach(clearTimeout)
+    }
+  }, [form, clearAutofillData])
 
   const onFinish = async (values: {
+    username: string
     email: string
     password: string
     confirmPassword: string
@@ -27,12 +65,18 @@ export default function Register() {
     setLoading(true)
     try {
       await authApi.register({
+        username: values.username,
         email: values.email,
         password: values.password,
         user_type: values.user_type,
       })
       
       message.success('注册成功，请登录')
+      
+      // 清空表单中的密码（内存中的密码值）
+      form.setFieldValue('password', '')
+      form.setFieldValue('confirmPassword', '')
+      
       navigate('/login')
     } catch (error: any) {
       message.error(error.message || '注册失败')
@@ -58,13 +102,24 @@ export default function Register() {
             initialValues={{ user_type: 'developer' }}
           >
             <Form.Item
+              name="username"
+              rules={[
+                { required: true, message: '请输入用户名' },
+                { min: 3, max: 50, message: '用户名3-50个字符' },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: '只能是字母、数字、下划线' },
+              ]}
+            >
+              <Input prefix={<UserOutlined />} placeholder="用户名（用于登录）" autoComplete="off" />
+            </Form.Item>
+
+            <Form.Item
               name="email"
               rules={[
                 { required: true, message: '请输入邮箱' },
                 { type: 'email', message: '请输入有效的邮箱地址' },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder="邮箱" />
+              <Input prefix={<MailOutlined />} placeholder="邮箱" autoComplete="off" />
             </Form.Item>
 
             <Form.Item
@@ -74,7 +129,14 @@ export default function Register() {
                 { min: 8, message: '密码至少8位' },
               ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="密码（至少8位）" />
+              <Input.Password 
+                prefix={<LockOutlined />} 
+                placeholder="密码（至少8位）"
+                autoComplete="new-password"
+                iconRender={(visible) => 
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
 
             <Form.Item
@@ -92,14 +154,23 @@ export default function Register() {
                 }),
               ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="确认密码" />
+              <Input.Password 
+                prefix={<LockOutlined />} 
+                placeholder="确认密码"
+                autoComplete="new-password"
+                iconRender={(visible) => 
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
 
             <Form.Item
               name="user_type"
               rules={[{ required: true, message: '请选择账号类型' }]}
+              extra="开发者可使用API服务，仓库所有者可创建和管理API仓库"
             >
               <Radio.Group buttonStyle="solid">
+                <Radio.Button value="user">普通用户</Radio.Button>
                 <Radio.Button value="developer">开发者</Radio.Button>
                 <Radio.Button value="owner">仓库所有者</Radio.Button>
               </Radio.Group>

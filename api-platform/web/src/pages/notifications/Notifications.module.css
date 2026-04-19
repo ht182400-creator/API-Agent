@@ -1,0 +1,99 @@
+.notifications {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.listContainer {
+  background: #fff;
+}
+
+.notificationItem {
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationItem:hover {
+  background: #fafafa;
+}
+
+.notificationItem.unread {
+  background: linear-gradient(90deg, #e6f4ff 0%, #f0f7ff 100%);
+}
+
+.notificationItem.unread:hover {
+  background: linear-gradient(90deg, #bae0ff 0%, #e6f0ff 100%);
+}
+
+.itemContent {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.iconWrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f0ff 100%);
+  border-radius: 50%;
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.itemTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.itemDesc {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.itemFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemTime {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #666;
+}

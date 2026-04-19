@@ -281,14 +281,14 @@ export default defineConfig({
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
 | `BASE_URL` | http://localhost:3000 | 测试基础 URL |
-| `API_URL` | http://localhost:8080 | API 地址 |
+| `API_URL` | http://localhost:8000 | API 地址 |
 
 ### 设置环境变量
 
 ```powershell
 # PowerShell
 $env:BASE_URL = "http://localhost:3000"
-$env:API_URL = "http://localhost:8080"
+$env:API_URL = "http://localhost:8000"
 
 # 运行测试
 npx playwright test
@@ -394,14 +394,14 @@ npm install
 | 端点 | 说明 | 地址 |
 |------|------|------|
 | 前端 | Web 应用 | http://localhost:3000 |
-| 后端 | REST API | http://localhost:8080 |
-| API 文档 | Swagger | http://localhost:8080/docs |
+| 后端 | REST API | http://localhost:8000 |
+| API 文档 | Swagger | http://localhost:8000/docs |
 
 ---
 
 ## 下一步
 
-1. 启动后端服务: `python -m uvicorn src.main:app --reload --port 8080`
+1. 启动后端服务: `python -m uvicorn src.main:app --reload --port 8000`
 2. 启动前端服务: `npm run dev`
 3. 访问 http://localhost:3000
 4. 运行测试: `npm run test:e2e`

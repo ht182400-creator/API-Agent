@@ -91,7 +91,17 @@ client.interceptors.response.use(
     // 自动提取 data 字段（统一响应格式）
     // 后端返回: { code: 0, message: "success", data: {...} }
     // 前端直接获取: {...}
-    const extractedData = data?.data !== undefined ? data.data : data
+    // 如果后端直接返回数据对象（没有 code 字段），也直接返回
+    let extractedData = data
+    if (data?.data !== undefined) {
+      extractedData = data.data
+    } else if (data?.code === undefined && data?.notifications === undefined && data?.items === undefined) {
+      // 没有 code 字段，且不是列表响应，说明是直接返回的数据对象
+      extractedData = data
+    } else if (data?.notifications !== undefined || data?.items !== undefined) {
+      // 列表响应，没有 code 字段，直接返回
+      extractedData = data
+    }
     
     // 返回提取后的数据，让 API 方法直接使用业务数据
     return {

@@ -15,7 +15,7 @@ export default defineConfig({
     // API 代理配置
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         // 开发环境日志
         logLevel: 'info',

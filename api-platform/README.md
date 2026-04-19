@@ -63,13 +63,13 @@ docker-compose up -d postgres redis
 python scripts/init_db.py
 
 # 启动API服务
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 访问API文档
 
-- Swagger UI: http://localhost:8080/docs
-- ReDoc: http://localhost:8080/redoc
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
 ## 项目结构
 
