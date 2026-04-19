@@ -77,8 +77,6 @@ CreateAPIKeyRequest = APIKeyCreate
 class RepositoryCreate(BaseModel):
     """Repository creation request"""
 
-    owner_id: str
-    owner_type: str = Field(..., pattern="^(internal|external)$")
     name: str = Field(..., min_length=1, max_length=100)
     display_name: Optional[str] = None
     description: Optional[str] = None
@@ -103,6 +101,7 @@ class RepositoryUpdate(BaseModel):
     logo_url: Optional[str] = None
     endpoint_url: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
+    repo_type: Optional[str] = Field(None, pattern="^(psychology|stock|ai|translation|vision|custom)$")
     status: Optional[str] = Field(None, pattern="^(pending|approved|rejected|online|offline)$")
 
 
@@ -110,6 +109,12 @@ class RepositoryApproval(BaseModel):
     """Repository approval request"""
 
     comment: Optional[str] = None
+
+
+class RepositoryReject(BaseModel):
+    """Repository rejection request"""
+
+    reason: Optional[str] = Field(None, max_length=500)
 
 
 class BillRecharge(BaseModel):

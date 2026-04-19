@@ -13,28 +13,27 @@ import {
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { useState, useEffect } from 'react'
+import { adminApi, userTypeMap } from '../../api/admin'
 import styles from './Dashboard.module.css'
 
 const { Title, Text } = Typography
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
+  const [recentUsers, setRecentUsers] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [statsLoading, setStatsLoading] = useState(true)
 
-  // 示例数据
-  const systemStats = {
-    totalUsers: 1250,
-    todayNewUsers: 25,
-    totalRepos: 156,
-    todayCalls: 125000,
-    totalRevenue: 125000,
-    activeKeys: 3400,
-  }
-
-  const recentUsers = [
-    { id: 1, email: 'user1@example.com', user_type: 'developer', created_at: dayjs().subtract(1, 'hour').toISOString() },
-    { id: 2, email: 'user2@example.com', user_type: 'owner', created_at: dayjs().subtract(3, 'hour').toISOString() },
-    { id: 3, email: 'user3@example.com', user_type: 'developer', created_at: dayjs().subtract(5, 'hour').toISOString() },
-  ]
+  // 统计数据
+  const [systemStats, setSystemStats] = useState({
+    totalUsers: 0,
+    todayNewUsers: 0,
+    totalRepos: 0,
+    todayCalls: 0,
+    totalRevenue: 0,
+    activeKeys: 0,
+  })
 
   const alerts = [
     { type: 'warning', message: '仓库 api-translate 响应超时率过高', time: '10分钟前' },
@@ -42,10 +41,60 @@ export default function AdminDashboard() {
     { type: 'error', message: 'API Key sk_live_xxx 异常使用', time: '1小时前' },
   ]
 
+  // 加载统计数据和用户列表
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      setStatsLoading(true)
+      try {
+        // 并行加载统计数据和用户列表
+        const [statsRes, usersRes] = await Promise.all([
+          adminApi.getStats(),
+          adminApi.listUsers({ page: 1, page_size: 10 }).catch(() => ({ items: [] }))
+        ])
+        
+        // 更新统计数据
+        setSystemStats({
+          totalUsers: statsRes.total_users || 0,
+          todayNewUsers: statsRes.today_new_users || 0,
+          totalRepos: statsRes.total_repos || 0,
+          todayCalls: statsRes.today_calls || 0,
+          totalRevenue: statsRes.total_revenue || 0,
+          activeKeys: statsRes.total_api_keys || 0,
+        })
+        
+        // 更新用户列表
+        if (usersRes.items) {
+          setRecentUsers(usersRes.items)
+        }
+      } catch (err) {
+        console.error('加载数据失败', err)
+      } finally {
+        setLoading(false)
+        setStatsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
   const columns = [
+    { title: '用户名', dataIndex: 'username', key: 'username' },
     { title: '邮箱', dataIndex: 'email', key: 'email' },
-    { title: '类型', dataIndex: 'user_type', key: 'user_type', render: (t: string) => <Tag>{t}</Tag> },
-    { title: '注册时间', dataIndex: 'created_at', key: 'created_at', render: (d: string) => dayjs(d).format('YYYY-MM-DD HH:mm') },
+    { 
+      title: '类型', 
+      dataIndex: 'user_type', 
+      key: 'user_type', 
+      render: (t: string) => {
+        const config = userTypeMap[t] || { label: t, color: 'default' }
+        return <Tag color={config.color}>{config.label}</Tag>
+      }
+    },
+    { 
+      title: '注册时间', 
+      dataIndex: 'created_at', 
+      key: 'created_at', 
+      render: (d: string) => d ? dayjs(d).format('YYYY-MM-DD HH:mm') : '-' 
+    },
   ]
 
   return (
@@ -105,6 +154,8 @@ export default function AdminDashboard() {
               columns={columns}
               rowKey="id"
               pagination={false}
+              loading={loading}
+              locale={{ emptyText: '暂无数据' }}
             />
           </Card>
         </Col>

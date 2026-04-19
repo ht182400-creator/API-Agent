@@ -1,0 +1,81 @@
+/* 仓库详情页面样式 */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* 仓库Logo */
+.repoLogo {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 基本信息卡片 */
+.basicInfoCard {
+  margin-bottom: 16px;
+}
+
+.basicInfoCard .description {
+  margin-top: 16px;
+  margin-bottom: 0;
+  color: #666;
+}
+
+.slaInfo {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 统计信息行 */
+.statsRow {
+  margin-bottom: 16px;
+}
+
+/* 端点列表卡片 */
+.endpointsCard {
+  margin-bottom: 16px;
+}
+
+/* 限流配置卡片 */
+.limitsCard {
+  margin-bottom: 16px;
+}
+
+/* 定价信息卡片 */
+.pricingCard {
+  margin-bottom: 16px;
+}
+
+/* 所有者信息卡片 */
+.ownerCard {
+  margin-bottom: 16px;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .statsRow .ant-col {
+    margin-bottom: 12px;
+  }
+}

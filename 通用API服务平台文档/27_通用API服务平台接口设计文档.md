@@ -5,9 +5,9 @@
 | 属性 | 内容 |
 |------|------|
 | **文档编号** | API-PLATFORM-2026-001 |
-| **版本** | V1.4 |
-| **日期** | 2026-04-18 |
-| **更新说明** | 新增 username、role、permissions 字段，支持用户名登录和权限管理 |
+| **版本** | V1.7 |
+| **日期** | 2026-04-19 |
+| **更新说明** | V1.7: 新增管理员用户管理接口 /admin/users；修复用户更新接口使用JSON Body |
 
 ---
 
@@ -973,26 +973,21 @@
 #### 3.3.1 仓库注册
 
 ```yaml
-接口: POST /v1/admin/repositories
-说明: 注册新仓库
+接口: POST /v1/repositories
+说明: 仓库所有者注册新仓库
+认证: Bearer Token (owner/super_admin)
 
 请求体:
 {
-  "owner_id": "user_xxx",
-  "owner_type": "internal",
-  "name": "psychology",
-  "display_name": "心理问答",
-  "description": "专业心理问答服务",
-  "repo_type": "psychology",
-  "protocol": "http",
-  "endpoint_url": "https://internal-service/psychology",
+  "name": "my-repo",
+  "display_name": "我的仓库",
+  "description": "仓库描述",
+  "repo_type": "psychology",  # psychology/stock/ai/translation/vision/custom
+  "protocol": "http",          # http/grpc/websocket
+  "endpoint_url": "https://api.example.com",
   "config": {
     "timeout": 30000,
     "retry": 3
-  },
-  "pricing": {
-    "type": "token",
-    "price_per_token": 0.001
   }
 }
 
@@ -1001,22 +996,66 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": "repo_xxx",
-    "status": "pending",
-    "created_at": "2026-04-16T10:00:00Z"
+    "id": "uuid",
+    "name": "my-repo",
+    "slug": "my-repo",
+    "status": "pending",       # 初始状态为待审核
+    "created_at": "2026-04-19T22:00:00Z"
   }
 }
 ```
 
-#### 3.3.2 仓库审核
+#### 3.3.2 获取所有仓库（管理员）
 
 ```yaml
-接口: POST /v1/admin/repositories/{repo_id}/approve
+接口: GET /v1/repositories/admin/all
+说明: 管理员获取所有仓库
+认证: Bearer Token (admin/super_admin)
+
+查询参数:
+- status: 状态筛选 (pending/approved/rejected/online/offline)
+- page: 页码 (默认1)
+- page_size: 每页数量 (默认20)
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "name": "repo-name",
+        "slug": "repo-name",
+        "display_name": "仓库显示名",
+        "status": "pending",
+        "owner": {
+          "id": "user-uuid",
+          "name": "owner_name"
+        },
+        "created_at": "2026-04-19T22:00:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total": 5,
+      "total_pages": 1
+    }
+  }
+}
+```
+
+#### 3.3.3 仓库审核（审核通过）
+
+```yaml
+接口: POST /v1/repositories/{repo_id}/approve
 说明: 审核通过仓库
+认证: Bearer Token (admin/super_admin)
 
 请求体:
 {
-  "comment": "审核通过"
+  "comment": "审核通过，备注信息（可选）"
 }
 
 响应:
@@ -1024,40 +1063,24 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": "repo_xxx",
+    "id": "uuid",
+    "name": "repo-name",
     "status": "approved",
-    "approved_at": "2026-04-16T10:00:00Z"
+    "approved_at": "2026-04-19T22:30:00Z"
   }
 }
 ```
 
-#### 3.3.3 仓库上线
+#### 3.3.4 仓库审核（审核拒绝）
 
 ```yaml
-接口: POST /v1/admin/repositories/{repo_id}/online
-说明: 上线仓库
-
-响应:
-{
-  "code": 0,
-  "message": "success",
-  "data": {
-    "id": "repo_xxx",
-    "status": "online",
-    "online_at": "2026-04-16T10:00:00Z"
-  }
-}
-```
-
-#### 3.3.4 仓库下线
-
-```yaml
-接口: POST /v1/admin/repositories/{repo_id}/offline
-说明: 下线仓库
+接口: POST /v1/repositories/{repo_id}/reject
+说明: 审核拒绝仓库
+认证: Bearer Token (admin/super_admin)
 
 请求体:
 {
-  "reason": "服务升级"
+  "reason": "拒绝原因（可选）"
 }
 
 响应:
@@ -1065,12 +1088,259 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": "repo_xxx",
-    "status": "offline",
-    "offline_at": "2026-04-16T10:00:00Z"
+    "id": "uuid",
+    "name": "repo-name",
+    "status": "rejected"
   }
 }
 ```
+
+#### 3.3.5 仓库上线
+
+```yaml
+接口: POST /v1/repositories/{repo_id}/online
+说明: 上线仓库（需要先审核通过）
+认证: Bearer Token (admin/super_admin)
+
+前置条件: 仓库状态必须为 approved 或 offline
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "name": "repo-name",
+    "status": "online",
+    "online_at": "2026-04-19T22:30:00Z"
+  }
+}
+```
+
+#### 3.3.6 仓库下线
+
+```yaml
+接口: POST /v1/repositories/{repo_id}/offline
+说明: 下线仓库
+认证: Bearer Token (admin/super_admin)
+
+前置条件: 仓库状态必须为 online
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "name": "repo-name",
+    "status": "offline",
+    "offline_at": "2026-04-19T22:30:00Z"
+  }
+}
+```
+
+### 3.5 超级管理员用户管理 (V1.6新增)
+
+超级管理员用户管理接口提供用户的查询、更新、禁用和删除功能。**重要**：只有 `super_admin` 角色的用户可以访问这些接口。
+
+#### 3.5.1 获取用户列表
+
+```yaml
+接口: GET /v1/superadmin/users
+说明: 获取用户列表
+认证: Bearer Token (super_admin)
+
+查询参数:
+- page: 页码 (默认1)
+- page_size: 每页数量 (默认10)
+- keyword: 搜索关键词（用户名/邮箱）
+- user_type: 用户类型筛选 (super_admin/admin/owner/developer/user)
+- user_status: 用户状态筛选 (active/inactive/suspended/deleted)
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "username": "admin",
+        "email": "admin@example.com",
+        "phone": "13800000000",
+        "user_type": "admin",
+        "role": "admin",
+        "user_status": "active",
+        "vip_level": 3,
+        "permissions": ["*"],
+        "created_at": "2026-04-19T13:41:48",
+        "last_login_at": "2026-04-19T13:41:48"
+      }
+    ],
+    "total": 5,
+    "page": 1,
+    "page_size": 10
+  }
+}
+```
+
+#### 3.5.2 更新用户信息
+
+```yaml
+接口: PUT /v1/superadmin/users/{user_id}
+说明: 更新用户信息
+认证: Bearer Token (super_admin)
+
+请求参数 (Query):
+- user_type: 用户类型 (可选)
+- role: 角色 (可选)
+- user_status: 用户状态 (可选: active/suspended)
+- vip_level: VIP等级 (可选)
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid",
+    "username": "admin",
+    "user_status": "suspended"
+  }
+}
+```
+
+#### 3.5.3 删除用户
+
+```yaml
+接口: DELETE /v1/superadmin/users/{user_id}
+说明: 删除用户（软删除）
+认证: Bearer Token (super_admin)
+
+响应:
+{
+  "code": 0,
+  "message": "用户已删除",
+  "data": null
+}
+```
+
+**业务规则**：
+- 超级管理员 (`super_admin`) 不能被删除
+- 删除为软删除，将用户状态设置为 `deleted`
+
+#### 3.5.4 用户状态说明
+
+| 状态 | 说明 |
+|------|------|
+| active | 正常，可登录 |
+| inactive | 未激活（注册后未验证） |
+| suspended | 已禁用，无法登录 |
+| deleted | 已删除（软删除） |
+
+#### 3.5.5 测试账号
+
+| 角色 | 邮箱 | 密码 | 说明 |
+|------|------|------|------|
+| 超级管理员 | superadmin@example.com | super123456 | 拥有所有权限 |
+| 管理员 | admin@example.com | admin123 | 无法访问用户管理接口 |
+
+### 3.6 管理员用户管理 (V1.7新增)
+
+管理员用户管理接口提供对普通用户的查询、更新、禁用和删除功能。只有 `admin` 或 `super_admin` 角色的用户可以访问这些接口。管理员只能管理非管理员用户。
+
+#### 3.6.1 获取用户列表
+
+```yaml
+接口: GET /v1/admin/users
+认证: Bearer Token (admin/super_admin)
+说明: 管理员获取用户列表（不包括超级管理员）
+
+查询参数:
+- page: 页码 (默认1)
+- page_size: 每页数量 (默认10)
+- keyword: 搜索关键词（用户名/邮箱）
+- user_type: 用户类型筛选 (owner/developer/user)
+- user_status: 用户状态筛选
+
+响应:
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [...],
+    "total": 4,
+    "page": 1,
+    "page_size": 10
+  }
+}
+```
+
+#### 3.6.2 更新用户信息
+
+```yaml
+接口: PUT /v1/admin/users/{user_id}
+认证: Bearer Token (admin/super_admin)
+说明: 管理员更新用户状态和VIP等级
+
+请求体 (JSON):
+{
+  "user_status": "suspended",  # 用户状态 (可选)
+  "vip_level": 1               # VIP等级 (可选)
+}
+
+响应 200:
+{
+  "code": 0,
+  "message": "success",
+  "data": {...}
+}
+
+响应 403:
+{
+  "code": 403,
+  "message": "无权修改管理员或超级管理员的账户"
+}
+```
+
+#### 3.6.3 删除用户
+
+```yaml
+接口: DELETE /v1/admin/users/{user_id}
+认证: Bearer Token (admin/super_admin)
+说明: 管理员删除用户
+
+响应 200:
+{
+  "code": 0,
+  "message": "用户已删除",
+  "data": {"id": "uuid"}
+}
+
+响应 403:
+{
+  "code": 403,
+  "message": "无权删除管理员或超级管理员账户"
+}
+```
+
+#### 3.6.4 权限说明
+
+| 用户类型 | 权限 | 可执行操作 |
+|----------|------|-----------|
+| super_admin | 所有权限 | 查询、更新、禁用、删除所有用户 |
+| admin | user:manage | 查询、更新、禁用、删除普通用户 |
+| 其他 | 受限 | 无权访问 |
+
+#### 3.6.5 管理员 vs 超级管理员
+
+| 功能 | 超级管理员 | 管理员 |
+|------|-----------|--------|
+| 查看所有用户 | ✅ | ❌ 不显示超级管理员 |
+| 修改用户类型/角色 | ✅ | ❌ |
+| 修改用户权限 | ✅ | ❌ |
+| 修改用户状态 | ✅ | ✅ 只能普通用户 |
+| 修改VIP等级 | ✅ | ✅ 只能普通用户 |
+| 删除用户 | ✅ | ❌ 不能删除管理员 |
 
 ### 3.4 适配器管理
 

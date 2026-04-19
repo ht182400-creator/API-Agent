@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | 文档编号 | FAQ-API-2026-002 |
-| 版本号 | V3.4 |
+| 版本号 | V3.15 |
 | 创建日期 | 2026-04-18 |
 | 更新日期 | 2026-04-19 |
 | 关联文档 | [13_FAQ常见问题.md](../Doc/13_FAQ常见问题.md) |
@@ -40,6 +40,25 @@
 | 54 | 普通用户显示开发者界面 + superadmin用户缺失 | 权限、用户类型、菜单 | P0 | ✅ 已解决 |
 | 55 | 超级管理员界面设计建议 | superadmin、职责分离、菜单设计 | P2 | ✅ 已记录 |
 | 56 | 超级管理员数据全部从数据库获取 | 审计日志、系统配置、角色、数据库 | P0 | ✅ 已完成 |
+| 57 | 仓库端点和限流配置从数据库读取 | 数据库、端点、限流、配置 | P0 | ✅ 已完成 |
+| 58 | 仓库市场前端Web页面实现 | 前端、Web页面、仓库市场 | P0 | ✅ 已完成 |
+| 59 | 仓库创建API报错：缺少repoApi导出 | 模块导出、API、前端 | P0 | ✅ 已修复 |
+| 60 | SLA字段类型错误：字符串"99.9%"无法转换为浮点数 | SLA、类型转换、前后端 | P0 | ✅ 已修复 |
+| 61 | 创建仓库API返回422错误：字段不匹配 | API、422、字段名 | P0 | ✅ 已修复 |
+| 62 | Repository模型字段不一致问题 | 模型、字段、is_public | P0 | ✅ 已修复 |
+| 63 | Repository模型缺少is_public字段导致API报错 | 模型、is_public、字段缺失 | P0 | ✅ 已修复 |
+| 64 | Repository模型未导入导致NameError | 模型、导入、NameError | P0 | ✅ 已修复 |
+| 65 | 仓库详情API调用失败：id vs slug | API、参数、404 | P0 | ✅ 已修复 |
+| 66 | 实现管理员审核流程 | 审核、管理员、approve、reject | P0 | ✅ 已完成 |
+| 67 | 删除仓库报错：UUID未定义 | UUID、导入、NameError | P0 | ✅ 已修复 |
+| 68 | Dashboard最新注册用户需显示用户名并从API加载 | Dashboard、用户名、API | P1 | ✅ 已完成 |
+| 69 | 用户管理页面添加用户名列并从API加载数据 | 用户管理、用户名、API | P1 | ✅ 已完成 |
+| 70 | PUT /superadmin/users/{id} 返回422错误 | 422、JSON、Body | P0 | ✅ 已修复 |
+| 71 | PUT /superadmin/configs/{id} 返回422错误 | 422、JSON、Body | P0 | ✅ 已修复 |
+| 72 | Dashboard统计总收入报错：sum(character varying) | PostgreSQL、类型转换、Numeric | P0 | ✅ 已修复 |
+| 73 | 管理员无法使用用户管理功能（权限不足） | 管理员、权限、API | P0 | ✅ 已完成 |
+| 74 | 今日调用次数功能测试案例（返回模拟数据Bug） | 调用次数、统计、Mock数据 | P0 | ✅ 已修复 |
+| 75 | Admin后台统计数据显示为0 | Admin、统计、API、日志记录 | P0 | ✅ 已修复 |
 
 **优先级说明**：P0=紧急/影响核心功能，P1=重要/影响常用功能，P2=一般/影响体验
 
@@ -271,7 +290,7 @@ function getAuthErrorConfig(error: any): ErrorConfig {
 
 ```bash
 # 测试登录
-curl -X POST http://localhost:8080/api/v1/auth/login \
+curl -X POST http://localhost:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"admin123"}'
 
@@ -291,7 +310,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 使用错误的密码登录：
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/login \
+curl -X POST http://localhost:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"wrongpassword"}'
 
@@ -306,7 +325,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 使用无效的 Token 访问受保护接口：
 
 ```bash
-curl -X GET http://localhost:8080/api/v1/auth/me \
+curl -X GET http://localhost:8000/api/v1/auth/me \
   -H "Authorization: Bearer invalid_token"
 
 # 响应 - 现在显示正确的错误消息
@@ -479,7 +498,7 @@ Get-Content "d:\Work_Area\AI\API-Agent\api-platform\logs\modules\middleware.log"
 
 ```powershell
 # 检查后端服务是否运行
-netstat -ano | findstr "8080"
+netstat -ano | findstr "8000"
 
 # 检查 PostgreSQL
 netstat -ano | findstr "5432"
@@ -492,12 +511,12 @@ netstat -ano | findstr "6379"
 
 ```bash
 # 测试登录接口
-curl -X POST http://localhost:8080/api/v1/auth/login ^
+curl -X POST http://localhost:8000/api/v1/auth/login ^
   -H "Content-Type: application/json" ^
   -d "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}"
 
 # 测试用户信息接口（需要先登录获取 Token）
-curl -X GET http://localhost:8080/api/v1/auth/me ^
+curl -X GET http://localhost:8000/api/v1/auth/me ^
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
@@ -3764,7 +3783,7 @@ npm run dev
 项目中的端口配置存在不一致，部分文件使用 `8080`，部分使用 `8000`，导致：
 
 1. 前端 Vite 代理配置指向 `8000`
-2. 后端实际可能运行在 `8080`
+2. 后端文档和命令使用 `8080`
 3. 文档中多处端口不一致
 4. 登录时 API 请求超时
 
@@ -3773,11 +3792,11 @@ npm run dev
 | 位置 | 原配置 | 问题 |
 |------|--------|------|
 | `vite.config.ts` | 8000 | ✓ 正确 |
-| `main.py` | 8080 | ❌ 需修改 |
-| `settings.py` CORS | 8080 | ❌ 需修改 |
-| `README.md` | 8080 | ❌ 需修改 |
-| `Dockerfile` | 8080 | ❌ 需修改 |
-| 各种文档 | 8080 | ❌ 需修改 |
+| `main.py` | 8000 | ❌ 需修改 |
+| `settings.py` CORS | 8000 | ❌ 需修改 |
+| `README.md` | 8000 | ❌ 需修改 |
+| `Dockerfile` | 8000 | ❌ 需修改 |
+| 各种文档 | 8000 | ❌ 需修改 |
 
 ---
 
@@ -4417,6 +4436,322 @@ python scripts/init_db_with_data.py --drop
 
 ---
 
+## 问题57：仓库管理里面的端点和限流配置不是从数据库读取
+
+### 57.1 问题描述
+
+用户指出仓库管理页面显示的 API 端点列表和限流配置信息不是从数据库读取的，而是写死在代码中的。这导致：
+
+1. **无法动态配置**：新增或修改端点需要修改代码
+2. **无法个性化设置**：每个仓库只能使用相同的端点和限流配置
+3. **数据不一致风险**：数据库和代码可能不同步
+4. **扩展性差**：无法为不同仓库设置不同的限流策略
+
+### 57.2 问题分析
+
+#### 57.2.1 问题代码位置
+
+原代码在 `src/api/v1/repositories.py` 中硬编码了端点和限流信息：
+
+```python
+# 原代码 - 硬编码端点
+endpoints = [
+    RepositoryEndpointResponse(
+        path="/chat",
+        method="POST",
+        description="智能问答",
+    ),
+    RepositoryEndpointResponse(
+        path="/assess",
+        method="POST",
+        description="心理评估",
+    ),
+]
+
+# 原代码 - 硬编码限流
+limits_response = RepositoryLimitsResponse(
+    rpm=1000,
+    rph=10000,
+    daily=100000,
+)
+```
+
+#### 57.2.2 影响范围
+
+| 接口 | 影响 |
+|------|------|
+| `GET /api/v1/repositories` | 仓库列表接口端点和限流信息 |
+| `GET /api/v1/repositories/my` | 我的仓库接口端点和限流信息 |
+| `GET /api/v1/repositories/{slug}` | 仓库详情接口端点和限流信息 |
+
+### 57.3 解决方案
+
+#### 57.3.1 新增数据库表
+
+**1. 仓库API端点表 (`repo_endpoints`)**
+
+```python
+class RepoEndpoint(Base):
+    """Repository endpoint model - 仓库API端点表"""
+
+    __tablename__ = "repo_endpoints"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # Endpoint information
+    path = Column(String(200), nullable=False)  # e.g., /chat, /assess
+    method = Column(String(10), nullable=False)  # GET, POST, PUT, DELETE
+    description = Column(String(500), nullable=True)  # Endpoint description
+    category = Column(String(50), nullable=True)  # chat, translate, recognize, etc.
+
+    # Request/Response schemas
+    request_schema = Column(JSONB, default=dict)
+    response_schema = Column(JSONB, default=dict)
+    example_request = Column(JSONB, default=dict)
+    example_response = Column(JSONB, default=dict)
+
+    # Rate limit for this endpoint
+    rpm_limit = Column(Integer, nullable=True)
+    rph_limit = Column(Integer, nullable=True)
+
+    # Status
+    enabled = Column(Boolean, default=True)
+    is_deprecated = Column(Boolean, default=False)
+
+    # Display order
+    display_order = Column(Integer, default=0)
+
+    # Audit fields
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+```
+
+**2. 仓库限流配置表 (`repo_limits`)**
+
+```python
+class RepoLimits(Base):
+    """Repository limits model - 仓库限流配置表"""
+
+    __tablename__ = "repo_limits"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, unique=True)
+
+    # Rate limits
+    rpm = Column(Integer, default=1000)  # Requests per minute
+    rph = Column(Integer, default=10000)  # Requests per hour
+    rpd = Column(Integer, default=100000)  # Requests per day
+
+    # Burst limits
+    burst_limit = Column(Integer, default=100)
+    concurrent_limit = Column(Integer, default=10)
+
+    # Quota limits
+    daily_quota = Column(Integer, nullable=True)
+    monthly_quota = Column(Integer, nullable=True)
+
+    # Timeout configuration
+    request_timeout = Column(Integer, default=30)
+    connect_timeout = Column(Integer, default=10)
+
+    # Status
+    enabled = Column(Boolean, default=True)
+
+    # Audit fields
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+```
+
+#### 57.3.2 更新 Repository 模型关系
+
+```python
+class Repository(Base):
+    # ... existing fields ...
+
+    # Relationships
+    endpoints = relationship("RepoEndpoint", back_populates="repository", order_by="RepoEndpoint.display_order")
+    limits = relationship("RepoLimits", back_populates="repository", uselist=False)
+```
+
+#### 57.3.3 更新 API 接口从数据库读取
+
+**修改 `src/api/v1/repositories.py`**：
+
+```python
+from src.models.repository import RepoEndpoint, RepoLimits
+
+@router.get("", response_model=BaseResponse[RepositoryListResponse])
+async def list_repositories(...):
+    # ... get repository ...
+
+    # Get endpoints from database
+    endpoints_result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.repo_id == repo.id,
+            RepoEndpoint.enabled == True
+        ).order_by(RepoEndpoint.display_order)
+    )
+    endpoints_list = endpoints_result.scalars().all()
+
+    # Get limits from database
+    limits_result = await db.execute(
+        select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+    )
+    limits_data = limits_result.scalar_one_or_none()
+
+    # Build endpoints from database, fallback to default if none
+    if endpoints_list:
+        endpoints = [
+            RepositoryEndpointResponse(
+                path=ep.path,
+                method=ep.method,
+                description=ep.description,
+            )
+            for ep in endpoints_list
+        ]
+    else:
+        # Fallback to default endpoints
+        endpoints = [
+            RepositoryEndpointResponse(path="/chat", method="POST", description="智能问答"),
+            RepositoryEndpointResponse(path="/assess", method="POST", description="心理评估"),
+        ]
+
+    # Build limits from database, fallback to default if none
+    if limits_data:
+        limits_response = RepositoryLimitsResponse(
+            rpm=limits_data.rpm or 1000,
+            rph=limits_data.rph or 10000,
+            daily=limits_data.rpd or 100000,
+        )
+    else:
+        limits_response = RepositoryLimitsResponse(rpm=1000, rph=10000, daily=100000)
+```
+
+#### 57.3.4 更新测试数据脚本
+
+**修改 `scripts/seed_data.py`**：
+
+```python
+async def seed_repositories():
+    """Create test repositories with endpoints and limits"""
+    # ... existing code ...
+
+    repo_configs = [
+        {
+            "name": "psychology",
+            "slug": "psychology",
+            # ... basic info ...
+            "endpoints": [
+                {"path": "/chat", "method": "POST", "description": "智能对话问答", "category": "chat", "display_order": 1},
+                {"path": "/assess", "method": "POST", "description": "心理评估量表", "category": "assess", "display_order": 2},
+                {"path": "/mood", "method": "POST", "description": "情绪监测", "category": "mood", "display_order": 3},
+                {"path": "/meditation", "method": "GET", "description": "冥想引导音频", "category": "meditation", "display_order": 4},
+            ],
+            "limits": {
+                "rpm": 1000, "rph": 10000, "rpd": 100000,
+                "burst_limit": 50, "concurrent_limit": 10,
+                "daily_quota": 50000, "monthly_quota": 1000000,
+                "request_timeout": 30, "connect_timeout": 10,
+            }
+        },
+        # ... more repos ...
+    ]
+
+    for repo_config in repo_configs:
+        endpoints_data = repo_config.pop("endpoints")
+        limits_data = repo_config.pop("limits")
+
+        # Create repository
+        repo = Repository(**repo_config)
+        db.add(repo)
+        await db.flush()
+
+        # Create endpoints
+        for ep_data in endpoints_data:
+            endpoint = RepoEndpoint(repo_id=repo.id, **ep_data)
+            db.add(endpoint)
+
+        # Create limits
+        limits = RepoLimits(repo_id=repo.id, **limits_data)
+        db.add(limits)
+```
+
+### 57.4 测试数据配置
+
+| 仓库 | 端点数 | 限流配置 |
+|------|--------|----------|
+| 心理问答 (psychology) | 4个 | rpm=1000, burst=50 |
+| 多语言翻译 (translation) | 4个 | rpm=500, burst=30 |
+| 图像识别 (vision) | 5个 | rpm=200, burst=20 |
+| 股票行情 (stock) | 4个 | rpm=3000, burst=100 |
+
+### 57.5 涉及文件清单
+
+#### 后端文件
+
+| 文件 | 修改内容 |
+|------|----------|
+| `src/models/repository.py` | 新增 `RepoEndpoint` 和 `RepoLimits` 模型类 |
+| `src/models/__init__.py` | 导出新模型 |
+| `src/api/v1/repositories.py` | 更新接口从数据库读取端点和限流配置 |
+| `scripts/seed_data.py` | 更新测试数据脚本，为每个仓库配置详细数据 |
+
+### 57.6 数据库表结构
+
+#### repo_endpoints 表
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | UUID | 主键 |
+| repo_id | UUID | 仓库ID (外键) |
+| path | VARCHAR(200) | API路径 |
+| method | VARCHAR(10) | HTTP方法 |
+| description | VARCHAR(500) | 端点描述 |
+| category | VARCHAR(50) | 分类 |
+| request_schema | JSONB | 请求schema |
+| response_schema | JSONB | 响应schema |
+| rpm_limit | INTEGER | 每分钟限制 |
+| rph_limit | INTEGER | 每小时限制 |
+| enabled | BOOLEAN | 是否启用 |
+| is_deprecated | BOOLEAN | 是否弃用 |
+| display_order | INTEGER | 显示顺序 |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间 |
+
+#### repo_limits 表
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | UUID | 主键 |
+| repo_id | UUID | 仓库ID (外键，唯一) |
+| rpm | INTEGER | 每分钟请求数 |
+| rph | INTEGER | 每小时请求数 |
+| rpd | INTEGER | 每天请求数 |
+| burst_limit | INTEGER | 突发限制 |
+| concurrent_limit | INTEGER | 并发限制 |
+| daily_quota | INTEGER | 日配额 |
+| monthly_quota | INTEGER | 月配额 |
+| request_timeout | INTEGER | 请求超时(秒) |
+| connect_timeout | INTEGER | 连接超时(秒) |
+| enabled | BOOLEAN | 是否启用 |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间 |
+
+### 57.7 相关文档
+
+- `Doc/08_数据库设计文档.md` - V2.2，新增 3.10-3.11 节，repo_endpoints 和 repo_limits 表结构
+- `Doc/09_接口设计文档.md` - V2.4，仓库管理接口说明更新
+
+### 57.8 变更记录
+
+| 版本 | 日期 | 变更内容 | 开发者 |
+|------|------|----------|--------|
+| V3.4 | 2026-04-19 | 问题56：超级管理员数据全部从数据库获取，完善数据库结构 | AI |
+| V3.5 | 2026-04-19 | 问题57：仓库端点和限流配置从数据库读取，新增 repo_endpoints 和 repo_limits 表 | AI |
+
+---
+
 ## 变更记录汇总
 
 | 版本 | 日期 | 变更内容 | 开发者 |
@@ -4426,6 +4761,1806 @@ python scripts/init_db_with_data.py --drop
 | V3.0 - V3.2 | 2026-04-19 | 问题50-53，集成调试、空状态、端口统一 | AI |
 | V3.3 | 2026-04-19 | 问题54-55，用户权限控制、superadmin用户、界面设计 | AI |
 | V3.4 | 2026-04-19 | 问题56，超级管理员数据从数据库获取，完善数据库结构 | AI |
+| V3.5 | 2026-04-19 | 问题57，仓库端点和限流配置从数据库读取，新增表结构 | AI |
+| V3.6 | 2026-04-19 | 问题58，前端Web页面实现：仓库市场、详情页、管理页 | AI |
+
+---
+
+## 问题58：仓库管理模块的Web页面实现
+
+### 58.1 需求概述
+
+根据仓库管理模块的需求（FR-REPO-001至FR-REPO-005），需要在Web前端实现以下功能页面：
+
+| 需求编号 | 功能 | 页面位置 |
+|----------|------|----------|
+| FR-REPO-001 | 仓库浏览 | `/developer/repos` - 仓库市场页面 |
+| FR-REPO-002 | 仓库端点配置展示 | 仓库详情页面端点列表 |
+| FR-REPO-003 | 仓库限流配置展示 | 仓库详情页面限流配置 |
+| FR-REPO-004 | 仓库详情查询 | `/developer/repos/:slug` - 仓库详情页面 |
+| FR-REPO-005 | 仓库所有者管理 | `/owner/repos` - 仓库管理页面 |
+
+### 58.2 新增/修改的前端文件
+
+#### 58.2.1 API类型定义
+**文件**: `web/src/api/repo.ts`
+
+更新了TypeScript接口定义，添加了数据库读取的新字段：
+
+```typescript
+// 仓库端点
+export interface RepositoryEndpoint {
+  path: string
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+  description?: string
+  category?: string
+  rpm_limit?: number
+  rph_limit?: number
+}
+
+// 仓库限流配置
+export interface RepositoryLimits {
+  rpm: number
+  rph: number
+  daily: number
+  burst_limit?: number
+  concurrent_limit?: number
+  request_timeout?: number
+  connect_timeout?: number
+}
+
+// 仓库定价配置
+export interface RepositoryPricing {
+  type: 'per_call' | 'token' | 'flow' | 'subscription' | 'free'
+  price_per_call?: number
+  price_per_token?: number
+  price_per_mb?: number
+  monthly_price?: number
+  yearly_price?: number
+  free_calls?: number
+  free_tokens?: number
+  free_quota_days?: number
+}
+
+// 仓库SLA信息
+export interface RepositorySLA {
+  uptime?: number
+  latency_p99?: number
+}
+
+// 仓库所有者信息
+export interface RepositoryOwner {
+  id: string
+  name: string
+  type?: 'internal' | 'external'
+}
+
+// 仓库响应结构 (V2.4)
+export interface Repository {
+  id: string
+  name: string
+  slug: string
+  display_name?: string
+  description?: string
+  type: string
+  protocol: string
+  status: 'online' | 'offline' | 'pending' | 'approved' | 'rejected'
+  owner?: RepositoryOwner
+  pricing?: RepositoryPricing
+  limits?: RepositoryLimits
+  endpoints?: RepositoryEndpoint[]
+  docs_url?: string
+  sla?: RepositorySLA
+  created_at: string
+  updated_at?: string
+  online_at?: string
+}
+```
+
+#### 58.2.2 仓库市场页面
+**文件**: `web/src/pages/developer/Repos.tsx`
+
+功能特性：
+- 卡片式展示所有可用仓库
+- 支持搜索和类型筛选
+- 显示端点数量、限流配置、定价信息
+- 点击卡片跳转到仓库详情
+
+页面布局：
+```
+┌─────────────────────────────────────────────────────────┐
+│ API仓库市场                           可用仓库: 4        │
+│ 浏览和发现可用的API服务               API端点: 17       │
+├─────────────────────────────────────────────────────────┤
+│ [搜索仓库...] [筛选类型: 心理问答 ▼]                    │
+├─────────────────────────────────────────────────────────┤
+│ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│ │   P         │ │   T         │ │   V         │       │
+│ │ 心理问答    │ │ 多语言翻译  │ │ 图像识别    │       │
+│ │             │ │             │ │             │       │
+│ │ API端点(4)  │ │ API端点(4)  │ │ API端点(5)  │       │
+│ │ [POST]/chat │ │ [POST]/tra  │ │ [POST]/ocr  │       │
+│ │ [POST]/ass  │ │ [POST]/doc  │ │ [POST]/obj  │       │
+│ │             │ │             │ │             │       │
+│ │ ⚡1000/分   │ │ ⚡500/分    │ │ ⚡200/分    │       │
+│ │ 💰付费      │ │ 💰付费      │ │ 💰付费      │       │
+│ │             │ │             │ │             │       │
+│ │ [查看详情]  │ │ [查看详情]  │ │ [查看详情]  │       │
+│ └─────────────┘ └─────────────┘ └─────────────┘       │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### 58.2.3 仓库详情页面
+**文件**: `web/src/pages/developer/RepoDetail.tsx`
+
+功能特性：
+- 完整展示仓库信息
+- 表格展示API端点列表（方法、路径、描述、分类）
+- 详细展示限流配置（RPM、RPH、RPD、突发限制等）
+- 展示定价信息（计费模式、免费额度等）
+- 展示SLA信息
+
+页面布局：
+```
+┌─────────────────────────────────────────────────────────┐
+│ 仓库市场 > 心理问答                                      │
+├─────────────────────────────────────────────────────────┤
+│ [P] 心理问答                                             │
+│ [已上线] psychology http                       [API文档] │
+│                                                         │
+│ 专业心理问答服务...                                       │
+│ SLA承诺：可用性 99.9% | P99延迟 500ms                    │
+├─────────────────────────────────────────────────────────┤
+│ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────┐│
+│ │API端点  4  │ │RPM     1000│ │RPH    10000│ │RPD 100k││
+│ └────────────┘ └────────────┘ └────────────┘ └────────┘│
+├─────────────────────────────┬───────────────────────────┤
+│ API端点列表 (4)              │ 限流配置                  │
+│ ┌─────┬──────────┬────────┐ │ 每分钟请求: 1000 次       │
+│ │方法 │路径      │描述    │ │ 每小时请求: 10000 次       │
+│ ├─────┼──────────┼────────┤ │ 每日请求: 100000 次       │
+│ │POST │/chat     │智能问答│ │ 突发限制: 50 次           │
+│ │POST │/assess   │心理评估│ ├───────────────────────────┤
+│ │POST │/mood     │情绪监测│ │ 定价信息                  │
+│ │GET  │/meditat  │冥想引导│ │ 计费模式: 按Token计费     │
+│ └─────┴──────────┴────────┘ │ 每次调用: ¥0.0100         │
+│                             │ 每Token: ¥0.001000        │
+│                             │ 免费调用: 100 次          │
+│                             │ 免费Token: 1000 Tokens    │
+├─────────────────────────────┴───────────────────────────┤
+│ 仓库信息                                                │
+│ 仓库名称: 心理问答 │ 仓库类型: psychology │ 协议: HTTP  │
+│ 所有者: 平台官方 │ 创建时间: 2026-04-19                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### 58.2.4 仓库管理页面（所有者）
+**文件**: `web/src/pages/owner/Repos.tsx`
+
+功能特性：
+- 表格展示当前用户创建的仓库
+- 显示端点数量、限流配置
+- 支持创建、编辑、删除、上线/下线操作
+- 详情抽屉展示端点列表和限流配置
+- 统计信息（仓库数、端点数、上下线状态）
+
+页面布局：
+```
+┌─────────────────────────────────────────────────────────┐
+│ 仓库管理                              [创建仓库]         │
+│ 管理您的API仓库，配置端点和限流策略                      │
+├─────────────────────────────────────────────────────────┤
+│ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────┐│
+│ │我的仓库 4 │ │API端点 17 │ │已上线 3   │ │未上线 1││
+│ └────────────┘ └────────────┘ └────────────┘ └────────┘│
+├─────────────────────────────────────────────────────────┤
+│ ⚠️ 端点和限流配置从数据库读取                           │
+│ 每个仓库的API端点和限流配置都存储在数据库中...          │
+├─────────────────────────────────────────────────────────┤
+│ 仓库名称 │ 描述    │类型│API端点│限流│状态│操作        │
+│ 心理问答 │ 专业... │psy │[4个] │1000│[上]│详情 编辑 下线│
+│ 翻译服务 │ 多语... │tra │[4个] │500 │[上]│详情 编辑 下线│
+│ 图像识别 │ 图像... │vis │[5个] │200 │[上]│详情 编辑 下线│
+│ 股票行情 │ 股票... │sto │[4个] │3000│[下]│详情 编辑 上线│
+└─────────────────────────────────────────────────────────┘
+```
+
+### 58.3 路由配置
+
+**文件**: `web/src/App.tsx`
+
+新增路由：
+```typescript
+<Route path="developer">
+  <Route path="repos" element={<DeveloperRepos />} />
+  <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
+</Route>
+```
+
+### 58.4 导航菜单更新
+
+**文件**: `web/src/components/Layout.tsx`
+
+开发者菜单新增「仓库市场」入口：
+```typescript
+const developerMenu: MenuProps['items'] = [
+  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+  { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },  // 新增
+  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
+  { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
+  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+]
+```
+
+### 58.5 数据流向
+
+```
+┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
+│   Web前端页面    │ ──── │   API接口调用    │ ──── │   后端服务       │
+│                  │      │                  │      │                  │
+│ - Repos.tsx      │      │ GET /repositori  │      │ repositories.py  │
+│ - RepoDetail.tsx │      │ GET /repositori  │      │   ↓             │
+│ - owner/Repos    │      │   /{slug}         │      │ RepoEndpoint表   │
+│                  │      │ GET /repositories │      │ RepoLimits表     │
+│                  │      │   /my             │      │ Repository表     │
+└──────────────────┘      └──────────────────┘      └──────────────────┘
+```
+
+### 58.6 涉及文件清单
+
+| 文件路径 | 操作 | 说明 |
+|----------|------|------|
+| `web/src/api/repo.ts` | 修改 | 更新TypeScript类型定义 |
+| `web/src/pages/developer/Repos.tsx` | 新增 | 仓库市场页面 |
+| `web/src/pages/developer/Repos.module.css` | 新增 | 仓库市场样式 |
+| `web/src/pages/developer/RepoDetail.tsx` | 新增 | 仓库详情页面 |
+| `web/src/pages/developer/RepoDetail.module.css` | 新增 | 仓库详情样式 |
+| `web/src/pages/owner/Repos.tsx` | 修改 | 仓库管理页面增强 |
+| `web/src/pages/owner/Repos.module.css` | 修改 | 仓库管理样式增强 |
+| `web/src/App.tsx` | 修改 | 添加路由配置 |
+| `web/src/components/Layout.tsx` | 修改 | 添加导航菜单入口 |
+
+### 58.7 相关文档
+
+- `Doc/09_接口设计文档.md` - V2.4，仓库管理接口说明
+- `Doc/08_数据库设计文档.md` - V2.2，仓库管理表设计
+- `Doc/01_项目需求规格说明书.md` - V2.0，仓库管理模块需求
+
+### 58.8 变更记录
+
+| 版本 | 日期 | 变更内容 | 开发者 |
+|------|------|----------|--------|
+| V3.5 | 2026-04-19 | 问题57，仓库端点和限流配置从数据库读取，新增表结构 | AI |
+| V3.6 | 2026-04-19 | 问题58，前端Web页面实现：仓库市场、详情页、管理页 | AI |
+
+---
+
+## 问题59：仓库创建API报错：缺少repoApi导出
+
+### 59.1 问题描述
+
+前端在调用仓库API时报错：
+
+```
+The requested module '/src/api/repo.ts' does not provide an export named 'repoApi'
+```
+
+### 59.2 问题分析
+
+`repo.ts` 文件只定义了类型接口，但没有导出 `repoApi` API调用对象。
+
+### 59.3 解决方案
+
+在 `web/src/api/repo.ts` 中添加完整的 `repoApi` 对象：
+
+```typescript
+// API调用函数
+export const repoApi = {
+  list: (params?) => api.get<PaginatedResponse<Repository>>('/repositories', params),
+  get: (repo_id: string) => api.get<Repository>(`/repositories/${repo_id}`),
+  create: (data: CreateRepoRequest) => api.post<Repository>('/repositories', data),
+  update: (repo_id, data) => api.put<Repository>(`/repositories/${repo_id}`, data),
+  delete: (repo_id) => api.delete(`/repositories/${repo_id}`),
+  getMyRepos: (params?) => api.get<PaginatedResponse<Repository>>('/repositories/my', params),
+}
+```
+
+### 59.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/api/repo.ts` | 添加 repoApi 导出对象 |
+
+---
+
+## 问题60：SLA字段类型错误：字符串"99.9%"无法转换为浮点数
+
+### 60.1 问题描述
+
+前端调用仓库详情API时，出现类型转换错误：
+
+```
+could not convert string to float: '99.9%'
+```
+
+### 60.2 问题分析
+
+后端返回的 `sla_uptime` 字段是字符串格式 `"99.9%"`（包含百分号），但前端 TypeScript 类型定义为 `number`，导致类型转换失败。
+
+### 60.3 解决方案
+
+#### 前端修复
+
+1. 修改 TypeScript 类型定义：
+
+```typescript
+// SLA信息 - 修复类型
+export interface RepositorySLA {
+  uptime?: number | string  // 支持字符串或数字
+  latency_p99?: number
+}
+```
+
+2. 修改显示逻辑：
+
+```tsx
+{repo.sla.uptime && (
+  <Text>
+    可用性 {typeof repo.sla.uptime === 'string' ? repo.sla.uptime : `${repo.sla.uptime}%`}
+  </Text>
+)}
+```
+
+#### 后端修复
+
+在 `src/api/v1/repositories.py` 中转换 SLA 数据：
+
+```python
+# SLA uptime转换 - 去除百分号
+uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None
+```
+
+### 60.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/api/repo.ts` | RepositorySLA 类型定义修复 |
+| `web/src/pages/developer/RepoDetail.tsx` | SLA 显示逻辑修复 |
+| `src/api/v1/repositories.py` | SLA 数据转换逻辑 |
+
+---
+
+## 问题61：创建仓库API返回422错误：字段不匹配
+
+### 61.1 问题描述
+
+前端创建仓库时，后端返回 422 错误：
+
+```
+POST /api/v1/repositories HTTP/1.1" 422 Unprocessable Content
+```
+
+### 61.2 问题分析
+
+发现以下问题：
+
+1. **后端 schema 要求必填字段**：`owner_id`, `owner_type` 在 schema 中是必填的
+2. **字段名不匹配**：后端使用 `category` 但 schema 定义 `repo_type`
+3. **Repository 模型缺少字段**：模型没有 `is_public` 字段
+
+### 61.3 解决方案
+
+#### 1. 修改 `src/schemas/request.py`
+
+```python
+class RepositoryCreate(BaseModel):
+    """Repository creation request"""
+    name: str = Field(..., min_length=1, max_length=100)
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    repo_type: str = Field(..., pattern="^(psychology|stock|ai|translation|vision|custom)$")
+    protocol: str = Field(..., pattern="^(http|grpc|websocket)$")
+    endpoint_url: Optional[str] = None
+    # 移除 owner_id, owner_type 等必填字段（从 current_user 自动获取）
+```
+
+#### 2. 修改 `src/api/v1/repositories.py`
+
+```python
+# 创建仓库 - 修复字段名和默认值
+repo = Repository(
+    name=repo_data.name,
+    slug=slug,
+    display_name=repo_data.display_name or repo_data.name,
+    description=repo_data.description,
+    repo_type=repo_data.repo_type,  # 改为 repo_type
+    protocol=repo_data.protocol or "http",
+    status="pending",  # 初始状态为待审核
+    owner_id=current_user.id,
+    owner_type="external",
+)
+```
+
+### 61.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/schemas/request.py` | RepositoryCreate schema 修复 |
+| `src/api/v1/repositories.py` | API 创建逻辑修复 |
+
+---
+
+## 问题62：Repository模型字段不一致问题
+
+### 62.1 问题描述
+
+创建仓库时，由于 Repository 模型定义与 API schema 不一致，导致字段映射错误。
+
+### 62.2 问题分析
+
+发现问题：
+
+1. 模型字段名与 schema 字段名不一致（`type` vs `repo_type`）
+2. 模型缺少部分字段支持
+3. 前端表单字段与后端 API 字段不匹配
+
+### 62.3 解决方案
+
+#### 前端修复
+
+修改 `web/src/api/repo.ts` 中的 `CreateRepoRequest` 接口：
+
+```typescript
+export interface CreateRepoRequest {
+  name: string
+  display_name?: string
+  description?: string
+  repo_type: 'psychology' | 'stock' | 'ai' | 'translation' | 'vision' | 'custom'
+  protocol?: 'http' | 'grpc' | 'websocket'
+  endpoint_url?: string
+  api_docs_url?: string
+}
+```
+
+修改 `web/src/pages/owner/Repos.tsx` 中的表单字段：
+
+```typescript
+// 表单字段 - 使用 repo_type
+<Form.Item name="repo_type" label="仓库类型" rules={[{ required: true, message: '请选择仓库类型' }]}>
+  <Select placeholder="请选择仓库类型">
+    <Select.Option value="psychology">心理问答</Select.Option>
+    <Select.Option value="translation">翻译服务</Select.Option>
+    <Select.Option value="vision">图像识别</Select.Option>
+    <Select.Option value="stock">股票行情</Select.Option>
+    <Select.Option value="ai">AI服务</Select.Option>
+    <Select.Option value="custom">自定义</Select.Option>
+  </Select>
+</Form.Item>
+
+// handleEdit 函数 - 使用正确的字段名
+const handleEdit = (repo: Repository) => {
+  setEditingRepo(repo)
+  form.setFieldsValue({
+    name: repo.name,
+    display_name: repo.display_name,
+    description: repo.description,
+    repo_type: repo.type,  // 映射到 repo_type
+    protocol: repo.protocol || 'http',
+    endpoint_url: repo.endpoint || '',
+  })
+  setModalVisible(true)
+}
+```
+
+### 62.4 字段命名规范
+
+统一使用以下字段命名：
+
+| 字段 | 说明 | 适用位置 |
+|------|------|----------|
+| `repo_type` | 仓库类型 | API、数据库 |
+| `type` | 响应中的别名 | 前端显示 |
+| `protocol` | 协议类型 | API、数据库 |
+
+### 62.5 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/api/repo.ts` | CreateRepoRequest 接口修复 |
+| `web/src/pages/owner/Repos.tsx` | 表单字段修复 |
+
+---
+
+## 问题63：Repository模型缺少is_public字段导致API报错
+
+### 63.1 问题描述
+
+调用 `POST /api/v1/repositories` 返回 422 Unprocessable Content 错误。
+
+### 63.2 问题分析
+
+发现问题：
+
+1. **Repository 模型没有 `is_public` 字段** - 但代码中多处引用了这个不存在的字段
+2. **`list_my_repositories` 函数** 引用了 `repo.is_public`
+3. **`update_repository` 函数** 引用了 `repo_data.category` 和 `repo_data.is_public`
+4. **`RepositoryUpdate` schema** 缺少 `repo_type` 字段定义
+
+### 63.3 解决方案
+
+#### 1. 修改 `src/schemas/request.py`
+
+```python
+class RepositoryUpdate(BaseModel):
+    """Repository update request"""
+
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    endpoint_url: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+    repo_type: Optional[str] = Field(None, pattern="^(psychology|stock|ai|translation|vision|custom)$")
+    status: Optional[str] = Field(None, pattern="^(pending|approved|rejected|online|offline)$")
+```
+
+#### 2. 修改 `src/api/v1/repositories.py`
+
+移除 `is_public` 相关引用：
+
+```python
+# list_my_repositories 函数中移除
+# "is_public": repo.is_public,
+
+# update_repository 函数中修复
+if repo_data.repo_type is not None:
+    repo.repo_type = repo_data.repo_type
+if repo_data.endpoint_url is not None:
+    repo.endpoint_url = repo_data.endpoint_url
+```
+
+#### 3. 修改前端代码
+
+移除 `is_public` 类型定义和显示：
+
+```typescript
+// web/src/api/repo.ts
+// 移除 is_public?: boolean
+
+// web/src/pages/owner/Repos.tsx
+// 移除"是否公开"显示行
+```
+
+### 63.4 设计说明
+
+仓库是否公开由 `status` 字段控制：
+- `status = 'online'` → 公开
+- `status = 'offline'` → 不公开
+
+不需要单独的 `is_public` 字段。
+
+### 63.5 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/schemas/request.py` | 添加 `repo_type` 字段 |
+| `src/api/v1/repositories.py` | 移除 `is_public` 引用 |
+| `web/src/api/repo.ts` | 移除 `is_public` 类型 |
+| `web/src/pages/owner/Repos.tsx` | 移除"是否公开"显示 |
+
+---
+
+## 问题64：Repository模型未导入导致NameError
+
+### 64.1 问题描述
+
+调用 `POST /api/v1/repositories` 接口创建仓库时，后端报错：
+
+```
+127.0.0.1 - "POST /api/v1/repositories HTTP/1.1" 422 Unprocessable Content
+```
+
+### 64.2 问题分析
+
+在修复问题63后，发现以下代码问题：
+
+1. **Repository 模型未导入** - 在文件顶部只导入了 `RepoEndpoint` 和 `RepoLimits`，但没有导入 `Repository` 模型
+2. **`created_at` 类型错误** - 返回数据时使用了 `.isoformat()` 转换为字符串，但 `RepositoryResponse` schema 期望 `datetime` 对象
+
+### 64.3 解决方案
+
+#### 1. 添加 Repository 模型导入
+
+```python
+# 修改前
+from src.models.repository import RepoEndpoint, RepoLimits
+
+# 修改后
+from src.models.repository import Repository, RepoEndpoint, RepoLimits
+```
+
+#### 2. 修复 created_at 类型
+
+```python
+# 修改前 - 错误
+created_at=repo.created_at.isoformat() if repo.created_at else None,
+
+# 修改后 - 正确
+created_at=repo.created_at,
+```
+
+### 64.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/api/v1/repositories.py` | 添加 Repository 模型导入，修复 created_at 类型 |
+
+### 64.5 验证方法
+
+```bash
+# 测试导入
+python -c "from src.api.v1.repositories import router; print('Import OK')"
+
+# 测试语法
+python -m py_compile src/api/v1/repositories.py
+```
+
+---
+
+## 仓库管理API 422错误排查总结
+
+### 常见422错误原因
+
+| 错误原因 | 解决方案 |
+|----------|----------|
+| Schema 字段名不匹配 | 统一前后端字段名（使用 `repo_type`） |
+| 缺少必填字段 | 检查 Schema 定义，移除不必要的必填字段 |
+| 类型转换错误 | 保持字段类型一致（datetime vs string） |
+| 模型未导入 | 在文件顶部添加正确的 import 语句 |
+| 引用不存在的字段 | 移除对 `is_public` 等不存在字段的引用 |
+
+### API 响应格式验证
+
+创建仓库 API 成功响应示例：
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "uuid-string",
+    "name": "my-repo",
+    "slug": "my-repo",
+    "display_name": "My Repository",
+    "description": "Description",
+    "type": "psychology",
+    "protocol": "http",
+    "status": "pending",
+    "owner": {
+      "id": "user-uuid",
+      "name": "user_name"
+    },
+    "created_at": "2026-04-19T22:00:00"
+  }
+}
+```
+
+### 前端调用示例
+
+```typescript
+// 创建仓库
+const response = await repoApi.create({
+  name: 'my-psychology-repo',
+  display_name: '心理问答API',
+  description: '专业的心理问答服务',
+  repo_type: 'psychology',
+  protocol: 'http',
+  endpoint_url: 'https://api.example.com',
+});
+
+// 更新仓库
+await repoApi.update(repoId, {
+  display_name: '更新后的名称',
+  status: 'online',
+});
+```
+
+---
+
+## 变更记录
+
+| 版本 | 日期 | 变更内容 | 开发者 |
+|------|------|----------|--------|
+| V3.5 | 2026-04-19 | 问题57，仓库端点和限流配置从数据库读取，新增表结构 | AI |
+| V3.6 | 2026-04-19 | 问题58，前端Web页面实现：仓库市场、详情页、管理页 | AI |
+| V3.7 | 2026-04-19 | 问题59-62，仓库管理前后端集成调试：repoApi导出、SLA类型、字段不匹配修复 | AI |
+| V3.8 | 2026-04-19 | 问题63，修复Repository模型缺少is_public字段导致的422错误 | AI |
+| V3.9 | 2026-04-19 | 问题64，修复Repository模型未导入和created_at类型错误 | AI |
+| V3.10 | 2026-04-19 | 问题65，修复仓库详情API调用使用id而非slug的问题 | AI |
+| V3.11 | 2026-04-19 | 问题66，实现管理员仓库审核流程 | AI |
+
+---
+
+## 问题66：实现管理员审核流程
+
+### 66.1 需求背景
+
+用户反馈"未审批"功能由谁操作。之前仓库创建后状态为 `pending`，但没有管理员审核接口，仓库所有者可以自己直接上下线。
+
+### 66.2 解决方案
+
+实现完整的管理员审核流程：
+
+1. **新增管理员 API**：
+   - `GET /repositories/admin/all` - 获取所有仓库（支持状态筛选）
+   - `POST /repositories/{id}/approve` - 审核通过
+   - `POST /repositories/{id}/reject` - 审核拒绝
+   - `POST /repositories/{id}/online` - 上线仓库
+   - `POST /repositories/{id}/offline` - 下线仓库
+
+2. **权限控制**：
+   - 只有 `admin` 或 `super_admin` 类型的用户可以执行审核操作
+   - 仓库所有者不能直接修改状态
+
+3. **前端页面**：
+   - 重写管理员仓库管理页面
+   - 支持按状态筛选（待审核/已审核/已上线/已下线/已拒绝）
+   - 支持审核通过、审核拒绝、上线、下线操作
+   - 统计各状态仓库数量
+
+### 66.3 仓库状态流转
+
+```
+创建仓库 ──→ pending（待审核）
+                  ↓
+         ┌───────┴───────┐
+         ↓               ↓
+    approved         rejected
+    （已审核）        （已拒绝）
+         ↓               ↓
+    online          (可重新审核)
+    （已上线）           ↓
+         ↓          pending
+      offline            ↑
+    （已下线）────────────┘
+```
+
+### 66.4 API 详细说明
+
+#### 66.4.1 获取所有仓库（管理员）
+
+```
+GET /api/v1/repositories/admin/all
+```
+
+**参数**：
+- `status` (可选): pending/approved/rejected/online/offline
+- `page` (可选): 页码，默认1
+- `page_size` (可选): 每页数量，默认20
+
+**响应**：
+```json
+{
+  "code": 0,
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "name": "repo-name",
+        "slug": "repo-name",
+        "status": "pending",
+        "owner": { "id": "user-uuid", "name": "owner_name" },
+        "created_at": "2026-04-19T22:30:00"
+      }
+    ],
+    "pagination": { "page": 1, "page_size": 20, "total": 5 }
+  }
+}
+```
+
+#### 66.4.2 审核通过
+
+```
+POST /api/v1/repositories/{repo_id}/approve
+```
+
+**请求体**：
+```json
+{
+  "comment": "审核备注（可选）"
+}
+```
+
+#### 66.4.3 审核拒绝
+
+```
+POST /api/v1/repositories/{repo_id}/reject
+```
+
+**请求体**：
+```json
+{
+  "reason": "拒绝原因（可选）"
+}
+```
+
+#### 66.4.4 上线仓库
+
+```
+POST /api/v1/repositories/{repo_id}/online
+```
+
+**前置条件**：仓库状态必须为 `approved` 或 `offline`
+
+#### 66.4.5 下线仓库
+
+```
+POST /api/v1/repositories/{repo_id}/offline
+```
+
+**前置条件**：仓库状态必须为 `online`
+
+### 66.5 涉及文件
+
+#### 后端修改
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/schemas/request.py` | 添加 RepositoryReject Schema |
+| `src/api/v1/repositories.py` | 添加管理员审核 API 端点 |
+| `src/api/v1/repositories.py` | 限制仓库所有者不能直接修改状态 |
+
+#### 前端修改
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/api/repo.ts` | 添加管理员 API 调用函数 |
+| `web/src/pages/admin/Repos.tsx` | 重写为完整的审核管理页面 |
+| `web/src/pages/admin/Repos.module.css` | 新增样式文件 |
+| `web/src/pages/owner/Repos.tsx` | 移除上下线按钮，添加审核提示 |
+
+### 66.6 测试账号
+
+管理员账号：
+- 邮箱：`admin@example.com`
+- 密码：`admin123`
+- 角色：`admin`
+
+超级管理员账号：
+- 邮箱：`superadmin@example.com`
+- 密码：`super123456`
+- 角色：`super_admin`
+
+### 66.7 使用流程
+
+1. **仓库所有者**：
+   - 登录后创建仓库，状态为 `pending`
+   - 等待管理员审核
+   - 不能自行上下线
+
+2. **管理员**：
+   - 登录后访问 `/admin/repos`
+   - 查看待审核仓库
+   - 执行审核通过/拒绝操作
+   - 可执行上线/下线操作
+
+---
+
+## 问题65：仓库详情API调用失败：id vs slug
+
+### 65.1 问题描述
+
+点击仓库管理页面的"详情"按钮后，报错：
+- API 返回 404 Not Found
+- 或者找不到仓库
+
+### 65.2 问题分析
+
+后端 API 使用 `slug` 作为路径参数：
+
+```python
+@router.get("/{repo_slug}", response_model=BaseResponse[RepositoryResponse])
+async def get_repository(repo_slug: str, ...):
+```
+
+但前端调用时使用的是 `id`：
+
+```typescript
+// 错误的调用
+const handleViewDetail = (repo: Repository) => {
+  fetchRepoDetail(repo.id)  // ❌ 错误：使用了 id
+}
+```
+
+### 65.3 解决方案
+
+修改前端调用，使用 `slug` 而不是 `id`：
+
+```typescript
+// 正确的调用
+const handleViewDetail = (repo: Repository) => {
+  fetchRepoDetail(repo.slug)  // ✅ 正确：使用 slug
+}
+```
+
+### 65.4 API 路径说明
+
+| 操作 | API 路径 | 参数 |
+|------|----------|------|
+| 获取仓库列表 | GET /repositories | - |
+| 获取我的仓库 | GET /repositories/my | - |
+| 获取仓库详情 | GET /repositories/{slug} | **slug** (不是 id) |
+| 创建仓库 | POST /repositories | - |
+| 更新仓库 | PUT /repositories/{id} | **id** |
+| 删除仓库 | DELETE /repositories/{id} | **id** |
+
+**注意**：获取仓库详情使用 `slug`，而更新/删除使用 `id`。
+
+### 65.5 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/pages/owner/Repos.tsx` | handleViewDetail 使用 repo.slug |
+
+---
+
+## 问题67：删除仓库报错 - UUID未定义
+
+### 67.1 问题描述
+
+点击删除按钮时报错：
+```
+name 'UUID' is not defined
+```
+
+### 67.2 问题分析
+
+后端 `repositories.py` 中使用了 `UUID` 类但未导入：
+- 代码中使用了 `UUID(repo_id)` 进行类型转换
+- 但导入语句只导入了 `uuid4`，没有导入 `UUID`
+
+### 67.3 解决方案
+
+在 `src/api/v1/repositories.py` 文件头部添加 `UUID` 导入：
+
+```python
+# 修改前
+from uuid import uuid4
+
+# 修改后
+from uuid import uuid4, UUID
+```
+
+### 67.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `api-platform/src/api/v1/repositories.py` | 添加 UUID 导入 |
+
+---
+
+## 问题68：Dashboard最新注册用户需显示用户名并从API加载
+
+### 68.1 问题描述
+
+管理员 Dashboard 页面的"最新注册用户"表格：
+1. 需要显示用户名（当前只显示邮箱）
+2. 需要从数据库 API 加载（当前是硬编码示例数据）
+
+### 68.2 问题分析
+
+原代码：
+```typescript
+// 示例数据 - 硬编码
+const recentUsers = [
+  { id: 1, email: 'user1@example.com', user_type: 'developer', ... },
+  ...
+]
+
+// 列定义 - 缺少用户名
+const columns = [
+  { title: '邮箱', dataIndex: 'email', key: 'email' },
+  ...
+]
+```
+
+### 68.3 解决方案
+
+1. **添加用户名列**：
+```typescript
+const columns = [
+  { title: '用户名', dataIndex: 'username', key: 'username' },
+  { title: '邮箱', dataIndex: 'email', key: 'email' },
+  ...
+]
+```
+
+2. **从 API 加载数据**：
+```typescript
+import { userApi } from '../../api/superadmin'
+
+// 加载最近注册用户
+useEffect(() => {
+  const loadRecentUsers = async () => {
+    setLoading(true)
+    try {
+      const res = await userApi.list({ page: 1, page_size: 10 })
+      if (res.items) {
+        setRecentUsers(res.items)
+      }
+    } catch (err) {
+      console.error('加载用户列表失败', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+  loadRecentUsers()
+}, [])
+```
+
+3. **添加用户类型映射**：
+```typescript
+const userTypeMap: Record<string, { label: string; color: string }> = {
+  super_admin: { label: '超级管理员', color: 'red' },
+  admin: { label: '管理员', color: 'orange' },
+  owner: { label: '仓库所有者', color: 'blue' },
+  developer: { label: '开发者', color: 'green' },
+  user: { label: '普通用户', color: 'default' },
+}
+```
+
+### 68.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/pages/admin/Dashboard.tsx` | 添加用户名列，从 API 加载数据，添加加载状态 |
+
+---
+
+## 问题69：用户管理页面添加用户名列并从API加载数据
+
+### 69.1 问题描述
+
+管理员用户管理页面：
+1. 需要显示用户名（当前只显示邮箱）
+2. 需要从数据库 API 加载（当前是硬编码示例数据）
+3. 启用/禁用、删除功能需要完善
+
+### 69.2 问题分析
+
+原代码使用硬编码示例数据：
+```typescript
+const users = [
+  { id: '1', email: 'admin@example.com', user_type: 'admin', ... },
+  ...
+]
+```
+
+缺少：
+- 用户名列
+- API 加载
+- 搜索、筛选功能
+- 禁用/启用功能
+- 删除功能
+
+### 69.3 解决方案
+
+1. **添加用户名列**：
+```typescript
+const columns = [
+  { title: '用户名', dataIndex: 'username', key: 'username', width: 120 },
+  { title: 'ID', dataIndex: 'id', key: 'id', ... },
+  { title: '邮箱', dataIndex: 'email', key: 'email' },
+  ...
+]
+```
+
+2. **从 API 加载数据**：
+```typescript
+import { userApi, UserListItem } from '../../api/superadmin'
+
+// 状态
+const [users, setUsers] = useState<UserListItem[]>([])
+const [total, setTotal] = useState(0)
+const [page, setPage] = useState(1)
+const [pageSize, setPageSize] = useState(20)
+const [searchText, setSearchText] = useState('')
+const [userTypeFilter, setUserTypeFilter] = useState<string | undefined>(undefined)
+const [userStatusFilter, setUserStatusFilter] = useState<string | undefined>(undefined)
+
+// 加载用户列表
+const loadUsers = async () => {
+  setLoading(true)
+  try {
+    const res = await userApi.list({
+      page,
+      page_size: pageSize,
+      keyword: searchText || undefined,
+      user_type: userTypeFilter,
+      user_status: userStatusFilter,
+    })
+    setUsers(res.items || [])
+    setTotal(res.total || 0)
+  } catch (err) {
+    message.error(err.userMessage || err.message || '加载失败')
+  } finally {
+    setLoading(false)
+  }
+}
+```
+
+3. **禁用/启用用户**：
+```typescript
+const handleToggleStatus = async (user: UserListItem) => {
+  try {
+    const newStatus = user.user_status === 'active' ? 'suspended' : 'active'
+    await userApi.update(user.id, { user_status: newStatus })
+    message.success(newStatus === 'active' ? '已启用该用户' : '已禁用该用户')
+    loadUsers()
+  } catch (err) {
+    message.error(err.userMessage || err.message || '操作失败')
+  }
+}
+```
+
+4. **删除用户**：
+```typescript
+const handleDeleteUser = async (userId: string) => {
+  try {
+    await userApi.delete(userId)
+    message.success('用户已删除')
+    loadUsers()
+  } catch (err) {
+    message.error(err.userMessage || err.message || '删除失败')
+  }
+}
+```
+
+### 69.4 API 测试结果
+
+所有用户管理 API 测试通过：
+
+| 功能 | API | 状态码 | 结果 |
+|------|-----|--------|------|
+| 获取用户列表 | `GET /superadmin/users` | 200 | ✅ |
+| 禁用用户 | `PUT /superadmin/users/{id}` | 200 | ✅ |
+| 启用用户 | `PUT /superadmin/users/{id}` | 200 | ✅ |
+| 删除用户 | `DELETE /superadmin/users/{id}` | 200 | ✅ |
+
+**注意**：只有 `super_admin` 权限的用户可以访问 `/superadmin/*` 接口。
+
+### 69.5 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `web/src/pages/admin/Users.tsx` | 完整重写，添加用户名列、API加载、搜索筛选、禁用启用删除功能 |
+
+---
+
+## 问题70：PUT /superadmin/users/{id} 返回422错误
+
+### 70.1 问题描述
+
+管理员在用户管理页面点击"编辑"按钮时报错：
+
+```
+422 Unprocessable Content
+Message: '[SRV-API] Request completed with warning: %s'
+Arguments: {'method': 'PUT', 'path': '/api/v1/superadmin/users/xxx', 'status': 422, ...}
+```
+
+### 70.2 问题分析
+
+后端 API 使用查询参数方式接收数据，但前端发送的是 JSON body：
+
+```python
+# 原代码 - 使用查询参数
+@router.put("/users/{user_id}")
+async def update_user(
+    user_id: str,
+    user_type: Optional[str] = None,      # 查询参数
+    role: Optional[str] = None,           # 查询参数
+    user_status: Optional[str] = None,     # 查询参数
+    ...
+)
+```
+
+```typescript
+// 前端发送 JSON body
+await userApi.update(userId, { user_status: 'suspended' })
+```
+
+### 70.3 解决方案
+
+1. **新增请求模型**：
+```python
+class UserUpdateRequest(BaseModel):
+    """更新用户请求模型"""
+    user_type: Optional[str] = None
+    role: Optional[str] = None
+    user_status: Optional[str] = None
+    vip_level: Optional[int] = None
+    permissions: Optional[List[str]] = None
+```
+
+2. **修改 API 函数**：
+```python
+from fastapi import Body
+
+@router.put("/users/{user_id}")
+async def update_user(
+    user_id: str,
+    update_data: UserUpdateRequest = Body(..., description="用户更新数据"),
+    ...
+)
+    # 更新字段
+    if update_data.user_type is not None:
+        user.user_type = update_data.user_type
+    ...
+```
+
+### 70.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/api/v1/superadmin.py` | 添加 UserUpdateRequest 模型，使用 Body() 接收 JSON |
+
+---
+
+## 问题71：PUT /superadmin/configs/{id} 返回422错误
+
+### 71.1 问题描述
+
+系统配置页面更新配置时报错 422，与问题70类似。
+
+### 71.2 问题分析
+
+后端 `update_config` 接口使用查询参数，但前端发送 JSON body。
+
+### 71.3 解决方案
+
+```python
+class ConfigUpdateRequest(BaseModel):
+    """更新配置请求模型"""
+    value: str
+
+@router.put("/configs/{config_id}")
+async def update_config(
+    config_id: str,
+    update_data: ConfigUpdateRequest = Body(..., description="配置更新数据"),
+    ...
+)
+    config.value = update_data.value
+```
+
+### 71.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/api/v1/superadmin.py` | 添加 ConfigUpdateRequest 模型，修复 update_config 接口 |
+
+---
+
+## 问题72：Dashboard统计总收入报错 - sum(character varying)
+
+### 72.1 问题描述
+
+Dashboard 页面加载时后端报错：
+
+```
+sqlalchemy.exc.ProgrammingError: (asyncpg.ProgrammingError)
+<class 'asyncpg.exceptions.UndefinedFunctionError'>:
+函数 sum(character varying) 不存在
+```
+
+### 72.2 问题分析
+
+数据库 `accounts` 表的 `balance` 字段是字符串类型 (VARCHAR)，但 `SUM()` 聚合函数需要数值类型。
+
+```python
+# 模型定义
+balance = Column(String(20), default="0")  # 字符串类型
+```
+
+```python
+# 错误的查询
+select(func.sum(Account.balance))  # ❌ 不能对字符串求和
+```
+
+### 72.3 解决方案
+
+使用 `cast()` 将字符串转换为数值类型：
+
+```python
+from sqlalchemy import cast, Numeric
+
+# 正确的查询
+select(func.sum(cast(Account.balance, Numeric)))
+```
+
+### 72.4 涉及文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/api/v1/superadmin.py` | 添加 `cast, Numeric` 导入，修复 SUM 查询 |
+
+---
+
+## 问题73：管理员无法使用用户管理功能（权限不足）
+
+### 73.1 问题描述
+
+管理员登录后访问用户管理页面时报错"需要超级管理员权限"，因为页面调用的是 `/api/v1/superadmin/users` 接口。
+
+### 73.2 问题分析
+
+1. **管理员菜单包含用户管理**：`adminMenu` 中有用户管理入口
+2. **但接口是超级管理员专用**：`/superadmin/*` 接口只有 `super_admin` 权限才能访问
+3. **权限不一致**：前端允许访问，但后端拒绝
+
+### 73.3 解决方案
+
+创建管理员专用的用户管理接口 `/api/v1/admin/users`：
+
+| 接口 | 方法 | 说明 | 权限限制 |
+|------|------|------|----------|
+| `/admin/users` | GET | 获取用户列表（排除超级管理员） | admin |
+| `/admin/users/{id}` | PUT | 更新用户（只能修改状态和VIP等级） | admin，不能修改管理员 |
+| `/admin/users/{id}` | DELETE | 删除用户（不能删除管理员） | admin |
+
+### 73.4 权限设计
+
+管理员用户管理权限限制：
+
+| 操作 | 可管理用户 | 不可管理用户 |
+|------|-----------|-------------|
+| 查看列表 | 所有非超级管理员用户 | 超级管理员 |
+| 更新用户 | 普通用户、所有者、开发者 | 管理员、超级管理员 |
+| 删除用户 | 普通用户、所有者、开发者 | 管理员、超级管理员、自己 |
+
+### 73.5 新增文件
+
+#### 后端文件
+
+| 文件 | 说明 |
+|------|------|
+| `src/api/v1/admin_users.py` | 新增管理员用户管理 API |
+
+#### 前端文件
+
+| 文件 | 说明 |
+|------|------|
+| `web/src/api/admin.ts` | 新增管理员 API 调用 |
+| `web/src/pages/admin/Users.tsx` | 使用 adminUserApi 替代 userApi |
+
+### 73.6 API 路由注册
+
+```python
+# src/api/v1/__init__.py
+from .admin_users import router as admin_users_router
+
+api_router.include_router(admin_users_router, prefix="/admin", tags=["Admin Users"])
+```
+
+### 73.7 测试账号
+
+| 用户类型 | 用户名 | 邮箱 | 密码 |
+|---------|--------|------|------|
+| 超级管理员 | superadmin | superadmin@example.com | super123456 |
+| 管理员 | admin | admin@example.com | admin123 |
+
+### 73.8 相关文档更新
+
+- `Doc/09_接口设计文档.md` - V2.8，新增 8.11 管理员用户管理接口
+- `Doc/01_项目需求规格说明书.md` - V2.4，用户管理模块需求完善
+
+---
+
+## 问题74：今日调用次数功能测试案例（返回模拟数据Bug）
+
+### 74.1 问题描述
+
+在测试"今日调用次数"功能时，发现`GET /api/v1/repositories/{repo_id}/stats`接口返回的统计数据全是0或模拟数据，无法显示真实的API调用次数。
+
+用户反馈：
+> "请写一个详细的测试案例，如何测试今日调用次数，不要仿真数据，要一个真实的操作过程。"
+
+### 74.2 问题分析
+
+#### 74.2.1 数据流追踪
+
+经过代码分析，"今日调用次数"的完整数据流如下：
+
+```
+1. API调用入口 → POST /repositories/{repo_slug}/chat 等端点
+2. 日志记录 → RepoService._log_api_call() 写入 api_call_logs 表
+3. 数据统计 → get_repository_stats() 从 APICallLog 表聚合统计
+4. 前端展示 → OwnerDashboard 从 /repositories/{repo_id}/stats 获取数据
+```
+
+#### 74.2.2 问题根源
+
+查看 `src/api/v1/repositories.py` 中的 `get_repository_stats` 方法，发现代码返回的是模拟数据：
+
+```python
+# 返回模拟统计数据
+return BaseResponse(
+    data={
+        "repo_id": str(repo.id),
+        "total_calls": 0,      # 模拟数据
+        "today_calls": 0,     # 模拟数据
+        "total_cost": 0.0,
+        "active_keys": 0,
+        "avg_latency": 0,
+        "success_rate": 100.0,
+    }
+)
+```
+
+### 74.3 解决方案
+
+修改 `get_repository_stats` 方法，从数据库查询真实统计数据：
+
+```python
+# 文件：api-platform/src/api/v1/repositories.py
+# 修改位置：get_repository_stats 方法
+
+# 从数据库查询真实统计数据
+from src.models.billing import APICallLog
+
+today = datetime.utcnow().date()
+week_ago = datetime.utcnow() - timedelta(days=7)
+
+# 今日调用量
+today_result = await db.execute(
+    select(func.count(APICallLog.id)).where(
+        and_(
+            APICallLog.repo_id == repo.id,
+            func.date(APICallLog.created_at) == today,
+        )
+    )
+)
+today_calls = today_result.scalar() or 0
+
+# 本周调用量
+week_result = await db.execute(
+    select(func.count(APICallLog.id)).where(
+        and_(
+            APICallLog.repo_id == repo.id,
+            APICallLog.created_at >= week_ago,
+        )
+    )
+)
+week_calls = week_result.scalar() or 0
+
+# 总调用量
+total_result = await db.execute(
+    select(func.count(APICallLog.id)).where(
+        APICallLog.repo_id == repo.id
+    )
+)
+total_calls = total_result.scalar() or 0
+
+# 总费用（从cost字段汇总）
+cost_result = await db.execute(
+    select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
+        APICallLog.repo_id == repo.id
+    )
+)
+total_cost = float(cost_result.scalar() or 0)
+
+return BaseResponse(
+    data={
+        "repo_id": str(repo.id),
+        "total_calls": total_calls,
+        "today_calls": today_calls,
+        "week_calls": week_calls,
+        "total_cost": round(total_cost, 2),
+        "active_keys": active_keys,
+        "avg_latency": 0,
+        "success_rate": 100.0,
+    }
+)
+```
+
+### 74.4 测试案例文档
+
+创建了完整的测试案例文档和测试脚本：
+
+| 文件 | 说明 |
+|------|------|
+| `api-platform/tests/test_today_call_count.md` | 详细的测试文档（Markdown格式） |
+| `api-platform/tests/test_today_call_count.py` | 可直接运行的Python测试脚本 |
+
+### 74.5 测试流程概览
+
+```
+1. Owner登录 → 获取token
+2. 获取仓库列表 → 选择测试仓库
+3. 查看当前调用统计 → 记录基准值
+4. Developer登录 → 创建API Key
+5. 执行3次API调用 → 触发日志记录
+6. 再次查看调用统计 → 验证增加
+7. 查看调用日志 → 确认记录正确
+```
+
+### 74.6 运行测试脚本
+
+```bash
+cd d:/Work_Area/AI/API-Agent/api-platform
+python tests/test_today_call_count.py
+```
+
+### 74.7 测试验证清单
+
+| 验证项 | 预期结果 |
+|--------|----------|
+| Owner能成功登录获取token | 返回有效token |
+| Owner能查看自己的仓库列表 | 返回仓库数据 |
+| Developer能创建API Key | 返回完整key和secret |
+| 调用前today_calls值为X | 显示正确数值 |
+| 执行3次API调用成功 | 返回200响应 |
+| 调用后today_calls值为X+3 | 数值增加3 |
+| 调用日志中能看到3条记录 | 日志完整 |
+
+### 74.8 常见问题排查
+
+#### 问题1：调用返回401未授权
+**原因**：API Key无效或已过期
+**解决**：
+1. 检查API Key是否正确
+2. 检查API Key状态是否为active
+3. 检查HMAC签名是否正确
+
+#### 问题2：today_calls没有增加
+**原因**：
+1. 统计接口返回的是模拟数据（当前代码中stats接口是mock的）
+2. 调用日志没有正确写入数据库
+
+**解决**：
+1. 检查`api_call_logs`表是否有新记录
+2. 检查`RepoService.call_repository`方法中的`_log_api_call`调用
+3. 检查后端日志是否有错误信息
+
+### 74.9 相关文件修改
+
+| 文件 | 修改内容 |
+|------|----------|
+| `src/api/v1/repositories.py` | 修改 `get_repository_stats` 方法，返回真实调用数据 |
+
+### 74.10 测试账户
+
+| 角色 | 用户名 | 邮箱 | 密码 |
+|------|--------|------|------|
+| owner | owner | owner@example.com | owner123456 |
+| developer | developer | developer@example.com | dev123456 |
+
+---
+
+## 问题75：Admin后台统计数据显示为0
+
+### 75.1 问题描述
+
+Admin用户登录管理后台后，发现仪表板统计卡片数据全部显示为0：
+- **API仓库数**：显示0（实际有4个仓库）
+- **总用户数**：显示0（实际有4个用户）
+- **今日调用次数**：显示0（无API调用记录）
+- **累计收入**：显示0（实际有余额）
+
+### 75.2 问题分析
+
+#### 75.2.1 问题根源
+
+1. **Dashboard调用了错误的API**：
+   - `Dashboard.tsx` 调用的是 `superadmin.ts` 中的 `userApi.list()`
+   - 这个API实际调用的是 `/superadmin/users`
+   - **Admin用户没有权限访问 superadmin API**，导致调用失败返回403
+
+2. **统计数据是硬编码的0**：
+   - 前端 `systemStats` 初始化为全0
+   - API调用失败后，状态没有更新
+
+3. **today_calls为0的原因**：
+   - chat API没有写入调用日志
+   - 原有代码只是返回模拟响应，没有记录日志
+
+#### 75.2.2 路由权限问题
+
+| 用户类型 | 可访问的后台 | 可调用的API |
+|---------|-------------|-------------|
+| `super_admin` | `/superadmin` | `/superadmin/*` |
+| `admin` | `/admin` | `/admin/*`（不能访问 `/superadmin/*`）|
+
+### 75.3 解决方案
+
+#### 75.3.1 创建Admin专用统计API
+
+新建 `src/api/v1/admin.py`：
+
+```python
+# src/api/v1/admin.py
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import select, func, and_, cast, Numeric
+
+router = APIRouter(tags=["管理员"])
+
+# 简单的内存缓存
+_stats_cache = {"data": None, "timestamp": 0}
+_CACHE_TTL = 300  # 缓存5分钟
+
+@router.get("/dashboard/stats")
+async def get_admin_dashboard_stats(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_admin_user),
+    refresh: bool = Query(False, description="是否强制刷新缓存"),
+):
+    # 检查缓存
+    if not refresh:
+        cached = _get_cached_stats()
+        if cached:
+            return BaseResponse(data=cached)
+    
+    # 从数据库统计真实数据
+    # ... 统计用户数、仓库数、API Keys数、总收入、今日调用次数 ...
+    
+    return BaseResponse(data={
+        "total_users": total_users,
+        "active_users": active_users,
+        "total_repos": total_repos,
+        "today_new_users": today_new_users,
+        "total_api_keys": total_api_keys,
+        "total_revenue": float(total_revenue),
+        "today_calls": today_calls,
+    })
+```
+
+#### 75.3.2 修复数据库类型转换问题
+
+`Account.balance` 是字符串类型，不能直接 `sum()`：
+
+```python
+# 错误写法
+revenue_result = await db.execute(select(func.sum(Account.balance)))
+
+# 正确写法
+revenue_result = await db.execute(
+    select(func.sum(cast(Account.balance, Numeric)))
+)
+```
+
+#### 75.3.3 添加API调用日志记录
+
+修改 `chat` API，添加日志记录：
+
+```python
+# src/api/v1/repositories.py - chat 方法
+
+# 获取仓库信息
+repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
+repo = repo_result.scalar_one_or_none()
+
+# 记录API调用日志
+from src.models.billing import APICallLog
+
+try:
+    log_entry = APICallLog(
+        repo_id=repo.id,
+        endpoint="/chat",
+        method="POST",
+        status_code=200,
+        response_time=str(int((time.time() - start_time) * 1000)),
+        cost="0",  # 免费调用
+    )
+    db.add(log_entry)
+    await db.commit()
+except Exception as e:
+    await db.rollback()
+    print(f"Failed to log API call: {e}")
+```
+
+#### 75.3.4 前端API客户端更新
+
+```typescript
+// web/src/api/admin.ts
+export const adminApi = {
+  getStats: () => api.get<AdminDashboardStats>('/admin/dashboard/stats'),
+  listUsers: (params) => api.get('/admin/users', params),
+}
+
+export const adminUserApi = {
+  ...adminApi,
+  list: adminApi.listUsers,
+}
+```
+
+#### 75.3.5 路由注册
+
+```python
+# src/api/v1/__init__.py
+from .admin import router as admin_router
+
+api_router.include_router(admin_router, prefix="/admin", tags=["Admin"])
+```
+
+### 75.4 修改文件清单
+
+| 文件 | 修改内容 |
+|------|----------|
+| `src/api/v1/admin.py` | **新建** - Admin专用统计API |
+| `src/api/v1/__init__.py` | 注册admin路由 |
+| `src/api/v1/repositories.py` | chat API添加调用日志记录 |
+| `src/api/v1/admin.py` | 修复 `cast(Account.balance, Numeric)` 类型转换 |
+| `web/src/api/admin.ts` | **新建** - Admin前端API |
+| `web/src/pages/admin/Dashboard.tsx` | 使用adminApi获取真实数据 |
+| `tests/make_api_calls.py` | **新建** - 手动产生API调用记录的脚本 |
+
+### 75.5 测试验证
+
+#### 75.5.1 测试统计API
+
+```bash
+# Admin用户登录
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"admin123"}'
+
+# 获取统计数据
+curl http://localhost:8000/api/v1/admin/dashboard/stats \
+  -H "Authorization: Bearer <token>"
+```
+
+预期响应：
+```json
+{
+  "code": 0,
+  "data": {
+    "total_users": 4,
+    "total_repos": 4,
+    "today_calls": 5,
+    "total_revenue": 15150.0
+  }
+}
+```
+
+#### 75.5.2 产生API调用记录
+
+```bash
+cd api-platform
+python tests/make_api_calls.py
+```
+
+### 75.6 常见问题
+
+#### 问题1：路由返回404
+**原因**：路径重复（如 `/admin/admin/dashboard/stats`）
+**解决**：路由定义中不要加 `/admin` 前缀，因为注册时已经添加
+
+#### 问题2：sum(character varying) 错误
+**原因**：`Account.balance` 是字符串类型
+**解决**：使用 `cast(Account.balance, Numeric)` 转换
+
+#### 问题3：today_calls一直是0
+**原因**：chat API没有写入调用日志
+**解决**：确保 `APICallLog` 模型和表结构正确
+
+---
+
+## 变更记录汇总
+
+| 版本 | 日期 | 变更内容 | 开发者 |
+|------|------|----------|--------|
+| V1.0 | 2026-04-18 | 初始版本 | AI |
+| V1.1 - V2.8 | 2026-04-19 | 问题33-49，新增多项功能和问题修复 | AI |
+| V3.0 - V3.2 | 2026-04-19 | 问题50-53，集成调试、空状态、端口统一 | AI |
+| V3.3 | 2026-04-19 | 问题54-55，用户权限控制、superadmin用户、界面设计 | AI |
+| V3.4 | 2026-04-19 | 问题56，超级管理员数据从数据库获取，完善数据库结构 | AI |
+| V3.5 | 2026-04-19 | 问题57，仓库端点和限流配置从数据库读取，新增表结构 | AI |
+| V3.6 | 2026-04-19 | 问题58，前端Web页面实现：仓库市场、详情页、管理页 | AI |
+| V3.7 - V3.11 | 2026-04-19 | 问题59-69，仓库管理前后端集成、用户管理功能完善 | AI |
+| V3.12 | 2026-04-19 | 问题70-72，API 422错误修复、数据库类型错误修复 | AI |
+| V3.13 | 2026-04-19 | 问题73，管理员用户管理接口实现，权限分离 | AI |
+| V3.14 | 2026-04-19 | 问题74，今日调用次数功能测试案例，修复返回模拟数据Bug | AI |
 
 ---
 

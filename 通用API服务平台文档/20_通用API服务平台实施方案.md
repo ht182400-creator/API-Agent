@@ -163,7 +163,7 @@ graph TB
 ```yaml
 # APISIX 配置示例
 apisix:
-  node_listen: 8080
+  node_listen: 8000
   ssl_port: 8443
 
 plugins:

@@ -1,0 +1,147 @@
+/* 仓库市场页面样式 */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* 页面头部 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.statsRow {
+  text-align: right;
+}
+
+/* 筛选卡片 */
+.filterCard {
+  margin-bottom: 24px;
+}
+
+/* 仓库卡片 */
+.repoCard {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.repoCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 卡片头部 */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.repoLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.repoInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.repoName {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repoType {
+  font-size: 12px;
+}
+
+/* 描述 */
+.description {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* 端点预览 */
+.endpointsPreview {
+  margin-bottom: 12px;
+}
+
+.endpointsLabel {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.endpointTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.endpointTag {
+  font-size: 11px;
+  margin: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 卡片底部 */
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.footerItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  font-size: 12px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .statsRow {
+    text-align: left;
+  }
+}

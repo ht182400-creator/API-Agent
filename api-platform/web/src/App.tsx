@@ -9,6 +9,8 @@ import DeveloperKeys from './pages/developer/Keys'
 import DeveloperQuota from './pages/developer/Quota'
 import DeveloperLogs from './pages/developer/Logs'
 import DeveloperBilling from './pages/developer/Billing'
+import DeveloperRepos from './pages/developer/Repos'
+import DeveloperRepoDetail from './pages/developer/RepoDetail'
 import OwnerDashboard from './pages/owner/Dashboard'
 import OwnerRepos from './pages/owner/Repos'
 import OwnerAnalytics from './pages/owner/Analytics'
@@ -168,6 +170,8 @@ function App() {
           <Route path="quota" element={<DeveloperQuota />} />
           <Route path="logs" element={<DeveloperLogs />} />
           <Route path="billing" element={<DeveloperBilling />} />
+          <Route path="repos" element={<DeveloperRepos />} />
+          <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
         </Route>
         <Route path="notifications" element={<Notifications />} />
       </Route>

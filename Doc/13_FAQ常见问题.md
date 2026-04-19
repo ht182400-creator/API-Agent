@@ -1004,26 +1004,26 @@ python scripts/seed_data.py
 ### Q24: API 服务启动后无法访问
 
 **问题描述**：
-API 服务已启动，但无法访问 http://localhost:8080
+API 服务已启动，但无法访问 http://localhost:8000
 
 **排查步骤**：
 
 1. **确认服务正在运行**
 ```powershell
 # 检查端口监听
-netstat -an | findstr "8080"
+netstat -an | findstr "8000"
 ```
 
 2. **检查防火墙**
 ```powershell
 # 允许端口通过防火墙
-netsh advfirewall firewall add rule name="API Platform" dir=in action=allow protocol=tcp localport=8080
+netsh advfirewall firewall add rule name="API Platform" dir=in action=allow protocol=tcp localport=8000
 ```
 
 3. **查看启动日志**
 ```powershell
 # 检查是否有错误
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 4. **检查环境变量**
@@ -1192,16 +1192,16 @@ python scripts/seed_data.py
 ```powershell
 # 启动服务
 cd D:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
 # API 文档地址
-# http://localhost:8080/docs
-# http://localhost:8080/redoc
+# http://localhost:8000/docs
+# http://localhost:8000/redoc
 ```
 
 ### 测试登录
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/login \
+curl -X POST http://localhost:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"admin123"}'
 ```
