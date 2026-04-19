@@ -55,6 +55,7 @@ const userMenu: MenuProps['items'] = [
 const developerMenu: MenuProps['items'] = [
   { key: '/', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+  { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
   { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },

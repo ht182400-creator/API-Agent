@@ -1,8 +1,12 @@
-/* Owner Repos Page Styles */
+/* 仓库管理页面样式 */
+
 .container {
   padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
 }
 
+/* 页面头部 */
 .header {
   display: flex;
   justify-content: space-between;
@@ -10,56 +14,71 @@
   margin-bottom: 24px;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 600;
+/* 统计信息行 */
+.statsRow {
+  margin-bottom: 24px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
+/* 仓库卡片样式 */
 .repoCard {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  transition: all 0.3s;
 }
 
 .repoCard:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.repoName {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
+/* 端点标签 */
+.endpointTag {
+  margin: 2px;
 }
 
-.repoDesc {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 16px;
+/* 端点列表 */
+.endpointList {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.repoStats {
+/* 限流信息 */
+.limitsInfo {
   display: flex;
   gap: 16px;
-  color: #999;
-  font-size: 12px;
+  flex-wrap: wrap;
 }
 
-.stat {
+.limitsItem {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 8px;
+/* 响应式 */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .statsRow .ant-col {
+    margin-bottom: 12px;
+  }
+}
+
+/* 操作按钮样式 - 防止文字溢出 */
+.actionButton {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* 表格操作列按钮 */
+:global(.ant-table-cell-operations) button {
+  max-width: 70px;
+  overflow: hidden;
 }

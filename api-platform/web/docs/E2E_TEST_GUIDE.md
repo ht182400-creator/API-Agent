@@ -187,7 +187,7 @@ server: {
 ```powershell
 # 终端 1: 启动后端
 cd d:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --port 8080
+python -m uvicorn src.main:app --reload --port 8000
 
 # 终端 2: 启动前端
 cd d:\Work_Area\AI\API-Agent\api-platform\web

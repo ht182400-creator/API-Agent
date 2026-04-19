@@ -16,7 +16,7 @@ from sqlalchemy import select
 from src.config.database import AsyncSessionLocal
 from src.models.user import User, UserProfile
 from src.models.api_key import APIKey
-from src.models.repository import Repository, RepoPricing
+from src.models.repository import Repository, RepoPricing, RepoEndpoint, RepoLimits
 from src.models.notification import Notification, NotificationPreference
 from src.core.security import hash_password, generate_api_key, generate_api_secret
 
@@ -196,7 +196,7 @@ async def seed_api_keys():
 
 
 async def seed_repositories():
-    """Create test repositories"""
+    """Create test repositories with endpoints and limits"""
     print("Creating test repositories...")
     
     async with AsyncSessionLocal() as db:
@@ -216,8 +216,8 @@ async def seed_repositories():
             print("Owner user not found, skipping repositories...")
             return
         
-        # Create internal repositories
-        repos = [
+        # Repository configurations with endpoints and limits
+        repo_configs = [
             {
                 "name": "psychology",
                 "slug": "psychology",
@@ -226,36 +226,158 @@ async def seed_repositories():
                 "repo_type": "psychology",
                 "protocol": "http",
                 "endpoint_url": "http://psychology-service:8000",
+                "api_docs_url": "http://psychology-service:8000/docs",
+                "pricing_type": "token",
+                "price_per_call": "0.01",
+                "price_per_token": "0.001",
+                "free_calls": 100,
+                "free_tokens": 1000,
+                "sla_uptime": "99.9",
+                "sla_latency_p99": 500,
+                "endpoints": [
+                    {"path": "/chat", "method": "POST", "description": "智能对话问答", "category": "chat", "display_order": 1},
+                    {"path": "/assess", "method": "POST", "description": "心理评估量表", "category": "assess", "display_order": 2},
+                    {"path": "/mood", "method": "POST", "description": "情绪监测", "category": "mood", "display_order": 3},
+                    {"path": "/meditation", "method": "GET", "description": "冥想引导音频", "category": "meditation", "display_order": 4},
+                ],
+                "limits": {
+                    "rpm": 1000,
+                    "rph": 10000,
+                    "rpd": 100000,
+                    "burst_limit": 50,
+                    "concurrent_limit": 10,
+                    "daily_quota": 50000,
+                    "monthly_quota": 1000000,
+                    "request_timeout": 30,
+                    "connect_timeout": 10,
+                }
             },
             {
                 "name": "translation",
                 "slug": "translation",
                 "display_name": "多语言翻译",
-                "description": "支持多种语言的翻译服务",
+                "description": "支持多种语言的翻译服务，包括文本翻译、语音翻译和文档翻译",
                 "repo_type": "translation",
                 "protocol": "http",
                 "endpoint_url": "http://translation-service:8000",
+                "api_docs_url": "http://translation-service:8000/docs",
+                "pricing_type": "per_call",
+                "price_per_call": "0.02",
+                "price_per_token": "0.0005",
+                "free_calls": 50,
+                "free_tokens": 500,
+                "sla_uptime": "99.5",
+                "sla_latency_p99": 800,
+                "endpoints": [
+                    {"path": "/translate/text", "method": "POST", "description": "文本翻译", "category": "translate", "display_order": 1},
+                    {"path": "/translate/document", "method": "POST", "description": "文档翻译", "category": "translate", "display_order": 2},
+                    {"path": "/translate/voice", "method": "POST", "description": "语音翻译", "category": "translate", "display_order": 3},
+                    {"path": "/detect/language", "method": "POST", "description": "语言检测", "category": "detect", "display_order": 4},
+                ],
+                "limits": {
+                    "rpm": 500,
+                    "rph": 5000,
+                    "rpd": 50000,
+                    "burst_limit": 30,
+                    "concurrent_limit": 5,
+                    "daily_quota": 20000,
+                    "monthly_quota": 500000,
+                    "request_timeout": 60,
+                    "connect_timeout": 15,
+                }
             },
             {
                 "name": "vision",
                 "slug": "vision",
                 "display_name": "图像识别",
-                "description": "OCR文字识别和图像分析服务",
+                "description": "OCR文字识别和图像分析服务，支持多种场景",
                 "repo_type": "vision",
                 "protocol": "http",
                 "endpoint_url": "http://vision-service:8000",
+                "api_docs_url": "http://vision-service:8000/docs",
+                "pricing_type": "token",
+                "price_per_call": "0.05",
+                "price_per_token": "0.002",
+                "free_calls": 20,
+                "free_tokens": 200,
+                "sla_uptime": "99.8",
+                "sla_latency_p99": 1000,
+                "endpoints": [
+                    {"path": "/ocr/text", "method": "POST", "description": "文字识别OCR", "category": "ocr", "display_order": 1},
+                    {"path": "/ocr/document", "method": "POST", "description": "文档识别", "category": "ocr", "display_order": 2},
+                    {"path": "/analyze/image", "method": "POST", "description": "图像分析", "category": "analyze", "display_order": 3},
+                    {"path": "/recognize/face", "method": "POST", "description": "人脸识别", "category": "recognize", "display_order": 4},
+                    {"path": "/detect/object", "method": "POST", "description": "物体检测", "category": "detect", "display_order": 5},
+                ],
+                "limits": {
+                    "rpm": 200,
+                    "rph": 2000,
+                    "rpd": 20000,
+                    "burst_limit": 20,
+                    "concurrent_limit": 5,
+                    "daily_quota": 10000,
+                    "monthly_quota": 200000,
+                    "request_timeout": 120,
+                    "connect_timeout": 30,
+                }
+            },
+            {
+                "name": "stock",
+                "slug": "stock",
+                "display_name": "股票行情",
+                "description": "实时股票行情数据接口",
+                "repo_type": "stock",
+                "protocol": "http",
+                "endpoint_url": "http://stock-service:8000",
+                "api_docs_url": "http://stock-service:8000/docs",
+                "pricing_type": "subscription",
+                "price_per_call": "0",
+                "price_per_token": "0",
+                "monthly_price": "99.00",
+                "yearly_price": "990.00",
+                "free_calls": 0,
+                "free_tokens": 0,
+                "sla_uptime": "99.95",
+                "sla_latency_p99": 200,
+                "endpoints": [
+                    {"path": "/quote/realtime", "method": "GET", "description": "实时行情", "category": "quote", "display_order": 1},
+                    {"path": "/quote/history", "method": "GET", "description": "历史行情", "category": "quote", "display_order": 2},
+                    {"path": "/news/market", "method": "GET", "description": "市场新闻", "category": "news", "display_order": 3},
+                    {"path": "/analysis/technical", "method": "POST", "description": "技术分析", "category": "analysis", "display_order": 4},
+                ],
+                "limits": {
+                    "rpm": 3000,
+                    "rph": 30000,
+                    "rpd": 300000,
+                    "burst_limit": 100,
+                    "concurrent_limit": 20,
+                    "daily_quota": None,
+                    "monthly_quota": None,
+                    "request_timeout": 10,
+                    "connect_timeout": 5,
+                }
             },
         ]
         
-        for repo_data in repos:
+        for repo_config in repo_configs:
+            # Extract endpoints and limits before creating repo
+            endpoints_data = repo_config.pop("endpoints")
+            limits_data = repo_config.pop("limits")
+            pricing_type = repo_config.pop("pricing_type")
+            price_per_call = repo_config.pop("price_per_call")
+            price_per_token = repo_config.pop("price_per_token")
+            monthly_price = repo_config.pop("monthly_price", None)
+            yearly_price = repo_config.pop("yearly_price", None)
+            
+            # Create repository
             repo = Repository(
                 owner_id=owner.id,
                 owner_type="internal",
                 status="online",
                 online_at=datetime.utcnow(),
-                sla_uptime="99.9",
-                sla_latency_p99=500,
-                **repo_data,
+                sla_uptime=repo_config.pop("sla_uptime"),
+                sla_latency_p99=repo_config.pop("sla_latency_p99"),
+                **repo_config,
             )
             db.add(repo)
             await db.flush()
@@ -263,16 +385,51 @@ async def seed_repositories():
             # Create pricing
             pricing = RepoPricing(
                 repo_id=repo.id,
-                pricing_type="token",
-                price_per_call="0.01",
-                price_per_token="0.001",
-                free_calls=100,
-                free_tokens=1000,
+                pricing_type=pricing_type,
+                price_per_call=price_per_call,
+                price_per_token=price_per_token,
+                monthly_price=monthly_price,
+                yearly_price=yearly_price,
+                free_calls=repo_config.get("free_calls", 0),
+                free_tokens=repo_config.get("free_tokens", 0),
+                free_quota_days=7,
             )
             db.add(pricing)
+            
+            # Create endpoints
+            for ep_data in endpoints_data:
+                endpoint = RepoEndpoint(
+                    repo_id=repo.id,
+                    path=ep_data["path"],
+                    method=ep_data["method"],
+                    description=ep_data["description"],
+                    category=ep_data.get("category"),
+                    display_order=ep_data.get("display_order", 0),
+                    enabled=True,
+                    is_deprecated=False,
+                )
+                db.add(endpoint)
+            
+            # Create limits
+            limits = RepoLimits(
+                repo_id=repo.id,
+                rpm=limits_data.get("rpm", 1000),
+                rph=limits_data.get("rph", 10000),
+                rpd=limits_data.get("rpd", 100000),
+                burst_limit=limits_data.get("burst_limit", 50),
+                concurrent_limit=limits_data.get("concurrent_limit", 10),
+                daily_quota=limits_data.get("daily_quota"),
+                monthly_quota=limits_data.get("monthly_quota"),
+                request_timeout=limits_data.get("request_timeout", 30),
+                connect_timeout=limits_data.get("connect_timeout", 10),
+                enabled=True,
+            )
+            db.add(limits)
         
         await db.commit()
-        print("Created repositories: psychology, translation, vision")
+        print("Created repositories with endpoints and limits:")
+        for config in repo_configs:
+            print(f"  - {config['slug']}: {len(config['endpoints'])} endpoints")
 
 
 async def seed_notifications():

@@ -2,7 +2,7 @@
 
 from .user import User, UserProfile
 from .api_key import APIKey, KeyUsageLog
-from .repository import Repository, RepoConfig, RepoPricing, RepoStats
+from .repository import Repository, RepoConfig, RepoPricing, RepoStats, RepoEndpoint, RepoLimits
 from .billing import Account, Bill, Quota, APICallLog
 from .adapter import Adapter, AdapterInstance
 from .notification import Notification, NotificationPreference
@@ -19,6 +19,8 @@ __all__ = [
     "RepoConfig",
     "RepoPricing",
     "RepoStats",
+    "RepoEndpoint",
+    "RepoLimits",
     "Account",
     "Bill",
     "Quota",

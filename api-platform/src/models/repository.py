@@ -73,6 +73,8 @@ class Repository(Base):
     owner = relationship("User", back_populates="repositories")
     pricing = relationship("RepoPricing", back_populates="repository", uselist=False)
     configs = relationship("RepoConfig", back_populates="repository")
+    endpoints = relationship("RepoEndpoint", back_populates="repository", order_by="RepoEndpoint.display_order")
+    limits = relationship("RepoLimits", back_populates="repository", uselist=False)
     stats = relationship("RepoStats", back_populates="repository")
 
     def __repr__(self):
@@ -147,6 +149,87 @@ class RepoPricing(Base):
 
     def __repr__(self):
         return f"<RepoPricing {self.pricing_type}>"
+
+
+class RepoEndpoint(Base):
+    """Repository endpoint model - 仓库API端点表"""
+
+    __tablename__ = "repo_endpoints"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # Endpoint information
+    path = Column(String(200), nullable=False)  # e.g., /chat, /assess
+    method = Column(String(10), nullable=False)  # GET, POST, PUT, DELETE
+    description = Column(String(500), nullable=True)  # Endpoint description
+    category = Column(String(50), nullable=True)  # chat, translate, recognize, etc.
+
+    # Request/Response schemas
+    request_schema = Column(JSONB, default=dict)  # Request JSON schema
+    response_schema = Column(JSONB, default=dict)  # Response JSON schema
+    example_request = Column(JSONB, default=dict)  # Example request
+    example_response = Column(JSONB, default=dict)  # Example response
+
+    # Rate limit for this endpoint
+    rpm_limit = Column(Integer, nullable=True)  # Requests per minute
+    rph_limit = Column(Integer, nullable=True)  # Requests per hour
+
+    # Status
+    enabled = Column(Boolean, default=True)
+    is_deprecated = Column(Boolean, default=False)
+
+    # Display order
+    display_order = Column(Integer, default=0)
+
+    # Audit fields
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    repository = relationship("Repository", back_populates="endpoints")
+
+    def __repr__(self):
+        return f"<RepoEndpoint {self.method} {self.path}>"
+
+
+class RepoLimits(Base):
+    """Repository limits model - 仓库限流配置表"""
+
+    __tablename__ = "repo_limits"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, unique=True)
+
+    # Rate limits
+    rpm = Column(Integer, default=1000)  # Requests per minute
+    rph = Column(Integer, default=10000)  # Requests per hour
+    rpd = Column(Integer, default=100000)  # Requests per day
+
+    # Burst limits
+    burst_limit = Column(Integer, default=100)  # Burst request limit
+    concurrent_limit = Column(Integer, default=10)  # Concurrent requests
+
+    # Quota limits
+    daily_quota = Column(Integer, nullable=True)  # Daily quota (None = unlimited)
+    monthly_quota = Column(Integer, nullable=True)  # Monthly quota (None = unlimited)
+
+    # Timeout configuration
+    request_timeout = Column(Integer, default=30)  # Request timeout in seconds
+    connect_timeout = Column(Integer, default=10)  # Connection timeout in seconds
+
+    # Status
+    enabled = Column(Boolean, default=True)
+
+    # Audit fields
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    repository = relationship("Repository", back_populates="limits")
+
+    def __repr__(self):
+        return f"<RepoLimits rpm={self.rpm}, rph={self.rph}>"
 
 
 class RepoStats(Base):

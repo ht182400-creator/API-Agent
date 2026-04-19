@@ -172,17 +172,17 @@ python scripts/seed_data.py
 cd D:\Work_Area\AI\API-Agent\api-platform
 
 # 启动服务
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 验证服务
 
 ```powershell
 # 检查健康状态
-curl http://localhost:8080/health
+curl http://localhost:8000/health
 
 # 访问 API 文档
-# 浏览器打开: http://localhost:8080/docs
+# 浏览器打开: http://localhost:8000/docs
 ```
 
 ---
@@ -276,7 +276,7 @@ Get-ChildItem -Path . -Recurse -Include "__pycache__" -Directory | Remove-Item -
 Get-ChildItem -Path . -Recurse -Filter "*.pyc" | Remove-Item -Force
 
 # 4. 重新启动服务
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 注意事项
@@ -439,7 +439,7 @@ python scripts/seed_data.py
 
 ### 问题描述
 
-API 服务已启动，但无法访问 http://localhost:8080
+API 服务已启动，但无法访问 http://localhost:8000
 
 ### 排查步骤
 
@@ -447,10 +447,10 @@ API 服务已启动，但无法访问 http://localhost:8080
 
 ```powershell
 # 检查端口监听
-netstat -an | Select-String "8080"
+netstat -an | Select-String "8000"
 
 # 应该看到类似输出：
-# TCP    0.0.0.0:8080    0.0.0.0:0    LISTENING
+# TCP    0.0.0.0:8000    0.0.0.0:0    LISTENING
 ```
 
 #### 步骤2：检查防火墙
@@ -460,14 +460,14 @@ netstat -an | Select-String "8080"
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 # 或添加规则
-netsh advfirewall firewall add rule name="API Platform" dir=in action=allow protocol=tcp localport=8080
+netsh advfirewall firewall add rule name="API Platform" dir=in action=allow protocol=tcp localport=8000
 ```
 
 #### 步骤3：查看启动日志
 
 ```powershell
 cd D:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 观察是否有错误信息。
@@ -589,10 +589,10 @@ DEBUG=true
 
 ```bash
 # 健康检查
-GET http://localhost:8080/health
+GET http://localhost:8000/health
 
 # 登录
-POST http://localhost:8080/api/v1/auth/login
+POST http://localhost:8000/api/v1/auth/login
 Content-Type: application/json
 {
   "email": "admin@example.com",
@@ -600,8 +600,8 @@ Content-Type: application/json
 }
 
 # API 文档
-# http://localhost:8080/docs (Swagger UI)
-# http://localhost:8080/redoc (ReDoc)
+# http://localhost:8000/docs (Swagger UI)
+# http://localhost:8000/redoc (ReDoc)
 ```
 
 ### 常用命令速查
@@ -609,14 +609,14 @@ Content-Type: application/json
 ```powershell
 # 启动 API 服务
 cd D:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
+python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
 # 初始化数据库
 python scripts/init_db.py
 python scripts/seed_data.py
 
 # 测试登录
-Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/v1/auth/login" -ContentType "application/json" -Body '{"email":"admin@example.com","password":"admin123"}'
+Invoke-RestMethod -Method Post -Uri "http://localhost:8000/api/v1/auth/login" -ContentType "application/json" -Body '{"email":"admin@example.com","password":"admin123"}'
 ```
 
 ---

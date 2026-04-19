@@ -19,7 +19,8 @@ from src.schemas.response import (
 )
 from src.core.exceptions import RepositoryNotFoundError, RateLimitError, AuthorizationError
 from src.services.auth_service import get_current_user
-from uuid import uuid4
+from src.models.repository import Repository, RepoEndpoint, RepoLimits
+from uuid import uuid4, UUID
 
 router = APIRouter()
 
@@ -57,13 +58,29 @@ async def list_repositories(
     result = await db.execute(query)
     repositories = result.scalars().all()
     
-    # Get pricing for each repository
+    # Get pricing, endpoints, and limits for each repository
     items = []
     for repo in repositories:
+        # Get pricing
         pricing_result = await db.execute(
             select(RepoPricing).where(RepoPricing.repo_id == repo.id)
         )
         pricing = pricing_result.scalar_one_or_none()
+        
+        # Get endpoints from database
+        endpoints_result = await db.execute(
+            select(RepoEndpoint).where(
+                RepoEndpoint.repo_id == repo.id,
+                RepoEndpoint.enabled == True
+            ).order_by(RepoEndpoint.display_order)
+        )
+        endpoints_list = endpoints_result.scalars().all()
+        
+        # Get limits from database
+        limits_result = await db.execute(
+            select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+        )
+        limits_data = limits_result.scalar_one_or_none()
         
         # Get owner info
         owner_response = RepositoryOwnerResponse(
@@ -83,19 +100,44 @@ async def list_repositories(
                 free_tokens=pricing.free_tokens,
             )
         
-        # Build endpoints
-        endpoints = [
-            RepositoryEndpointResponse(
-                path="/chat",
-                method="POST",
-                description="智能问答",
-            ),
-            RepositoryEndpointResponse(
-                path="/assess",
-                method="POST",
-                description="心理评估",
-            ),
-        ]
+        # Build endpoints from database, fallback to default if none
+        if endpoints_list:
+            endpoints = [
+                RepositoryEndpointResponse(
+                    path=ep.path,
+                    method=ep.method,
+                    description=ep.description,
+                )
+                for ep in endpoints_list
+            ]
+        else:
+            endpoints = [
+                RepositoryEndpointResponse(
+                    path="/chat",
+                    method="POST",
+                    description="智能问答",
+                ),
+                RepositoryEndpointResponse(
+                    path="/assess",
+                    method="POST",
+                    description="心理评估",
+                ),
+            ]
+        
+        # Build limits from database, fallback to default if none
+        limits_response = None
+        if limits_data:
+            limits_response = RepositoryLimitsResponse(
+                rpm=limits_data.rpm or 1000,
+                rph=limits_data.rph or 10000,
+                daily=limits_data.rpd or 100000,
+            )
+        else:
+            limits_response = RepositoryLimitsResponse(
+                rpm=1000,
+                rph=10000,
+                daily=100000,
+            )
         
         items.append(
             RepositoryResponse(
@@ -109,8 +151,13 @@ async def list_repositories(
                 status=repo.status,
                 owner=owner_response,
                 pricing=pricing_response,
+                limits=limits_response,
                 endpoints=endpoints,
                 docs_url=repo.api_docs_url,
+                sla=RepositorySLAResponse(
+                    uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
+                    latency_p99=repo.sla_latency_p99,
+                ),
                 created_at=repo.created_at,
             )
         )
@@ -155,13 +202,29 @@ async def list_my_repositories(
     result = await db.execute(query)
     repositories = result.scalars().all()
     
-    # Get pricing for each repository
+    # Get pricing, endpoints, and limits for each repository
     items = []
     for repo in repositories:
+        # Get pricing
         pricing_result = await db.execute(
             select(RepoPricing).where(RepoPricing.repo_id == repo.id)
         )
         pricing = pricing_result.scalar_one_or_none()
+        
+        # Get endpoints from database
+        endpoints_result = await db.execute(
+            select(RepoEndpoint).where(
+                RepoEndpoint.repo_id == repo.id,
+                RepoEndpoint.enabled == True
+            ).order_by(RepoEndpoint.display_order)
+        )
+        endpoints_list = endpoints_result.scalars().all()
+        
+        # Get limits from database
+        limits_result = await db.execute(
+            select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+        )
+        limits_data = limits_result.scalar_one_or_none()
         
         owner_response = RepositoryOwnerResponse(
             id=str(current_user.id),
@@ -178,17 +241,44 @@ async def list_my_repositories(
                 free_calls=pricing.free_calls,
             )
         
+        # Build endpoints from database
+        endpoints_response = [
+            RepositoryEndpointResponse(
+                path=ep.path,
+                method=ep.method,
+                description=ep.description,
+            )
+            for ep in endpoints_list
+        ]
+        
+        # Build limits from database
+        limits_response = None
+        if limits_data:
+            limits_response = RepositoryLimitsResponse(
+                rpm=limits_data.rpm or 1000,
+                rph=limits_data.rph or 10000,
+                daily=limits_data.rpd or 100000,
+            )
+        
         repo_data = {
             "id": str(repo.id),
             "name": repo.name,
+            "slug": repo.slug,
             "display_name": repo.display_name,
             "description": repo.description,
-            "category": repo.category,
+            "type": repo.repo_type,
+            "category": repo.repo_type,
             "owner": owner_response,
             "protocol": repo.protocol,
             "status": repo.status,
-            "is_public": repo.is_public,
             "pricing": pricing_response,
+            "limits": limits_response,
+            "endpoints": endpoints_response,
+            "docs_url": repo.api_docs_url,
+            "sla": RepositorySLAResponse(
+                uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
+                latency_p99=repo.sla_latency_p99,
+            ),
             "created_at": repo.created_at.isoformat() if repo.created_at else None,
             "updated_at": repo.updated_at.isoformat() if repo.updated_at else None,
         }
@@ -245,6 +335,21 @@ async def get_repository(
     )
     pricing = pricing_result.scalar_one_or_none()
     
+    # Get endpoints from database
+    endpoints_result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.repo_id == repo.id,
+            RepoEndpoint.enabled == True
+        ).order_by(RepoEndpoint.display_order)
+    )
+    endpoints_list = endpoints_result.scalars().all()
+    
+    # Get limits from database
+    limits_result = await db.execute(
+        select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+    )
+    limits_data = limits_result.scalar_one_or_none()
+    
     # Build response
     owner_response = None
     if owner:
@@ -264,13 +369,38 @@ async def get_repository(
             free_tokens=pricing.free_tokens,
         )
     
-    endpoints = [
-        RepositoryEndpointResponse(
-            path="/chat",
-            method="POST",
-            description="智能问答",
-        ),
-    ]
+    # Build endpoints from database, fallback to default if none
+    if endpoints_list:
+        endpoints = [
+            RepositoryEndpointResponse(
+                path=ep.path,
+                method=ep.method,
+                description=ep.description,
+            )
+            for ep in endpoints_list
+        ]
+    else:
+        endpoints = [
+            RepositoryEndpointResponse(
+                path="/chat",
+                method="POST",
+                description="智能问答",
+            ),
+        ]
+    
+    # Build limits from database, fallback to default if none
+    if limits_data:
+        limits_response = RepositoryLimitsResponse(
+            rpm=limits_data.rpm or 1000,
+            rph=limits_data.rph or 10000,
+            daily=limits_data.rpd or 100000,
+        )
+    else:
+        limits_response = RepositoryLimitsResponse(
+            rpm=1000,
+            rph=10000,
+            daily=100000,
+        )
     
     return BaseResponse(
         data=RepositoryResponse(
@@ -284,15 +414,11 @@ async def get_repository(
             status=repo.status,
             owner=owner_response,
             pricing=pricing_response,
-            limits=RepositoryLimitsResponse(
-                rpm=repo.rate_limit_rpm if hasattr(repo, 'rate_limit_rpm') else 1000,
-                rph=10000,
-                daily=100000,
-            ),
+            limits=limits_response,
             endpoints=endpoints,
             docs_url=repo.api_docs_url,
             sla=RepositorySLAResponse(
-                uptime=float(repo.sla_uptime) if repo.sla_uptime else None,
+                uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
                 latency_p99=repo.sla_latency_p99,
             ),
             created_at=repo.created_at,
@@ -324,11 +450,34 @@ async def chat(
     Returns:
         Chat response
     """
-    # In production, this would:
-    # 1. Verify the API key
-    # 2. Check rate limits
-    # 3. Forward request to repository adapter
-    # 4. Process response and return
+    import time
+    start_time = time.time()
+    
+    # 获取仓库信息
+    from src.models.repository import Repository
+    repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
+    repo = repo_result.scalar_one_or_none()
+    
+    if not repo:
+        raise HTTPException(status_code=404, detail="Repository not found")
+    
+    # 记录API调用日志
+    from src.models.billing import APICallLog
+    
+    try:
+        log_entry = APICallLog(
+            repo_id=repo.id,
+            endpoint="/chat",
+            method="POST",
+            status_code=200,
+            response_time=str(int((time.time() - start_time) * 1000)),
+            cost="0",  # 免费调用
+        )
+        db.add(log_entry)
+        await db.commit()
+    except Exception as e:
+        await db.rollback()
+        print(f"Failed to log API call: {e}")
     
     # Placeholder response
     return BaseResponse(
@@ -404,7 +553,7 @@ async def recognize(
 
 # ==================== 仓库所有者 CRUD 接口 ====================
 
-from src.schemas.request import RepositoryCreate, RepositoryUpdate
+from src.schemas.request import RepositoryCreate, RepositoryUpdate, RepositoryApproval, RepositoryReject
 
 
 @router.post("", response_model=BaseResponse[RepositoryResponse])
@@ -443,12 +592,11 @@ async def create_repository(
         slug=slug,
         display_name=repo_data.display_name or repo_data.name,
         description=repo_data.description,
-        category=repo_data.category,
+        repo_type=repo_data.repo_type,
         protocol=repo_data.protocol or "http",
-        status="offline",  # 初始状态为下线
-        is_public=repo_data.is_public if repo_data.is_public is not None else True,
+        status="pending",  # 初始状态为待审核
         owner_id=current_user.id,
-        owner_type="user",
+        owner_type="external",  # 外部用户创建
     )
     
     db.add(repo)
@@ -469,7 +617,7 @@ async def create_repository(
                 id=str(current_user.id),
                 name=current_user.email.split("@")[0],
             ),
-            created_at=repo.created_at.isoformat() if repo.created_at else None,
+            created_at=repo.created_at,
         )
     )
 
@@ -492,11 +640,22 @@ async def update_repository(
         Updated repository
     """
     from src.models.user import User
+    from uuid import UUID
     
-    # 查找仓库
-    result = await db.execute(
-        select(Repository).where(Repository.id == uuid4() if isinstance(repo_id, str) and len(repo_id) == 36 else Repository.id == repo_id)
-    )
+    # 查找仓库 - 处理 UUID 和字符串 ID
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_uuid)
+        )
+    else:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_id)
+        )
     repo = result.scalar_one_or_none()
     
     if not repo:
@@ -506,15 +665,20 @@ async def update_repository(
     if repo.owner_id != current_user.id and current_user.user_type != 'super_admin':
         raise AuthorizationError("无权修改此仓库")
     
+    # 权限检查：只有管理员可以修改状态
+    if repo_data.status is not None and repo.owner_id == current_user.id:
+        from src.core.exceptions import AuthorizationError
+        raise AuthorizationError("状态变更需要管理员审核，请联系管理员操作")
+    
     # 更新字段
     if repo_data.display_name is not None:
         repo.display_name = repo_data.display_name
     if repo_data.description is not None:
         repo.description = repo_data.description
-    if repo_data.category is not None:
-        repo.category = repo_data.category
-    if repo_data.is_public is not None:
-        repo.is_public = repo_data.is_public
+    if repo_data.repo_type is not None:
+        repo.repo_type = repo_data.repo_type
+    if repo_data.endpoint_url is not None:
+        repo.endpoint_url = repo_data.endpoint_url
     if repo_data.status is not None:
         repo.status = repo_data.status
         if repo_data.status == "online" and not repo.online_at:
@@ -538,7 +702,7 @@ async def update_repository(
                 id=str(current_user.id),
                 name=current_user.email.split("@")[0],
             ),
-            created_at=repo.created_at.isoformat() if repo.created_at else None,
+            created_at=repo.created_at,
         )
     )
 
@@ -559,9 +723,19 @@ async def delete_repository(
         Success message
     """
     # 查找仓库
-    result = await db.execute(
-        select(Repository).where(Repository.id == uuid4() if isinstance(repo_id, str) and len(repo_id) == 36 else Repository.id == repo_id)
-    )
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_uuid)
+        )
+    else:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_id)
+        )
     repo = result.scalar_one_or_none()
     
     if not repo:
@@ -596,9 +770,19 @@ async def get_repository_stats(
     from datetime import datetime, timedelta
     
     # 查找仓库
-    result = await db.execute(
-        select(Repository).where(Repository.id == uuid4() if isinstance(repo_id, str) and len(repo_id) == 36 else Repository.id == repo_id)
-    )
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_uuid)
+        )
+    else:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_id)
+        )
     repo = result.scalar_one_or_none()
     
     if not repo:
@@ -608,15 +792,452 @@ async def get_repository_stats(
     if repo.owner_id != current_user.id and current_user.user_type not in ['super_admin', 'admin']:
         raise AuthorizationError("无权查看此仓库统计")
     
-    # 返回模拟统计数据
+    # 从数据库查询真实统计数据
+    from src.models.billing import APICallLog
+    
+    today = datetime.utcnow().date()
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    
+    # 今日调用量
+    today_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            and_(
+                APICallLog.repo_id == repo.id,
+                func.date(APICallLog.created_at) == today,
+            )
+        )
+    )
+    today_calls = today_result.scalar() or 0
+    
+    # 本周调用量
+    week_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            and_(
+                APICallLog.repo_id == repo.id,
+                APICallLog.created_at >= week_ago,
+            )
+        )
+    )
+    week_calls = week_result.scalar() or 0
+    
+    # 总调用量
+    total_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.repo_id == repo.id
+        )
+    )
+    total_calls = total_result.scalar() or 0
+    
+    # 总费用（从cost字段汇总）
+    cost_result = await db.execute(
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
+            APICallLog.repo_id == repo.id
+        )
+    )
+    total_cost = float(cost_result.scalar() or 0)
+    
+    # 活跃API Key数量
+    from src.models.api_key import APIKey
+    keys_result = await db.execute(
+        select(func.count(APIKey.id)).where(
+            and_(
+                APIKey.user_id == repo.owner_id,
+                APIKey.status == "active"
+            )
+        )
+    )
+    active_keys = keys_result.scalar() or 0
+    
     return BaseResponse(
         data={
             "repo_id": str(repo.id),
-            "total_calls": 0,
-            "today_calls": 0,
-            "total_cost": 0.0,
-            "active_keys": 0,
+            "total_calls": total_calls,
+            "today_calls": today_calls,
+            "week_calls": week_calls,
+            "total_cost": round(total_cost, 2),
+            "active_keys": active_keys,
             "avg_latency": 0,
             "success_rate": 100.0,
         }
+    )
+
+
+# ==================== 管理员仓库审核接口 ====================
+
+def check_admin_permission(user: "User") -> None:  # noqa: F821
+    """检查用户是否有管理员权限"""
+    from src.core.exceptions import AuthorizationError
+    if user.user_type not in ['admin', 'super_admin']:
+        raise AuthorizationError("只有管理员可以执行此操作")
+
+
+@router.get("/admin/all", response_model=BaseResponse[RepositoryListResponse])
+async def list_all_repositories_for_admin(
+    status: Optional[str] = Query(None, description="Status filter: pending/approved/rejected/online/offline"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Page size"),
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    获取所有仓库（管理员专用）
+    
+    管理员可以查看所有仓库，支持按状态筛选。
+    """
+    from src.models.user import User
+    
+    # 检查管理员权限
+    check_admin_permission(current_user)
+    
+    # 构建查询
+    query = select(Repository)
+    
+    # 状态筛选
+    if status:
+        query = query.where(Repository.status == status)
+    
+    # 统计总数
+    count_query = select(func.count()).select_from(query.subquery())
+    total_result = await db.execute(count_query)
+    total = total_result.scalar()
+    
+    # 分页查询
+    query = query.offset((page - 1) * page_size).limit(page_size).order_by(Repository.created_at.desc())
+    result = await db.execute(query)
+    repositories = result.scalars().all()
+    
+    # 构建响应
+    items = []
+    for repo in repositories:
+        # 获取所有者信息
+        owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+        owner = owner_result.scalar_one_or_none()
+        
+        items.append(
+            RepositoryResponse(
+                id=str(repo.id),
+                name=repo.name,
+                slug=repo.slug,
+                display_name=repo.display_name,
+                description=repo.description,
+                type=repo.repo_type,
+                protocol=repo.protocol,
+                status=repo.status,
+                owner=RepositoryOwnerResponse(
+                    id=str(repo.owner_id),
+                    name=owner.email.split("@")[0] if owner else "未知",
+                ),
+                created_at=repo.created_at,
+                updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+                online_at=repo.online_at.isoformat() if repo.online_at else None,
+            )
+        )
+    
+    return BaseResponse(
+        data=RepositoryListResponse(
+            items=items,
+            pagination={
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": (total + page_size - 1) // page_size if total > 0 else 0,
+            }
+        )
+    )
+
+
+@router.post("/{repo_id}/approve", response_model=BaseResponse[RepositoryResponse])
+async def approve_repository(
+    repo_id: str,
+    approval_data: RepositoryApproval,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    审核通过仓库（管理员专用）
+    
+    Args:
+        repo_id: 仓库ID
+        approval_data: 审核通过数据
+    
+    Returns:
+        更新后的仓库信息
+    """
+    from src.models.user import User
+    from datetime import datetime
+    
+    # 检查管理员权限
+    check_admin_permission(current_user)
+    
+    # 查找仓库
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(select(Repository).where(Repository.id == repo_uuid))
+    else:
+        result = await db.execute(select(Repository).where(Repository.id == repo_id))
+    repo = result.scalar_one_or_none()
+    
+    if not repo:
+        raise RepositoryNotFoundError()
+    
+    # 检查状态是否允许审核
+    if repo.status not in ['pending', 'rejected']:
+        from src.core.exceptions import ValidationError
+        raise ValidationError(f"仓库当前状态为 {repo.status}，无法审核")
+    
+    # 获取所有者信息
+    owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+    owner = owner_result.scalar_one_or_none()
+    
+    # 更新仓库状态
+    repo.status = "approved"
+    repo.approved_at = datetime.utcnow()
+    repo.approved_by = current_user.id
+    repo.reviewed_by = current_user.id
+    
+    await db.commit()
+    await db.refresh(repo)
+    
+    return BaseResponse(
+        data=RepositoryResponse(
+            id=str(repo.id),
+            name=repo.name,
+            slug=repo.slug,
+            display_name=repo.display_name,
+            description=repo.description,
+            type=repo.repo_type,
+            protocol=repo.protocol,
+            status=repo.status,
+            owner=RepositoryOwnerResponse(
+                id=str(repo.owner_id),
+                name=owner.email.split("@")[0] if owner else "未知",
+            ),
+            created_at=repo.created_at,
+            updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+        )
+    )
+
+
+@router.post("/{repo_id}/reject", response_model=BaseResponse[RepositoryResponse])
+async def reject_repository(
+    repo_id: str,
+    reject_data: RepositoryReject,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    审核拒绝仓库（管理员专用）
+    
+    Args:
+        repo_id: 仓库ID
+        reject_data: 拒绝原因
+    
+    Returns:
+        更新后的仓库信息
+    """
+    from src.models.user import User
+    from datetime import datetime
+    
+    # 检查管理员权限
+    check_admin_permission(current_user)
+    
+    # 查找仓库
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(select(Repository).where(Repository.id == repo_uuid))
+    else:
+        result = await db.execute(select(Repository).where(Repository.id == repo_id))
+    repo = result.scalar_one_or_none()
+    
+    if not repo:
+        raise RepositoryNotFoundError()
+    
+    # 检查状态是否允许审核
+    if repo.status not in ['pending', 'approved']:
+        from src.core.exceptions import ValidationError
+        raise ValidationError(f"仓库当前状态为 {repo.status}，无法拒绝")
+    
+    # 获取所有者信息
+    owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+    owner = owner_result.scalar_one_or_none()
+    
+    # 更新仓库状态
+    repo.status = "rejected"
+    repo.reviewed_by = current_user.id
+    
+    await db.commit()
+    await db.refresh(repo)
+    
+    return BaseResponse(
+        data=RepositoryResponse(
+            id=str(repo.id),
+            name=repo.name,
+            slug=repo.slug,
+            display_name=repo.display_name,
+            description=repo.description,
+            type=repo.repo_type,
+            protocol=repo.protocol,
+            status=repo.status,
+            owner=RepositoryOwnerResponse(
+                id=str(repo.owner_id),
+                name=owner.email.split("@")[0] if owner else "未知",
+            ),
+            created_at=repo.created_at,
+            updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+        )
+    )
+
+
+@router.post("/{repo_id}/online", response_model=BaseResponse[RepositoryResponse])
+async def online_repository(
+    repo_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    上线仓库（管理员专用）
+    
+    仓库必须先通过审核(approved)才能上线。
+    
+    Args:
+        repo_id: 仓库ID
+    
+    Returns:
+        更新后的仓库信息
+    """
+    from src.models.user import User
+    from datetime import datetime
+    
+    # 检查管理员权限
+    check_admin_permission(current_user)
+    
+    # 查找仓库
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(select(Repository).where(Repository.id == repo_uuid))
+    else:
+        result = await db.execute(select(Repository).where(Repository.id == repo_id))
+    repo = result.scalar_one_or_none()
+    
+    if not repo:
+        raise RepositoryNotFoundError()
+    
+    # 检查状态是否允许上线
+    if repo.status not in ['approved', 'offline']:
+        from src.core.exceptions import ValidationError
+        raise ValidationError(f"仓库当前状态为 {repo.status}，必须先审核通过才能上线")
+    
+    # 获取所有者信息
+    owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+    owner = owner_result.scalar_one_or_none()
+    
+    # 更新仓库状态
+    repo.status = "online"
+    repo.online_at = datetime.utcnow()
+    
+    await db.commit()
+    await db.refresh(repo)
+    
+    return BaseResponse(
+        data=RepositoryResponse(
+            id=str(repo.id),
+            name=repo.name,
+            slug=repo.slug,
+            display_name=repo.display_name,
+            description=repo.description,
+            type=repo.repo_type,
+            protocol=repo.protocol,
+            status=repo.status,
+            owner=RepositoryOwnerResponse(
+                id=str(repo.owner_id),
+                name=owner.email.split("@")[0] if owner else "未知",
+            ),
+            created_at=repo.created_at,
+            updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+            online_at=repo.online_at.isoformat() if repo.online_at else None,
+        )
+    )
+
+
+@router.post("/{repo_id}/offline", response_model=BaseResponse[RepositoryResponse])
+async def offline_repository(
+    repo_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    下线仓库（管理员专用）
+    
+    Args:
+        repo_id: 仓库ID
+    
+    Returns:
+        更新后的仓库信息
+    """
+    from src.models.user import User
+    from datetime import datetime
+    
+    # 检查管理员权限
+    check_admin_permission(current_user)
+    
+    # 查找仓库
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(select(Repository).where(Repository.id == repo_uuid))
+    else:
+        result = await db.execute(select(Repository).where(Repository.id == repo_id))
+    repo = result.scalar_one_or_none()
+    
+    if not repo:
+        raise RepositoryNotFoundError()
+    
+    # 检查状态
+    if repo.status != "online":
+        from src.core.exceptions import ValidationError
+        raise ValidationError(f"仓库当前状态为 {repo.status}，只能下线已上线的仓库")
+    
+    # 获取所有者信息
+    owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+    owner = owner_result.scalar_one_or_none()
+    
+    # 更新仓库状态
+    repo.status = "offline"
+    repo.offline_at = datetime.utcnow()
+    
+    await db.commit()
+    await db.refresh(repo)
+    
+    return BaseResponse(
+        data=RepositoryResponse(
+            id=str(repo.id),
+            name=repo.name,
+            slug=repo.slug,
+            display_name=repo.display_name,
+            description=repo.description,
+            type=repo.repo_type,
+            protocol=repo.protocol,
+            status=repo.status,
+            owner=RepositoryOwnerResponse(
+                id=str(repo.owner_id),
+                name=owner.email.split("@")[0] if owner else "未知",
+            ),
+            created_at=repo.created_at,
+            updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+        )
     )

@@ -126,7 +126,7 @@ dist/assets/index-xxxxx.js     xxx.xx kB
 **先启动后端**（新终端）:
 ```powershell
 cd d:\Work_Area\AI\API-Agent\api-platform
-python -m uvicorn src.main:app --reload --port 8080
+python -m uvicorn src.main:app --reload --port 8000
 ```
 
 **启动前端**（另一个终端）:

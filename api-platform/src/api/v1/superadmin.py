@@ -4,9 +4,9 @@ from typing import Optional, List
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, and_, or_
+from sqlalchemy import select, func, and_, or_, cast, Numeric
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config.database import get_db
@@ -79,8 +79,8 @@ async def get_dashboard_stats(
     keys_result = await db.execute(select(func.count(APIKey.id)))
     total_api_keys = keys_result.scalar() or 0
     
-    # 统计总收入（所有账户余额之和）
-    revenue_result = await db.execute(select(func.sum(Account.balance)))
+    # 统计总收入（所有账户余额之和，需要转换为数值类型）
+    revenue_result = await db.execute(select(func.sum(cast(Account.balance, Numeric))))
     total_revenue = revenue_result.scalar() or Decimal("0")
     
     # 按用户类型统计
@@ -159,6 +159,15 @@ class UserListItem(BaseModel):
         from_attributes = True
 
 
+class UserUpdateRequest(BaseModel):
+    """更新用户请求模型"""
+    user_type: Optional[str] = None
+    role: Optional[str] = None
+    user_status: Optional[str] = None
+    vip_level: Optional[int] = None
+    permissions: Optional[List[str]] = None
+
+
 @router.get("/users")
 async def list_users(
     page: int = Query(1, ge=1),
@@ -233,11 +242,7 @@ async def list_users(
 @router.put("/users/{user_id}", response_model=BaseResponse[UserListItem])
 async def update_user(
     user_id: str,
-    user_type: Optional[str] = None,
-    role: Optional[str] = None,
-    user_status: Optional[str] = None,
-    vip_level: Optional[int] = None,
-    permissions: Optional[List[str]] = None,
+    update_data: UserUpdateRequest = Body(..., description="用户更新数据"),
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_super_admin_user),
 ):
@@ -262,16 +267,16 @@ async def update_user(
     }
     
     # 更新字段
-    if user_type is not None:
-        user.user_type = user_type
-    if role is not None:
-        user.role = role
-    if user_status is not None:
-        user.user_status = user_status
-    if vip_level is not None:
-        user.vip_level = vip_level
-    if permissions is not None:
-        user.permissions = permissions
+    if update_data.user_type is not None:
+        user.user_type = update_data.user_type
+    if update_data.role is not None:
+        user.role = update_data.role
+    if update_data.user_status is not None:
+        user.user_status = update_data.user_status
+    if update_data.vip_level is not None:
+        user.vip_level = update_data.vip_level
+    if update_data.permissions is not None:
+        user.permissions = update_data.permissions
     
     # 记录审计日志
     audit_log = AuditLog(
@@ -569,10 +574,15 @@ async def list_configs(
     return BaseResponse(data=items)
 
 
+class ConfigUpdateRequest(BaseModel):
+    """更新配置请求模型"""
+    value: str
+
+
 @router.put("/configs/{config_id}", response_model=BaseResponse[dict])
 async def update_config(
     config_id: str,
-    value: str,
+    update_data: ConfigUpdateRequest = Body(..., description="配置更新数据"),
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_super_admin_user),
 ):
@@ -594,7 +604,7 @@ async def update_config(
     old_value = config.value
     
     # 更新配置
-    config.value = value
+    config.value = update_data.value
     config.updated_at = datetime.utcnow()
     config.updated_by = current_user["username"]
     
@@ -608,7 +618,7 @@ async def update_config(
         resource_id=str(config.id),
         description=f"更新系统配置 {config.key}",
         old_data={"value": old_value},
-        new_data={"value": value},
+        new_data={"value": update_data.value},
         status="success",
     )
     db.add(audit_log)
