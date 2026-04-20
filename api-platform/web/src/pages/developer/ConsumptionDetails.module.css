@@ -1,0 +1,15 @@
+.container {
+  padding: 0;
+}
+
+.statsRow {
+  margin-bottom: 16px;
+}
+
+.statCard {
+  text-align: center;
+}
+
+.filters {
+  margin-bottom: 16px;
+}

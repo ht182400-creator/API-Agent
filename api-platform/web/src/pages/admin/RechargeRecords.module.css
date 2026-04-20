@@ -1,0 +1,22 @@
+/* 充值明细页面样式 */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.summaryCard {
+  margin-bottom: 16px;
+}
+
+.filterCard {
+  margin-bottom: 16px;
+}

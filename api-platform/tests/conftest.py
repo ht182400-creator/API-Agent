@@ -128,7 +128,7 @@ def auth_headers(test_user):
     """Create authentication headers"""
     from src.core.security import create_access_token
     
-    token = create_access_token({"sub": test_user.id})
+    token = create_access_token({"sub": str(test_user.id)})
     return {"Authorization": f"Bearer {token}"}
 
 

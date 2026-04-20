@@ -2,7 +2,7 @@
 
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, Query, Request, Header
+from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
@@ -442,6 +442,8 @@ async def chat(
     Call repository chat API
     
     This endpoint proxies requests to the underlying repository's chat API.
+    If the repository has a configured backend URL, it will forward the request.
+    Otherwise, it returns a mock response for testing purposes.
     
     Args:
         repo_slug: Repository slug
@@ -451,9 +453,22 @@ async def chat(
         Chat response
     """
     import time
+    import httpx
+    from src.services.auth_service import AuthService
+    
     start_time = time.time()
     
-    # 获取仓库信息
+    # 1. 验证API Key并检查配额
+    auth_service = AuthService(db)
+    try:
+        user, api_key = await auth_service.verify_api_key(x_access_key, repo_id=None)
+    except Exception as e:
+        from src.core.exceptions import QuotaExceededError, InvalidAPIKeyError
+        if isinstance(e, (InvalidAPIKeyError, QuotaExceededError)):
+            raise
+        # 其他异常继续处理
+    
+    # 2. 获取仓库信息
     from src.models.repository import Repository
     repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
     repo = repo_result.scalar_one_or_none()
@@ -461,33 +476,106 @@ async def chat(
     if not repo:
         raise HTTPException(status_code=404, detail="Repository not found")
     
-    # 记录API调用日志
-    from src.models.billing import APICallLog
+    # 3. 检查仓库状态
+    if repo.status != "online":
+        raise HTTPException(status_code=403, detail="Repository is not online")
     
-    try:
-        log_entry = APICallLog(
-            repo_id=repo.id,
-            endpoint="/chat",
-            method="POST",
-            status_code=200,
-            response_time=str(int((time.time() - start_time) * 1000)),
-            cost="0",  # 免费调用
-        )
-        db.add(log_entry)
-        await db.commit()
-    except Exception as e:
-        await db.rollback()
-        print(f"Failed to log API call: {e}")
+    # 4. 尝试调用实际后端服务
+    response_data = None
+    status_code = 200
     
-    # Placeholder response
-    return BaseResponse(
-        data={
+    if repo.endpoint_url:
+        # 有配置后端URL，尝试调用
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                backend_url = f"{repo.endpoint_url.rstrip('/')}/chat"
+                resp = await client.post(
+                    backend_url,
+                    json=request_data,
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-API-Key": x_access_key,
+                        "X-Request-ID": getattr(request.state, "request_id", ""),
+                    }
+                )
+                status_code = resp.status_code
+                if resp.status_code == 200:
+                    response_data = resp.json()
+                else:
+                    response_data = {"error": resp.text}
+        except httpx.TimeoutException:
+            response_data = {"error": "Backend service timeout"}
+            status_code = 504
+        except httpx.RequestError as e:
+            response_data = {"error": f"Backend service error: {str(e)}"}
+            status_code = 502
+    else:
+        # 没有配置后端URL，返回模拟数据
+        response_data = {
             "answer": "这是一个模拟的回答。在生产环境中，这将调用实际的心理问答API服务。",
             "suggestions": [
                 "建议您保持规律的作息时间",
                 "可以尝试冥想放松",
                 "建议咨询专业心理医生",
             ],
+        }
+    
+    # 5. 记录API调用日志
+    from src.models.billing import APICallLog
+    from src.models.billing import Quota
+    from datetime import datetime, timedelta
+    
+    try:
+        response_time = int((time.time() - start_time) * 1000)
+        
+        log_entry = APICallLog(
+            repo_id=repo.id,
+            api_key_id=api_key.id,
+            user_id=user.id,
+            endpoint="/chat",
+            method="POST",
+            status_code=status_code,
+            response_time=str(response_time),
+            cost="0",
+        )
+        db.add(log_entry)
+        
+        # 更新每日配额使用量
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        quota_result = await db.execute(
+            select(Quota).where(
+                and_(
+                    Quota.key_id == api_key.id,
+                    Quota.quota_type == "daily",
+                    Quota.reset_at >= today_start
+                )
+            )
+        )
+        quota = quota_result.scalar_one_or_none()
+        
+        if quota:
+            quota.quota_used += 1
+        else:
+            quota = Quota(
+                user_id=user.id,
+                key_id=api_key.id,
+                repo_id=repo.id,
+                quota_type="daily",
+                quota_limit=api_key.daily_quota or 0,
+                quota_used=1,
+                reset_type="daily",
+                reset_at=today_start + timedelta(days=1),
+            )
+            db.add(quota)
+        
+        await db.commit()
+    except Exception as e:
+        await db.rollback()
+        print(f"Failed to log API call: {e}")
+    
+    return BaseResponse(
+        data={
+            **response_data,
             "request_id": getattr(request.state, "request_id", "mock-request-id"),
         }
     )

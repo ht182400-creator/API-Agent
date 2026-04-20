@@ -1,0 +1,30 @@
+/* 支付方式选中高亮样式 - 渐变背景、阴影、放大效果、文字变白 */
+
+/* 支付方式按钮基础样式 */
+.ant-radio-button-wrapper.methodButton {
+  height: 50px !important;
+  padding: 0 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  border-radius: 8px !important;
+  transition: all 0.3s !important;
+}
+
+/* 支付方式选中高亮 - 紫色渐变（与支付宝蓝色图标形成对比） */
+.ant-radio-button-wrapper-checked.methodButton {
+  background: linear-gradient(135deg, #722ed1 0%, #9254de 100%) !important;
+  border-color: #722ed1 !important;
+  box-shadow: 0 4px 12px rgba(114, 46, 209, 0.3) !important;
+  transform: scale(1.02) !important;
+  color: #ffffff !important;
+}
+
+.ant-radio-button-wrapper-checked.methodButton:hover {
+  background: linear-gradient(135deg, #9254de 0%, #b37feb 100%) !important;
+  border-color: #9254de !important;
+  transform: scale(1.02) !important;
+}
+
+.ant-radio-button-wrapper.methodButton:hover {
+  border-color: #722ed1 !important;
+}

@@ -106,4 +106,34 @@ DEFAULT_CONFIGS = {
     "rate_limit.enabled": {"value": "true", "type": "boolean", "label": "启用限流"},
     "rate_limit.default_rpm": {"value": "60", "type": "number", "label": "默认RPM"},
     "rate_limit.default_rph": {"value": "1000", "type": "number", "label": "默认RPH"},
+
+    # 支付设置 - 模拟模式
+    "payment.mock_mode": {"value": "true", "type": "boolean", "label": "支付模式", 
+                         "description": "true=模拟模式(测试用), false=真实支付",
+                         "options": ["true", "false"]},
+    "payment.mock_pay_url": {"value": "/mock-payment", "type": "string", "label": "模拟支付页面地址"},
+
+    # 支付设置 - 支付宝
+    "payment.alipay.enabled": {"value": "false", "type": "boolean", "label": "启用支付宝"},
+    "payment.alipay.app_id": {"value": "", "type": "string", "label": "支付宝AppID", "encrypted": True},
+    "payment.alipay.private_key": {"value": "", "type": "string", "label": "应用私钥(RSA2)", "encrypted": True},
+    "payment.alipay.alipay_public_key": {"value": "", "type": "string", "label": "支付宝公钥", "encrypted": True},
+    "payment.alipay.notify_url": {"value": "", "type": "string", "label": "异步通知地址"},
+    "payment.alipay.return_url": {"value": "", "type": "string", "label": "同步跳转地址"},
+    "payment.alipay.sandbox": {"value": "true", "type": "boolean", "label": "沙箱环境"},
+
+    # 支付设置 - 微信支付
+    "payment.wechat.enabled": {"value": "false", "type": "boolean", "label": "启用微信支付"},
+    "payment.wechat.mchid": {"value": "", "type": "string", "label": "微信商户号", "encrypted": True},
+    "payment.wechat.appid": {"value": "", "type": "string", "label": "微信AppID", "encrypted": True},
+    "payment.wechat.api_key": {"value": "", "type": "string", "label": "微信API密钥", "encrypted": True},
+    "payment.wechat.cert_path": {"value": "", "type": "string", "label": "SSL证书路径", "encrypted": True},
+    "payment.wechat.notify_url": {"value": "", "type": "string", "label": "支付结果通知地址"},
+    "payment.wechat.sandbox": {"value": "true", "type": "boolean", "label": "沙箱环境"},
+
+    # 支付设置 - 银行卡
+    "payment.bankcard.enabled": {"value": "false", "type": "boolean", "label": "启用银行卡支付"},
+    "payment.bankcard.merchant_id": {"value": "", "type": "string", "label": "商户号", "encrypted": True},
+    "payment.bankcard.terminal_id": {"value": "", "type": "string", "label": "终端号", "encrypted": True},
+    "payment.bankcard.notify_url": {"value": "", "type": "string", "label": "支付结果通知地址"},
 }

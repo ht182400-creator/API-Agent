@@ -9,7 +9,10 @@ import DeveloperKeys from './pages/developer/Keys'
 import DeveloperQuota from './pages/developer/Quota'
 import DeveloperLogs from './pages/developer/Logs'
 import DeveloperBilling from './pages/developer/Billing'
+import DeveloperRecharge from './pages/developer/Recharge'
 import DeveloperRepos from './pages/developer/Repos'
+import DeveloperUsage from './pages/developer/Usage'
+import DeveloperConsumptionDetails from './pages/developer/ConsumptionDetails'
 import DeveloperRepoDetail from './pages/developer/RepoDetail'
 import OwnerDashboard from './pages/owner/Dashboard'
 import OwnerRepos from './pages/owner/Repos'
@@ -20,6 +23,12 @@ import AdminUsers from './pages/admin/Users'
 import AdminRepos from './pages/admin/Repos'
 import AdminSettings from './pages/admin/Settings'
 import AdminLogs from './pages/admin/AdminLogs'
+import AdminRechargeRecords from './pages/admin/RechargeRecords'
+import AdminChannelSummary from './pages/admin/ChannelSummary'
+import AdminPlatformAccounts from './pages/admin/PlatformAccounts'
+import AdminReconciliation from './pages/admin/Reconciliation'
+import AdminPricingConfig from './pages/admin/PricingConfig'
+import AdminMonthlyBills from './pages/admin/AdminMonthlyBills'
 import DevTools from './pages/admin/DevTools'
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard'
 import SuperAdminUsers from './pages/superadmin/SuperAdminUsers'
@@ -136,6 +145,14 @@ function App() {
         <Route path="logs" element={<AdminLogs />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="devtools" element={<DevTools />} />
+        {/* V2.6 新增：对账相关页面 */}
+        <Route path="recharge-records" element={<AdminRechargeRecords />} />
+        <Route path="channel-summary" element={<AdminChannelSummary />} />
+        <Route path="platform-accounts" element={<AdminPlatformAccounts />} />
+        {/* V2.6 新增：对账核心管理 */}
+        <Route path="reconciliation" element={<AdminReconciliation />} />
+        <Route path="pricing-config" element={<AdminPricingConfig />} />
+        <Route path="monthly-bills" element={<AdminMonthlyBills />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
       
@@ -170,6 +187,9 @@ function App() {
           <Route path="quota" element={<DeveloperQuota />} />
           <Route path="logs" element={<DeveloperLogs />} />
           <Route path="billing" element={<DeveloperBilling />} />
+          <Route path="usage" element={<DeveloperUsage />} />
+          <Route path="consumption-details" element={<DeveloperConsumptionDetails />} />
+          <Route path="recharge" element={<DeveloperRecharge />} />
           <Route path="repos" element={<DeveloperRepos />} />
           <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
         </Route>

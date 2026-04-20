@@ -138,11 +138,33 @@ class QuotaExceededError(APIError):
         )
 
 
+class InsufficientBalanceError(APIError):
+    """Insufficient balance for operation"""
+
+    def __init__(self, available: float = 0, required: float = 0):
+        super().__init__(
+            "Insufficient balance",
+            code=40005,
+            details={"available": available, "required": required},
+            status_code=400,
+        )
+
+
 class ValidationError(APIError):
     """Validation error"""
 
     def __init__(self, message: str, details: dict = None):
         super().__init__(message, code=40001, details=details or {}, status_code=400)
+
+
+class InvalidParameterError(ValidationError):
+    """Invalid parameter"""
+
+    def __init__(self, parameter: str, reason: str = None):
+        message = f"Invalid parameter: {parameter}"
+        if reason:
+            message += f" - {reason}"
+        super().__init__(message)
 
 
 class RepositoryUnavailableError(APIError):
@@ -178,3 +200,43 @@ class ServerError(APIError):
 
     def __init__(self, message: str = "Internal server error"):
         super().__init__(message, code=50001, status_code=500)
+
+
+# ============= Payment Exceptions (V2.5新增) =============
+
+class PaymentError(APIError):
+    """Payment related error"""
+
+    def __init__(self, message: str = "Payment error", details: dict = None):
+        super().__init__(message, code=40001, details=details or {}, status_code=400)
+
+
+class PaymentFailedError(PaymentError):
+    """Payment processing failed"""
+
+    def __init__(self, message: str = "Payment processing failed"):
+        super().__init__(message, code=40002)
+
+
+class OrderNotFoundError(NotFoundError):
+    """Payment order not found"""
+
+    def __init__(self):
+        super().__init__("Payment order")
+
+
+class OrderExpiredError(PaymentError):
+    """Payment order has expired"""
+
+    def __init__(self):
+        super().__init__("Payment order has expired", code=40003)
+
+
+class InvalidPaymentStatusError(PaymentError):
+    """Invalid payment status transition"""
+
+    def __init__(self, current_status: str, target_status: str):
+        super().__init__(
+            f"Cannot change status from {current_status} to {target_status}",
+            code=40004,
+        )

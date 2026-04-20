@@ -25,6 +25,10 @@ import {
   SafetyCertificateOutlined,
   TeamOutlined,
   ToolOutlined,
+  UnorderedListOutlined,
+  AccountBookOutlined,
+  BankOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useAuthStore } from '../stores/auth'
@@ -59,6 +63,17 @@ const developerMenu: MenuProps['items'] = [
   { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+  // V2.8 新增：消费明细子菜单
+  {
+    key: 'consumption',
+    icon: <BarChartOutlined />,
+    label: '消费分析',
+    children: [
+      { key: '/developer/usage', icon: <PieChartOutlined />, label: '使用概览' },
+      { key: '/developer/consumption-details', icon: <FileTextOutlined />, label: '消费明细' },
+    ],
+  },
+  { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
 ]
 
 // 仓库所有者菜单（不包含开发者菜单，避免路由冲突）
@@ -75,6 +90,28 @@ const adminMenu: MenuProps['items'] = [
   { key: '/admin/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: '/admin/repos', icon: <ShopOutlined />, label: '仓库管理' },
   { key: '/admin/logs', icon: <FolderOutlined />, label: '日志管理' },
+  // V2.6 新增：对账子菜单
+  {
+    key: 'reconciliation',
+    icon: <AccountBookOutlined />,
+    label: '财务对账',
+    children: [
+      { key: '/admin/reconciliation', icon: <CheckCircleOutlined />, label: '对账管理' },
+      { key: '/admin/recharge-records', icon: <UnorderedListOutlined />, label: '充值明细' },
+      { key: '/admin/channel-summary', icon: <DollarOutlined />, label: '渠道收款汇总' },
+      { key: '/admin/platform-accounts', icon: <BankOutlined />, label: '平台账户余额' },
+    ],
+  },
+  // V2.6 新增：计费配置子菜单
+  {
+    key: 'pricing',
+    icon: <DollarOutlined />,
+    label: '计费配置',
+    children: [
+      { key: '/admin/pricing-config', icon: <SettingOutlined />, label: '计费规则管理' },
+      { key: '/admin/monthly-bills', icon: <FileTextOutlined />, label: '月度账单管理' },
+    ],
+  },
   { key: '/admin/settings', icon: <SettingOutlined />, label: '系统设置' },
 ]
 

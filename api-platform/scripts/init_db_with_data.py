@@ -637,6 +637,93 @@ async def create_test_data(session: AsyncSession):
     for audit_log in audit_logs:
         session.add(audit_log)
     
+    # ==================== 充值套餐数据 ====================
+    recharge_packages = [
+        RechargePackage(
+            id=uuid.UUID("f0000000-0000-0000-0000-000000000001"),
+            name="基础套餐",
+            description="适合个人开发者使用",
+            original_amount="50.00",
+            price="50.00",
+            discount=None,
+            bonus_amount="0",
+            bonus_ratio=None,
+            included_calls=10000,
+            included_tokens=None,
+            validity_days=30,
+            is_active="true",
+            is_featured="false",
+            sort_order=1,
+        ),
+        RechargePackage(
+            id=uuid.UUID("f0000000-0000-0000-0000-000000000002"),
+            name="标准套餐",
+            description="适合中小团队使用，包含赠送额度",
+            original_amount="100.00",
+            price="100.00",
+            discount=None,
+            bonus_amount="10",
+            bonus_ratio=None,
+            included_calls=25000,
+            included_tokens=None,
+            validity_days=30,
+            is_active="true",
+            is_featured="true",
+            sort_order=2,
+        ),
+        RechargePackage(
+            id=uuid.UUID("f0000000-0000-0000-0000-000000000003"),
+            name="高级套餐",
+            description="适合企业用户使用",
+            original_amount="500.00",
+            price="500.00",
+            discount=None,
+            bonus_amount="75",
+            bonus_ratio=None,
+            included_calls=150000,
+            included_tokens=None,
+            validity_days=90,
+            is_active="true",
+            is_featured="false",
+            sort_order=3,
+        ),
+        RechargePackage(
+            id=uuid.UUID("f0000000-0000-0000-0000-000000000004"),
+            name="旗舰套餐",
+            description="适合大型企业，无限制使用",
+            original_amount="2000.00",
+            price="2000.00",
+            discount=None,
+            bonus_amount="400",
+            bonus_ratio=None,
+            included_calls=None,
+            included_tokens=None,
+            validity_days=365,
+            is_active="true",
+            is_featured="false",
+            sort_order=4,
+        ),
+        RechargePackage(
+            id=uuid.UUID("f0000000-0000-0000-0000-000000000005"),
+            name="年度会员",
+            description="一次性付费，全年不限量",
+            original_amount="5000.00",
+            price="5000.00",
+            discount=None,
+            bonus_amount="0",
+            bonus_ratio="0.2",
+            included_calls=None,
+            included_tokens=None,
+            validity_days=365,
+            is_active="true",
+            is_featured="false",
+            sort_order=5,
+        ),
+    ]
+    
+    for package in recharge_packages:
+        session.add(package)
+    
     await session.commit()
     print("Test data created successfully!")
 

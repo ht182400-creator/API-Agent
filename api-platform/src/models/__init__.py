@@ -9,6 +9,9 @@ from .notification import Notification, NotificationPreference
 from .audit_log import AuditLog, AuditAction, ResourceType
 from .system_config import SystemConfig, ConfigCategory, DEFAULT_CONFIGS
 from .role import Role, DEFAULT_ROLES, PERMISSION_DEFINITIONS
+from .payment import Payment, RechargePackage, PaymentCallback
+from .reconciliation import PlatformAccount, ReconciliationRecord, ReconciliationDispute
+from .pricing_config import PricingConfig
 
 __all__ = [
     "User",
@@ -39,4 +42,14 @@ __all__ = [
     "Role",
     "DEFAULT_ROLES",
     "PERMISSION_DEFINITIONS",
+    # 支付模块
+    "Payment",
+    "RechargePackage",
+    "PaymentCallback",
+    # 对账模块
+    "PlatformAccount",
+    "ReconciliationRecord",
+    "ReconciliationDispute",
+    # 计费配置模块
+    "PricingConfig",
 ]

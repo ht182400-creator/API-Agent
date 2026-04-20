@@ -182,6 +182,7 @@ export default function Login() {
           </div>
 
           <Form
+            form={form}
             name="login"
             onFinish={onFinish}
             autoComplete="off"

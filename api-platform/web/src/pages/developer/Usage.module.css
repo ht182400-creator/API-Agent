@@ -1,0 +1,34 @@
+.container {
+  padding: 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  text-align: center;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.section h4 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  background: #fafafa;
+  border-radius: 8px;
+}

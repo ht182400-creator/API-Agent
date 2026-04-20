@@ -1,0 +1,66 @@
+/* 渠道收款汇总页面样式 */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.totalCard {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.totalCard :global(.ant-statistic-title) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.totalCard :global(.ant-statistic-content) {
+  color: #fff;
+}
+
+.channelCard {
+  height: 100%;
+}
+
+.channelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.channelStats {
+  padding-top: 8px;
+}
+
+.subStats {
+  margin: 16px 0;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.progressSection {
+  margin-top: 16px;
+}
+
+.tipCard {
+  margin-top: 16px;
+}

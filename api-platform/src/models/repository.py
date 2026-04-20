@@ -72,6 +72,7 @@ class Repository(Base):
     # Relationships
     owner = relationship("User", back_populates="repositories")
     pricing = relationship("RepoPricing", back_populates="repository", uselist=False)
+    pricing_configs = relationship("PricingConfig", back_populates="repository")
     configs = relationship("RepoConfig", back_populates="repository")
     endpoints = relationship("RepoEndpoint", back_populates="repository", order_by="RepoEndpoint.display_order")
     limits = relationship("RepoLimits", back_populates="repository", uselist=False)

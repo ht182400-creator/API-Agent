@@ -34,6 +34,14 @@ export interface QuotaInfo {
     limit: number | null
     remaining: number | null
   }
+  // V2.5 新增：RPM/RPH 限流信息
+  rpm_limit?: number
+  rpm_used?: number
+  rph_limit?: number
+  rph_used?: number
+  // V2.5 新增：余额信息
+  balance_enabled?: boolean
+  balance?: number
 }
 
 // 调用日志
