@@ -123,12 +123,13 @@ class AuthService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def verify_api_key(self, api_key: str) -> Tuple[User, APIKey]:
+    async def verify_api_key(self, api_key: str, repo_id: str = None) -> Tuple[User, APIKey]:
         """
         Verify API key and return associated user and key
         
         Args:
             api_key: API key to verify
+            repo_id: Repository ID (optional, for quota check)
         
         Returns:
             Tuple of (User, APIKey)
@@ -137,6 +138,7 @@ class AuthService:
             InvalidAPIKeyError: If key is invalid
             APIKeyDisabledError: If key is disabled
             APIKeyExpiredError: If key has expired
+            QuotaExceededError: If quota is exceeded
         """
         # Hash the provided key
         key_hash = hash_api_key(api_key)
@@ -177,8 +179,110 @@ class AuthService:
             logger.warning("User account disabled: %s, status: %s", user.email, user.user_status)
             raise APIKeyDisabledError()
 
+        # Check rate limit / quota
+        await self._check_rate_limit(key, repo_id)
+
         logger.info("API key verified successfully: %s for user: %s", key.key_prefix, user.email)
         return user, key
+
+    async def _check_rate_limit(self, key: APIKey, repo_id: str = None) -> None:
+        """
+        检查API Key的限流/配额
+        
+        Args:
+            key: API Key对象
+            repo_id: 仓库ID
+            
+        Raises:
+            QuotaExceededError: 如果超过配额
+        """
+        from src.models.billing import APICallLog, Quota
+        from src.core.exceptions import QuotaExceededError
+        from sqlalchemy import func, and_
+        from datetime import datetime, timedelta
+        import uuid
+        
+        now = datetime.utcnow()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # 1. 检查每分钟请求数（RPM）- 使用Redis或数据库
+        # 这里简化实现，实际应该使用Redis
+        rpm_result = await self.db.execute(
+            select(func.count(APICallLog.id)).where(
+                and_(
+                    APICallLog.api_key_id == key.id,
+                    APICallLog.created_at >= now - timedelta(minutes=1)
+                )
+            )
+        )
+        rpm_count = rpm_result.scalar() or 0
+        
+        if key.rate_limit_rpm and rpm_count >= key.rate_limit_rpm:
+            logger.warning("RPM limit exceeded: %s, rpm: %s/%s", key.key_prefix, rpm_count, key.rate_limit_rpm)
+            raise QuotaExceededError(f"请求过于频繁，请稍后再试（RPM限制: {key.rate_limit_rpm}）")
+        
+        # 2. 检查小时请求数（RPH）
+        rph_result = await self.db.execute(
+            select(func.count(APICallLog.id)).where(
+                and_(
+                    APICallLog.api_key_id == key.id,
+                    APICallLog.created_at >= now - timedelta(hours=1)
+                )
+            )
+        )
+        rph_count = rph_result.scalar() or 0
+        
+        if key.rate_limit_rph and rph_count >= key.rate_limit_rph:
+            logger.warning("RPH limit exceeded: %s, rph: %s/%s", key.key_prefix, rph_count, key.rate_limit_rph)
+            raise QuotaExceededError(f"小时请求数超限（RPH限制: {key.rate_limit_rph}）")
+        
+        # 3. 检查日配额（从Quota表）
+        if key.daily_quota:
+            # 查询今日使用量
+            daily_used_result = await self.db.execute(
+                select(func.coalesce(func.sum(Quota.quota_used), 0)).where(
+                    and_(
+                        Quota.key_id == key.id,
+                        Quota.quota_type == "daily",
+                        Quota.reset_at >= today_start
+                    )
+                )
+            )
+            daily_used = daily_used_result.scalar() or 0
+            
+            if daily_used >= key.daily_quota:
+                logger.warning("Daily quota exceeded: %s, used: %s/%s", key.key_prefix, daily_used, key.daily_quota)
+                raise QuotaExceededError(f"今日配额已用完，请明天再试（日配额: {key.daily_quota}）")
+        
+        # 4. 检查月配额
+        if key.monthly_quota:
+            month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            monthly_used_result = await self.db.execute(
+                select(func.coalesce(func.sum(Quota.quota_used), 0)).where(
+                    and_(
+                        Quota.key_id == key.id,
+                        Quota.quota_type == "monthly",
+                        Quota.reset_at >= month_start
+                    )
+                )
+            )
+            monthly_used = monthly_used_result.scalar() or 0
+            
+            if monthly_used >= key.monthly_quota:
+                logger.warning("Monthly quota exceeded: %s, used: %s/%s", key.key_prefix, monthly_used, key.monthly_quota)
+                raise QuotaExceededError(f"本月配额已用完，请下个月再试（月配额: {key.monthly_quota}）")
+        
+        # 5. 检查账户余额（如果启用了余额扣费）
+        if key.is_balance_enabled:
+            from src.services.account_service import AccountService
+            account_service = AccountService(self.db)
+            balance = await account_service.get_balance(str(key.user_id))
+            
+            # 如果余额低于阈值，给出警告但不阻止（允许透支一定额度）
+            min_balance = 1.0  # 最低余额1元
+            if balance < min_balance:
+                logger.warning("Low balance for API key: %s, balance: %s", key.key_prefix, balance)
+                # 可以选择阻止或只是警告，这里选择警告而不是阻止
 
     async def verify_hmac_request(
         self,

@@ -1,0 +1,43 @@
+/**
+ * 对账管理页面样式
+ */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.resultCard {
+  margin-bottom: 16px;
+}
+
+.statsRow {
+  margin-top: 24px;
+}
+
+.executeCard {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.filterBar {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 4px;
+}

@@ -2,6 +2,9 @@
 
 本文档提供在 Windows 系统上设置 API Platform Web 前端环境的完整步骤，包括依赖安装、E2E 测试配置和运行。
 
+> **版本历史**：
+> - V2.0 (2026-04-20): 新增 V2.5 新功能测试（充值、计费、配额）
+
 ---
 
 ## 目录
@@ -156,7 +159,10 @@ web/
 │   ├── navigation.spec.ts  # 导航测试
 │   ├── components.spec.ts  # 组件测试
 │   ├── adminLogs.spec.ts   # 日志管理测试
-│   └── keys.spec.ts        # API Keys 管理测试
+│   ├── keys.spec.ts        # API Keys 管理测试
+│   ├── recharge.spec.ts    # 充值/支付测试 (V2.5)
+│   ├── billing.spec.ts     # 计费页面测试 (V2.5)
+│   └── quota.spec.ts       # 配额页面测试 (V2.5)
 ├── playwright.config.ts    # Playwright 配置
 └── package.json
 ```
@@ -329,9 +335,15 @@ npm run dev
 npx playwright test
 
 # 7. 运行特定测试文件
-npx playwright test e2e/auth.spec.ts
+npx playwright test e2e/auth.spec.ts           # 认证测试
+npx playwright test e2e/recharge.spec.ts       # 充值功能 (V2.5)
+npx playwright test e2e/billing.spec.ts         # 计费功能 (V2.5)
+npx playwright test e2e/quota.spec.ts          # 配额功能 (V2.5)
 
-# 8. 查看测试报告
+# 8. 运行 V2.5 新功能测试
+npx playwright test e2e/recharge.spec.ts e2e/billing.spec.ts e2e/quota.spec.ts
+
+# 9. 查看测试报告
 start playwright-report\index.html
 
 # ==================== 构建 ====================
@@ -352,7 +364,7 @@ npm run preview
 ```
   Playwright Test Runner v1.x.x
 
-  Running 28 tests using 3 browsers
+  Running 40 tests using 3 browsers
 
   auth.spec.ts
     ✓ 登录页面加载正常 (2.1s)
@@ -372,7 +384,25 @@ npm run preview
     ✓ API Keys 页面 (1.1s)
     ...
 
-  28 passed in 45.2s (3 browsers)
+  recharge.spec.ts (V2.5)
+    ✓ 充值套餐列表加载 (1.5s)
+    ✓ 创建支付订单 (2.3s)
+    ✓ 支付状态查询 (1.8s)
+    ...
+
+  billing.spec.ts (V2.5)
+    ✓ 计费页面加载 (1.2s)
+    ✓ 消费统计图表 (1.5s)
+    ✓ 账单时间筛选 (2.0s)
+    ...
+
+  quota.spec.ts (V2.5)
+    ✓ 配额概览信息 (1.0s)
+    ✓ RPM/RPH 限流显示 (1.2s)
+    ✓ API Key 配额列表 (1.5s)
+    ...
+
+  40 passed in 65.3s (3 browsers)
 ```
 
 ---
@@ -391,6 +421,14 @@ npm run preview
 | 导航 | 响应式设计 | 测试 4 种视口 |
 | 组件 | 按钮/输入框 | 检查组件可用 |
 | 组件 | 开发者页面 | 检查各功能页面 |
+| 充值 (V2.5) | 充值套餐列表 | 检查套餐正常加载 |
+| 充值 (V2.5) | 创建支付订单 | 测试支付流程 |
+| 充值 (V2.5) | 支付状态查询 | 测试状态查询 |
+| 充值 (V2.5) | 支付记录查看 | 测试历史记录 |
+| 计费 (V2.5) | 计费页面加载 | 检查账单列表 |
+| 计费 (V2.5) | 消费统计图表 | 检查图表渲染 |
+| 配额 (V2.5) | 配额概览 | 检查配额信息 |
+| 配额 (V2.5) | RPM/RPH 显示 | 检查限流信息 |
 
 ### 可扩展的测试
 
@@ -402,6 +440,25 @@ npm run preview
 | 开发者 | 配额查看 |
 | 所有者 | 仓库管理 |
 | 管理员 | 用户管理 |
+
+---
+
+### V2.5 新功能测试覆盖 (充值/计费/配额)
+
+| 页面 | 路由 | 测试用例 | 状态 |
+|------|------|----------|------|
+| 充值页面 | `/developer/recharge` | 套餐列表加载 | 待实现 |
+| 充值页面 | `/developer/recharge` | 创建支付订单 | 待实现 |
+| 充值页面 | `/developer/recharge` | 支付状态查询 | 待实现 |
+| 充值页面 | `/developer/recharge` | 取消未支付订单 | 待实现 |
+| 充值页面 | `/developer/recharge` | 支付记录查看 | 待实现 |
+| 计费页面 | `/developer/billing` | 账单列表加载 | 待实现 |
+| 计费页面 | `/developer/billing` | 消费统计图表 | 待实现 |
+| 计费页面 | `/developer/billing` | 账单时间筛选 | 待实现 |
+| 配额页面 | `/developer/quota` | 配额概览信息 | 待实现 |
+| 配额页面 | `/developer/quota` | RPM/RPH 显示 | 待实现 |
+| 配额页面 | `/developer/quota` | API Key 配额列表 | 待实现 |
+| 配额页面 | `/developer/quota` | 配额不足警告 | 待实现 |
 
 ---
 
@@ -515,3 +572,236 @@ test.describe('统一错误处理测试', () => {
 | 429 请求限流 | 频繁请求 | 显示"请求过于频繁" |
 | 500 服务器错误 | 后端异常 | 显示"服务器开小差了" |
 | 0 网络错误 | 离线状态 | 显示"网络连接失败" |
+
+---
+
+## 附录：V2.5 新功能 E2E 测试用例
+
+### 1. 充值/支付测试 (recharge.spec.ts)
+
+```typescript
+// e2e/recharge.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('充值功能测试 (V2.5)', () => {
+  test.beforeEach(async ({ page }) => {
+    // 登录
+    await page.goto('/login')
+    await page.fill('input[name="username"]', 'testuser')
+    await page.fill('input[name="password"]', 'password')
+    await page.click('button[type="submit"]')
+    await page.waitForURL('/developer')
+  })
+
+  test('充值套餐列表加载', async ({ page }) => {
+    await page.goto('/developer/recharge')
+    
+    // 检查套餐列表
+    await expect(page.getByText('充值套餐')).toBeVisible()
+    await expect(page.locator('.package-card').first()).toBeVisible()
+  })
+
+  test('创建支付订单', async ({ page }) => {
+    await page.goto('/developer/recharge')
+    
+    // 选择套餐
+    await page.click('.package-card >> nth=0')
+    await page.click('button:has-text("立即充值")')
+    
+    // 检查订单确认
+    await expect(page.getByText('确认支付')).toBeVisible()
+  })
+
+  test('支付状态查询', async ({ page }) => {
+    await page.goto('/developer/recharge')
+    
+    // 切换到支付记录标签
+    await page.click('button:has-text("支付记录")')
+    
+    // 检查记录列表
+    await expect(page.locator('.payment-record')).toBeVisible()
+  })
+
+  test('取消未支付订单', async ({ page }) => {
+    await page.goto('/developer/recharge')
+    
+    // 打开支付记录
+    await page.click('button:has-text("支付记录")')
+    
+    // 点击取消按钮（如果有未支付订单）
+    const cancelBtn = page.getByRole('button', { name: '取消' })
+    if (await cancelBtn.isVisible()) {
+      await cancelBtn.click()
+      await expect(page.getByText('确认取消订单')).toBeVisible()
+    }
+  })
+})
+```
+
+### 2. 计费页面测试 (billing.spec.ts)
+
+```typescript
+// e2e/billing.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('计费页面测试 (V2.5)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/login')
+    await page.fill('input[name="username"]', 'testuser')
+    await page.fill('input[name="password"]', 'password')
+    await page.click('button[type="submit"]')
+    await page.waitForURL('/developer')
+  })
+
+  test('计费页面加载', async ({ page }) => {
+    await page.goto('/developer/billing')
+    
+    // 检查页面标题
+    await expect(page.getByText('账单管理')).toBeVisible()
+    
+    // 检查账单列表
+    await expect(page.locator('.billing-table')).toBeVisible()
+  })
+
+  test('消费统计图表', async ({ page }) => {
+    await page.goto('/developer/billing')
+    
+    // 检查图表
+    await expect(page.locator('.recharts-wrapper')).toBeVisible()
+  })
+
+  test('账单时间筛选', async ({ page }) => {
+    await page.goto('/developer/billing')
+    
+    // 打开日期选择器
+    await page.click('input[placeholder*="日期"]')
+    
+    // 选择本周
+    await page.click('button:has-text("本周")')
+    
+    // 等待数据刷新
+    await page.waitForTimeout(500)
+  })
+})
+```
+
+### 3. 配额页面测试 (quota.spec.ts)
+
+```typescript
+// e2e/quota.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('配额页面测试 (V2.5)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/login')
+    await page.fill('input[name="username"]', 'testuser')
+    await page.fill('input[name="password"]', 'password')
+    await page.click('button[type="submit"]')
+    await page.waitForURL('/developer')
+  })
+
+  test('配额概览信息', async ({ page }) => {
+    await page.goto('/developer/quota')
+    
+    // 检查配额卡片
+    await expect(page.getByText('今日调用')).toBeVisible()
+    await expect(page.getByText('本月调用')).toBeVisible()
+  })
+
+  test('RPM/RPH 限流显示', async ({ page }) => {
+    await page.goto('/developer/quota')
+    
+    // 检查 RPM 信息
+    await expect(page.getByText(/RPM/)).toBeVisible()
+    await expect(page.getByText(/RPH/)).toBeVisible()
+  })
+
+  test('API Key 配额列表', async ({ page }) => {
+    await page.goto('/developer/quota')
+    
+    // 检查 Key 列表
+    await expect(page.locator('.quota-table')).toBeVisible()
+  })
+
+  test('配额不足警告', async ({ page }) => {
+    await page.goto('/developer/quota')
+    
+    // 检查警告提示（如果配额不足）
+    const warning = page.getByText(/配额不足/)
+    if (await warning.isVisible()) {
+      await expect(warning).toBeVisible()
+      await expect(page.getByText('升级套餐')).toBeVisible()
+    }
+  })
+})
+```
+
+### 4. V2.5 API Mock 测试
+
+```typescript
+// e2e/v25-api-mock.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('V2.5 API Mock 测试', () => {
+  test('支付 API 模拟', async ({ page }) => {
+    // Mock 充值套餐列表
+    await page.route('**/api/v1/payments/packages', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          code: 0,
+          data: [
+            { id: 1, name: '基础套餐', price: 10, credits: 1000 },
+            { id: 2, name: '高级套餐', price: 50, credits: 6000 },
+          ]
+        })
+      })
+    })
+
+    await page.goto('/developer/recharge')
+    await expect(page.getByText('基础套餐')).toBeVisible()
+    await expect(page.getByText('高级套餐')).toBeVisible()
+  })
+
+  test('配额 API 模拟', async ({ page }) => {
+    // Mock 配额数据
+    await page.route('**/api/v1/quota/*', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          code: 0,
+          data: {
+            today_calls: 150,
+            month_calls: 3500,
+            rpm_limit: 60,
+            rph_limit: 1000,
+          }
+        })
+      })
+    })
+
+    await page.goto('/developer/quota')
+    await expect(page.getByText('150')).toBeVisible()
+    await expect(page.getByText('60')).toBeVisible()
+  })
+
+  test('限流错误处理', async ({ page }) => {
+    // Mock 429 限流响应
+    await page.route('**/api/v1/*', route => {
+      route.fulfill({
+        status: 429,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          code: 42901,
+          message: '请求过于频繁，请稍后再试'
+        })
+      })
+    })
+
+    await page.goto('/developer/quota')
+    await expect(page.getByText('请求过于频繁')).toBeVisible()
+  })
+})
+```

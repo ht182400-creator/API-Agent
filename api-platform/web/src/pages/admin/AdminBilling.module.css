@@ -1,0 +1,21 @@
+/**
+ * 管理员月度账单管理页面样式
+ */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tableCard {
+  background: #fff;
+  border-radius: 8px;
+}

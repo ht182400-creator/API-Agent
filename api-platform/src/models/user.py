@@ -62,6 +62,8 @@ class User(Base):
     repositories = relationship("Repository", back_populates="owner")
     accounts = relationship("Account", back_populates="user")
     bills = relationship("Bill", back_populates="user")
+    monthly_bills = relationship("MonthlyBill", back_populates="user", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User {self.email}>"

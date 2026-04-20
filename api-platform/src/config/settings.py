@@ -38,15 +38,32 @@ class Settings(BaseSettings):
     jwt_refresh_token_expire_days: int = 7
 
     # CORS Configuration
-    cors_origins: str = "http://localhost:3000,http://localhost:8000"
+    cors_origins: str = "http://localhost:3000,http://localhost:8080,http://127.0.0.1:3000,http://127.0.0.1:8080"
+    cors_allow_all_localhost: bool = True  # 开发模式：允许所有 localhost 端口
 
     @property
     def cors_origins_list(self) -> List[str]:
-        return [origin.strip() for origin in self.cors_origins.split(",")]
+        origins = [origin.strip() for origin in self.cors_origins.split(",")]
+        if self.cors_allow_all_localhost and self.environment == "development":
+            # 开发模式下自动添加 localhost:3000-9999
+            for port in range(3000, 10000):
+                origins.extend([
+                    f"http://localhost:{port}",
+                    f"http://127.0.0.1:{port}",
+                ])
+        return list(set(origins))  # 去重
 
     # Rate Limiting
     rate_limit_enabled: bool = True
     rate_limit_per_minute: int = 100
+    
+    # Recharge Configuration (充值配置)
+    recharge_min_amount: float = 1.0  # 最小充值金额
+    recharge_max_amount: float = 10000.0  # 最大充值金额
+    recharge_default_bonus_ratio: float = 0.0  # 默认赠送比例
+
+    # Payment Configuration (支付配置)
+    payment_mock_mode: bool = True  # 支付模拟模式开关，True=模拟支付，False=真实支付
 
     # Security
     secret_key: str = "your-application-secret-key"

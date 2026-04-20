@@ -52,6 +52,10 @@ export default function DeveloperLogs() {
   }
 
   const handleFilterChange = (key: string, value: any) => {
+    // 如果选择 "all"，则清除该筛选条件（不传 key_id 表示查询全部）
+    if (value === 'all') {
+      value = undefined
+    }
     setFilters((prev) => ({ ...prev, [key]: value }))
     setPage(1)
   }

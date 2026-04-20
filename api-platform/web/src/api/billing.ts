@@ -1,11 +1,41 @@
-/**
- * 计费API
- */
+import { api } from './client'
 
-import { api, PaginatedResponse } from './client'
+// ============ Billing API (Developer) ============
 
-// 账户信息
-export interface Account {
+export interface UserUsage {
+  call_count: number
+  total_tokens: number
+  total_cost: number
+  by_repository: {
+    repo_id: string
+    repo_name: string
+    call_count: number
+    total_tokens: number
+    total_cost: number
+  }[]
+}
+
+export interface ConsumptionDetail {
+  id: number
+  repo_id: string | null
+  repo_name: string
+  endpoint: string
+  tokens_used: number
+  cost: number
+  created_at: string
+}
+
+export interface ConsumptionDetailsResponse {
+  items: ConsumptionDetail[]
+  pagination: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+}
+
+export interface UserAccount {
   id: string
   user_id: string
   balance: number
@@ -13,87 +43,197 @@ export interface Account {
   total_recharge: number
   total_consumption: number
   created_at: string
+  mock_mode: boolean
+  environment: string
 }
 
-// 账单类型
-export type BillType = 'recharge' | 'consumption' | 'refund' | 'freeze' | 'unfreeze' | 'settlement'
-
-// 账单记录
-export interface Bill {
+// Monthly Bill types
+export interface MonthlyBill {
   id: string
-  account_id: string
-  bill_type: BillType
-  amount: number
-  balance_after: number
-  payment_method?: string
-  payment_id?: string
-  api_key_id?: string
-  repo_id?: string
-  repo_name?: string
-  description: string
-  created_at: string
-}
-
-// 月度汇总
-export interface MonthlySummary {
   year: number
   month: number
   total_recharge: number
   total_consumption: number
-  consumption_count: number
   net_change: number
-  by_repository: {
-    repo_id: string
-    repo_name: string
+  beginning_balance: number
+  ending_balance: number
+  total_calls: number
+  total_tokens: number
+  status: 'pending' | 'generated' | 'reviewed' | 'published'
+  generated_at?: string
+  published_at?: string
+}
+
+export interface MonthlyBillDetail extends MonthlyBill {
+  details: {
+    by_repository?: {
+      repo_id: string
+      repo_name: string
+      call_count: number
+      total_tokens: number
+      total_cost: number
+    }[]
+    generated_at?: string
+    period?: string
+  }
+  review_comment?: string
+  reviewed_at?: string
+}
+
+export interface PaginatedMonthlyBills {
+  items: MonthlyBill[]
+  pagination: {
+    page: number
+    page_size: number
     total: number
-    count: number
-  }[]
+    total_pages: number
+  }
+  environment: string
 }
 
-// 充值请求
-export interface RechargeRequest {
-  amount: number
-  payment_method: 'alipay' | 'wechat' | 'bank' | 'manual'
+// Admin Billing API types
+export interface AdminMonthlyBill {
+  id: string
+  user_id: string
+  username: string
+  email: string
+  year: number
+  month: number
+  environment: string
+  total_recharge: number
+  total_consumption: number
+  net_change: number
+  beginning_balance: number
+  ending_balance: number
+  total_calls: number
+  total_tokens: number
+  status: string
+  reviewed_at?: string
+  reviewed_by?: string
+  generated_at?: string
+  published_at?: string
+  created_at?: string
 }
 
-// 计费API
+export interface PaginatedAdminMonthlyBills {
+  items: AdminMonthlyBill[]
+  pagination: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+  environment: string
+}
+
 export const billingApi = {
-  // 获取账户信息
+  // Get user account info
   getAccount: () => {
-    return api.get<Account>('/billing/account')
+    return api.get<UserAccount>('/billing/account')
   },
-  
-  // 充值
-  recharge: (data: RechargeRequest) => {
-    return api.post<{ order_id: string; pay_url: string }>('/billing/recharge', data)
+
+  // Get user usage statistics
+  getUsage: () => {
+    return api.get<UserUsage>('/billing/usage')
   },
-  
-  // 获取账单列表
-  getBills: (params?: {
+
+  // Get consumption details
+  getConsumptionDetails: (params?: {
     page?: number
     page_size?: number
-    bill_type?: BillType
+    repo_id?: string
     start_date?: string
     end_date?: string
   }) => {
-    return api.get<PaginatedResponse<Bill>>('/billing/bills', params)
+    return api.get<ConsumptionDetailsResponse>('/billing/consumption-details', params)
   },
-  
-  // 获取月度汇总
-  getMonthlySummary: (year?: number, month?: number) => {
-    return api.get<MonthlySummary>('/billing/monthly-summary', { year, month })
+
+  // ============ Monthly Bill APIs (Developer) ============
+
+  // Get user's monthly bills
+  getMonthlyBills: (params?: {
+    page?: number
+    page_size?: number
+    year?: number
+    month?: number
+    status?: string
+  }) => {
+    return api.get<PaginatedMonthlyBills>('/billing/monthly-bills', params)
   },
-  
-  // 获取余额历史
-  getBalanceHistory: (days?: number) => {
-    return api.get<{ date: string; daily_change: number; balance: number }[]>(
-      '/billing/balance-history',
-      { days }
-    )
+
+  // Get user's monthly bill detail
+  getMonthlyBillDetail: (billId: string) => {
+    return api.get<MonthlyBillDetail>(`/billing/monthly-bills/${billId}`)
   },
-  
-  // 获取消费趋势
-  getConsumptionTrend: (days?: number) => {
-    return api.get<{ date: string; amount: number }[]>('/billing/consumption-trend', { days })
+
+  // Get available periods for user's monthly bills
+  getAvailablePeriods: () => {
+    return api.get<{ year: number; month: number }[]>('/billing/monthly-bills/available-periods')
+  },
+
+  // ============ Admin Monthly Bill APIs ============
+
+  // Get all generated monthly bills (Admin)
+  getAdminMonthlyBills: (params?: {
+    page?: number
+    page_size?: number
+    year?: number
+    month?: number
+    user_id?: string
+    status?: string
+    environment?: string
+  }) => {
+    return api.get<PaginatedAdminMonthlyBills>('/admin/billing/monthly-bills/generated', params)
+  },
+
+  // Get monthly bill detail (Admin)
+  getAdminMonthlyBillDetail: (billId: string) => {
+    return api.get<MonthlyBillDetail>(`/admin/billing/monthly-bills/${billId}`)
+  },
+
+  // Generate monthly bills (Admin)
+  generateMonthlyBills: (params: {
+    year: number
+    month: number
+    user_id?: string
+    environment?: string
+  }) => {
+    return api.post<{
+      year: number
+      month: number
+      environment: string
+      generated_count: number
+      skipped_count: number
+      total_count: number
+      errors?: { user_id: string; error: string }[]
+    }>('/admin/billing/monthly-bills/generate', null, { params })
+  },
+
+  // Review monthly bill (Admin)
+  reviewMonthlyBill: (billId: string, params: {
+    action: 'approve' | 'reject'
+    comment?: string
+  }) => {
+    return api.put<{
+      id: string
+      status: string
+      reviewed_by: string
+      reviewed_at: string
+      review_comment?: string
+    }>(`/admin/billing/monthly-bills/${billId}/review`, null, { params })
+  },
+
+  // Publish monthly bill (Admin)
+  publishMonthlyBill: (billId: string) => {
+    return api.put<{
+      id: string
+      status: string
+      published_at: string
+    }>(`/admin/billing/monthly-bills/${billId}/publish`)
+  },
+
+  // Get available periods for admin monthly bills
+  getAdminAvailablePeriods: (environment?: string) => {
+    return api.get<{ year: number; month: number }[]>('/admin/billing/monthly-bills/years-months', { environment })
   },
 }

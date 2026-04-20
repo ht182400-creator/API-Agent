@@ -1,0 +1,140 @@
+/* 充值中心页面样式 */
+
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.packageSection {
+  margin-bottom: 24px;
+}
+
+.packageCard {
+  position: relative;
+  height: 100%;
+  transition: all 0.3s;
+  border-radius: 12px;
+}
+
+.packageCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.packageCard.selected {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+}
+
+.packageCard.featured {
+  border-color: #faad14;
+}
+
+.featuredTag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #faad14, #fa8c16);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.packageHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.packageName {
+  font-size: 18px;
+  color: #262626;
+}
+
+.priceSection {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.currencyIcon {
+  font-size: 16px;
+  color: #ff4d4f;
+}
+
+.price {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff4d4f;
+}
+
+.packageDetail {
+  margin-bottom: 12px;
+}
+
+.description {
+  font-size: 13px;
+  margin-top: 8px !important;
+}
+
+.selectedIndicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  color: #1677ff;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paymentSection {
+  margin-bottom: 24px;
+}
+
+.paymentMethods {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.payAmount {
+  font-size: 20px;
+  color: #ff4d4f;
+}
+
+.actionSection {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.payActions {
+  text-align: center;
+}
+
+.hint {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+}

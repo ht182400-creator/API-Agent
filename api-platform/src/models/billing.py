@@ -62,6 +62,9 @@ class Bill(Base):
     source_type = Column(String(20), nullable=True)  # api_call, refund, admin, manual
     source_id = Column(String(50), nullable=True)  # Related call record ID
 
+    # Environment flag: simulation, production (区分模拟/真实环境)
+    environment = Column(String(20), default="simulation", index=True)
+
     # Description
     description = Column(Text, nullable=True)
     remark = Column(Text, nullable=True)
@@ -165,3 +168,60 @@ class APICallLog(Base):
 
     def __repr__(self):
         return f"<APICallLog {self.id}:{self.endpoint}>"
+
+
+class MonthlyBill(Base):
+    """Monthly Bill model - 月度账单汇总表"""
+
+    __tablename__ = "monthly_bills"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    # 关联信息
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # 账单周期
+    year = Column(BigInteger, nullable=False)
+    month = Column(BigInteger, nullable=False)
+
+    # 环境标识
+    environment = Column(String(20), default="simulation", index=True)
+
+    # 账单统计
+    total_recharge = Column(String(20), default="0")  # 本月充值总额
+    total_consumption = Column(String(20), default="0")  # 本月消费总额
+    net_change = Column(String(20), default="0")  # 净变化（充值-消费）
+    beginning_balance = Column(String(20), default="0")  # 期初余额
+    ending_balance = Column(String(20), default="0")  # 期末余额
+
+    # 使用统计
+    total_calls = Column(BigInteger, default=0)  # 总调用次数
+    total_tokens = Column(BigInteger, default=0)  # 总Token数
+
+    # 账单详情（JSON格式存储按仓库/按类型分类的明细）
+    details = Column(Text, nullable=True)  # JSON: {"by_repository": [...], "by_type": [...]}
+
+    # 账单状态: pending(待生成), generated(已生成), reviewed(已审核), published(已发布)
+    status = Column(String(20), default="pending", index=True)
+
+    # 审核信息
+    reviewed_by = Column(UUID(as_uuid=True), nullable=True)  # 审核人
+    reviewed_at = Column(DateTime, nullable=True)  # 审核时间
+    review_comment = Column(Text, nullable=True)  # 审核备注
+
+    # 生成信息
+    generated_by = Column(UUID(as_uuid=True), nullable=True)  # 生成人
+    generated_at = Column(DateTime, nullable=True)  # 生成时间
+
+    # 发布信息
+    published_at = Column(DateTime, nullable=True)  # 发布时间
+
+    # 审计字段
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="monthly_bills")
+
+    def __repr__(self):
+        return f"<MonthlyBill {self.user_id}:{self.year}-{self.month:02d}>"

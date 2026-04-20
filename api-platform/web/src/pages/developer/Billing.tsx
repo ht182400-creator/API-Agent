@@ -3,14 +3,16 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Table, DatePicker, Select, Button, Typography, Statistic, Space, Tag, Empty } from 'antd'
+import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App } from 'antd'
 import { 
   WalletOutlined, 
   RiseOutlined, 
   FallOutlined, 
   DownloadOutlined,
-  ReloadOutlined 
+  ReloadOutlined,
+  PlusOutlined 
 } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -18,11 +20,11 @@ import dayjs from 'dayjs'
 import styles from './Billing.module.css'
 
 const { Title, Text } = Typography
-const { RangePicker } = DatePicker
 
 const COLORS = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1']
 
 export default function DeveloperBilling() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const [bills, setBills] = useState<Bill[]>([])
@@ -31,6 +33,8 @@ export default function DeveloperBilling() {
   const [pageSize, setPageSize] = useState(20)
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [balanceHistory, setBalanceHistory] = useState<any[]>([])
+  const [mockMode, setMockMode] = useState<boolean>(true)  // 当前环境模式
+  const [currentEnv, setCurrentEnv] = useState<string>('simulation')  // 当前环境
 
   // 使用统一的错误提示
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
@@ -48,6 +52,10 @@ export default function DeveloperBilling() {
         billingApi.getBalanceHistory(30),
       ])
 
+      // 设置环境信息
+      setMockMode(accountData.mock_mode ?? true)
+      setCurrentEnv(accountData.environment || 'simulation')
+      
       setAccount(accountData)
       setSummary(summaryData)
       setBalanceHistory(historyData)
@@ -137,8 +145,23 @@ export default function DeveloperBilling() {
       <ErrorModalComponent />
 
       <div className={styles.header}>
-        <Title level={4}>账单中心</Title>
+        <div>
+          <Space align="center">
+            <Title level={4}>账单中心</Title>
+            {mockMode ? (
+              <Tag color="orange">⚠️ 模拟环境</Tag>
+            ) : (
+              <Tag color="green">🛡️ 真实环境</Tag>
+            )}
+          </Space>
+          <Text type="secondary" style={{ display: 'block', marginTop: 4 }}>
+            当前显示：{currentEnv === 'simulation' ? '模拟环境' : '生产环境'}数据
+          </Text>
+        </div>
         <Space>
+          <Button icon={<PlusOutlined />} type="primary" onClick={() => navigate('/developer/recharge')}>
+            充值
+          </Button>
           <Button icon={<ReloadOutlined />} onClick={fetchData}>刷新</Button>
           <Button icon={<DownloadOutlined />}>导出</Button>
         </Space>
@@ -149,7 +172,14 @@ export default function DeveloperBilling() {
         <Col xs={24} sm={12} lg={6}>
           <Card className={styles.statCard}>
             <Statistic
-              title="账户余额"
+              title={
+                <Space>
+                  <span>账户余额</span>
+                  <Tag color={mockMode ? 'orange' : 'green'} style={{ marginLeft: 8 }}>
+                    {mockMode ? '模拟' : '真实'}
+                  </Tag>
+                </Space>
+              }
               value={account?.balance || 0}
               prefix={<WalletOutlined />}
               precision={2}

@@ -1,10 +1,11 @@
 /**
  * 配额使用页面
+ * V2.5 更新：添加 RPM/RPH 限制展示
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button } from 'antd'
-import { PieChartOutlined, BarChartOutlined, PlusOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button, Alert, Tag } from 'antd'
+import { PieChartOutlined, BarChartOutlined, PlusOutlined, ThunderboltOutlined, ClockCircleOutlined, WarningOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
@@ -150,6 +151,127 @@ export default function DeveloperQuota() {
               </Card>
             </Col>
           </Row>
+
+          {/* RPM/RPH 限流信息 V2.5 新增 */}
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              <Card 
+                className={styles.card}
+                title={
+                  <Space>
+                    <ThunderboltOutlined />
+                    <span>每分钟请求限制 (RPM)</span>
+                  </Space>
+                }
+              >
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic 
+                        title="RPM 限制" 
+                        value={quota.rpm_limit || 1000} 
+                        suffix="次/分钟" 
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic 
+                        title="最近1分钟" 
+                        value={quota.rpm_used || 0} 
+                        valueStyle={{ color: quota.rpm_used >= (quota.rpm_limit || 1000) ? '#ff4d4f' : undefined }}
+                      />
+                    </Col>
+                  </Row>
+                  <Progress 
+                    percent={quota.rpm_limit ? Math.min(100, Math.round((quota.rpm_used / quota.rpm_limit) * 100)) : 0}
+                    strokeColor={getProgressColor(
+                      quota.rpm_limit ? Math.min(100, (quota.rpm_used / quota.rpm_limit) * 100) : 0
+                    )}
+                    format={(p) => `${p}%`}
+                    showInfo
+                  />
+                  {quota.rpm_used >= (quota.rpm_limit || 1000) && (
+                    <Alert 
+                      type="warning" 
+                      message="RPM 限制已达上限，请稍后再试" 
+                      showIcon 
+                      icon={<WarningOutlined />}
+                    />
+                  )}
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} md={12}>
+              <Card 
+                className={styles.card}
+                title={
+                  <Space>
+                    <ClockCircleOutlined />
+                    <span>每小时请求限制 (RPH)</span>
+                  </Space>
+                }
+              >
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic 
+                        title="RPH 限制" 
+                        value={quota.rph_limit || 10000} 
+                        suffix="次/小时" 
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic 
+                        title="最近1小时" 
+                        value={quota.rph_used || 0} 
+                        valueStyle={{ color: quota.rph_used >= (quota.rph_limit || 10000) ? '#ff4d4f' : undefined }}
+                      />
+                    </Col>
+                  </Row>
+                  <Progress 
+                    percent={quota.rph_limit ? Math.min(100, Math.round((quota.rph_used / quota.rph_limit) * 100)) : 0}
+                    strokeColor={getProgressColor(
+                      quota.rph_limit ? Math.min(100, (quota.rph_used / quota.rph_limit) * 100) : 0
+                    )}
+                    format={(p) => `${p}%`}
+                    showInfo
+                  />
+                  {quota.rph_used >= (quota.rph_limit || 10000) && (
+                    <Alert 
+                      type="warning" 
+                      message="RPH 限制已达上限，请稍后再试" 
+                      showIcon 
+                      icon={<WarningOutlined />}
+                    />
+                  )}
+                </Space>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* 余额警告 V2.5 新增 */}
+          {quota.balance_enabled && quota.balance !== undefined && (
+            <Alert
+              type={quota.balance < 1 ? 'error' : 'warning'}
+              message={
+                <Space>
+                  <span>
+                    余额提醒：当前余额 <Text strong>¥{quota.balance.toFixed(2)}</Text>
+                    {quota.balance < 1 && '，余额不足，请及时充值'}
+                  </span>
+                  <Tag color={quota.balance < 1 ? 'red' : 'orange'}>
+                    余额扣费已启用
+                  </Tag>
+                </Space>
+              }
+              showIcon
+              action={
+                <Button size="small" type="primary" onClick={() => navigate('/developer/recharge')}>
+                  立即充值
+                </Button>
+              }
+              style={{ marginBottom: 16 }}
+            />
+          )}
 
           {/* 使用趋势 */}
           <Card title="每日调用趋势（近14天）" className={styles.chartCard}>

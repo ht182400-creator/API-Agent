@@ -1,0 +1,92 @@
+/* 平台账户余额页面样式 */
+
+.container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.summaryCard {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #1890ff 0%, #1890ff 100%);
+}
+
+.summaryCard :global(.ant-statistic-title) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summaryCard :global(.ant-statistic-content) {
+  color: #fff;
+}
+
+.accountCard {
+  height: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.cardContent {
+  padding: 8px 0;
+}
+
+.balanceSection {
+  text-align: center;
+  padding: 16px 0;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.balanceSection .mainBalance {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1890ff;
+  margin-top: 8px;
+}
+
+.subBalances {
+  margin: 16px 0;
+}
+
+.subBalance {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.accountNo {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #f0f0f0;
+}
+
+.remark {
+  margin-top: 8px;
+  color: #666;
+  font-size: 12px;
+}
+
+.tipCard {
+  margin-top: 16px;
+}

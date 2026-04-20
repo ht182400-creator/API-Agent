@@ -37,6 +37,7 @@ class APIKey(Base):
     rate_limit_rph = Column(Integer, default=10000)  # Requests per hour
     daily_quota = Column(BigInteger, nullable=True)  # Daily quota (NULL = unlimited)
     monthly_quota = Column(BigInteger, nullable=True)  # Monthly quota (NULL = unlimited)
+    is_balance_enabled = Column(Boolean, default=False)  # 是否启用余额扣费
 
     # Status
     status = Column(String(20), default="active")  # active, disabled, expired

@@ -96,7 +96,14 @@ export default function DeveloperDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card className={styles.statCard}>
             <Statistic
-              title="账户余额"
+              title={
+                <Space>
+                  <span>账户余额</span>
+                  <Tag color={account?.mock_mode !== false ? 'orange' : 'green'} style={{ marginLeft: 8 }}>
+                    {account?.mock_mode !== false ? '模拟' : '真实'}
+                  </Tag>
+                </Space>
+              }
               value={account?.balance || 0}
               prefix={<WalletOutlined />}
               precision={2}
