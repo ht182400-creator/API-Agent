@@ -701,6 +701,70 @@ graph TB
 
 ---
 
+## 11.6 计费规则可配置需求 (V1.9新增)
+
+### 11.6.1 功能概述
+
+计费规则支持通过配置文件调整，无需修改代码即可灵活设置默认计费策略。
+
+### 11.6.2 配置项说明
+
+**配置文件**：`api-platform/src/config/settings.py`
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `billing_default_enabled` | bool | `True` | 是否启用默认计费 |
+| `billing_default_type` | str | `per_call` | 计费类型: per_call, token, free |
+| `billing_default_price_per_call` | float | `0.01` | 按次计费单价（元） |
+| `billing_default_price_per_token` | float | `0.0001` | 按Token计费单价（元/Token） |
+| `billing_default_free_calls` | int | `0` | 免费调用次数 |
+| `billing_default_free_tokens` | int | `0` | 免费Token数 |
+
+### 11.6.3 计费优先级
+
+| 优先级 | 数据源 | 说明 |
+|--------|--------|------|
+| 1 | `RepoPricing` 表 | 仓库级别定价配置（数据库） |
+| 2 | `settings.py` | 全局默认计费配置（配置文件） |
+
+### 11.6.4 计费规则说明
+
+| 场景 | 描述示例 |
+|------|----------|
+| 仓库配置-按次 | `per_call计费-按次` |
+| 仓库配置-按Token | `token计费-按Token(1000 tokens)` |
+| 仓库配置-免费 | `免费调用` |
+| 默认配置-按次 | `按次计费(默认 ¥0.01)` |
+| 默认配置-不计费 | `不计费(计费已禁用)` |
+
+### 11.6.5 配置示例
+
+**场景1：关闭计费（免费使用）**
+```python
+billing_default_enabled: bool = False
+```
+
+**场景2：调整按次计费价格**
+```python
+billing_default_type: str = "per_call"
+billing_default_price_per_call: float = 0.05  # 每次 0.05 元
+```
+
+**场景3：改为按 Token 计费**
+```python
+billing_default_type: str = "token"
+billing_default_price_per_token: float = 0.001  # 每 Token 0.001 元
+```
+
+### 11.6.6 实现状态
+
+✅ **已完成**：
+- `api-platform/src/config/settings.py` - 添加计费配置项
+- `api-platform/src/api/v1/repositories.py` - 添加 `calculate_and_charge` 函数
+- API 调用时自动创建消费账单记录
+
+---
+
 ## 12. 限流检查需求 (V1.8新增)
 
 ### 12.1 功能概述

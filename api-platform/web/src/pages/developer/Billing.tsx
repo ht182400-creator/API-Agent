@@ -1,5 +1,6 @@
 /**
  * 账单中心页面
+ * V2.6 更新：现代化UI设计，修复数据展示问题
  */
 
 import { useState, useEffect } from 'react'
@@ -10,12 +11,16 @@ import {
   FallOutlined, 
   DownloadOutlined,
   ReloadOutlined,
-  PlusOutlined 
+  PlusOutlined,
+  FieldTimeOutlined,
+  PieChartOutlined,
+  FileTextOutlined,
+  HistoryOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Billing.module.css'
 
@@ -33,10 +38,8 @@ export default function DeveloperBilling() {
   const [pageSize, setPageSize] = useState(20)
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [balanceHistory, setBalanceHistory] = useState<any[]>([])
-  const [mockMode, setMockMode] = useState<boolean>(true)  // 当前环境模式
-  const [currentEnv, setCurrentEnv] = useState<string>('simulation')  // 当前环境
+  const [mockMode, setMockMode] = useState<boolean>(true)
 
-  // 使用统一的错误提示
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
 
   useEffect(() => {
@@ -52,10 +55,7 @@ export default function DeveloperBilling() {
         billingApi.getBalanceHistory(30),
       ])
 
-      // 设置环境信息
       setMockMode(accountData.mock_mode ?? true)
-      setCurrentEnv(accountData.environment || 'simulation')
-      
       setAccount(accountData)
       setSummary(summaryData)
       setBalanceHistory(historyData)
@@ -69,7 +69,6 @@ export default function DeveloperBilling() {
 
   const fetchBills = async (params?: any) => {
     try {
-      // api.get 已返回 res.data，所以直接是 PaginatedResponse
       const data = await billingApi.getBills({ page, page_size: pageSize, ...params })
       setBills(data.items)
       setTotal(data.pagination.total)
@@ -81,6 +80,7 @@ export default function DeveloperBilling() {
   const getBillTypeTag = (type: string) => {
     const map: Record<string, { color: string; text: string }> = {
       recharge: { color: 'green', text: '充值' },
+      consume: { color: 'red', text: '消费' },
       consumption: { color: 'red', text: '消费' },
       refund: { color: 'cyan', text: '退款' },
       freeze: { color: 'orange', text: '冻结' },
@@ -113,7 +113,7 @@ export default function DeveloperBilling() {
       width: 120,
       render: (amount: number) => (
         <Text type={amount >= 0 ? 'success' : 'danger'} strong>
-          {amount >= 0 ? '+' : ''}{amount.toFixed(2)}
+          {amount >= 0 ? '+' : ''}¥{amount.toFixed(2)}
         </Text>
       ),
     },
@@ -130,18 +130,26 @@ export default function DeveloperBilling() {
       key: 'description',
       ellipsis: true,
     },
-    {
-      title: '仓库',
-      dataIndex: 'repo_name',
-      key: 'repo_name',
-      width: 120,
-      render: (name: string) => name || '-',
-    },
   ]
+
+  // 计算消费分布数据
+  const getConsumptionDistribution = () => {
+    if (!summary?.by_repository || summary.by_repository.length === 0) {
+      return []
+    }
+    return summary.by_repository.slice(0, 5).map((item, index) => ({
+      name: item.repo_name || '未知',
+      value: item.total,
+      percent: summary.total_consumption > 0 
+        ? ((item.total / summary.total_consumption) * 100).toFixed(1) 
+        : '0'
+    }))
+  }
+
+  const distributionData = getConsumptionDistribution()
 
   return (
     <div className={styles.container}>
-      {/* 统一的错误提示组件 */}
       <ErrorModalComponent />
 
       <div className={styles.header}>
@@ -149,86 +157,125 @@ export default function DeveloperBilling() {
           <Space align="center">
             <Title level={4}>账单中心</Title>
             {mockMode ? (
-              <Tag color="orange">⚠️ 模拟环境</Tag>
+              <Tag color="orange">模拟环境</Tag>
             ) : (
-              <Tag color="green">🛡️ 真实环境</Tag>
+              <Tag color="green">生产环境</Tag>
             )}
           </Space>
-          <Text type="secondary" style={{ display: 'block', marginTop: 4 }}>
-            当前显示：{currentEnv === 'simulation' ? '模拟环境' : '生产环境'}数据
-          </Text>
         </div>
         <Space>
           <Button icon={<PlusOutlined />} type="primary" onClick={() => navigate('/developer/recharge')}>
             充值
           </Button>
           <Button icon={<ReloadOutlined />} onClick={fetchData}>刷新</Button>
-          <Button icon={<DownloadOutlined />}>导出</Button>
         </Space>
       </div>
 
-      {/* 账户概览 */}
-      <Row gutter={[16, 16]}>
+      {/* 账户概览 - 现代化卡片设计 */}
+      <Row gutter={[16, 16]} className="mb-4">
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <Card className={styles.statCard} style={{ borderTop: '3px solid #1677ff' }}>
+            <div className={styles.statCardIcon} style={{ backgroundColor: '#e6f4ff' }}>
+              <WalletOutlined style={{ color: '#1677ff', fontSize: 24 }} />
+            </div>
             <Statistic
-              title={
-                <Space>
-                  <span>账户余额</span>
-                  <Tag color={mockMode ? 'orange' : 'green'} style={{ marginLeft: 8 }}>
-                    {mockMode ? '模拟' : '真实'}
-                  </Tag>
-                </Space>
-              }
+              title="账户余额"
               value={account?.balance || 0}
-              prefix={<WalletOutlined />}
               precision={2}
               suffix="元"
+              valueStyle={{ color: '#1677ff', fontSize: 24 }}
             />
+            <div className={styles.statCardFooter}>
+              {mockMode ? (
+                <Tag color="orange">模拟模式</Tag>
+              ) : (
+                <Tag color="green">真实账户</Tag>
+              )}
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <Card className={styles.statCard} style={{ borderTop: '3px solid #52c41a' }}>
+            <div className={styles.statCardIcon} style={{ backgroundColor: '#f6ffed' }}>
+              <RiseOutlined style={{ color: '#52c41a', fontSize: 24 }} />
+            </div>
             <Statistic
               title="本月充值"
               value={summary?.total_recharge || 0}
-              prefix={<RiseOutlined />}
               precision={2}
               suffix="元"
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#52c41a', fontSize: 24 }}
             />
+            <div className={styles.statCardFooter}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {dayjs().format('YYYY年MM月')}
+              </Text>
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <Card className={styles.statCard} style={{ borderTop: '3px solid #ff4d4f' }}>
+            <div className={styles.statCardIcon} style={{ backgroundColor: '#fff1f0' }}>
+              <FallOutlined style={{ color: '#ff4d4f', fontSize: 24 }} />
+            </div>
             <Statistic
               title="本月消费"
               value={summary?.total_consumption || 0}
-              prefix={<FallOutlined />}
               precision={2}
               suffix="元"
-              valueStyle={{ color: '#ff4d4f' }}
+              valueStyle={{ color: '#ff4d4f', fontSize: 24 }}
             />
+            <div className={styles.statCardFooter}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                共 {(summary?.consumption_count || 0).toLocaleString()} 次调用
+              </Text>
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <Card className={styles.statCard} style={{ borderTop: '3px solid #722ed1' }}>
+            <div className={styles.statCardIcon} style={{ backgroundColor: '#f9f0ff' }}>
+              <FieldTimeOutlined style={{ color: '#722ed1', fontSize: 24 }} />
+            </div>
             <Statistic
               title="本月调用"
               value={summary?.consumption_count || 0}
               suffix="次"
+              valueStyle={{ color: '#722ed1', fontSize: 24 }}
             />
+            <div className={styles.statCardFooter}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                平均 ¥{(summary?.consumption_count ? (summary.total_consumption / summary.consumption_count).toFixed(4) : '0.00')} / 次
+              </Text>
+            </div>
           </Card>
         </Col>
       </Row>
 
-      {/* 图表 */}
+      {/* 图表区域 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Card title="余额变化趋势（近30天）" className={styles.chartCard}>
+          <Card 
+            title={
+              <Space>
+                <HistoryOutlined />
+                <span>余额变化趋势（近30天）</span>
+              </Space>
+            } 
+            className={styles.chartCard}
+            extra={
+              <Text type="secondary">
+                当前余额: <Text strong>¥{(account?.balance || 0).toFixed(2)}</Text>
+              </Text>
+            }
+          >
             {balanceHistory.length === 0 ? (
               <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Empty description="暂无余额变化记录" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <Empty description="暂无余额变化记录" image={Empty.PRESENTED_IMAGE_SIMPLE}>
+                  <Button type="primary" onClick={() => navigate('/developer/recharge')}>
+                    立即充值
+                  </Button>
+                </Empty>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
@@ -248,6 +295,8 @@ export default function DeveloperBilling() {
                     dataKey="balance" 
                     stroke="#1677ff" 
                     strokeWidth={2}
+                    dot={{ fill: '#1677ff', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#1677ff' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -255,24 +304,38 @@ export default function DeveloperBilling() {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="消费分布" className={styles.pieCard}>
-            {summary?.by_repository && summary.by_repository.length > 0 ? (
+          <Card 
+            title={
+              <Space>
+                <PieChartOutlined />
+                <span>消费分布</span>
+              </Space>
+            }
+            className={styles.pieCard}
+          >
+            {distributionData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={summary.by_repository.slice(0, 5)}
-                    dataKey="total"
-                    nameKey="repo_name"
+                    data={distributionData}
+                    dataKey="value"
+                    nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    outerRadius={80}
+                    innerRadius={40}
+                    paddingAngle={2}
+                    label={({ name, percent }) => `${name} ${(Number(percent)).toFixed(0)}%`}
+                    labelLine={false}
                   >
-                    {summary.by_repository.map((_, index) => (
+                    {distributionData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value: number) => `¥${value.toFixed(2)}`} />
+                  <Legend 
+                    formatter={(value) => <span style={{ color: '#595959' }}>{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -285,7 +348,32 @@ export default function DeveloperBilling() {
       </Row>
 
       {/* 账单列表 */}
-      <Card title="账单明细" className={styles.tableCard}>
+      <Card 
+        title={
+          <Space>
+            <FileTextOutlined />
+            <span>账单明细</span>
+          </Space>
+        } 
+        className={styles.tableCard}
+        extra={
+          <Space>
+            <Text type="secondary">共 {total} 条记录</Text>
+            <Button 
+              icon={<DownloadOutlined />} 
+              onClick={() => {
+                try {
+                  billingApi.exportBills()
+                } catch (error: any) {
+                  showError(error, () => billingApi.exportBills())
+                }
+              }}
+            >
+              导出
+            </Button>
+          </Space>
+        }
+      >
         <Table
           dataSource={bills}
           columns={columns}

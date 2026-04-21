@@ -1,4 +1,5 @@
 import { api } from './client'
+import { useAuthStore } from '../stores/auth'
 
 // ============ Billing API (Developer) ============
 
@@ -80,6 +81,61 @@ export interface MonthlyBillDetail extends MonthlyBill {
   reviewed_at?: string
 }
 
+// Monthly Summary types
+export interface MonthlySummary {
+  year?: number
+  month?: number
+  total_recharge: number
+  total_consumption: number
+  consumption_count: number
+  net_change?: number
+  by_repository: {
+    repo_id: string | null
+    repo_name: string
+    call_count: number
+    total: number
+  }[]
+  environment?: string
+  mock_mode?: boolean
+}
+
+export interface MonthlySummaryResponse {
+  environment: string
+  current_period: {
+    start: string
+    end: string
+  }
+  summary: MonthlySummary
+}
+
+// Bill types
+export interface Bill {
+  id: number
+  bill_type: string
+  amount: number
+  balance_before: number
+  balance_after: number
+  description: string
+  repo_id?: string
+  repo_name?: string
+  created_at: string
+}
+
+export interface PaginatedBills {
+  items: Bill[]
+  pagination: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+}
+
+export interface BalanceHistoryItem {
+  date: string
+  balance: number
+}
+
 export interface PaginatedMonthlyBills {
   items: MonthlyBill[]
   pagination: {
@@ -130,6 +186,91 @@ export const billingApi = {
   // Get user account info
   getAccount: () => {
     return api.get<UserAccount>('/billing/account')
+  },
+
+  // Get monthly summary
+  getMonthlySummary: () => {
+    return api.get<MonthlySummary>('/billing/monthly-summary')
+  },
+
+  // Get balance history
+  getBalanceHistory: (days: number = 30) => {
+    return api.get<BalanceHistoryItem[]>('/billing/balance-history', { days })
+  },
+
+  // Get consumption trend
+  getConsumptionTrend: (days: number = 7) => {
+    return api.get<{ date: string; amount: number }[]>('/billing/consumption-trend', { days })
+  },
+
+  // Get bills list
+  getBills: (params?: {
+    page?: number
+    page_size?: number
+    bill_type?: string
+    start_date?: string
+    end_date?: string
+  }) => {
+    return api.get<PaginatedBills>('/billing/bills', params)
+  },
+
+  // Export bills as CSV
+  exportBills: async (params?: {
+    bill_type?: string
+    start_date?: string
+    end_date?: string
+  }): Promise<void> => {
+    try {
+      // 构建查询参数
+      const queryParams = new URLSearchParams()
+      if (params?.bill_type) queryParams.append('bill_type', params.bill_type)
+      if (params?.start_date) queryParams.append('start_date', params.start_date)
+      if (params?.end_date) queryParams.append('end_date', params.end_date)
+      
+      const queryString = queryParams.toString() ? `?${queryParams.toString()}` : ''
+      const baseUrl = import.meta.env.VITE_API_URL || '/api/v1'
+      const token = useAuthStore.getState().accessToken
+      
+      // 使用 fetch 发送带认证的请求
+      const response = await fetch(`${baseUrl}/billing/bills/export${queryString}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      
+      // 检查响应状态
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || `导出失败 (${response.status})`)
+      }
+      
+      // 获取文件名
+      const contentDisposition = response.headers.get('content-disposition')
+      let filename = 'bills_export.csv'
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename\*?=(?:UTF-8'')?"?([^"]+)"?/)
+        if (match) {
+          filename = decodeURIComponent(match[1])
+        }
+      }
+      
+      // 下载文件
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      // 记录详细错误日志
+      console.error('[导出账单] 失败:', error)
+      // 向用户显示友好错误信息
+      throw new Error('导出失败，请稍后重试')
+    }
   },
 
   // Get user usage statistics

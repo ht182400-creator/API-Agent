@@ -39,19 +39,33 @@ export default function DeveloperDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [accountRes, keysRes, quotaRes, consumptionRes] = await Promise.all([
-        billingApi.getAccount().catch(() => null),
-        quotaApi.getKeys({ page_size: 5 }).catch(() => ({ items: [], total: 0 })),
-        quotaApi.getQuotaOverview().catch(() => []),
-        billingApi.getConsumptionTrend(7).catch(() => []),
+      // 先获取 keys，再并行获取其他数据
+      const keysRes = await quotaApi.getKeys({ page_size: 5 })
+
+      const [accountRes, quotaRes, consumptionRes] = await Promise.all([
+        billingApi.getAccount(),
+        quotaApi.getQuotaOverview(),
+        quotaApi.getConsumptionTrend(7),  // 使用 quota API 的趋势统计（基于调用记录）
       ])
+
+      // 获取第一个 key 的 top repos
+      const topReposRes = keysRes?.items?.[0]?.id 
+        ? await quotaApi.getTopRepos(keysRes.items[0].id, 5, 14)
+        : []
 
       setAccount(accountRes)
       setKeys(keysRes?.items || [])
       setQuotaOverview(quotaRes || [])
       setConsumptionTrend(consumptionRes || [])
+      setTopRepos(topReposRes || [])
     } catch (error) {
       console.error('获取数据失败:', error)
+      // 失败时设置默认值，避免界面异常
+      setAccount(null)
+      setKeys([])
+      setQuotaOverview([])
+      setConsumptionTrend([])
+      setTopRepos([])
     } finally {
       setLoading(false)
     }

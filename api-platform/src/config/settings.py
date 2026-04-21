@@ -65,6 +65,15 @@ class Settings(BaseSettings):
     # Payment Configuration (支付配置)
     payment_mock_mode: bool = True  # 支付模拟模式开关，True=模拟支付，False=真实支付
 
+    # ==================== 计费配置 ====================
+    # 默认计费规则（当仓库没有配置 RepoPricing 时使用）
+    billing_default_enabled: bool = True  # 是否启用默认计费
+    billing_default_type: str = "per_call"  # 计费类型: per_call, token, free
+    billing_default_price_per_call: float = 0.01  # 按次计费单价（元）
+    billing_default_price_per_token: float = 0.0001  # 按Token计费单价（元/Token）
+    billing_default_free_calls: int = 0  # 免费调用次数（每个API Key）
+    billing_default_free_tokens: int = 0  # 免费Token数（每个API Key）
+
     # Security
     secret_key: str = "your-application-secret-key"
     encryption_key: str = "your-encryption-key-32-bytes"

@@ -163,7 +163,7 @@ export default function AdminRepos() {
 
   // 查看详情
   const handleViewDetail = (repo: Repository) => {
-    navigate(`/repo/${repo.slug}`)
+    navigate(`/admin/repos/${repo.slug}`)
   }
 
   // 状态标签

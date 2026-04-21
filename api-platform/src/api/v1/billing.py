@@ -208,6 +208,97 @@ async def get_bills(
     )
 
 
+@router.get("/bills/export")
+async def export_bills(
+    bill_type: str = Query(None, description="账单类型筛选"),
+    start_date: str = Query(None, description="开始日期 YYYY-MM-DD"),
+    end_date: str = Query(None, description="结束日期 YYYY-MM-DD"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    导出账单列表为CSV文件
+    根据当前支付模式自动过滤数据
+    """
+    from fastapi.responses import StreamingResponse
+    from src.config.settings import settings
+    import io
+    import csv
+    
+    # 自动判断环境
+    environment = "simulation" if settings.payment_mock_mode else "production"
+    
+    # 构建查询 - 获取所有符合条件的账单
+    query = select(Bill).where(
+        Bill.user_id == current_user.id,
+        Bill.environment == environment,
+    ).order_by(desc(Bill.created_at))
+    
+    if bill_type:
+        query = query.where(Bill.bill_type == bill_type)
+    
+    if start_date:
+        from datetime import datetime
+        try:
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            query = query.where(Bill.created_at >= start_dt)
+        except ValueError:
+            pass
+    
+    if end_date:
+        from datetime import datetime
+        try:
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+            query = query.where(Bill.created_at <= end_dt)
+        except ValueError:
+            pass
+    
+    result = await db.execute(query)
+    bills = result.scalars().all()
+    
+    # 生成CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # 写入表头
+    writer.writerow(['时间', '类型', '金额', '余额', '描述', '仓库', '支付方式', '交易ID', '环境'])
+    
+    # 写入数据
+    bill_type_map = {
+        'recharge': '充值',
+        'consume': '消费',
+        'refund': '退款',
+        'freeze': '冻结',
+        'unfreeze': '解冻',
+        'settlement': '结算',
+    }
+    
+    for bill in bills:
+        writer.writerow([
+            bill.created_at.strftime('%Y-%m-%d %H:%M:%S') if bill.created_at else '',
+            bill_type_map.get(bill.bill_type, bill.bill_type),
+            f"{float(bill.amount):.2f}",
+            f"{float(bill.balance_after):.2f}",
+            bill.description or '',
+            '',  # repo_name 需要关联查询，这里留空
+            bill.payment_method or '',
+            bill.transaction_id or '',
+            bill.environment,
+        ])
+    
+    # 生成文件名
+    from datetime import datetime
+    filename = f"bills_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+    
+    # 返回文件流
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"}
+    )
+
+
 @router.get("/monthly-summary", response_model=BaseResponse[dict])
 async def get_monthly_summary(
     year: int = Query(None),
@@ -275,6 +366,40 @@ async def get_monthly_summary(
     )
     consumption_count = count_result.scalar() or 0
     
+    # 从 APICallLog 表计算消费分布
+    repo_stats_result = await db.execute(
+        select(
+            APICallLog.repo_id,
+            func.count(APICallLog.id).label("call_count"),
+            func.coalesce(func.sum(func.cast(APICallLog.cost, Numeric)), 0).label("total_cost")
+        ).where(
+            APICallLog.user_id == current_user.id,
+            APICallLog.created_at >= start_date,
+            APICallLog.created_at < end_date,
+        ).group_by(APICallLog.repo_id).order_by(desc("call_count"))
+    )
+    repo_stats = repo_stats_result.all()
+    
+    # 获取仓库名称
+    repo_ids = [str(stat.repo_id) for stat in repo_stats if stat.repo_id]
+    repo_names = {}
+    if repo_ids:
+        repo_result = await db.execute(
+            select(Repository).where(Repository.id.in_(repo_ids))
+        )
+        for repo in repo_result.scalars().all():
+            repo_names[str(repo.id)] = repo.display_name or repo.name
+    
+    by_repository = []
+    for stat in repo_stats:
+        repo_id_str = str(stat.repo_id) if stat.repo_id else None
+        by_repository.append({
+            "repo_id": repo_id_str,
+            "repo_name": repo_names.get(repo_id_str, "未知仓库") if repo_id_str else "未知仓库",
+            "call_count": stat.call_count,
+            "total": float(stat.total_cost),
+        })
+    
     return BaseResponse(
         data={
             "year": year,
@@ -283,7 +408,7 @@ async def get_monthly_summary(
             "total_consumption": total_consumption,
             "consumption_count": consumption_count,
             "net_change": total_recharge - total_consumption,
-            "by_repository": [],
+            "by_repository": by_repository,
             "environment": environment,
             "mock_mode": settings.payment_mock_mode,
         }

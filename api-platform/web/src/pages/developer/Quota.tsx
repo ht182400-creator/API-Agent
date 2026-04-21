@@ -1,15 +1,25 @@
 /**
  * 配额使用页面
- * V2.5 更新：添加 RPM/RPH 限制展示
+ * V2.6 更新：现代化UI设计，支持多种配额类型显示
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button, Alert, Tag } from 'antd'
-import { PieChartOutlined, BarChartOutlined, PlusOutlined, ThunderboltOutlined, ClockCircleOutlined, WarningOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button, Alert, Tag, Tooltip, Badge } from 'antd'
+import { 
+  PieChartOutlined, 
+  BarChartOutlined, 
+  ThunderboltOutlined, 
+  ClockCircleOutlined, 
+  WarningOutlined,
+  CheckCircleOutlined,
+  CalendarOutlined,
+  RiseOutlined,
+  FallOutlined
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Quota.module.css'
 
@@ -39,7 +49,6 @@ export default function DeveloperQuota() {
 
   const fetchKeys = async () => {
     try {
-      // api.get 已返回 res.data，所以直接是 PaginatedResponse
       const data = await quotaApi.getKeys({ page_size: 100 })
       setKeys(data.items)
       if (data.items.length > 0) {
@@ -75,11 +84,36 @@ export default function DeveloperQuota() {
     return '#52c41a'
   }
 
+  const getQuotaStatus = (used: number, limit: number | null) => {
+    if (!limit) return { color: 'blue', text: '无限制', icon: <CheckCircleOutlined /> }
+    const percent = (used / limit) * 100
+    if (percent >= 100) return { color: 'red', text: '已用完', icon: <WarningOutlined /> }
+    if (percent >= 90) return { color: 'orange', text: '即将用完', icon: <WarningOutlined /> }
+    if (percent >= 70) return { color: 'gold', text: '使用中', icon: <ClockCircleOutlined /> }
+    return { color: 'green', text: '正常', icon: <CheckCircleOutlined /> }
+  }
+
+  // 每日配额数据
+  const dailyData = quota ? getQuotaData(quota.daily) : null
+  // 每月配额数据
+  const monthlyData = quota ? getQuotaData(quota.monthly) : null
+
+  function getQuotaData(data: { used: number; limit: number | null; remaining: number | null }) {
+    const percent = data.limit ? Math.min(100, Math.round((data.used / data.limit) * 100)) : 0
+    const status = getQuotaStatus(data.used, data.limit)
+    return {
+      used: data.used,
+      limit: data.limit,
+      remaining: data.remaining ?? (data.limit ? data.limit - data.used : null),
+      percent,
+      status
+    }
+  }
+
   const COLORS = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1', '#13c2c2']
 
   return (
     <div className={styles.container}>
-      {/* 统一的错误提示组件 */}
       <ErrorModalComponent />
 
       <div className={styles.header}>
@@ -100,155 +134,148 @@ export default function DeveloperQuota() {
 
       {quota && (
         <>
-          {/* 配额概览 */}
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
-              <Card className={styles.card}>
-                <div className={styles.quotaHeader}>
-                  <PieChartOutlined />
-                  <Text strong>每日配额</Text>
+          {/* 配额概览 - 现代化卡片设计 */}
+          <Row gutter={[16, 16]} className="mb-4">
+            {/* 每日配额 */}
+            <Col xs={24} md={12} lg={6}>
+              <Card 
+                className={styles.quotaCard}
+                loading={loading}
+                style={{ borderTop: '3px solid #1677ff' }}
+              >
+                <div className={styles.quotaCardHeader}>
+                  <div className={styles.quotaCardIcon} style={{ backgroundColor: '#e6f4ff' }}>
+                    <CalendarOutlined style={{ color: '#1677ff', fontSize: 20 }} />
+                  </div>
+                  <Tag color={dailyData?.status.color}>{dailyData?.status.text}</Tag>
                 </div>
-                <Progress
-                  type="dashboard"
-                  percent={quota.daily.limit ? Math.round((quota.daily.used / quota.daily.limit) * 100) : 0}
-                  format={(p) => `${quota.daily.used}/${quota.daily.limit || '∞'}`}
-                  strokeColor={getProgressColor(
-                    quota.daily.limit ? (quota.daily.used / quota.daily.limit) * 100 : 0
-                  )}
+                <div className={styles.quotaCardTitle}>每日配额</div>
+                <div className={styles.quotaCardValue}>
+                  <span className={styles.quotaUsed}>{dailyData?.used ?? 0}</span>
+                  <span className={styles.quotaDivider}>/</span>
+                  <span className={styles.quotaLimit}>{dailyData?.limit ?? '∞'}</span>
+                </div>
+                <Progress 
+                  percent={dailyData?.percent ?? 0}
+                  strokeColor={getProgressColor(dailyData?.percent ?? 0)}
+                  showInfo={false}
+                  size="small"
                 />
-                <div className={styles.quotaDetail}>
-                  <Space direction="vertical">
-                    <Text>已使用：{quota.daily.used}</Text>
-                    <Text type="secondary">
-                      剩余：{quota.daily.remaining ?? '无限制'}
-                    </Text>
-                  </Space>
+                <div className={styles.quotaCardFooter}>
+                  <span>剩余: <Text strong>{dailyData?.remaining ?? '无限制'}</Text></span>
                 </div>
               </Card>
             </Col>
-            <Col xs={24} md={12}>
-              <Card className={styles.card}>
-                <div className={styles.quotaHeader}>
-                  <BarChartOutlined />
-                  <Text strong>每月配额</Text>
+
+            {/* 每月配额 */}
+            <Col xs={24} md={12} lg={6}>
+              <Card 
+                className={styles.quotaCard}
+                loading={loading}
+                style={{ borderTop: '3px solid #722ed1' }}
+              >
+                <div className={styles.quotaCardHeader}>
+                  <div className={styles.quotaCardIcon} style={{ backgroundColor: '#f9f0ff' }}>
+                    <BarChartOutlined style={{ color: '#722ed1', fontSize: 20 }} />
+                  </div>
+                  <Tag color={monthlyData?.status.color}>{monthlyData?.status.text}</Tag>
                 </div>
-                <Progress
-                  type="dashboard"
-                  percent={quota.monthly.limit ? Math.round((quota.monthly.used / quota.monthly.limit) * 100) : 0}
-                  format={(p) => `${quota.monthly.used}/${quota.monthly.limit || '∞'}`}
-                  strokeColor={getProgressColor(
-                    quota.monthly.limit ? (quota.monthly.used / quota.monthly.limit) * 100 : 0
-                  )}
+                <div className={styles.quotaCardTitle}>每月配额</div>
+                <div className={styles.quotaCardValue}>
+                  <span className={styles.quotaUsed}>{monthlyData?.used ?? 0}</span>
+                  <span className={styles.quotaDivider}>/</span>
+                  <span className={styles.quotaLimit}>{monthlyData?.limit ?? '∞'}</span>
+                </div>
+                <Progress 
+                  percent={monthlyData?.percent ?? 0}
+                  strokeColor={getProgressColor(monthlyData?.percent ?? 0)}
+                  showInfo={false}
+                  size="small"
                 />
-                <div className={styles.quotaDetail}>
-                  <Space direction="vertical">
-                    <Text>已使用：{quota.monthly.used}</Text>
-                    <Text type="secondary">
-                      剩余：{quota.monthly.remaining ?? '无限制'}
-                    </Text>
-                  </Space>
+                <div className={styles.quotaCardFooter}>
+                  <span>剩余: <Text strong>{monthlyData?.remaining ?? '无限制'}</Text></span>
+                </div>
+              </Card>
+            </Col>
+
+            {/* RPM 限制 */}
+            <Col xs={24} md={12} lg={6}>
+              <Card 
+                className={styles.quotaCard}
+                loading={loading}
+                style={{ borderTop: '3px solid #faad14' }}
+              >
+                <div className={styles.quotaCardHeader}>
+                  <div className={styles.quotaCardIcon} style={{ backgroundColor: '#fffbe6' }}>
+                    <ThunderboltOutlined style={{ color: '#faad14', fontSize: 20 }} />
+                  </div>
+                  <Badge 
+                    status={quota.rpm_used >= (quota.rpm_limit || 1000) ? 'error' : 'processing'}
+                    text={quota.rpm_used >= (quota.rpm_limit || 1000) ? '已达限' : '正常'}
+                  />
+                </div>
+                <div className={styles.quotaCardTitle}>每分钟请求 (RPM)</div>
+                <div className={styles.quotaCardValue}>
+                  <span className={styles.quotaUsed} style={{ color: quota.rpm_used >= (quota.rpm_limit || 1000) ? '#ff4d4f' : '#faad14' }}>
+                    {quota.rpm_used ?? 0}
+                  </span>
+                  <span className={styles.quotaDivider}>/</span>
+                  <span className={styles.quotaLimit}>{quota.rpm_limit || 1000}</span>
+                </div>
+                <Progress 
+                  percent={quota.rpm_limit ? Math.min(100, Math.round((quota.rpm_used / quota.rpm_limit) * 100)) : 0}
+                  strokeColor={quota.rpm_used >= (quota.rpm_limit || 1000) ? '#ff4d4f' : '#faad14'}
+                  showInfo={false}
+                  size="small"
+                />
+                <div className={styles.quotaCardFooter}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    限制: {quota.rpm_limit || 1000} 次/分钟
+                  </Text>
+                </div>
+              </Card>
+            </Col>
+
+            {/* RPH 限制 */}
+            <Col xs={24} md={12} lg={6}>
+              <Card 
+                className={styles.quotaCard}
+                loading={loading}
+                style={{ borderTop: '3px solid #52c41a' }}
+              >
+                <div className={styles.quotaCardHeader}>
+                  <div className={styles.quotaCardIcon} style={{ backgroundColor: '#f6ffed' }}>
+                    <ClockCircleOutlined style={{ color: '#52c41a', fontSize: 20 }} />
+                  </div>
+                  <Badge 
+                    status={quota.rph_used >= (quota.rph_limit || 10000) ? 'error' : 'processing'}
+                    text={quota.rph_used >= (quota.rph_limit || 10000) ? '已达限' : '正常'}
+                  />
+                </div>
+                <div className={styles.quotaCardTitle}>每小时请求 (RPH)</div>
+                <div className={styles.quotaCardValue}>
+                  <span className={styles.quotaUsed} style={{ color: quota.rph_used >= (quota.rph_limit || 10000) ? '#ff4d4f' : '#52c41a' }}>
+                    {quota.rph_used ?? 0}
+                  </span>
+                  <span className={styles.quotaDivider}>/</span>
+                  <span className={styles.quotaLimit}>{quota.rph_limit || 10000}</span>
+                </div>
+                <Progress 
+                  percent={quota.rph_limit ? Math.min(100, Math.round((quota.rph_used / quota.rph_limit) * 100)) : 0}
+                  strokeColor={quota.rph_used >= (quota.rph_limit || 10000) ? '#ff4d4f' : '#52c41a'}
+                  showInfo={false}
+                  size="small"
+                />
+                <div className={styles.quotaCardFooter}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    限制: {quota.rph_limit || 10000} 次/小时
+                  </Text>
                 </div>
               </Card>
             </Col>
           </Row>
 
-          {/* RPM/RPH 限流信息 V2.5 新增 */}
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
-              <Card 
-                className={styles.card}
-                title={
-                  <Space>
-                    <ThunderboltOutlined />
-                    <span>每分钟请求限制 (RPM)</span>
-                  </Space>
-                }
-              >
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Statistic 
-                        title="RPM 限制" 
-                        value={quota.rpm_limit || 1000} 
-                        suffix="次/分钟" 
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Statistic 
-                        title="最近1分钟" 
-                        value={quota.rpm_used || 0} 
-                        valueStyle={{ color: quota.rpm_used >= (quota.rpm_limit || 1000) ? '#ff4d4f' : undefined }}
-                      />
-                    </Col>
-                  </Row>
-                  <Progress 
-                    percent={quota.rpm_limit ? Math.min(100, Math.round((quota.rpm_used / quota.rpm_limit) * 100)) : 0}
-                    strokeColor={getProgressColor(
-                      quota.rpm_limit ? Math.min(100, (quota.rpm_used / quota.rpm_limit) * 100) : 0
-                    )}
-                    format={(p) => `${p}%`}
-                    showInfo
-                  />
-                  {quota.rpm_used >= (quota.rpm_limit || 1000) && (
-                    <Alert 
-                      type="warning" 
-                      message="RPM 限制已达上限，请稍后再试" 
-                      showIcon 
-                      icon={<WarningOutlined />}
-                    />
-                  )}
-                </Space>
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card 
-                className={styles.card}
-                title={
-                  <Space>
-                    <ClockCircleOutlined />
-                    <span>每小时请求限制 (RPH)</span>
-                  </Space>
-                }
-              >
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Statistic 
-                        title="RPH 限制" 
-                        value={quota.rph_limit || 10000} 
-                        suffix="次/小时" 
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Statistic 
-                        title="最近1小时" 
-                        value={quota.rph_used || 0} 
-                        valueStyle={{ color: quota.rph_used >= (quota.rph_limit || 10000) ? '#ff4d4f' : undefined }}
-                      />
-                    </Col>
-                  </Row>
-                  <Progress 
-                    percent={quota.rph_limit ? Math.min(100, Math.round((quota.rph_used / quota.rph_limit) * 100)) : 0}
-                    strokeColor={getProgressColor(
-                      quota.rph_limit ? Math.min(100, (quota.rph_used / quota.rph_limit) * 100) : 0
-                    )}
-                    format={(p) => `${p}%`}
-                    showInfo
-                  />
-                  {quota.rph_used >= (quota.rph_limit || 10000) && (
-                    <Alert 
-                      type="warning" 
-                      message="RPH 限制已达上限，请稍后再试" 
-                      showIcon 
-                      icon={<WarningOutlined />}
-                    />
-                  )}
-                </Space>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* 余额警告 V2.5 新增 */}
+          {/* 余额警告 */}
           {quota.balance_enabled && quota.balance !== undefined && (
             <Alert
               type={quota.balance < 1 ? 'error' : 'warning'}
@@ -264,6 +291,7 @@ export default function DeveloperQuota() {
                 </Space>
               }
               showIcon
+              icon={<WarningOutlined />}
               action={
                 <Button size="small" type="primary" onClick={() => navigate('/developer/recharge')}>
                   立即充值
@@ -274,7 +302,20 @@ export default function DeveloperQuota() {
           )}
 
           {/* 使用趋势 */}
-          <Card title="每日调用趋势（近14天）" className={styles.chartCard}>
+          <Card 
+            title={
+              <Space>
+                <RiseOutlined />
+                <span>每日调用趋势（近14天）</span>
+              </Space>
+            } 
+            className={styles.chartCard}
+            extra={
+              <Text type="secondary">
+                总调用: {usageHistory.reduce((acc, r) => acc + r.call_count, 0)} 次
+              </Text>
+            }
+          >
             {usageHistory.length === 0 ? (
               <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Empty description="暂无调用记录，开始使用API后将显示趋势图" image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -288,7 +329,7 @@ export default function DeveloperQuota() {
                     tickFormatter={(val) => dayjs(val).format('MM-DD')}
                   />
                   <YAxis />
-                  <Tooltip 
+                  <RechartsTooltip 
                     labelFormatter={(val) => dayjs(val).format('YYYY-MM-DD')}
                     formatter={(value: number) => [`${value}次`, '调用次数']}
                   />
@@ -299,7 +340,15 @@ export default function DeveloperQuota() {
           </Card>
 
           {/* Top仓库 */}
-          <Card title="调用量最高的仓库（近14天）" className={styles.tableCard}>
+          <Card 
+            title={
+              <Space>
+                <FallOutlined />
+                <span>调用量最高的仓库（近14天）</span>
+              </Space>
+            }
+            className={styles.tableCard}
+          >
             <Table
               dataSource={topRepos}
               rowKey="repo_id"
@@ -309,27 +358,40 @@ export default function DeveloperQuota() {
                 { 
                   title: '排名', 
                   key: 'rank',
-                  render: (_: any, __: any, index: number) => index + 1
+                  width: 80,
+                  render: (_: any, __: any, index: number) => (
+                    <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#1677ff' : '#d9d9d9' }} />
+                  )
                 },
-                { title: '仓库名称', dataIndex: 'repo_name', key: 'repo_name' },
+                { 
+                  title: '仓库名称', 
+                  dataIndex: 'repo_name', 
+                  key: 'repo_name',
+                  render: (name: string) => <Tag color="blue">{name || '未知仓库'}</Tag>
+                },
                 { 
                   title: '调用次数', 
                   dataIndex: 'call_count', 
                   key: 'call_count',
                   sorter: (a: any, b: any) => a.call_count - b.call_count,
+                  render: (count: number) => count?.toLocaleString()
                 },
                 {
                   title: '用量占比',
                   key: 'percent',
+                  width: 200,
                   render: (_: any, record: any) => {
                     const total = topRepos.reduce((acc, r) => acc + r.call_count, 0)
-                    const percent = Math.round((record.call_count / total) * 100)
+                    const percent = total > 0 ? Math.round((record.call_count / total) * 100) : 0
                     return (
-                      <Progress
-                        percent={percent}
-                        size="small"
-                        format={(p) => `${p}%`}
-                      />
+                      <Tooltip title={`${record.call_count} / ${total} 次`}>
+                        <Progress
+                          percent={percent}
+                          size="small"
+                          format={(p) => `${p}%`}
+                          strokeColor={percent > 50 ? '#1677ff' : '#52c41a'}
+                        />
+                      </Tooltip>
                     )
                   }
                 },
@@ -346,7 +408,7 @@ export default function DeveloperQuota() {
             description="暂无API Key，请先创建API Key"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           >
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/developer/keys')}>
+            <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => navigate('/developer/keys')}>
               创建API Key
             </Button>
           </Empty>

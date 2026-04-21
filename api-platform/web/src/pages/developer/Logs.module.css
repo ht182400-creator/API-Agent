@@ -11,5 +11,28 @@
 
 .filterCard {
   margin-bottom: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tableCard {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tableHeader {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .container {
+    padding: 0;
+  }
+  
+  .filterCard :global(.ant-space-wrap) {
+    width: 100%;
+  }
 }

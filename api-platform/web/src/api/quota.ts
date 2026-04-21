@@ -47,6 +47,7 @@ export interface QuotaInfo {
 // 调用日志
 export interface APICallLog {
   id: string
+  request_id: string | null  // 全链路追踪ID
   api_key_id: string
   repo_id: string
   repo_name: string
@@ -149,6 +150,11 @@ export const quotaApi = {
       `/quota/top-repos/${key_id}`,
       { limit, days }
     )
+  },
+
+  // 获取每日调用趋势（从 APICallLog 统计）
+  getConsumptionTrend: (days: number = 14) => {
+    return api.get<{ date: string; amount: number }[]>('/quota/consumption-trend', { days })
   },
 
   // 查看 API Key 明文

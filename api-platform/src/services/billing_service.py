@@ -197,7 +197,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
-            bill_type="consumption",
+            bill_type="consume",
             amount=str(-abs(amount)),
             balance_before=str(balance_before),
             balance_after=str(new_balance),

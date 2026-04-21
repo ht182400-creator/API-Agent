@@ -1,6 +1,6 @@
 """Database configuration - 数据库配置"""
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -61,6 +61,8 @@ async def get_db() -> AsyncSession:
 async def init_db():
     """Initialize database tables"""
     async with async_engine.begin() as conn:
+        # 设置会话时区为 UTC
+        await conn.execute(text("SET TIME ZONE 'UTC'"))
         await conn.run_sync(Base.metadata.create_all)
 
 
