@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Header, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc, Numeric
+from sqlalchemy import select, func, desc, Numeric, Float
 from typing import Optional
 import secrets
 import uuid
@@ -13,7 +13,7 @@ from src.schemas.request import CreateAPIKeyRequest
 from src.services.auth_service import get_current_user
 from src.models.user import User
 from src.models.api_key import APIKey
-from src.models.billing import Quota
+from src.models.billing import Quota, APICallLog, Bill
 from src.utils.crypto import hash_api_key, encrypt_api_key, decrypt_api_key
 
 router = APIRouter()
@@ -391,6 +391,7 @@ async def get_quota_info(
     获取指定Key的配额信息
     """
     from datetime import datetime, timedelta
+    from src.models.billing import APICallLog
     
     # 首先验证 API Key 属于当前用户
     key_result = await db.execute(
@@ -405,9 +406,12 @@ async def get_quota_info(
         from src.core.exceptions import NotFoundError
         raise NotFoundError("API Key不存在或无权访问")
     
-    # 获取今日和本月使用量
-    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # 获取今日和本月使用量（使用 UTC 时间保持一致）
+    now = datetime.utcnow()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     month_start = today.replace(day=1)
+    one_minute_ago = now - timedelta(minutes=1)
+    one_hour_ago = now - timedelta(hours=1)
     
     # 查询配额记录
     quota_query = select(Quota).where(
@@ -416,17 +420,47 @@ async def get_quota_info(
     quota_result = await db.execute(quota_query)
     quotas = quota_result.scalars().all()
     
-    # 计算今日和本月使用量
-    daily_used = 0
-    monthly_used = 0
+    # 计算今日和本月使用量 - 直接从 APICallLog 表统计
     daily_limit = api_key.daily_quota
     monthly_limit = api_key.monthly_quota
+
+    # 今日使用量（直接统计 APICallLog）
+    daily_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.api_key_id == api_key.id,
+            APICallLog.created_at >= today
+        )
+    )
+    daily_used = daily_result.scalar() or 0
+
+    # 本月使用量（直接统计 APICallLog）
+    monthly_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.api_key_id == api_key.id,
+            APICallLog.created_at >= month_start
+        )
+    )
+    monthly_used = monthly_result.scalar() or 0
     
-    for q in quotas:
-        if q.quota_type == "daily" and q.reset_at and q.reset_at >= today:
-            daily_used = q.quota_used
-        elif q.quota_type == "monthly" and q.reset_at and q.reset_at >= month_start:
-            monthly_used = q.quota_used
+    # 统计 RPM (最近1分钟调用次数) - 从 APICallLog 表
+    # 按 api_key_id 过滤，确保统计的是当前 Key 的调用
+    rpm_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.api_key_id == api_key.id,
+            APICallLog.created_at >= one_minute_ago
+        )
+    )
+    rpm_used = rpm_result.scalar() or 0
+
+    # 统计 RPH (最近1小时调用次数) - 从 APICallLog 表
+    # 按 api_key_id 过滤，确保统计的是当前 Key 的调用
+    rph_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.api_key_id == api_key.id,
+            APICallLog.created_at >= one_hour_ago
+        )
+    )
+    rph_used = rph_result.scalar() or 0
     
     return BaseResponse(
         data={
@@ -441,6 +475,12 @@ async def get_quota_info(
                 "limit": monthly_limit or 0,
                 "remaining": (monthly_limit - monthly_used) if monthly_limit else None
             },
+            "rpm_limit": api_key.rate_limit_rpm or 1000,
+            "rpm_used": rpm_used,
+            "rph_limit": api_key.rate_limit_rph or 10000,
+            "rph_used": rph_used,
+            "balance_enabled": api_key.is_balance_enabled or False,
+            "balance": 0,  # 余额需要单独从 Account 表获取
         }
     )
 
@@ -453,31 +493,63 @@ async def get_quota_overview(
     """
     获取所有API Key的配额概览
     """
+    from datetime import datetime, timedelta
+    from src.models.billing import APICallLog
+    
     # 获取用户的所有 keys
     keys_result = await db.execute(
         select(APIKey).where(APIKey.user_id == current_user.id)
     )
     keys = keys_result.scalars().all()
     
+    # 使用 UTC 时间保持一致
+    now = datetime.utcnow()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    month_start = today.replace(day=1)
+    one_minute_ago = now - timedelta(minutes=1)
+    one_hour_ago = now - timedelta(hours=1)
+
     overview = []
     for key in keys:
-        # 获取每个 key 的配额
-        quota_result = await db.execute(
-            select(Quota).where(Quota.key_id == str(key.id))
-        )
-        quotas = quota_result.scalars().all()
-        
-        daily_used = 0
-        monthly_used = 0
         daily_limit = key.daily_quota
         monthly_limit = key.monthly_quota
+
+        # 今日使用量（直接统计 APICallLog）
+        daily_result = await db.execute(
+            select(func.count(APICallLog.id)).where(
+                APICallLog.api_key_id == key.id,
+                APICallLog.created_at >= today
+            )
+        )
+        daily_used = daily_result.scalar() or 0
+
+        # 本月使用量（直接统计 APICallLog）
+        monthly_result = await db.execute(
+            select(func.count(APICallLog.id)).where(
+                APICallLog.api_key_id == key.id,
+                APICallLog.created_at >= month_start
+            )
+        )
+        monthly_used = monthly_result.scalar() or 0
         
-        for q in quotas:
-            if q.quota_type == "daily":
-                daily_used = q.quota_used
-            elif q.quota_type == "monthly":
-                monthly_used = q.quota_used
-        
+        # 统计 RPM (最近1分钟) - 按 api_key_id 过滤
+        rpm_result = await db.execute(
+            select(func.count(APICallLog.id)).where(
+                APICallLog.api_key_id == key.id,
+                APICallLog.created_at >= one_minute_ago
+            )
+        )
+        rpm_used = rpm_result.scalar() or 0
+
+        # 统计 RPH (最近1小时) - 按 api_key_id 过滤
+        rph_result = await db.execute(
+            select(func.count(APICallLog.id)).where(
+                APICallLog.api_key_id == key.id,
+                APICallLog.created_at >= one_hour_ago
+            )
+        )
+        rph_used = rph_result.scalar() or 0
+
         overview.append({
             "api_key_id": str(key.id),
             "daily": {
@@ -490,6 +562,10 @@ async def get_quota_overview(
                 "limit": monthly_limit or 0,
                 "remaining": (monthly_limit - monthly_used) if monthly_limit else None
             },
+            "rpm_limit": key.rate_limit_rpm or 1000,
+            "rpm_used": rpm_used,
+            "rph_limit": key.rate_limit_rph or 10000,
+            "rph_used": rph_used,
         })
     
     return BaseResponse(data=overview)
@@ -511,43 +587,72 @@ async def get_logs(
     """
     获取调用日志
     """
-    from src.models.api_key import KeyUsageLog
+    from src.models.billing import APICallLog
+    from src.models.repository import Repository
     from datetime import datetime
     
-    # 构建查询
-    query = select(KeyUsageLog).where(KeyUsageLog.user_id == current_user.id)
-    
+    # 构建查询 - 查询 APICallLog 表（实际记录 API 调用的表）
+    # 优先使用 api_key_id 过滤，与配额 API 统计口径保持一致
     if key_id:
-        query = query.where(KeyUsageLog.key_id == key_id)
+        query = select(APICallLog).where(APICallLog.api_key_id == key_id)
+        count_query = select(func.count(APICallLog.id)).where(APICallLog.api_key_id == key_id)
+    else:
+        # 未指定 key_id 时，使用 user_id 过滤（查看该用户所有调用）
+        query = select(APICallLog).where(APICallLog.user_id == current_user.id)
+        count_query = select(func.count(APICallLog.id)).where(APICallLog.user_id == current_user.id)
+
     if repo_id:
-        query = query.where(KeyUsageLog.repo_id == repo_id)
+        query = query.where(APICallLog.repo_id == repo_id)
+        count_query = count_query.where(APICallLog.repo_id == repo_id)
+    if start_date:
+        try:
+            start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            query = query.where(APICallLog.created_at >= start_dt)
+            count_query = count_query.where(APICallLog.created_at >= start_dt)
+        except Exception:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            query = query.where(APICallLog.created_at <= end_dt)
+            count_query = count_query.where(APICallLog.created_at <= end_dt)
+        except Exception:
+            pass
     
     # 获取总数
-    count_query = select(func.count(KeyUsageLog.id)).where(KeyUsageLog.user_id == current_user.id)
-    if key_id:
-        count_query = count_query.where(KeyUsageLog.key_id == key_id)
     total_result = await db.execute(count_query)
     total = total_result.scalar() or 0
     
     # 分页查询
     offset = (page - 1) * page_size
-    query = query.order_by(desc(KeyUsageLog.created_at)).offset(offset).limit(page_size)
+    query = query.order_by(desc(APICallLog.created_at)).offset(offset).limit(page_size)
     
     result = await db.execute(query)
     logs = result.scalars().all()
+    
+    # 获取仓库名称映射
+    repo_ids = list(set(str(log.repo_id) for log in logs if log.repo_id))
+    repo_names = {}
+    if repo_ids:
+        repo_result = await db.execute(
+            select(Repository).where(Repository.id.in_(repo_ids))
+        )
+        for repo in repo_result.scalars().all():
+            repo_names[str(repo.id)] = repo.display_name or repo.name
     
     return BaseResponse(
         data={
             "items": [
                 {
                     "id": str(log.id),
-                    "api_key_id": str(log.key_id),
+                    "request_id": log.request_id,  # 全链路追踪ID
+                    "api_key_id": str(log.api_key_id) if log.api_key_id else None,
                     "repo_id": str(log.repo_id) if log.repo_id else None,
-                    "repo_name": None,  # 需要关联查询
+                    "repo_name": repo_names.get(str(log.repo_id), "未知仓库"),
                     "endpoint": log.endpoint,
-                    "method": log.method,
+                    "method": log.request_method or log.method,
                     "response_status": log.status_code,
-                    "response_time": log.latency_ms,
+                    "response_time": int(float(log.response_time)) if log.response_time else 0,
                     "ip_address": log.ip_address,
                     "created_at": log.created_at.isoformat() if log.created_at else None,
                 }
@@ -572,39 +677,96 @@ async def get_usage_history(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    获取配额使用历史
+    获取配额使用历史 - 从 APICallLog 表统计
     """
     from datetime import datetime, timedelta
-    from src.models.api_key import KeyUsageLog
     
-    start_date = datetime.now() - timedelta(days=days)
+    # 使用北京时间
+    now = datetime.now()
+    start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
     
-    # 按日期聚合查询
+    # 从 APICallLog 表按日期聚合查询
     result = await db.execute(
-        select(KeyUsageLog).where(
-            KeyUsageLog.key_id == key_id,
-            KeyUsageLog.user_id == current_user.id,
-            KeyUsageLog.created_at >= start_date,
-        ).order_by(KeyUsageLog.created_at)
+        select(
+            func.date(APICallLog.created_at).label("date"),
+            func.count(APICallLog.id).label("call_count"),
+            func.sum(func.cast(APICallLog.cost, Float)).label("total_amount")
+        ).where(
+            APICallLog.api_key_id == key_id,
+            APICallLog.user_id == current_user.id,
+            APICallLog.created_at >= start_date,
+        ).group_by(func.date(APICallLog.created_at)).order_by(func.date(APICallLog.created_at))
     )
-    logs = result.scalars().all()
+    rows = result.all()
     
-    # 按日期聚合
+    # 构建日期到数据的映射
     daily_data = {}
-    for log in logs:
-        date_str = log.created_at.strftime("%Y-%m-%d") if log.created_at else "unknown"
-        if date_str not in daily_data:
-            daily_data[date_str] = {
-                "date": date_str,
-                "total_amount": float(log.cost or "0"),
-                "call_count": 0
-            }
-        daily_data[date_str]["call_count"] += 1
-        daily_data[date_str]["total_amount"] += float(log.cost or "0")
+    for row in rows:
+        date_val = row.date
+        if hasattr(date_val, 'strftime'):
+            date_str = date_val.strftime("%Y-%m-%d")
+        else:
+            date_str = str(date_val)
+        daily_data[date_str] = {
+            "date": date_str,
+            "call_count": row.call_count or 0,
+            "total_amount": float(row.total_amount or 0)
+        }
     
-    return BaseResponse(
-        data=list(daily_data.values()) if daily_data else []
+    # 填充缺失的日期
+    data = []
+    for i in range(days - 1, -1, -1):
+        date = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+        if date in daily_data:
+            data.append(daily_data[date])
+        else:
+            data.append({"date": date, "call_count": 0, "total_amount": 0})
+    
+    return BaseResponse(data=data)
+
+
+@router.get("/consumption-trend", response_model=BaseResponse[list])
+async def get_consumption_trend(
+    days: int = Query(14, ge=1, le=90),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    获取每日消费趋势 - 从 Bill 表统计消费金额
+    """
+    from datetime import datetime, timedelta
+    from src.models.billing import Bill
+
+    # 使用北京时间
+    now = datetime.now()
+    start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # 查询消费账单并按日期聚合
+    result = await db.execute(
+        select(Bill).where(
+            Bill.user_id == current_user.id,
+            Bill.bill_type == "consume",  # 与 billing.py 保持一致
+            Bill.created_at >= start_date,
+        ).order_by(Bill.created_at)
     )
+    bills = result.scalars().all()
+
+    # 按日期聚合消费金额
+    daily_data = {}
+    for bill in bills:
+        date_str = bill.created_at.strftime("%Y-%m-%d") if bill.created_at else "unknown"
+        if date_str not in daily_data:
+            daily_data[date_str] = {"date": date_str, "amount": 0}
+        # amount 存储为负数，取绝对值
+        daily_data[date_str]["amount"] += abs(float(bill.amount))
+
+    # 填充缺失的日期（返回完整的 days 天数据）
+    data = []
+    for i in range(days - 1, -1, -1):
+        date = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+        data.append(daily_data.get(date, {"date": date, "amount": 0}))
+
+    return BaseResponse(data=data)
 
 
 @router.get("/top-repos/{key_id}", response_model=BaseResponse[list])
@@ -616,35 +778,50 @@ async def get_top_repos(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    获取使用量最高的仓库
+    获取使用量最高的仓库 - 从 APICallLog 表统计
     """
     from datetime import datetime, timedelta
-    from src.models.api_key import KeyUsageLog
-    
-    start_date = datetime.now() - timedelta(days=days)
-    
-    # 按 repo_id 聚合查询
+    from src.models.repository import Repository
+
+    # 验证 key_id 属于当前用户
+    key_result = await db.execute(
+        select(APIKey).where(APIKey.id == key_id, APIKey.user_id == current_user.id)
+    )
+    api_key = key_result.scalar_one_or_none()
+    if not api_key:
+        from src.core.exceptions import NotFoundError
+        raise NotFoundError("API Key不存在或无权访问")
+
+    start_date = datetime.utcnow() - timedelta(days=days)
+
+    # 按 repo_id 聚合查询 - 使用 APICallLog 表，关联 Repository 获取仓库名称
     result = await db.execute(
         select(
-            KeyUsageLog.repo_id,
-            func.count(KeyUsageLog.id).label("call_count"),
-            func.sum(func.cast(KeyUsageLog.cost, Numeric)).label("total_amount")
+            APICallLog.repo_id,
+            func.count(APICallLog.id).label("call_count"),
         ).where(
-            KeyUsageLog.key_id == key_id,
-            KeyUsageLog.user_id == current_user.id,
-            KeyUsageLog.created_at >= start_date,
-        ).group_by(KeyUsageLog.repo_id).order_by(desc("call_count")).limit(limit)
+            APICallLog.api_key_id == api_key.id,
+            APICallLog.created_at >= start_date,
+        ).group_by(APICallLog.repo_id).order_by(desc("call_count")).limit(limit)
     )
     rows = result.all()
-    
-    return BaseResponse(
-        data=[
-            {
-                "repo_id": str(row.repo_id) if row.repo_id else None,
-                "repo_name": "未知仓库",  # 需要关联查询
-                "total_amount": float(row.total_amount or 0),
-                "call_count": row.call_count
-            }
-            for row in rows
-        ]
-    )
+
+    # 获取仓库名称
+    data = []
+    for row in rows:
+        repo_name = "未知仓库"
+        if row.repo_id:
+            repo_result = await db.execute(
+                select(Repository).where(Repository.id == row.repo_id)
+            )
+            repo = repo_result.scalar_one_or_none()
+            if repo:
+                repo_name = repo.name
+        data.append({
+            "repo_id": str(row.repo_id) if row.repo_id else None,
+            "repo_name": repo_name,
+            "total_amount": row.call_count,
+            "call_count": row.call_count
+        })
+
+    return BaseResponse(data=data)

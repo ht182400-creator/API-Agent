@@ -117,6 +117,81 @@ class RepositoryReject(BaseModel):
     reason: Optional[str] = Field(None, max_length=500)
 
 
+# ==================== 仓库端点管理请求 ====================
+
+class EndpointCreate(BaseModel):
+    """API端点创建请求"""
+
+    path: str = Field(..., min_length=1, max_length=200, description="端点路径，如 /current")
+    method: str = Field(..., pattern="^(GET|POST|PUT|DELETE|PATCH)$", description="HTTP方法")
+    description: Optional[str] = Field(None, max_length=500, description="端点描述")
+    category: Optional[str] = Field(None, max_length=50, description="端点分类")
+    rpm_limit: Optional[int] = Field(None, ge=1, description="每分钟请求限制")
+    rph_limit: Optional[int] = Field(None, ge=1, description="每小时请求限制")
+    display_order: int = Field(default=0, description="显示顺序")
+
+
+class EndpointUpdate(BaseModel):
+    """API端点更新请求"""
+
+    path: Optional[str] = Field(None, min_length=1, max_length=200)
+    method: Optional[str] = Field(None, pattern="^(GET|POST|PUT|DELETE|PATCH)$")
+    description: Optional[str] = Field(None, max_length=500)
+    category: Optional[str] = Field(None, max_length=50)
+    rpm_limit: Optional[int] = Field(None, ge=1)
+    rph_limit: Optional[int] = Field(None, ge=1)
+    display_order: Optional[int] = Field(None, ge=0)
+    enabled: Optional[bool] = None
+
+
+class EndpointsBatchUpdate(BaseModel):
+    """批量更新端点请求"""
+
+    endpoints: List[EndpointCreate] = Field(..., description="端点列表")
+
+
+# ==================== 仓库限流配置请求 ====================
+
+class LimitsUpdate(BaseModel):
+    """限流配置更新请求"""
+
+    rpm: Optional[int] = Field(None, ge=1, le=100000, description="每分钟请求数")
+    rph: Optional[int] = Field(None, ge=1, le=1000000, description="每小时请求数")
+    rpd: Optional[int] = Field(None, ge=1, le=10000000, description="每日请求数")
+    burst_limit: Optional[int] = Field(None, ge=1, description="突发请求限制")
+    concurrent_limit: Optional[int] = Field(None, ge=1, description="并发请求限制")
+    request_timeout: Optional[int] = Field(None, ge=1, le=300, description="请求超时秒数")
+    connect_timeout: Optional[int] = Field(None, ge=1, le=60, description="连接超时秒数")
+
+
+# ==================== 仓库完整配置更新请求 ====================
+
+class RepositoryConfigUpdate(BaseModel):
+    """仓库完整配置更新请求"""
+
+    # 基本信息
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    endpoint_url: Optional[str] = None
+    repo_type: Optional[str] = Field(None, pattern="^(psychology|stock|ai|translation|vision|custom)$")
+
+    # 端点配置
+    endpoints: Optional[List[EndpointCreate]] = None
+
+    # 限流配置
+    limits: Optional[LimitsUpdate] = None
+
+    # 定价配置
+    pricing_type: Optional[str] = Field(None, pattern="^(per_call|token|flow|subscription|free)$")
+    price_per_call: Optional[float] = None
+    price_per_token: Optional[float] = None
+    monthly_price: Optional[float] = None
+    yearly_price: Optional[float] = None
+    free_calls: Optional[int] = None
+    free_tokens: Optional[int] = None
+    free_quota_days: Optional[int] = None
+
+
 class BillRecharge(BaseModel):
     """Bill recharge request"""
 

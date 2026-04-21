@@ -1,17 +1,21 @@
 /**
  * 仓库管理页面 - 仓库所有者视角
  * 管理自己创建的仓库，包括端点配置和限流设置
+ * 更新: V2.5 - 添加端点管理和限流配置Tab
  */
 
 import { useState, useEffect } from 'react'
-import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert } from 'antd'
+import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined } from '@ant-design/icons'
-import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest } from '../../api/repo'
+import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest, Endpoint, CreateEndpointRequest, UpdateEndpointRequest, UpdateLimitsRequest } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 
 const { Title, Text } = Typography
+
+// HTTP 方法选项
+const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 export default function OwnerRepos() {
   const [loading, setLoading] = useState(false)
@@ -25,6 +29,21 @@ export default function OwnerRepos() {
   const [editingRepo, setEditingRepo] = useState<Repository | null>(null)
   const [createLoading, setCreateLoading] = useState(false)
   const [form] = Form.useForm()
+
+  // 编辑状态
+  const [endpoints, setEndpoints] = useState<Endpoint[]>([])
+  const [limits, setLimits] = useState<UpdateLimitsRequest>({
+    rpm: 1000,
+    rph: 10000,
+    rpd: 100000,
+    burst_limit: 100,
+    concurrent_limit: 10,
+    request_timeout: 30,
+    connect_timeout: 10,
+  })
+  const [editingEndpoint, setEditingEndpoint] = useState<Endpoint | null>(null)
+  const [endpointModalVisible, setEndpointModalVisible] = useState(false)
+  const [endpointForm] = Form.useForm()
 
   // 使用统一错误处理
   const { showError, showSuccess } = useError()
@@ -57,12 +76,46 @@ export default function OwnerRepos() {
     }
   }
 
+  // 加载仓库的端点和限流配置
+  const loadRepoConfig = async (repoId: string) => {
+    try {
+      // 并行加载端点和限流配置
+      const [endpointsData, limitsData] = await Promise.all([
+        repoApi.getEndpoints(repoId),
+        repoApi.getLimits(repoId),
+      ])
+      setEndpoints(endpointsData || [])
+      setLimits(limitsData || {})
+    } catch (error: any) {
+      // 如果获取失败，使用默认值
+      console.error('Failed to load repo config:', error)
+      setEndpoints([])
+      setLimits({
+        rpm: 1000,
+        rph: 10000,
+        rpd: 100000,
+        burst_limit: 100,
+        concurrent_limit: 10,
+        request_timeout: 30,
+        connect_timeout: 10,
+      })
+    }
+  }
+
   const handleCreate = async (values: CreateRepoRequest) => {
     setCreateLoading(true)
     try {
       if (editingRepo) {
-        await repoApi.update(editingRepo.id, values)
-        showSuccess('仓库更新成功')
+        // 更新完整配置
+        await repoApi.updateConfig(editingRepo.id, {
+          display_name: values.display_name,
+          description: values.description,
+          endpoint_url: values.endpoint_url,
+          repo_type: values.repo_type,
+          endpoints: endpoints,
+          limits: limits,
+        })
+        showSuccess('仓库配置更新成功')
       } else {
         await repoApi.create(values)
         showSuccess('仓库创建成功')
@@ -70,6 +123,8 @@ export default function OwnerRepos() {
       setModalVisible(false)
       form.resetFields()
       setEditingRepo(null)
+      setEndpoints([])
+      setLimits({})
       fetchRepos()
     } catch (error: any) {
       showError(error, () => handleCreate(values))
@@ -78,7 +133,7 @@ export default function OwnerRepos() {
     }
   }
 
-  const handleEdit = (repo: Repository) => {
+  const handleEdit = async (repo: Repository) => {
     setEditingRepo(repo)
     form.setFieldsValue({
       name: repo.name,
@@ -88,6 +143,8 @@ export default function OwnerRepos() {
       protocol: repo.protocol || 'http',
       endpoint_url: repo.endpoint || '',
     })
+    // 加载端点和限流配置
+    await loadRepoConfig(repo.id)
     setModalVisible(true)
   }
 
@@ -116,6 +173,66 @@ export default function OwnerRepos() {
       fetchRepos()
     } catch (error: any) {
       showError(error, () => handleToggleStatus(repo))
+    }
+  }
+
+  // ==================== 端点管理函数 ====================
+
+  const handleAddEndpoint = () => {
+    setEditingEndpoint(null)
+    setEndpointModalVisible(true)
+  }
+
+  const handleEditEndpoint = (endpoint: Endpoint) => {
+    setEditingEndpoint(endpoint)
+    setEndpointModalVisible(true)
+  }
+
+  const handleSaveEndpoint = async () => {
+    try {
+      const values = await endpointForm.validateFields()
+      if (editingEndpoint?.id && editingRepo) {
+        // 更新端点
+        await repoApi.updateEndpoint(editingRepo.id, editingEndpoint.id, values)
+        showSuccess('端点更新成功')
+      } else if (editingRepo) {
+        // 创建端点
+        await repoApi.createEndpoint(editingRepo.id, values)
+        showSuccess('端点添加成功')
+      }
+      setEndpointModalVisible(false)
+      // 重新加载端点列表
+      if (editingRepo) {
+        const endpointsData = await repoApi.getEndpoints(editingRepo.id)
+        setEndpoints(endpointsData || [])
+      }
+    } catch (error: any) {
+      showError(error, handleSaveEndpoint)
+    }
+  }
+
+  const handleDeleteEndpoint = async (endpoint: Endpoint) => {
+    if (!editingRepo?.id || !endpoint.id) return
+    try {
+      await repoApi.deleteEndpoint(editingRepo.id, endpoint.id)
+      showSuccess('端点已删除')
+      // 重新加载端点列表
+      const endpointsData = await repoApi.getEndpoints(editingRepo.id)
+      setEndpoints(endpointsData || [])
+    } catch (error: any) {
+      showError(error, () => handleDeleteEndpoint(endpoint))
+    }
+  }
+
+  // ==================== 限流配置函数 ====================
+
+  const handleSaveLimits = async () => {
+    if (!editingRepo?.id) return
+    try {
+      await repoApi.updateLimits(editingRepo.id, limits)
+      showSuccess('限流配置已保存')
+    } catch (error: any) {
+      showError(error, handleSaveLimits)
     }
   }
 
@@ -205,6 +322,232 @@ export default function OwnerRepos() {
     },
   ]
 
+  // Tab 内容组件
+  const BasicInfoTab = () => (
+    <>
+      <Form.Item name="name" label="仓库标识" rules={[{ required: true, message: '请输入仓库标识' }]}>
+        <Input placeholder="如：weather-api (唯一标识)" disabled={!!editingRepo} />
+      </Form.Item>
+      <Form.Item name="display_name" label="显示名称" rules={[{ required: true, message: '请输入显示名称' }]}>
+        <Input placeholder="如：天气 API" />
+      </Form.Item>
+      <Form.Item name="description" label="描述">
+        <Input.TextArea rows={3} placeholder="简要描述您的API服务" />
+      </Form.Item>
+      <Form.Item name="repo_type" label="仓库类型" rules={[{ required: true, message: '请选择仓库类型' }]}>
+        <Select placeholder="请选择仓库类型">
+          <Select.Option value="psychology">心理问答</Select.Option>
+          <Select.Option value="translation">翻译服务</Select.Option>
+          <Select.Option value="vision">图像识别</Select.Option>
+          <Select.Option value="stock">股票行情</Select.Option>
+          <Select.Option value="ai">AI服务</Select.Option>
+          <Select.Option value="custom">自定义</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item name="protocol" label="协议类型" rules={[{ required: true }]}>
+        <Select>
+          <Select.Option value="http">HTTP</Select.Option>
+          <Select.Option value="grpc">gRPC</Select.Option>
+          <Select.Option value="websocket">WebSocket</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item name="endpoint_url" label="API端点地址">
+        <Input placeholder="https://api.example.com/v1" />
+      </Form.Item>
+    </>
+  )
+
+  const EndpointsTab = () => (
+    <div>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text type="secondary">配置仓库提供的所有API接口</Text>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAddEndpoint}>
+          添加端点
+        </Button>
+      </div>
+      
+      {endpoints.length === 0 ? (
+        <Alert message="暂无API端点配置" description="点击上方按钮添加您的第一个API端点" type="info" showIcon />
+      ) : (
+        <Table
+          dataSource={endpoints}
+          rowKey={(record) => record.id || record.path}
+          pagination={false}
+          size="small"
+          columns={[
+            {
+              title: '方法',
+              dataIndex: 'method',
+              key: 'method',
+              width: 80,
+              render: (method: string) => <Tag color={getMethodColor(method)}>{method}</Tag>
+            },
+            {
+              title: '路径',
+              dataIndex: 'path',
+              key: 'path',
+              render: (path: string) => <Text code>{path}</Text>
+            },
+            {
+              title: '描述',
+              dataIndex: 'description',
+              key: 'description',
+              ellipsis: true
+            },
+            {
+              title: 'RPM限制',
+              dataIndex: 'rpm_limit',
+              key: 'rpm_limit',
+              width: 100,
+              render: (v: number) => v || '-'
+            },
+            {
+              title: '状态',
+              dataIndex: 'enabled',
+              key: 'enabled',
+              width: 80,
+              render: (enabled: boolean) => (
+                <Tag color={enabled !== false ? 'green' : 'default'}>
+                  {enabled !== false ? '启用' : '禁用'}
+                </Tag>
+              )
+            },
+            {
+              title: '操作',
+              key: 'action',
+              width: 120,
+              render: (_: any, record: Endpoint) => (
+                <Space size="small">
+                  <Button size="small" onClick={() => handleEditEndpoint(record)}>编辑</Button>
+                  <Button size="small" danger onClick={() => handleDeleteEndpoint(record)}>删除</Button>
+                </Space>
+              )
+            },
+          ]}
+        />
+      )}
+    </div>
+  )
+
+  const LimitsTab = () => (
+    <div>
+      <Alert 
+        message="限流配置说明" 
+        description="设置API的访问频率限制，保护您的服务不被过度调用" 
+        type="info" 
+        showIcon 
+        style={{ marginBottom: 16 }} 
+      />
+      
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="每分钟请求数 (RPM)">
+            <Input 
+              type="number" 
+              value={limits.rpm} 
+              onChange={(e) => setLimits({ ...limits, rpm: parseInt(e.target.value) || 0 })}
+              placeholder="1000"
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="每小时请求数 (RPH)">
+            <Input 
+              type="number" 
+              value={limits.rph} 
+              onChange={(e) => setLimits({ ...limits, rph: parseInt(e.target.value) || 0 })}
+              placeholder="10000"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="每日请求数 (RPD)">
+            <Input 
+              type="number" 
+              value={limits.rpd} 
+              onChange={(e) => setLimits({ ...limits, rpd: parseInt(e.target.value) || 0 })}
+              placeholder="100000"
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="突发限制">
+            <Input 
+              type="number" 
+              value={limits.burst_limit} 
+              onChange={(e) => setLimits({ ...limits, burst_limit: parseInt(e.target.value) || 0 })}
+              placeholder="100"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="并发限制">
+            <Input 
+              type="number" 
+              value={limits.concurrent_limit} 
+              onChange={(e) => setLimits({ ...limits, concurrent_limit: parseInt(e.target.value) || 0 })}
+              placeholder="10"
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="请求超时 (秒)">
+            <Input 
+              type="number" 
+              value={limits.request_timeout} 
+              onChange={(e) => setLimits({ ...limits, request_timeout: parseInt(e.target.value) || 0 })}
+              placeholder="30"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="连接超时 (秒)">
+            <Input 
+              type="number" 
+              value={limits.connect_timeout} 
+              onChange={(e) => setLimits({ ...limits, connect_timeout: parseInt(e.target.value) || 0 })}
+              placeholder="10"
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <div style={{ paddingTop: 4 }}>
+            <Button type="primary" onClick={handleSaveLimits}>
+              保存限流配置
+            </Button>
+          </div>
+        </Col>
+      </Row>
+    </div>
+  )
+
+  const tabItems = [
+    {
+      key: 'basic',
+      label: '基本信息',
+      children: <BasicInfoTab />,
+    },
+    {
+      key: 'endpoints',
+      label: <span><ApiOutlined /> 端点配置 ({endpoints.length})</span>,
+      children: <EndpointsTab />,
+    },
+    {
+      key: 'limits',
+      label: <span><ThunderboltOutlined /> 限流配置</span>,
+      children: <LimitsTab />,
+    },
+  ]
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -215,6 +558,16 @@ export default function OwnerRepos() {
         <Button type="primary" icon={<PlusOutlined />} onClick={() => {
           setEditingRepo(null)
           form.resetFields()
+          setEndpoints([])
+          setLimits({
+            rpm: 1000,
+            rph: 10000,
+            rpd: 100000,
+            burst_limit: 100,
+            concurrent_limit: 10,
+            request_timeout: 30,
+            connect_timeout: 10,
+          })
           setModalVisible(true)
         }}>
           创建仓库
@@ -283,49 +636,97 @@ export default function OwnerRepos() {
 
       {/* 创建/编辑仓库弹窗 */}
       <Modal
-        title={editingRepo ? '编辑仓库' : '创建仓库'}
+        title={editingRepo ? '编辑仓库配置' : '创建仓库'}
         open={modalVisible}
-        onCancel={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null) }}
+        onCancel={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null); setEndpoints([]) }}
         footer={null}
-        width={600}
+        width={800}
+        destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="name" label="仓库标识" rules={[{ required: true, message: '请输入仓库标识' }]}>
-            <Input placeholder="如：my-api (唯一标识)" disabled={!!editingRepo} />
-          </Form.Item>
-          <Form.Item name="display_name" label="显示名称" rules={[{ required: true, message: '请输入显示名称' }]}>
-            <Input placeholder="如：我的API服务" />
-          </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea rows={3} placeholder="简要描述您的API服务" />
-          </Form.Item>
-          <Form.Item name="repo_type" label="仓库类型" rules={[{ required: true, message: '请选择仓库类型' }]}>
-            <Select placeholder="请选择仓库类型">
-              <Select.Option value="psychology">心理问答</Select.Option>
-              <Select.Option value="translation">翻译服务</Select.Option>
-              <Select.Option value="vision">图像识别</Select.Option>
-              <Select.Option value="stock">股票行情</Select.Option>
-              <Select.Option value="ai">AI服务</Select.Option>
-              <Select.Option value="custom">自定义</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="protocol" label="协议类型" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="http">HTTP</Select.Option>
-              <Select.Option value="grpc">gRPC</Select.Option>
-              <Select.Option value="websocket">WebSocket</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="endpoint_url" label="API端点地址">
-            <Input placeholder="https://api.example.com/v1" />
-          </Form.Item>
-          <Form.Item>
+          <Tabs items={tabItems} defaultActiveKey="basic" />
+          <Form.Item style={{ marginBottom: 0, marginTop: 16 }}>
             <Space>
               <Button type="primary" htmlType="submit" loading={createLoading}>
-                {editingRepo ? '保存' : '创建'}
+                {editingRepo ? '保存配置' : '创建'}
               </Button>
-              <Button onClick={() => { setModalVisible(false); form.resetFields() }}>取消</Button>
+              <Button onClick={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null) }}>取消</Button>
             </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 添加/编辑端点弹窗 */}
+      <Modal
+        title={editingEndpoint ? '编辑端点' : '添加端点'}
+        open={endpointModalVisible}
+        onCancel={() => { setEndpointModalVisible(false); endpointForm.resetFields(); setEditingEndpoint(null) }}
+        onOk={handleSaveEndpoint}
+        okText="保存"
+        cancelText="取消"
+        destroyOnClose
+        afterOpenChange={(open) => {
+          if (open) {
+            if (editingEndpoint) {
+              // 编辑模式：填充现有数据
+              endpointForm.setFieldsValue({
+                path: editingEndpoint.path,
+                method: editingEndpoint.method,
+                description: editingEndpoint.description,
+                category: editingEndpoint.category,
+                rpm_limit: editingEndpoint.rpm_limit,
+                rph_limit: editingEndpoint.rph_limit,
+                display_order: editingEndpoint.display_order || 0,
+                enabled: editingEndpoint.enabled !== false,
+              })
+            } else {
+              // 新增模式：重置表单并设置默认值
+              endpointForm.resetFields()
+              endpointForm.setFieldsValue({
+                method: 'GET',
+                enabled: true,
+                display_order: endpoints.length,
+              })
+            }
+          }
+        }}
+      >
+        <Form form={endpointForm} layout="vertical">
+          <Form.Item name="method" label="HTTP方法" rules={[{ required: true, message: '请选择HTTP方法' }]}>
+            <Select>
+              {HTTP_METHODS.map(m => (
+                <Select.Option key={m} value={m}>
+                  <Tag color={getMethodColor(m)}>{m}</Tag>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="path" label="端点路径" rules={[{ required: true, message: '请输入端点路径' }]}>
+            <Input placeholder="/current, /forecast, /aqi" />
+          </Form.Item>
+          <Form.Item name="description" label="描述">
+            <Input placeholder="获取实时天气数据" />
+          </Form.Item>
+          <Form.Item name="category" label="分类">
+            <Input placeholder="weather" />
+          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="rpm_limit" label="RPM限制">
+                <Input type="number" placeholder="1000" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="rph_limit" label="RPH限制">
+                <Input type="number" placeholder="10000" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item name="display_order" label="显示顺序">
+            <Input type="number" placeholder="0" />
+          </Form.Item>
+          <Form.Item name="enabled" label="状态" valuePropName="checked">
+            <Switch checkedChildren="启用" unCheckedChildren="禁用" />
           </Form.Item>
         </Form>
       </Modal>

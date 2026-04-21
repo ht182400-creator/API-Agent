@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 
 from src.config.database import get_db
 from src.schemas.response import (
@@ -19,10 +19,150 @@ from src.schemas.response import (
 )
 from src.core.exceptions import RepositoryNotFoundError, RateLimitError, AuthorizationError
 from src.services.auth_service import get_current_user
-from src.models.repository import Repository, RepoEndpoint, RepoLimits
+from src.models.repository import Repository, RepoEndpoint, RepoLimits, RepoPricing
+from src.schemas.request import (
+    EndpointCreate,
+    EndpointUpdate,
+    EndpointsBatchUpdate,
+    LimitsUpdate,
+    RepositoryConfigUpdate,
+)
 from uuid import uuid4, UUID
 
 router = APIRouter()
+
+
+# ==================== 计费辅助函数 ====================
+
+async def calculate_and_charge(
+    db: AsyncSession,
+    user_id: UUID,
+    repo_id: UUID,
+    api_key_id: UUID,
+    tokens_used: int = 0,
+) -> tuple:
+    """
+    计算并扣除API调用费用
+    
+    Args:
+        db: 数据库会话
+        user_id: 用户ID
+        repo_id: 仓库ID
+        api_key_id: API Key ID
+        tokens_used: 使用的Token数量
+    
+    Returns:
+        (cost, description) - 费用和描述
+    """
+    from decimal import Decimal
+    from src.models.billing import Account, Bill, APICallLog
+    from src.models.repository import RepoPricing
+    from src.config.settings import settings
+    import random
+    
+    # 获取仓库定价信息
+    pricing_result = await db.execute(
+        select(RepoPricing).where(RepoPricing.repo_id == repo_id)
+    )
+    pricing = pricing_result.scalar_one_or_none()
+    
+    # 计算费用
+    cost = Decimal("0")
+    description = "API调用"
+    
+    # 优先使用仓库的 RepoPricing 配置
+    if pricing and pricing.pricing_type:
+        if pricing.pricing_type == "free":
+            # 免费
+            cost = Decimal("0")
+            description = "免费调用"
+        elif pricing.pricing_type in ("per_call", "subscription") and pricing.price_per_call:
+            # 按次计费
+            cost = Decimal(str(pricing.price_per_call))
+            description = f"{pricing.pricing_type}计费-按次"
+        elif pricing.pricing_type == "token" and pricing.price_per_token:
+            # 按Token计费
+            if tokens_used > 0:
+                cost = Decimal(str(pricing.price_per_token)) * tokens_used
+                description = f"token计费-按Token({tokens_used} tokens)"
+            else:
+                cost = Decimal("0")
+                description = "token计费-无Token消耗"
+        else:
+            # 仓库配置了定价类型但没有价格，使用默认值
+            cost = Decimal(str(settings.billing_default_price_per_call))
+            description = f"默认计费(仓库未配置价格)"
+    elif settings.billing_default_enabled:
+        # 使用全局默认配置
+        if settings.billing_default_type == "free":
+            cost = Decimal("0")
+            description = "免费调用(全局默认)"
+        elif settings.billing_default_type == "per_call":
+            cost = Decimal(str(settings.billing_default_price_per_call))
+            description = f"按次计费(默认 ¥{settings.billing_default_price_per_call})"
+        elif settings.billing_default_type == "token" and tokens_used > 0:
+            cost = Decimal(str(settings.billing_default_price_per_token)) * tokens_used
+            description = f"按Token计费(默认 ¥{settings.billing_default_price_per_token}/token)"
+        else:
+            cost = Decimal("0")
+            description = "不计费"
+    else:
+        # 计费未启用
+        cost = Decimal("0")
+        description = "不计费(计费已禁用)"
+    
+    if cost <= 0:
+        return Decimal("0"), description
+    
+    # 获取用户账户
+    account_result = await db.execute(
+        select(Account).where(
+            Account.user_id == user_id,
+            Account.account_type == "balance"
+        )
+    )
+    account = account_result.scalar_one_or_none()
+    
+    if not account:
+        # 没有账户，不扣费
+        return cost, description
+    
+    # 检查余额是否足够
+    balance = Decimal(str(account.balance))
+    if balance < cost:
+        # 余额不足，不扣费（但仍记录调用）
+        return cost, description
+    
+    # 扣费
+    balance_before = balance
+    balance_after = balance - cost
+    account.balance = str(balance_after)
+    account.total_consume = str(Decimal(str(account.total_consume)) + cost)
+    
+    # 获取环境标识
+    environment = "simulation" if settings.payment_mock_mode else "production"
+    
+    # 生成账单号
+    import time
+    bill_no = f"BILL{int(time.time() * 1000)}"
+    
+    # 创建消费账单
+    bill = Bill(
+        user_id=user_id,
+        bill_no=bill_no,
+        bill_type="consume",  # 与查询端保持一致
+        amount=str(-cost),  # 负数表示消费
+        balance_before=str(balance_before),
+        balance_after=str(balance_after),
+        source_type="api_call",
+        source_id=str(api_key_id),
+        environment=environment,
+        description=f"{description} - 仓库:{str(repo_id)[:8]}",
+        status="completed",
+    )
+    db.add(bill)
+    
+    return cost, description
 
 
 @router.get("", response_model=BaseResponse[RepositoryListResponse])
@@ -520,28 +660,42 @@ async def chat(
             ],
         }
     
-    # 5. 记录API调用日志
+    # 5. 记录API调用日志并计费
     from src.models.billing import APICallLog
     from src.models.billing import Quota
     from datetime import datetime, timedelta
+    from decimal import Decimal
     
     try:
         response_time = int((time.time() - start_time) * 1000)
         
+        # 计算并扣除费用
+        tokens_used = request_data.get("tokens_used", 0) if isinstance(request_data, dict) else 0
+        call_cost, cost_description = await calculate_and_charge(
+            db=db,
+            user_id=user.id,
+            repo_id=repo.id,
+            api_key_id=api_key.id,
+            tokens_used=tokens_used,
+        )
+        
+        # 使用北京时间记录，保存 request_id 用于追踪
         log_entry = APICallLog(
             repo_id=repo.id,
             api_key_id=api_key.id,
             user_id=user.id,
+            request_id=getattr(request.state, "request_id", None),
             endpoint="/chat",
             method="POST",
             status_code=status_code,
             response_time=str(response_time),
-            cost="0",
+            cost=str(call_cost),
+            created_at=datetime.now(),  # 使用北京时间
         )
         db.add(log_entry)
         
         # 更新每日配额使用量
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         quota_result = await db.execute(
             select(Quota).where(
                 and_(
@@ -637,6 +791,190 @@ async def recognize(
             "request_id": getattr(request.state, "request_id", "mock-request-id"),
         }
     )
+
+
+@router.api_route("/{repo_slug}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def proxy_repository_endpoint(
+    repo_slug: str,
+    path: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    通用仓库端点代理
+    
+    动态代理请求到仓库的实际后端服务。
+    支持 GET、POST、PUT、DELETE、PATCH 方法。
+    
+    Args:
+        repo_slug: 仓库 slug
+        path: 仓库内部路径（如 weather/current）
+    
+    Returns:
+        后端服务响应
+    """
+    import httpx
+    from src.services.auth_service import AuthService
+    
+    # 1. 获取仓库信息
+    repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
+    repo = repo_result.scalar_one_or_none()
+    
+    if not repo:
+        raise HTTPException(status_code=404, detail=f"Repository '{repo_slug}' not found")
+    
+    # 2. 检查仓库状态
+    if repo.status != "online":
+        raise HTTPException(status_code=403, detail="Repository is not online")
+    
+    # 3. 如果没有配置后端URL，返回模拟响应
+    if not repo.endpoint_url:
+        return BaseResponse(
+            code=200,
+            message="Success",
+            data={
+                "mock": True,
+                "repo": repo.name,
+                "path": f"/{path}",
+                "message": "后端服务未配置，返回模拟响应",
+            }
+        )
+    
+    # 4. 从请求头获取 API Key
+    x_access_key = request.headers.get("X-Access-Key")
+    
+    # 5. 验证 API Key（必填）
+    if not x_access_key:
+        raise HTTPException(
+            status_code=401,
+            detail="API Key is required. Please provide X-Access-Key header."
+        )
+    
+    auth_service = AuthService(db)
+    try:
+        user, key_obj = await auth_service.verify_api_key(x_access_key, repo_id=str(repo.id))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid API Key: {type(e).__name__}: {str(e)}")
+    
+    # 5. 转发请求到后端
+    status_code = 200
+    response_data = None
+    response_time = 0
+    
+    try:
+        # 构建后端 URL
+        backend_url = f"{repo.endpoint_url.rstrip('/')}/{path}"
+        
+        # 获取查询参数
+        query_params = dict(request.query_params)
+        
+        # 获取请求体
+        body = await request.body()
+        
+        import time
+        start_time = time.time()
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # 构建转发请求
+            headers = dict(request.headers)
+            headers.pop("host", None)  # 移除 host 头
+            
+            if x_access_key:
+                headers["X-API-Key"] = x_access_key
+            
+            resp = await client.request(
+                method=request.method,
+                url=backend_url,
+                params=query_params,
+                content=body if body else None,
+                headers=headers,
+            )
+            
+            status_code = resp.status_code
+            response_time = int((time.time() - start_time) * 1000)
+            
+            # 返回后端响应
+            try:
+                resp_data = resp.json()
+                response_data = resp_data
+                return resp_data
+            except Exception:
+                response_data = {"status_code": resp.status_code, "content": resp.text}
+                return {"status_code": resp.status_code, "content": resp.text}
+                
+    except httpx.TimeoutException:
+        status_code = 504
+        response_data = {"error": "Backend service timeout"}
+        raise HTTPException(status_code=504, detail="Backend service timeout")
+    except httpx.RequestError as e:
+        status_code = 502
+        response_data = {"error": f"Backend service error: {str(e)}"}
+        raise HTTPException(status_code=502, detail=f"Backend service error: {str(e)}")
+    finally:
+        # 6. 记录 API 调用日志并计费
+        try:
+            from src.models.billing import APICallLog, Quota
+            from datetime import datetime, timedelta
+            
+            # 计算并扣除费用
+            tokens_used = response_data.get("tokens_used", 0) if isinstance(response_data, dict) else 0
+            call_cost, cost_description = await calculate_and_charge(
+                db=db,
+                user_id=user.id,
+                repo_id=repo.id,
+                api_key_id=key_obj.id,
+                tokens_used=tokens_used,
+            )
+            
+            # 使用北京时间记录，保存 request_id 用于追踪
+            log_entry = APICallLog(
+                repo_id=repo.id,
+                api_key_id=key_obj.id,
+                user_id=user.id,
+                request_id=getattr(request.state, "request_id", None),
+                endpoint=f"/{path}",
+                method=request.method,
+                status_code=status_code,
+                response_time=str(response_time),
+                cost=str(call_cost),
+                created_at=datetime.now(),  # 使用北京时间
+            )
+            db.add(log_entry)
+            
+            # 更新每日配额使用量
+            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            quota_result = await db.execute(
+                select(Quota).where(
+                    and_(
+                        Quota.key_id == key_obj.id,
+                        Quota.quota_type == "daily",
+                        Quota.reset_at >= today_start
+                    )
+                )
+            )
+            quota = quota_result.scalar_one_or_none()
+            
+            if quota:
+                quota.quota_used += 1
+            else:
+                quota = Quota(
+                    user_id=user.id,
+                    key_id=key_obj.id,
+                    repo_id=repo.id,
+                    quota_type="daily",
+                    quota_limit=key_obj.daily_quota or 0,
+                    quota_used=1,
+                    reset_type="daily",
+                    reset_at=today_start + timedelta(days=1),
+                )
+                db.add(quota)
+            
+            await db.commit()
+        except Exception as log_error:
+            await db.rollback()
+            print(f"Failed to log API call: {log_error}")
 
 
 # ==================== 仓库所有者 CRUD 接口 ====================
@@ -1325,6 +1663,613 @@ async def offline_repository(
                 id=str(repo.owner_id),
                 name=owner.email.split("@")[0] if owner else "未知",
             ),
+            created_at=repo.created_at,
+            updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
+        )
+    )
+
+
+# ==================== 仓库端点管理 API ====================
+
+def _check_repo_owner_permission(repo: Repository, user: "User") -> None:  # noqa: F821
+    """检查仓库所有者权限"""
+    if repo.owner_id != user.id and user.user_type != 'super_admin':
+        from src.core.exceptions import AuthorizationError
+        raise AuthorizationError("无权修改此仓库")
+
+
+async def _get_repo_by_id(db: AsyncSession, repo_id: str) -> Optional[Repository]:
+    """根据ID或slug获取仓库"""
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+
+    if repo_uuid:
+        result = await db.execute(select(Repository).where(Repository.id == repo_uuid))
+    else:
+        result = await db.execute(select(Repository).where(Repository.slug == repo_id))
+    return result.scalar_one_or_none()
+
+
+@router.get("/{repo_id}/endpoints", response_model=BaseResponse[List[dict]])
+async def list_endpoints(
+    repo_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    获取仓库的所有API端点
+
+    Args:
+        repo_id: 仓库ID或slug
+
+    Returns:
+        端点列表
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.repo_id == repo.id
+        ).order_by(RepoEndpoint.display_order)
+    )
+    endpoints = result.scalars().all()
+
+    return BaseResponse(
+        data=[
+            {
+                "id": str(ep.id),
+                "path": ep.path,
+                "method": ep.method,
+                "description": ep.description,
+                "category": ep.category,
+                "rpm_limit": ep.rpm_limit,
+                "rph_limit": ep.rph_limit,
+                "display_order": ep.display_order,
+                "enabled": ep.enabled,
+            }
+            for ep in endpoints
+        ]
+    )
+
+
+@router.post("/{repo_id}/endpoints", response_model=BaseResponse[dict])
+async def create_endpoint(
+    repo_id: str,
+    endpoint_data: EndpointCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    添加新的API端点
+
+    Args:
+        repo_id: 仓库ID或slug
+        endpoint_data: 端点数据
+
+    Returns:
+        创建的端点信息
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    endpoint = RepoEndpoint(
+        repo_id=repo.id,
+        path=endpoint_data.path,
+        method=endpoint_data.method,
+        description=endpoint_data.description,
+        category=endpoint_data.category,
+        rpm_limit=endpoint_data.rpm_limit,
+        rph_limit=endpoint_data.rph_limit,
+        display_order=endpoint_data.display_order,
+        enabled=True,
+    )
+
+    db.add(endpoint)
+    await db.commit()
+    await db.refresh(endpoint)
+
+    return BaseResponse(
+        data={
+            "id": str(endpoint.id),
+            "path": endpoint.path,
+            "method": endpoint.method,
+            "description": endpoint.description,
+            "category": endpoint.category,
+            "rpm_limit": endpoint.rpm_limit,
+            "rph_limit": endpoint.rph_limit,
+            "display_order": endpoint.display_order,
+            "enabled": endpoint.enabled,
+        }
+    )
+
+
+@router.put("/{repo_id}/endpoints/{endpoint_id}", response_model=BaseResponse[dict])
+async def update_endpoint(
+    repo_id: str,
+    endpoint_id: str,
+    endpoint_data: EndpointUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    更新API端点
+
+    Args:
+        repo_id: 仓库ID或slug
+        endpoint_id: 端点ID
+        endpoint_data: 更新数据
+
+    Returns:
+        更新后的端点信息
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    try:
+        endpoint_uuid = UUID(endpoint_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="无效的端点ID")
+
+    result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.id == endpoint_uuid,
+            RepoEndpoint.repo_id == repo.id,
+        )
+    )
+    endpoint = result.scalar_one_or_none()
+
+    if not endpoint:
+        raise HTTPException(status_code=404, detail="端点不存在")
+
+    # 更新字段
+    if endpoint_data.path is not None:
+        endpoint.path = endpoint_data.path
+    if endpoint_data.method is not None:
+        endpoint.method = endpoint_data.method
+    if endpoint_data.description is not None:
+        endpoint.description = endpoint_data.description
+    if endpoint_data.category is not None:
+        endpoint.category = endpoint_data.category
+    if endpoint_data.rpm_limit is not None:
+        endpoint.rpm_limit = endpoint_data.rpm_limit
+    if endpoint_data.rph_limit is not None:
+        endpoint.rph_limit = endpoint_data.rph_limit
+    if endpoint_data.display_order is not None:
+        endpoint.display_order = endpoint_data.display_order
+    if endpoint_data.enabled is not None:
+        endpoint.enabled = endpoint_data.enabled
+
+    await db.commit()
+    await db.refresh(endpoint)
+
+    return BaseResponse(
+        data={
+            "id": str(endpoint.id),
+            "path": endpoint.path,
+            "method": endpoint.method,
+            "description": endpoint.description,
+            "category": endpoint.category,
+            "rpm_limit": endpoint.rpm_limit,
+            "rph_limit": endpoint.rph_limit,
+            "display_order": endpoint.display_order,
+            "enabled": endpoint.enabled,
+        }
+    )
+
+
+@router.delete("/{repo_id}/endpoints/{endpoint_id}", response_model=BaseResponse[dict])
+async def delete_endpoint(
+    repo_id: str,
+    endpoint_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    删除API端点
+
+    Args:
+        repo_id: 仓库ID或slug
+        endpoint_id: 端点ID
+
+    Returns:
+        删除结果
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    try:
+        endpoint_uuid = UUID(endpoint_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="无效的端点ID")
+
+    result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.id == endpoint_uuid,
+            RepoEndpoint.repo_id == repo.id,
+        )
+    )
+    endpoint = result.scalar_one_or_none()
+
+    if not endpoint:
+        raise HTTPException(status_code=404, detail="端点不存在")
+
+    await db.delete(endpoint)
+    await db.commit()
+
+    return BaseResponse(data={"message": "端点删除成功"})
+
+
+@router.put("/{repo_id}/endpoints", response_model=BaseResponse[dict])
+async def batch_update_endpoints(
+    repo_id: str,
+    data: EndpointsBatchUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    批量更新API端点（替换模式）
+
+    Args:
+        repo_id: 仓库ID或slug
+        data: 端点列表
+
+    Returns:
+        更新结果
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    # 删除现有端点
+    existing = await db.execute(
+        select(RepoEndpoint).where(RepoEndpoint.repo_id == repo.id)
+    )
+    for ep in existing.scalars().all():
+        await db.delete(ep)
+
+    # 创建新端点
+    new_endpoints = []
+    for idx, ep_data in enumerate(data.endpoints):
+        endpoint = RepoEndpoint(
+            repo_id=repo.id,
+            path=ep_data.path,
+            method=ep_data.method,
+            description=ep_data.description,
+            category=ep_data.category,
+            rpm_limit=ep_data.rpm_limit,
+            rph_limit=ep_data.rph_limit,
+            display_order=ep_data.display_order or idx,
+            enabled=True,
+        )
+        db.add(endpoint)
+        new_endpoints.append(endpoint)
+
+    await db.commit()
+
+    return BaseResponse(
+        data={
+            "message": f"成功更新 {len(new_endpoints)} 个端点",
+            "count": len(new_endpoints),
+        }
+    )
+
+
+# ==================== 仓库限流配置 API ====================
+
+@router.get("/{repo_id}/limits", response_model=BaseResponse[dict])
+async def get_limits(
+    repo_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    获取仓库的限流配置
+
+    Args:
+        repo_id: 仓库ID或slug
+
+    Returns:
+        限流配置
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    result = await db.execute(
+        select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+    )
+    limits = result.scalar_one_or_none()
+
+    if not limits:
+        # 返回默认值
+        return BaseResponse(
+            data={
+                "rpm": 1000,
+                "rph": 10000,
+                "rpd": 100000,
+                "burst_limit": 100,
+                "concurrent_limit": 10,
+                "request_timeout": 30,
+                "connect_timeout": 10,
+            }
+        )
+
+    return BaseResponse(
+        data={
+            "rpm": limits.rpm,
+            "rph": limits.rph,
+            "rpd": limits.rpd,
+            "burst_limit": limits.burst_limit,
+            "concurrent_limit": limits.concurrent_limit,
+            "request_timeout": limits.request_timeout,
+            "connect_timeout": limits.connect_timeout,
+        }
+    )
+
+
+@router.put("/{repo_id}/limits", response_model=BaseResponse[dict])
+async def update_limits(
+    repo_id: str,
+    limits_data: LimitsUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    更新仓库的限流配置
+
+    Args:
+        repo_id: 仓库ID或slug
+        limits_data: 限流配置数据
+
+    Returns:
+        更新后的限流配置
+    """
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    # 获取或创建限流配置
+    result = await db.execute(
+        select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+    )
+    limits = result.scalar_one_or_none()
+
+    if not limits:
+        limits = RepoLimits(repo_id=repo.id)
+        db.add(limits)
+
+    # 更新字段
+    if limits_data.rpm is not None:
+        limits.rpm = limits_data.rpm
+    if limits_data.rph is not None:
+        limits.rph = limits_data.rph
+    if limits_data.rpd is not None:
+        limits.rpd = limits_data.rpd
+    if limits_data.burst_limit is not None:
+        limits.burst_limit = limits_data.burst_limit
+    if limits_data.concurrent_limit is not None:
+        limits.concurrent_limit = limits_data.concurrent_limit
+    if limits_data.request_timeout is not None:
+        limits.request_timeout = limits_data.request_timeout
+    if limits_data.connect_timeout is not None:
+        limits.connect_timeout = limits_data.connect_timeout
+
+    await db.commit()
+    await db.refresh(limits)
+
+    return BaseResponse(
+        data={
+            "rpm": limits.rpm,
+            "rph": limits.rph,
+            "rpd": limits.rpd,
+            "burst_limit": limits.burst_limit,
+            "concurrent_limit": limits.concurrent_limit,
+            "request_timeout": limits.request_timeout,
+            "connect_timeout": limits.connect_timeout,
+        }
+    )
+
+
+# ==================== 仓库完整配置更新 API ====================
+
+@router.put("/{repo_id}/config", response_model=BaseResponse[RepositoryResponse])
+async def update_repository_config(
+    repo_id: str,
+    config_data: RepositoryConfigUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    更新仓库的完整配置（基本信息 + 端点 + 限流）
+
+    Args:
+        repo_id: 仓库ID或slug
+        config_data: 完整配置数据
+
+    Returns:
+        更新后的仓库信息
+    """
+    from src.models.user import User
+    from datetime import datetime
+
+    repo = await _get_repo_by_id(db, repo_id)
+    if not repo:
+        raise RepositoryNotFoundError()
+
+    _check_repo_owner_permission(repo, current_user)
+
+    # 更新基本信息
+    if config_data.display_name is not None:
+        repo.display_name = config_data.display_name
+    if config_data.description is not None:
+        repo.description = config_data.description
+    if config_data.endpoint_url is not None:
+        repo.endpoint_url = config_data.endpoint_url
+    if config_data.repo_type is not None:
+        repo.repo_type = config_data.repo_type
+
+    # 更新端点配置
+    if config_data.endpoints is not None:
+        # 删除现有端点
+        existing = await db.execute(
+            select(RepoEndpoint).where(RepoEndpoint.repo_id == repo.id)
+        )
+        for ep in existing.scalars().all():
+            await db.delete(ep)
+
+        # 创建新端点
+        for idx, ep_data in enumerate(config_data.endpoints):
+            endpoint = RepoEndpoint(
+                repo_id=repo.id,
+                path=ep_data.path,
+                method=ep_data.method,
+                description=ep_data.description,
+                category=ep_data.category,
+                rpm_limit=ep_data.rpm_limit,
+                rph_limit=ep_data.rph_limit,
+                display_order=ep_data.display_order or idx,
+                enabled=True,
+            )
+            db.add(endpoint)
+
+    # 更新限流配置
+    if config_data.limits is not None:
+        result = await db.execute(
+            select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+        )
+        limits = result.scalar_one_or_none()
+
+        if not limits:
+            limits = RepoLimits(repo_id=repo.id)
+            db.add(limits)
+
+        if config_data.limits.rpm is not None:
+            limits.rpm = config_data.limits.rpm
+        if config_data.limits.rph is not None:
+            limits.rph = config_data.limits.rph
+        if config_data.limits.rpd is not None:
+            limits.rpd = config_data.limits.rpd
+        if config_data.limits.burst_limit is not None:
+            limits.burst_limit = config_data.limits.burst_limit
+        if config_data.limits.concurrent_limit is not None:
+            limits.concurrent_limit = config_data.limits.concurrent_limit
+        if config_data.limits.request_timeout is not None:
+            limits.request_timeout = config_data.limits.request_timeout
+        if config_data.limits.connect_timeout is not None:
+            limits.connect_timeout = config_data.limits.connect_timeout
+
+    # 更新定价配置
+    if config_data.pricing_type is not None:
+        result = await db.execute(
+            select(RepoPricing).where(RepoPricing.repo_id == repo.id)
+        )
+        pricing = result.scalar_one_or_none()
+
+        if not pricing:
+            pricing = RepoPricing(repo_id=repo.id, pricing_type=config_data.pricing_type)
+            db.add(pricing)
+
+        pricing.pricing_type = config_data.pricing_type
+        if config_data.price_per_call is not None:
+            pricing.price_per_call = str(config_data.price_per_call)
+        if config_data.price_per_token is not None:
+            pricing.price_per_token = str(config_data.price_per_token)
+        if config_data.monthly_price is not None:
+            pricing.monthly_price = str(config_data.monthly_price)
+        if config_data.yearly_price is not None:
+            pricing.yearly_price = str(config_data.yearly_price)
+        if config_data.free_calls is not None:
+            pricing.free_calls = config_data.free_calls
+        if config_data.free_tokens is not None:
+            pricing.free_tokens = config_data.free_tokens
+        if config_data.free_quota_days is not None:
+            pricing.free_quota_days = config_data.free_quota_days
+
+    repo.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(repo)
+
+    # 获取完整信息构建响应
+    owner_result = await db.execute(select(User).where(User.id == repo.owner_id))
+    owner = owner_result.scalar_one_or_none()
+
+    # 获取端点
+    endpoints_result = await db.execute(
+        select(RepoEndpoint).where(
+            RepoEndpoint.repo_id == repo.id,
+            RepoEndpoint.enabled == True
+        ).order_by(RepoEndpoint.display_order)
+    )
+    endpoints_list = endpoints_result.scalars().all()
+
+    # 获取限流配置
+    limits_result = await db.execute(
+        select(RepoLimits).where(RepoLimits.repo_id == repo.id)
+    )
+    limits_data = limits_result.scalar_one_or_none()
+
+    # 获取定价配置
+    pricing_result = await db.execute(
+        select(RepoPricing).where(RepoPricing.repo_id == repo.id)
+    )
+    pricing = pricing_result.scalar_one_or_none()
+
+    return BaseResponse(
+        data=RepositoryResponse(
+            id=str(repo.id),
+            name=repo.name,
+            slug=repo.slug,
+            display_name=repo.display_name,
+            description=repo.description,
+            type=repo.repo_type,
+            protocol=repo.protocol,
+            status=repo.status,
+            endpoint=repo.endpoint_url,
+            owner=RepositoryOwnerResponse(
+                id=str(repo.owner_id),
+                name=owner.email.split("@")[0] if owner else "未知",
+            ),
+            pricing=RepositoryPricingResponse(
+                type=pricing.pricing_type if pricing else "free",
+                price_per_call=float(pricing.price_per_call) if pricing and pricing.price_per_call else None,
+                price_per_token=float(pricing.price_per_token) if pricing and pricing.price_per_token else None,
+                monthly_price=float(pricing.monthly_price) if pricing and pricing.monthly_price else None,
+                free_calls=pricing.free_calls if pricing else 0,
+            ) if pricing else None,
+            limits=RepositoryLimitsResponse(
+                rpm=limits_data.rpm if limits_data else 1000,
+                rph=limits_data.rph if limits_data else 10000,
+                daily=limits_data.rpd if limits_data else 100000,
+            ),
+            endpoints=[
+                RepositoryEndpointResponse(
+                    path=ep.path,
+                    method=ep.method,
+                    description=ep.description,
+                )
+                for ep in endpoints_list
+            ],
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )

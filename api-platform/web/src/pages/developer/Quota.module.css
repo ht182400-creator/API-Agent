@@ -10,8 +10,69 @@
 }
 
 .card {
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
+}
+
+/* 配额卡片样式 - 现代化设计 */
+.quotaCard {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.quotaCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.quotaCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.quotaCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quotaCardTitle {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+}
+
+.quotaCardValue {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.quotaUsed {
+  color: #262626;
+}
+
+.quotaDivider {
+  color: #d9d9d9;
+  margin: 0 4px;
+}
+
+.quotaLimit {
+  color: #8c8c8c;
+  font-size: 20px;
+}
+
+.quotaCardFooter {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
 }
 
 .quotaHeader {
@@ -28,11 +89,26 @@
 }
 
 .chartCard {
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 16px;
 }
 
 .tableCard {
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 16px;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .quotaCardValue {
+    font-size: 22px;
+  }
+  
+  .quotaUsed {
+    font-size: 22px;
+  }
+  
+  .quotaLimit {
+    font-size: 16px;
+  }
 }

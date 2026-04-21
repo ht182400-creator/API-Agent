@@ -136,6 +136,9 @@ class APICallLog(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
+    # 请求追踪ID (由 middleware 生成的全链路追踪ID)
+    request_id = Column(String(64), nullable=True, index=True)
+
     # Foreign keys
     repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False, index=True)
     api_key_id = Column(UUID(as_uuid=True), ForeignKey("api_keys.id", ondelete="SET NULL"), nullable=True, index=True)

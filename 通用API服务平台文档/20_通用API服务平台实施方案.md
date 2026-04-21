@@ -370,6 +370,85 @@ graph TD
     style Execute fill:#e8f5e9,stroke:#2e7d32
 ```
 
+#### 2.6.3 可配置计费规则实现 (V1.9)
+
+##### 设计目标
+
+计费规则支持通过配置文件调整，无需修改代码即可灵活设置默认计费策略。
+
+##### 配置项
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `billing_default_enabled` | bool | `True` | 是否启用默认计费 |
+| `billing_default_type` | str | `per_call` | 计费类型: per_call, token, free |
+| `billing_default_price_per_call` | float | `0.01` | 按次计费单价（元） |
+| `billing_default_price_per_token` | float | `0.0001` | 按Token计费单价（元/Token） |
+
+##### 核心实现
+
+**1. 计费辅助函数 `calculate_and_charge`**
+
+```python
+# 文件：api-platform/src/api/v1/repositories.py
+
+async def calculate_and_charge(
+    db: AsyncSession,
+    user_id: UUID,
+    repo_id: UUID,
+    api_key_id: UUID,
+    tokens_used: int = 0,
+) -> tuple:
+    """
+    计算并扣除API调用费用
+    
+    计费优先级：
+    1. RepoPricing 表 - 仓库级别配置
+    2. settings.py - 全局默认配置
+    """
+```
+
+**2. 计费流程**
+
+```mermaid
+graph TD
+    A["API调用"] --> B{获取RepoPricing}
+    B -->|有配置| C["使用仓库定价"]
+    B -->|无配置| D{全局计费启用?}
+    D -->|是| E["使用默认配置"]
+    D -->|否| F["不计费"]
+    C --> G{费用>0?}
+    E --> G
+    F --> I["返回: 不计费"]
+    G -->|是| H{余额足够?}
+    G -->|否| J["返回: 费用信息"]
+    H -->|是| K["扣费+创建账单"]
+    H -->|否| L["返回: 费用信息"]
+    K --> M["返回: 费用+描述"]
+    J --> M
+    L --> M
+    I --> M
+```
+
+##### 涉及文件
+
+| 文件 | 修改内容 |
+|------|----------|
+| `src/config/settings.py` | 添加计费配置项 |
+| `src/api/v1/repositories.py` | 添加 `calculate_and_charge` 函数 |
+| `src/api/v1/chat接口` | 调用计费函数 |
+| `src/api/v1/proxy接口` | 调用计费函数 |
+
+##### 配置示例
+
+```python
+# 关闭计费
+billing_default_enabled = False
+
+# 调整价格
+billing_default_price_per_call = 0.05  # 每次 0.05 元
+```
+
 ### 2.7 监控告警方案
 
 #### 2.7.1 监控指标

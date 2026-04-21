@@ -142,6 +142,7 @@ function App() {
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="repos" element={<AdminRepos />} />
+        <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
         <Route path="logs" element={<AdminLogs />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="devtools" element={<DevTools />} />
