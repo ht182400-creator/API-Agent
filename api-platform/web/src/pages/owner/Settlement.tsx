@@ -74,7 +74,7 @@ export default function OwnerSettlement() {
           <Card className={styles.statCard}>
             <Statistic
               title="可结算余额"
-              value={account?.balance || 0}
+              value={account?.total_revenue || 0}
               prefix={<DollarOutlined />}
               precision={2}
               suffix="元"
@@ -97,7 +97,7 @@ export default function OwnerSettlement() {
           <Card className={styles.statCard}>
             <Statistic
               title="累计收益"
-              value={account?.total_recharge || 0}
+              value={account?.total_revenue || 0}
               prefix={<DollarOutlined />}
               precision={2}
               suffix="元"

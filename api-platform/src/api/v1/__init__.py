@@ -18,6 +18,7 @@ from .admin_reconciliation import router as admin_reconciliation_router  # V2.6�
 from .admin_payment_config import router as admin_payment_config_router  # V2.6新增
 from .admin_pricing_config import router as admin_pricing_config_router  # V2.7新增
 from .admin_billing import router as admin_billing_router  # P4月度账单优化新增
+from .user import router as user_router  # 用户升级与试用功能新增
 
 api_router = APIRouter()
 
@@ -37,5 +38,6 @@ api_router.include_router(admin_billing_router, prefix="/admin/billing", tags=["
 api_router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 api_router.include_router(analytics_router, prefix="", tags=["Analytics"])
 api_router.include_router(superadmin_router, prefix="/superadmin", tags=["Super Admin"])
+api_router.include_router(user_router, prefix="/user", tags=["User"])  # 用户升级与试用
 
 __all__ = ["api_router"]

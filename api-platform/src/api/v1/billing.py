@@ -50,6 +50,14 @@ async def get_account(
         db.add(account)
         await db.flush()
     
+    # 计算 API 调用总收益 (从 api_call_logs.cost 字段，按仓库所有者关联)
+    revenue_result = await db.execute(
+        select(func.coalesce(func.sum(func.cast(APICallLog.cost, Numeric)), 0)).join(
+            Repository, APICallLog.repo_id == Repository.id
+        ).where(Repository.owner_id == current_user.id)
+    )
+    total_revenue = float(revenue_result.scalar() or 0)
+    
     return BaseResponse(
         data={
             "id": str(account.id),
@@ -58,6 +66,7 @@ async def get_account(
             "frozen_balance": float(account.frozen_balance or 0),
             "total_recharge": float(account.total_recharge or 0),
             "total_consumption": float(account.total_consume or 0),
+            "total_revenue": total_revenue,  # API 调用总收益（按仓库所有者计算）
             "created_at": account.created_at.isoformat() if account.created_at else None,
             "mock_mode": settings.payment_mock_mode,
             "environment": "simulation" if settings.payment_mock_mode else "production",
@@ -659,6 +668,8 @@ async def get_consumption_details(
             "repo_id": str(call_log.repo_id) if call_log.repo_id else None,
             "repo_name": repo_name,
             "endpoint": call_log.endpoint,
+            "request_params": call_log.request_params,  # 请求参数 (JSON字符串)
+            "tester": call_log.tester,  # 测试人员
             "tokens_used": call_log.tokens_used or 0,
             "cost": float(call_log.cost or 0),
             "created_at": call_log.created_at.isoformat() if call_log.created_at else None,

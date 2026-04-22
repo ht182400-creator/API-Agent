@@ -30,11 +30,13 @@ import AdminReconciliation from './pages/admin/Reconciliation'
 import AdminPricingConfig from './pages/admin/PricingConfig'
 import AdminMonthlyBills from './pages/admin/AdminMonthlyBills'
 import DevTools from './pages/admin/DevTools'
+import ApiTester from './pages/developer/ApiTester'
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard'
 import SuperAdminUsers from './pages/superadmin/SuperAdminUsers'
 import SuperAdminRoles from './pages/superadmin/SuperAdminRoles'
 import SuperAdminSystem from './pages/superadmin/SuperAdminSystem'
 import Notifications from './pages/notifications/Notifications'
+import UserDashboard from './pages/user/UserDashboard'
 
 // 用户类型
 type UserType = 'super_admin' | 'admin' | 'owner' | 'developer' | 'user'
@@ -64,8 +66,9 @@ const ProtectedRoute = ({
         return <Navigate to="/admin" replace />
       case 'owner':
         return <Navigate to="/owner" replace />
-      case 'developer':
       case 'user':
+        return <Navigate to="/user" replace />
+      case 'developer':
       default:
         return <Navigate to="/" replace />
     }
@@ -99,10 +102,11 @@ const getDefaultPath = (userType: string): string => {
       return '/admin'
     case 'owner':
       return '/owner'
-    case 'developer':
     case 'user':
+      return '/user'  // 普通用户跳转到 /user
+    case 'developer':
     default:
-      return '/'
+      return '/'  // 开发者跳转到 /
   }
 }
 
@@ -170,9 +174,19 @@ function App() {
         <Route path="notifications" element={<Notifications />} />
       </Route>
       
-      {/* 开发者/普通用户路由 */}
+      {/* 普通用户路由 - 引导页 */}
+      <Route path="/user" element={
+        <ProtectedRoute allowedUserTypes={['user']}>
+          <Layout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<UserDashboard />} />
+        <Route path="notifications" element={<Notifications />} />
+      </Route>
+      
+      {/* 开发者路由 */}
       <Route path="/" element={
-        <ProtectedRoute allowedUserTypes={['developer', 'user']}>
+        <ProtectedRoute allowedUserTypes={['developer']}>
           <Layout />
         </ProtectedRoute>
       }>
@@ -193,6 +207,7 @@ function App() {
           <Route path="recharge" element={<DeveloperRecharge />} />
           <Route path="repos" element={<DeveloperRepos />} />
           <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
+          <Route path="api-tester" element={<ApiTester />} />
         </Route>
         <Route path="notifications" element={<Notifications />} />
       </Route>

@@ -239,7 +239,7 @@ const ConsumptionDetails: React.FC = () => {
       title: '时间',
       dataIndex: 'created_at',
       key: 'created_at',
-      width: 180,
+      width: 160,
       render: (time: string) => {
         const date = new Date(time)
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
@@ -249,13 +249,14 @@ const ConsumptionDetails: React.FC = () => {
       title: '仓库',
       dataIndex: 'repo_name',
       key: 'repo_name',
-      width: 120,
+      width: 100,
       render: (name: string) => <Tag color="blue">{name || '未知'}</Tag>,
     },
     {
       title: '接口',
       dataIndex: 'endpoint',
       key: 'endpoint',
+      width: 140,
       ellipsis: true,
       render: (endpoint: string) => (
         <Text code style={{ fontSize: 11 }}>
@@ -263,12 +264,47 @@ const ConsumptionDetails: React.FC = () => {
         </Text>
       ),
     },
+    {
+      title: '调用者',
+      dataIndex: 'tester',
+      key: 'tester',
+      width: 100,
+      render: (tester: string) => (
+        <Tag color="purple">{tester || '-'}</Tag>
+      ),
+    },
+    {
+      title: '请求参数',
+      dataIndex: 'request_params',
+      key: 'request_params',
+      width: 200,
+      ellipsis: true,
+      render: (params: string) => {
+        if (!params) return <Text type="secondary">-</Text>
+        try {
+          const parsed = JSON.parse(params)
+          const preview = Object.entries(parsed)
+            .slice(0, 3)
+            .map(([k, v]) => `${k}=${String(v).substring(0, 15)}`)
+            .join(', ')
+          return (
+            <Tooltip title={<pre style={{ margin: 0, fontSize: 11 }}>{JSON.stringify(parsed, null, 2)}</pre>}>
+              <Text style={{ fontSize: 11, color: '#64748b' }}>
+                {Object.keys(parsed).length > 3 ? `${preview}...` : preview}
+              </Text>
+            </Tooltip>
+          )
+        } catch {
+          return <Text style={{ fontSize: 11 }} ellipsis={{ tooltip: params }}>{params}</Text>
+        }
+      },
+    },
     // 根据计费模式显示/隐藏Tokens列
     ...(billingModel === 'per_token' ? [{
       title: '使用 Tokens',
       dataIndex: 'tokens_used',
       key: 'tokens_used',
-      width: 120,
+      width: 100,
       align: 'right' as const,
       render: (tokens: number) => (
         <Tooltip title={`${tokens?.toLocaleString() || 0} Tokens`}>
@@ -282,7 +318,7 @@ const ConsumptionDetails: React.FC = () => {
       title: '费用',
       dataIndex: 'cost',
       key: 'cost',
-      width: 100,
+      width: 80,
       align: 'right' as const,
       render: (cost: number) => (
         <Text type="danger">

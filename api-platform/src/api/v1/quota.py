@@ -406,8 +406,8 @@ async def get_quota_info(
         from src.core.exceptions import NotFoundError
         raise NotFoundError("API Key不存在或无权访问")
     
-    # 获取今日和本月使用量（使用 UTC 时间保持一致）
-    now = datetime.utcnow()
+    # 统一使用北京时间，与日志记录时间保持一致
+    now = datetime.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     month_start = today.replace(day=1)
     one_minute_ago = now - timedelta(minutes=1)
@@ -502,8 +502,8 @@ async def get_quota_overview(
     )
     keys = keys_result.scalars().all()
     
-    # 使用 UTC 时间保持一致
-    now = datetime.utcnow()
+    # 统一使用北京时间，与日志记录时间保持一致
+    now = datetime.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     month_start = today.replace(day=1)
     one_minute_ago = now - timedelta(minutes=1)
@@ -651,6 +651,8 @@ async def get_logs(
                     "repo_name": repo_names.get(str(log.repo_id), "未知仓库"),
                     "endpoint": log.endpoint,
                     "method": log.request_method or log.method,
+                    "request_params": log.request_params,  # 请求参数 (JSON字符串)
+                    "tester": log.tester,  # 测试人员
                     "response_status": log.status_code,
                     "response_time": int(float(log.response_time)) if log.response_time else 0,
                     "ip_address": log.ip_address,
@@ -792,7 +794,8 @@ async def get_top_repos(
         from src.core.exceptions import NotFoundError
         raise NotFoundError("API Key不存在或无权访问")
 
-    start_date = datetime.utcnow() - timedelta(days=days)
+    # 统一使用北京时间，与日志记录时间保持一致
+    start_date = datetime.now() - timedelta(days=days)
 
     # 按 repo_id 聚合查询 - 使用 APICallLog 表，关联 Repository 获取仓库名称
     result = await db.execute(

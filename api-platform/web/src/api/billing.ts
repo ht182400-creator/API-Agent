@@ -21,6 +21,8 @@ export interface ConsumptionDetail {
   repo_id: string | null
   repo_name: string
   endpoint: string
+  request_params?: string  // 请求参数 (JSON字符串)
+  tester?: string           // 测试人员
   tokens_used: number
   cost: number
   created_at: string
@@ -43,6 +45,7 @@ export interface UserAccount {
   frozen_balance: number
   total_recharge: number
   total_consumption: number
+  total_revenue: number  // API 调用总收益
   created_at: string
   mock_mode: boolean
   environment: string

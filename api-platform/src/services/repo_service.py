@@ -273,6 +273,7 @@ class RepoService:
         timeout: int = 30,
         api_key_id: Optional[str] = None,
         user_id: Optional[str] = None,
+        tester: Optional[str] = None,
     ) -> AdapterResponse:
         """
         调用仓库API
@@ -286,6 +287,7 @@ class RepoService:
             timeout: 超时时间
             api_key_id: API Key ID
             user_id: 用户ID
+            tester: 测试人员用户名
 
         Returns:
             适配器响应
@@ -337,6 +339,7 @@ class RepoService:
             request_params=params,
             response_status=response.status,
             response_time=response.elapsed_ms,
+            tester=tester,
         )
 
         # 扣减配额/计费
@@ -420,9 +423,14 @@ class RepoService:
         request_params: Optional[Dict],
         response_status: int,
         response_time: float,
+        tester: Optional[str] = None,
     ) -> None:
         """记录API调用日志"""
         from src.models.billing import APICallLog
+        import json
+
+        # 将请求参数转为JSON字符串存储
+        params_json = json.dumps(request_params) if request_params else None
 
         log = APICallLog(
             repo_id=uuid.UUID(repo_id),
@@ -430,9 +438,10 @@ class RepoService:
             user_id=uuid.UUID(user_id) if user_id else None,
             endpoint=endpoint,
             method=method,
-            request_params=request_params,
-            response_status=response_status,
-            response_time=response_time,
+            request_params=params_json,
+            tester=tester,
+            status_code=response_status,
+            response_time=str(response_time),
         )
 
         self.db.add(log)

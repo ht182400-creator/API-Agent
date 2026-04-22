@@ -63,17 +63,28 @@ export default function OwnerDashboard() {
       title: '仓库', 
       dataIndex: 'name', 
       key: 'name',
-      render: (name: string) => <Text strong>{name}</Text>
+      render: (name: string, record: any) => (
+        <Space direction="vertical" size={0}>
+          <Text strong>{record.display_name || name}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>{name}</Text>
+        </Space>
+      )
     },
     { 
       title: '状态', 
       dataIndex: 'status', 
       key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'active' ? 'green' : 'orange'}>
-          {status === 'active' ? '运行中' : '已下线'}
-        </Tag>
-      )
+      render: (status: string) => {
+        const statusMap: Record<string, { color: string; text: string }> = {
+          pending: { color: 'orange', text: '待审核' },
+          approved: { color: 'blue', text: '已审核（待上线）' },
+          rejected: { color: 'red', text: '已拒绝' },
+          online: { color: 'green', text: '已上线' },
+          offline: { color: 'default', text: '已下线' },
+        }
+        const config = statusMap[status] || { color: 'default', text: status || '未知' }
+        return <Tag color={config.color}>{config.text}</Tag>
+      }
     },
     { 
       title: '今日调用', 

@@ -14,6 +14,7 @@ from src.models.repository import Repository
 from src.models.billing import APICallLog
 from src.schemas.response import BaseResponse
 from src.config.database import get_db
+from loguru import logger
 
 router = APIRouter()
 
@@ -30,13 +31,17 @@ async def get_owner_overview(
     - 活跃仓库数
     - 本月增长
     """
-    now = datetime.utcnow()
+    now = datetime.now()  # 统一使用北京时间，与日志记录保持一致
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    # 调试日志
+    print(f"[Analytics Debug] current_user.id={current_user.id}, username={getattr(current_user, 'username', 'N/A')}")
     
     # 获取用户拥有的仓库
     repo_query = select(func.count(Repository.id)).where(Repository.owner_id == current_user.id)
     repo_result = await db.execute(repo_query)
     total_repos = repo_result.scalar() or 0
+    print(f"[Analytics Debug] total_repos={total_repos}")
     
     # 获取总调用次数
     call_query = select(func.count(APICallLog.id)).join(
@@ -44,6 +49,17 @@ async def get_owner_overview(
     ).where(Repository.owner_id == current_user.id)
     call_result = await db.execute(call_query)
     total_calls = call_result.scalar() or 0
+    print(f"[Analytics Debug] total_calls={total_calls} (via JOIN)")
+    
+    # 获取总收益 (从 api_call_logs 的 cost 字段计算)
+    revenue_query = select(
+        func.coalesce(func.sum(func.cast(APICallLog.cost, Numeric)), 0).label("total_revenue")
+    ).join(
+        Repository, APICallLog.repo_id == Repository.id
+    ).where(Repository.owner_id == current_user.id)
+    revenue_result = await db.execute(revenue_query)
+    total_revenue = float(revenue_result.scalar() or 0)
+    print(f"[Analytics Debug] total_revenue={total_revenue} (from api_call_logs.cost)")
     
     # 获取本月调用次数
     month_call_query = select(func.count(APICallLog.id)).join(
@@ -56,18 +72,7 @@ async def get_owner_overview(
     )
     month_result = await db.execute(month_call_query)
     month_calls = month_result.scalar() or 0
-    
-    # 获取总收益 (从 bills 表)
-    from src.models.billing import Bill
-    revenue_query = select(func.sum(func.cast(Bill.amount, Numeric))).where(
-        and_(
-            Bill.user_id == current_user.id,
-            Bill.bill_type.in_(['recharge', 'bonus']),
-            Bill.status == 'completed'
-        )
-    )
-    revenue_result = await db.execute(revenue_query)
-    total_revenue = float(revenue_result.scalar() or 0)
+    print(f"[Analytics Debug] month_calls={month_calls}")
     
     return BaseResponse(data={
         "total_calls": total_calls,
@@ -89,7 +94,7 @@ async def get_weekly_stats(
     返回最近N周的每日统计数据
     """
     result = []
-    now = datetime.utcnow()
+    now = datetime.now()  # 统一使用北京时间
     
     for week in range(weeks):
         week_end = now - timedelta(days=week * 7)
@@ -132,7 +137,7 @@ async def get_hourly_stats(
     """
     获取24小时调用分布
     """
-    now = datetime.utcnow()
+    now = datetime.now()  # 统一使用北京时间
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     
     result = []
@@ -169,21 +174,25 @@ async def get_call_sources(
     获取调用来源分布
     按 source 字段统计
     """
+    # 定义 source 列的表达式（复用确保一致性）
+    source_expr = func.coalesce(APICallLog.source, 'unknown').label("source")
+    
     query = select(
-        func.coalesce(APICallLog.source, 'unknown').label("source"),
+        source_expr,
         func.count(APICallLog.id).label("count")
     ).join(
         Repository, APICallLog.repo_id == Repository.id
     ).where(
         Repository.owner_id == current_user.id
     ).group_by(
-        func.coalesce(APICallLog.source, 'unknown')
-    ).order_by(
-        func.count(APICallLog.id).desc()
+        source_expr  # 直接使用同一表达式引用
     )
     
     res = await db.execute(query)
     rows = res.all()
+    
+    # 在应用层按 count 降序排序（最安全的方式，避免 SQL ORDER BY 问题）
+    rows = sorted(rows, key=lambda x: x.count, reverse=True)
     
     # 计算百分比
     total = sum(row.count for row in rows) if rows else 1

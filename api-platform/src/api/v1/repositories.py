@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, Numeric
 
 from src.config.database import get_db
 from src.schemas.response import (
@@ -437,9 +437,123 @@ async def list_my_repositories(
     )
 
 
+@router.get("/{repo_id}/stats", response_model=BaseResponse[dict])
+async def get_repository_stats(
+    repo_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: "User" = Depends(get_current_user),  # noqa: F821
+):
+    """
+    Get repository statistics (仓库所有者查看统计)
+    
+    Args:
+        repo_id: Repository ID
+    
+    Returns:
+        Repository statistics
+    """
+    from src.models.user import User
+    from datetime import datetime, timedelta
+    
+    # 查找仓库
+    try:
+        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
+    except ValueError:
+        repo_uuid = None
+    
+    if repo_uuid:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_uuid)
+        )
+    else:
+        result = await db.execute(
+            select(Repository).where(Repository.id == repo_id)
+        )
+    repo = result.scalar_one_or_none()
+    
+    if not repo:
+        raise RepositoryNotFoundError()
+    
+    # 检查权限
+    if repo.owner_id != current_user.id and current_user.user_type not in ['super_admin', 'admin']:
+        raise AuthorizationError("无权查看此仓库统计")
+    
+    # 从数据库查询真实统计数据
+    from src.models.billing import APICallLog
+    
+    # 统一使用北京时间，与日志记录时间保持一致
+    now = datetime.now()
+    today = now.date()
+    week_ago = now - timedelta(days=7)
+    
+    # 今日调用量
+    today_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            and_(
+                APICallLog.repo_id == repo.id,
+                func.date(APICallLog.created_at) == today,
+            )
+        )
+    )
+    today_calls = today_result.scalar() or 0
+    
+    # 本周调用量
+    week_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            and_(
+                APICallLog.repo_id == repo.id,
+                APICallLog.created_at >= week_ago,
+            )
+        )
+    )
+    week_calls = week_result.scalar() or 0
+    
+    # 总调用量
+    total_result = await db.execute(
+        select(func.count(APICallLog.id)).where(
+            APICallLog.repo_id == repo.id
+        )
+    )
+    total_calls = total_result.scalar() or 0
+    
+    # 总费用（从cost字段汇总）
+    cost_result = await db.execute(
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
+            APICallLog.repo_id == repo.id
+        )
+    )
+    total_cost = float(cost_result.scalar() or 0)
+    
+    # 活跃API Key数量
+    from src.models.api_key import APIKey
+    keys_result = await db.execute(
+        select(func.count(APIKey.id)).where(
+            and_(
+                APIKey.user_id == repo.owner_id,
+                APIKey.status == "active"
+            )
+        )
+    )
+    active_keys = keys_result.scalar() or 0
+    
+    return BaseResponse(
+        data={
+            "repo_id": str(repo.id),
+            "total_calls": total_calls,
+            "today_calls": today_calls,
+            "week_calls": week_calls,
+            "total_cost": round(total_cost, 2),
+            "active_keys": active_keys,
+            "avg_latency": 0,
+            "success_rate": 100.0,
+        }
+    )
+
+
 @router.get("/{repo_slug}", response_model=BaseResponse[RepositoryResponse])
 async def get_repository(
     repo_slug: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -453,6 +567,11 @@ async def get_repository(
     """
     from src.models.repository import Repository, RepoPricing
     from src.models.user import User
+    
+    # 防止 /{repo_slug} 路由错误匹配带有额外路径的请求
+    # 如 /repositories/weather-api/current 应该匹配 proxy 路由，而不是这个路由
+    if "/" in repo_slug:
+        raise HTTPException(status_code=404, detail="Repository not found")
     
     # Find repository
     result = await db.execute(
@@ -665,6 +784,7 @@ async def chat(
     from src.models.billing import Quota
     from datetime import datetime, timedelta
     from decimal import Decimal
+    import json
     
     try:
         response_time = int((time.time() - start_time) * 1000)
@@ -687,6 +807,8 @@ async def chat(
             request_id=getattr(request.state, "request_id", None),
             endpoint="/chat",
             method="POST",
+            request_params=json.dumps(request_data) if request_data else None,
+            tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
             status_code=status_code,
             response_time=str(response_time),
             cost=str(call_cost),
@@ -917,6 +1039,17 @@ async def proxy_repository_endpoint(
         try:
             from src.models.billing import APICallLog, Quota
             from datetime import datetime, timedelta
+            import json
+            
+            # 合并请求参数（查询参数 + 请求体）
+            request_params = dict(query_params)
+            if body:
+                try:
+                    body_params = json.loads(body.decode('utf-8'))
+                    if isinstance(body_params, dict):
+                        request_params.update(body_params)
+                except Exception:
+                    pass
             
             # 计算并扣除费用
             tokens_used = response_data.get("tokens_used", 0) if isinstance(response_data, dict) else 0
@@ -936,6 +1069,8 @@ async def proxy_repository_endpoint(
                 request_id=getattr(request.state, "request_id", None),
                 endpoint=f"/{path}",
                 method=request.method,
+                request_params=json.dumps(request_params) if request_params else None,
+                tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
                 status_code=status_code,
                 response_time=str(response_time),
                 cost=str(call_cost),
@@ -1175,117 +1310,6 @@ async def delete_repository(
     await db.commit()
     
     return BaseResponse(data={"message": "仓库删除成功"})
-
-
-@router.get("/{repo_id}/stats", response_model=BaseResponse[dict])
-async def get_repository_stats(
-    repo_id: str,
-    db: AsyncSession = Depends(get_db),
-    current_user: "User" = Depends(get_current_user),  # noqa: F821
-):
-    """
-    Get repository statistics (仓库所有者查看统计)
-    
-    Args:
-        repo_id: Repository ID
-    
-    Returns:
-        Repository statistics
-    """
-    from src.models.user import User
-    from datetime import datetime, timedelta
-    
-    # 查找仓库
-    try:
-        repo_uuid = UUID(repo_id) if len(repo_id) == 36 else None
-    except ValueError:
-        repo_uuid = None
-    
-    if repo_uuid:
-        result = await db.execute(
-            select(Repository).where(Repository.id == repo_uuid)
-        )
-    else:
-        result = await db.execute(
-            select(Repository).where(Repository.id == repo_id)
-        )
-    repo = result.scalar_one_or_none()
-    
-    if not repo:
-        raise RepositoryNotFoundError()
-    
-    # 检查权限
-    if repo.owner_id != current_user.id and current_user.user_type not in ['super_admin', 'admin']:
-        raise AuthorizationError("无权查看此仓库统计")
-    
-    # 从数据库查询真实统计数据
-    from src.models.billing import APICallLog
-    
-    today = datetime.utcnow().date()
-    week_ago = datetime.utcnow() - timedelta(days=7)
-    
-    # 今日调用量
-    today_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            and_(
-                APICallLog.repo_id == repo.id,
-                func.date(APICallLog.created_at) == today,
-            )
-        )
-    )
-    today_calls = today_result.scalar() or 0
-    
-    # 本周调用量
-    week_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            and_(
-                APICallLog.repo_id == repo.id,
-                APICallLog.created_at >= week_ago,
-            )
-        )
-    )
-    week_calls = week_result.scalar() or 0
-    
-    # 总调用量
-    total_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            APICallLog.repo_id == repo.id
-        )
-    )
-    total_calls = total_result.scalar() or 0
-    
-    # 总费用（从cost字段汇总）
-    cost_result = await db.execute(
-        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
-            APICallLog.repo_id == repo.id
-        )
-    )
-    total_cost = float(cost_result.scalar() or 0)
-    
-    # 活跃API Key数量
-    from src.models.api_key import APIKey
-    keys_result = await db.execute(
-        select(func.count(APIKey.id)).where(
-            and_(
-                APIKey.user_id == repo.owner_id,
-                APIKey.status == "active"
-            )
-        )
-    )
-    active_keys = keys_result.scalar() or 0
-    
-    return BaseResponse(
-        data={
-            "repo_id": str(repo.id),
-            "total_calls": total_calls,
-            "today_calls": today_calls,
-            "week_calls": week_calls,
-            "total_cost": round(total_cost, 2),
-            "active_keys": active_keys,
-            "avg_latency": 0,
-            "success_rate": 100.0,
-        }
-    )
 
 
 # ==================== 管理员仓库审核接口 ====================

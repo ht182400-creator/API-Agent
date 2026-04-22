@@ -1,0 +1,162 @@
+/* 普通用户首页样式 */
+
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* 欢迎区域 */
+.welcomeSection {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 32px 0;
+}
+
+.welcomeTitle {
+  color: #1890ff;
+  margin-bottom: 8px !important;
+}
+
+.welcomeDesc {
+  font-size: 16px;
+  color: #666;
+}
+
+/* 试用卡片 */
+.trialCard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-bottom: 24px;
+}
+
+.trialCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.trialCard :global(.ant-typography) {
+  color: white !important;
+}
+
+.trialCard :global(.ant-typography-secondary) {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.trialBadge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.trialInfo {
+  text-align: left;
+}
+
+.trialAction {
+  text-align: center;
+}
+
+.claimButton {
+  background: white;
+  border-color: white;
+  color: #667eea;
+  font-weight: bold;
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+.claimButton:hover {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #667eea;
+}
+
+/* 已领取提示 */
+.claimedAlert {
+  margin-bottom: 24px;
+}
+
+/* 功能介绍 */
+.featuresSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  margin-bottom: 16px !important;
+  color: #333;
+}
+
+.featureCard {
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.featureIcon {
+  font-size: 32px;
+  color: #1890ff;
+  margin-bottom: 12px;
+}
+
+.featureCard :global(.ant-card-body) {
+  padding: 20px 16px;
+}
+
+.featureCard :global(.ant-typography) {
+  margin-bottom: 0 !important;
+}
+
+/* 操作卡片 */
+.actionCard {
+  margin-bottom: 24px;
+}
+
+.actionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.actionItem:last-child {
+  border-bottom: none;
+}
+
+.actionInfo {
+  flex: 1;
+}
+
+.actionInfo :global(.ant-typography) {
+  margin-bottom: 0 !important;
+}
+
+/* 快速链接 */
+.quickLinks {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.helpLink {
+  color: #1890ff;
+  margin-left: 4px;
+}
+
+.helpLink:hover {
+  color: #40a9ff;
+}
