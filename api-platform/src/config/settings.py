@@ -62,6 +62,11 @@ class Settings(BaseSettings):
     recharge_max_amount: float = 10000.0  # 最大充值金额
     recharge_default_bonus_ratio: float = 0.0  # 默认赠送比例
 
+    # Trial Configuration (试用配置)
+    trial_amount: float = 10.0  # 试用金额（元）
+    trial_enabled: bool = True  # 是否启用试用功能
+    trial_one_time_only: bool = True  # 试用只能领取一次
+
     # Payment Configuration (支付配置)
     payment_mock_mode: bool = True  # 支付模拟模式开关，True=模拟支付，False=真实支付
 

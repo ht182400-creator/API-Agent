@@ -24,10 +24,11 @@ const getRedirectPath = (userType: string): string => {
       return '/admin'
     case 'owner':
       return '/owner'
-    case 'developer':
     case 'user':
+      return '/user'  // 普通用户跳转到 /user 引导页
+    case 'developer':
     default:
-      return '/'
+      return '/'  // 开发者跳转到 /
   }
 }
 

@@ -48,6 +48,10 @@ class User(Base):
     vip_level = Column(Integer, default=0)
     vip_expire_at = Column(DateTime, nullable=True)
 
+    # Trial information (试用信息)
+    trial_claimed = Column(Boolean, default=False)  # 是否已领取试用金额
+    trial_amount_claimed = Column(String(20), default="0")  # 已领取的试用金额
+
     # Audit fields
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

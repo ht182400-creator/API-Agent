@@ -5,9 +5,9 @@
 | 项目 | 内容 |
 |------|------|
 | 文档编号 | FAQ-API-2026-001 |
-| 版本号 | V2.0 |
+| 版本号 | V2.2 |
 | 创建日期 | 2026-04-16 |
-| 更新日期 | 2026-04-20 |
+| 更新日期 | 2026-04-22 |
 
 ---
 
@@ -77,6 +77,15 @@
 | Q52 | 限流检查是如何工作的？ | 限流、RPM、RPH、配额 | P0 | ✅ |
 | Q53 | 配额超限怎么办？ | 配额、超限、充值 | P1 | ✅ |
 | Q54 | 后端服务配置说明 | 后端、endpoint、代理 | P1 | ✅ |
+
+### 第六部分：消费明细与集成测试问题（V2.1新增）
+
+| 序号 | 问题标题 | 关键词 | 优先级 | 状态 |
+|:----:|----------|--------|:------:|:----:|
+| Q55 | 消费明细页面显示空数据 | 消费明细、空数据、字段 | P0 | ✅ |
+| Q56 | 集成测试工具调用返回404 | 集成测试、404、URL路径 | P0 | ✅ |
+| Q57 | API调用日志缺少调用者和请求参数 | 调用者、请求参数、日志 | P1 | ✅ |
+| Q58 | 如何添加仓库到集成测试页面 | 添加仓库、测试页面、配置 | P1 | ✅ |
 
 
 **详细说明**：详见 [33_FAQ_登录错误提示问题详解.md](33_FAQ_登录错误提示问题详解.md)
@@ -1779,5 +1788,276 @@ POST https://psychology-backend.example.com/api/v1/chat
 | V2.0 | 2026-04-20 | 新增第五章：支付与限流问题（Q50-Q54）| AI Assistant |
 | V1.8 | 2026-04-19 | Q48补充：修复通知路由路径问题 - 根据用户类型使用正确的绝对路径导航 | AI Assistant |
 | V1.9 | 2026-04-19 | 新增Q49：通知功能完善（完整版）- 后端数据库模型、API接口、前端真实数据、下拉菜单修复、已读状态管理 | AI Assistant |
+| V2.1 | 2026-04-22 | 新增第六章：消费明细与集成测试问题（Q55-Q57）- 集成测试工具改造、消费明细新增字段 | AI Assistant |
 
 如需补充问题，请联系项目组。
+
+---
+
+## 第七章 消费明细与集成测试问题（V2.1新增）
+
+### Q55: 消费明细页面显示空数据
+
+**问题描述**：在集成测试工具中调用API后，消费明细页面的"调用者"和"请求参数"列显示为空或"-"。
+
+**问题原因**：
+1. 数据库 `api_call_logs` 表缺少 `request_params`、`tester` 等字段
+2. 数据库迁移未执行
+
+**解决方案**：
+
+1. **执行数据库迁移**：运行迁移脚本添加新字段
+
+```bash
+cd d:/Work_Area/AI/API-Agent/api-platform
+python -m scripts.migrate_add_request_params_tester
+```
+
+迁移脚本会添加以下字段：
+- `request_params (TEXT)` - 请求参数
+- `tester (VARCHAR(100))` - 测试人员
+- `request_id (VARCHAR(64))` - 全链路追踪ID
+- `request_path (VARCHAR(500))` - 请求路径
+- `request_method (VARCHAR(10))` - 请求方法
+
+2. **验证数据库更新**：
+
+```sql
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'api_call_logs'
+ORDER BY ordinal_position;
+```
+
+**详细说明**：详见 [35_开发过程中的FAQ_更新01.md](35_开发过程中的FAQ_更新01.md)
+
+---
+
+### Q56: 集成测试工具调用返回404
+
+**问题描述**：集成测试工具调用API后，响应返回200但内容为空，显示 `{"detail": "Not Found"}`。
+
+**问题原因**：
+1. 前端URL构建错误：前端构建的URL是 `/weather-api/current`，但后端proxy接口完整路径是 `/api/v1/repositories/{repo_slug}/{path}`
+2. 路由匹配问题：`/{repo_slug}` 路由在 `/{repo_slug}/{path:path}` 之前定义
+3. 仓库 `endpoint_url` 未配置：数据库中Weather仓库的 `endpoint_url` 为NULL
+
+**解决方案**：
+
+1. **修复前端URL构建逻辑**：修改 `ApiTester.tsx` 中的 `buildUrl` 函数
+
+```typescript
+// 正确的URL格式
+const buildUrl = useCallback((repo: Repository, endpoint: Endpoint): string => {
+    // ...
+    return `/api/v1/repositories/${repo.slug}${path}${queryString ? '?' + queryString : ''}`;
+}, [paramValues]);
+```
+
+2. **修复后端路由匹配**：修改 `repositories.py`，在 `get_repository` 函数中添加路径检查
+
+```python
+# 防止路由错误匹配
+if "/" in repo_slug:
+    raise HTTPException(status_code=404, detail="Repository not found")
+```
+
+3. **更新数据库仓库配置**：
+
+```sql
+UPDATE repositories
+SET endpoint_url = 'http://localhost:8001/api/v1/weather'
+WHERE slug = 'weather-api';
+```
+
+4. **重启后端服务**
+
+```bash
+python -m uvicorn src.main:app --reload
+```
+
+**详细说明**：详见 [35_开发过程中的FAQ_更新01.md](35_开发过程中的FAQ_更新01.md)
+
+---
+
+### Q57: API调用日志缺少调用者和请求参数
+
+**问题描述**：消费明细页面需要显示"调用者"和"请求参数"列，但日志记录中缺少这些信息。
+
+**问题原因**：代码中没有记录 `tester` 和 `request_params` 字段。
+
+**解决方案**：
+
+1. **修改后端日志记录逻辑**：在 `repo_service.py` 的 `_log_api_call` 函数中添加字段记录
+
+```python
+async def _log_api_call(
+    db: AsyncSession,
+    repo_id: str,
+    endpoint: str,
+    method: str,
+    status_code: int,
+    response_time: str,
+    error_message: Optional[str] = None,
+    # 新增参数
+    tester: Optional[str] = None,
+    request_params: Optional[str] = None,
+    request_path: Optional[str] = None,
+    request_method: Optional[str] = None,
+    request_id: Optional[str] = None,
+):
+    log_entry = APICallLog(
+        request_id=request_id,
+        repo_id=repo_id,
+        endpoint=endpoint,
+        method=method,
+        request_path=request_path,
+        request_method=request_method,
+        request_params=request_params,
+        tester=tester,  # 记录调用者
+        status_code=status_code,
+        response_time=response_time,
+        error_message=error_message,
+    )
+    # ...
+```
+
+2. **更新前端调用**：传入当前用户信息
+
+```typescript
+// 在 repositories.py proxy 接口中
+from src.services.repo_service import RepoService
+
+user = request.state.user if hasattr(request.state, 'user') else None
+tester = user.username if user else None
+
+# 获取请求参数
+request_params = {
+    **dict(request.query_params),
+    **(await request.json() if request.method in ['POST', 'PUT', 'PATCH'] else {})
+}
+
+await repo_service._log_api_call(
+    db=db,
+    repo_id=str(repo.id),
+    tester=tester,
+    request_params=json.dumps(request_params),
+    # ...
+)
+```
+
+3. **更新前端页面**：在 `ConsumptionDetails.tsx` 中添加新列
+
+```typescript
+{
+    title: '调用者',
+    dataIndex: 'tester',
+    key: 'tester',
+    render: (tester: string) => <Tag color="purple">{tester || '-'}</Tag>,
+},
+{
+    title: '请求参数',
+    dataIndex: 'request_params',
+    key: 'request_params',
+    render: (params: string) => {
+        if (!params) return '-';
+        try {
+            const parsed = JSON.parse(params);
+            return (
+                <Tooltip title={<pre>{JSON.stringify(parsed, null, 2)}</pre>}>
+                    <Tag color="blue">查看参数</Tag>
+                </Tooltip>
+            );
+        } catch {
+            return params;
+        }
+    },
+},
+```
+
+**详细说明**：详见 [35_开发过程中的FAQ_更新01.md](35_开发过程中的FAQ_更新01.md)
+
+---
+
+### Q58: 如何添加仓库到集成测试页面？
+
+**问题描述**：想在API测试工具中添加新的仓库选项，应该如何操作？
+
+**解决方案**：
+
+**步骤1：创建仓库配置文件**
+
+在 `web/src/config/repos/` 目录下创建新的配置文件，如 `example.config.ts`：
+
+```typescript
+import { Repository } from '../../../types/api-tester';
+
+export const exampleRepository: Repository = {
+  id: 'example-api',
+  slug: 'example-api',  // 必须与数据库 repositories 表的 slug 一致
+  name: '示例API',
+  description: 'API描述',
+  icon: 'api',
+  category: 'self',  // self=自研, third=第三方
+  baseUrl: '/api/v1/repositories/example-api',
+  apiUrl: 'http://localhost:8000',
+  authType: 'api_key',
+  authHeader: 'X-Access-Key',
+  enabled: true,
+  version: '1.0.0',
+  endpoints: [
+    {
+      id: 'endpoint1',
+      name: '示例接口',
+      description: '接口描述',
+      path: '/example',
+      method: 'GET',
+      params: [
+        {
+          name: 'param1',
+          type: 'string',
+          required: true,
+          description: '参数描述',
+          placeholder: '请输入',
+          in: 'query'
+        }
+      ],
+      tags: ['示例']
+    }
+  ]
+};
+```
+
+**步骤2：在仓库索引中注册**
+
+编辑 `web/src/config/repositories.config.ts`：
+
+```typescript
+import { exampleRepository } from './repos/example.config';
+
+export const repositories = [
+  exampleRepository,
+  // ... 其他仓库
+];
+```
+
+**步骤3：确保数据库有对应记录**
+
+```sql
+INSERT INTO repositories (id, name, slug, endpoint_url, status)
+VALUES ('example-api', '示例API', 'example-api', 'http://目标服务地址', 'online');
+```
+
+**步骤4：重启前端服务**
+
+刷新页面后，新仓库会出现在测试工具的选择框中。
+
+**注意事项**：
+1. `slug` 必须与数据库中 `repositories` 表的 `slug` 字段一致
+2. `endpoint_url` 必须指向实际的后端服务地址
+3. 如果是第三方API，`category` 应设置为 `third`
+
+**详细说明**：详见 [35_开发过程中的FAQ_更新01.md](35_开发过程中的FAQ_更新01.md)
+
+---
+
+**FAQ文档结束**

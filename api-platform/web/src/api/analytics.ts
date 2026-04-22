@@ -34,31 +34,28 @@ export const analyticsApi = {
    * 获取总览统计
    */
   getOverview: async (): Promise<OverviewStats> => {
-    const response = await api.get('/owner/overview')
-    return response.data
+    // api.get() 已由 client.ts 拦截器自动提取 data 字段
+    return await api.get<OverviewStats>('/owner/overview')
   },
 
   /**
    * 获取每周统计
    */
   getWeeklyStats: async (weeks: number = 1): Promise<WeeklyStats[]> => {
-    const response = await api.get('/owner/weekly', { params: { weeks } })
-    return response.data
+    return await api.get<WeeklyStats[]>('/owner/weekly', { params: { weeks } })
   },
 
   /**
    * 获取24小时分布
    */
   getHourlyStats: async (): Promise<HourlyStats[]> => {
-    const response = await api.get('/owner/hourly')
-    return response.data
+    return await api.get<HourlyStats[]>('/owner/hourly')
   },
 
   /**
    * 获取调用来源分布
    */
   getSourceStats: async (): Promise<SourceStats[]> => {
-    const response = await api.get('/owner/sources')
-    return response.data
+    return await api.get<SourceStats[]>('/owner/sources')
   }
 }

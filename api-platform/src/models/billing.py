@@ -149,6 +149,10 @@ class APICallLog(Base):
     method = Column(String(10), nullable=True)
     request_path = Column(String(500), nullable=True)
     request_method = Column(String(10), nullable=True)
+    request_params = Column(Text, nullable=True)  # JSON字符串格式的请求参数
+
+    # Tester information - 测试人员
+    tester = Column(String(100), nullable=True)  # 测试人员用户名
 
     # Response information
     status_code = Column(BigInteger, nullable=True)
