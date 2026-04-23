@@ -9,9 +9,22 @@ import { MailOutlined, LockOutlined, UserOutlined, EyeInvisibleOutlined, EyeTwoT
 import { authApi } from '../../api/auth'
 import styles from './Register.module.css'
 
+// 根据用户类型获取提示文本
+const getUserTypeHint = (userType: string): string => {
+  switch (userType) {
+    case 'developer':
+      return '开发者可使用API服务、创建仓库并获得收益分成'
+    case 'user':
+      return '普通用户可领取试用金额，升级后成为开发者'
+    default:
+      return ''
+  }
+}
+
 export default function Register() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [userType, setUserType] = useState<string>('developer')
   const [form] = Form.useForm()
 
   // 清除输入框中的浏览器自动填充数据
@@ -167,12 +180,15 @@ export default function Register() {
             <Form.Item
               name="user_type"
               rules={[{ required: true, message: '请选择账号类型' }]}
-              extra="开发者可使用API服务，仓库所有者可创建和管理API仓库"
+              extra={getUserTypeHint(userType)}
             >
-              <Radio.Group buttonStyle="solid">
+              <Radio.Group 
+                buttonStyle="solid"
+                onChange={(e) => setUserType(e.target.value)}
+              >
                 <Radio.Button value="user">普通用户</Radio.Button>
+                {/* 【V4.0 重构】去掉 owner 选项，owner = developer + 有仓库 */}
                 <Radio.Button value="developer">开发者</Radio.Button>
-                <Radio.Button value="owner">仓库所有者</Radio.Button>
               </Radio.Group>
             </Form.Item>
 

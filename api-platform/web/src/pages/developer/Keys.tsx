@@ -3,16 +3,20 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography } from 'antd'
-import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined, EyeOutlined } from '@ant-design/icons'
+import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography, Alert } from 'antd'
+import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined, EyeOutlined, RocketOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, CreateKeyRequest } from '../../api/quota'
 import { useErrorModal, extractErrorMessage, parseErrorType } from '../../components/ErrorModal'
+import { useAuthStore } from '../../stores/auth'
 import dayjs from 'dayjs'
 import styles from './Keys.module.css'
 
 const { Title, Text } = Typography
 
 export default function DeveloperKeys() {
+  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [total, setTotal] = useState(0)
@@ -28,6 +32,9 @@ export default function DeveloperKeys() {
 
   // 使用统一的错误提示
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
+  
+  // 判断是否是普通用户
+  const isNormalUser = user?.user_type === 'user'
 
   useEffect(() => {
     fetchKeys()
@@ -223,12 +230,31 @@ export default function DeveloperKeys() {
     <div className={styles.container}>
       {/* 统一的错误提示组件 */}
       <ErrorModalComponent />
+      
+      {/* 普通用户升级引导 */}
+      {isNormalUser && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<RocketOutlined />}
+          message="升级为开发者，获取API Keys"
+          description="成为开发者后，您可以创建和管理API Keys，用于调用平台API服务。"
+          action={
+            <Button type="primary" size="small" onClick={() => navigate('/user')}>
+              前往升级
+            </Button>
+          }
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <div className={styles.header}>
         <Title level={4}>API Keys管理</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
-          创建API Key
-        </Button>
+        {!isNormalUser && (
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+            创建API Key
+          </Button>
+        )}
       </div>
 
       <Table

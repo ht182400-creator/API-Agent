@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     recharge_default_bonus_ratio: float = 0.0  # 默认赠送比例
 
     # Trial Configuration (试用配置)
-    trial_amount: float = 10.0  # 试用金额（元）
+    trial_amount: float = 20.0  # 试用金额（元）
     trial_enabled: bool = True  # 是否启用试用功能
     trial_one_time_only: bool = True  # 试用只能领取一次
 

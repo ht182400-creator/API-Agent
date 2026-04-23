@@ -63,7 +63,15 @@ class BillingService:
             query = query.where(Account.user_id == uuid.UUID(user_id))
 
         result = await self.db.execute(query)
-        account = result.scalar_one_or_none()
+        # 安全处理：使用 scalars().all() 检查多记录情况
+        accounts = result.scalars().all()
+        if len(accounts) > 1:
+            logger.warning(f"用户 {user_id} 存在多个账户，取第一条")
+            account = accounts[0]
+        elif len(accounts) == 0:
+            account = None
+        else:
+            account = accounts[0]
 
         if not account:
             # 创建默认账户

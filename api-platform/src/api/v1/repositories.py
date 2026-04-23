@@ -124,14 +124,20 @@ async def calculate_and_charge(
     account = account_result.scalar_one_or_none()
     
     if not account:
-        # 没有账户，不扣费
-        return cost, description
+        # 没有账户，不扣费，但抛出余额不足异常阻止调用
+        raise HTTPException(
+            status_code=402,
+            detail=f"账户不存在或余额为0，无法调用API。请先充值。"
+        )
     
     # 检查余额是否足够
     balance = Decimal(str(account.balance))
     if balance < cost:
-        # 余额不足，不扣费（但仍记录调用）
-        return cost, description
+        # 余额不足，拒绝API调用
+        raise HTTPException(
+            status_code=402,
+            detail=f"余额不足。当前余额：¥{balance:.2f}，本次调用需要：¥{cost:.2f}。请先充值。"
+        )
     
     # 扣费
     balance_before = balance
@@ -474,9 +480,20 @@ async def get_repository_stats(
     if not repo:
         raise RepositoryNotFoundError()
     
-    # 检查权限
-    if repo.owner_id != current_user.id and current_user.user_type not in ['super_admin', 'admin']:
+    # 【V4.0 重构】使用统一的权限检查
+    from src.services.permission_service import PermissionService
+    # 检查权限: 仓库所有者本人或管理员可以查看
+    if repo.owner_id != current_user.id and not PermissionService.is_admin(current_user):
         raise AuthorizationError("无权查看此仓库统计")
+
+# 【V4.0 新增】更新仓库的权限检查
+async def _check_repo_update_permission(repo: "Repository", current_user: "User"):  # noqa: F821
+    """检查是否有权限更新仓库"""
+    from src.core.exceptions import AuthorizationError
+    from src.services.permission_service import PermissionService
+    # 仓库所有者本人或超级管理员可以更新
+    if repo.owner_id != current_user.id and not PermissionService.is_super_admin(current_user):
+        raise AuthorizationError("只有仓库所有者或超级管理员可以更新此仓库")
     
     # 从数据库查询真实统计数据
     from src.models.billing import APICallLog
@@ -789,7 +806,7 @@ async def chat(
     try:
         response_time = int((time.time() - start_time) * 1000)
         
-        # 计算并扣除费用
+        # 计算并扣除费用（余额不足会抛出 HTTPException 402）
         tokens_used = request_data.get("tokens_used", 0) if isinstance(request_data, dict) else 0
         call_cost, cost_description = await calculate_and_charge(
             db=db,
@@ -845,6 +862,10 @@ async def chat(
             db.add(quota)
         
         await db.commit()
+    except HTTPException:
+        # HTTPException（如余额不足）正常抛出
+        await db.rollback()
+        raise
     except Exception as e:
         await db.rollback()
         print(f"Failed to log API call: {e}")
@@ -1107,6 +1128,10 @@ async def proxy_repository_endpoint(
                 db.add(quota)
             
             await db.commit()
+        except HTTPException:
+            # HTTPException（如余额不足）正常抛出
+            await db.rollback()
+            raise
         except Exception as log_error:
             await db.rollback()
             print(f"Failed to log API call: {log_error}")
@@ -1133,10 +1158,12 @@ async def create_repository(
         Created repository
     """
     from src.models.user import User
+    from src.services.permission_service import PermissionService
     
-    # 检查用户权限（必须是 owner 类型）
-    if current_user.user_type not in ['owner', 'super_admin']:
-        raise AuthorizationError("只有仓库所有者可以创建仓库")
+    # 【V4.0 重构】使用统一的权限检查
+    # 可以创建仓库的角色: developer, admin, super_admin
+    if not PermissionService.can_create_repo(current_user):
+        raise AuthorizationError("只有开发者、管理员或超级管理员可以创建仓库")
     
     # 生成 slug
     slug = repo_data.name.lower().replace("_", "-").replace(" ", "-")
@@ -1222,8 +1249,10 @@ async def update_repository(
     if not repo:
         raise RepositoryNotFoundError()
     
+    # 【V4.0 重构】使用统一的权限检查
+    from src.services.permission_service import PermissionService
     # 检查权限（必须是仓库所有者或超级管理员）
-    if repo.owner_id != current_user.id and current_user.user_type != 'super_admin':
+    if repo.owner_id != current_user.id and not PermissionService.is_super_admin(current_user):
         raise AuthorizationError("无权修改此仓库")
     
     # 权限检查：只有管理员可以修改状态
@@ -1302,8 +1331,10 @@ async def delete_repository(
     if not repo:
         raise RepositoryNotFoundError()
     
-    # 检查权限
-    if repo.owner_id != current_user.id and current_user.user_type != 'super_admin':
+    # 【V4.0 重构】使用统一的权限检查
+    from src.services.permission_service import PermissionService
+    # 检查权限（必须是仓库所有者或超级管理员）
+    if repo.owner_id != current_user.id and not PermissionService.is_super_admin(current_user):
         raise AuthorizationError("无权删除此仓库")
     
     await db.delete(repo)
@@ -1315,9 +1346,10 @@ async def delete_repository(
 # ==================== 管理员仓库审核接口 ====================
 
 def check_admin_permission(user: "User") -> None:  # noqa: F821
-    """检查用户是否有管理员权限"""
+    """【V4.0 重构】检查用户是否有管理员权限"""
     from src.core.exceptions import AuthorizationError
-    if user.user_type not in ['admin', 'super_admin']:
+    from src.services.permission_service import PermissionService
+    if not PermissionService.is_admin(user):
         raise AuthorizationError("只有管理员可以执行此操作")
 
 

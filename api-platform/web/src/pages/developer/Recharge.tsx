@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, InputNumber } from 'antd'
+import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, InputNumber, Alert } from 'antd'
 import { 
   GiftOutlined, 
   CheckCircleOutlined, 
@@ -13,10 +13,14 @@ import {
   CreditCardOutlined,
   ReloadOutlined,
   ExclamationCircleOutlined,
-  EditOutlined
+  EditOutlined,
+  RocketOutlined
 } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { paymentApi, RechargePackage, Payment, RechargeConfig } from '../../api/payment'
+import { authApi } from '../../api/auth'
 import { useErrorModal } from '../../components/ErrorModal'
+import { useAuthStore } from '../../stores/auth'
 import styles from './Recharge.module.css'
 import '../../styles/payment-methods.css'
 
@@ -30,6 +34,8 @@ const PAYMENT_METHODS = [
 ]
 
 export default function DeveloperRecharge() {
+  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [packages, setPackages] = useState<RechargePackage[]>([])
   const [selectedPackage, setSelectedPackage] = useState<RechargePackage | null>(null)
@@ -45,6 +51,9 @@ export default function DeveloperRecharge() {
   const [rechargeConfig, setRechargeConfig] = useState<RechargeConfig | null>(null)
 
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
+  
+  // 判断是否是普通用户
+  const isNormalUser = user?.user_type === 'user'
 
   useEffect(() => {
     fetchPackages()
@@ -204,10 +213,39 @@ export default function DeveloperRecharge() {
 
   const handlePayModalClose = () => {
     setPayModalVisible(false)
-    if (paySuccess) {
-      message.success('充值成功！')
-    }
+    // 注意：支付成功后的跳转已由 useEffect 处理，此处不需要重复逻辑
   }
+
+  // 监听支付成功状态，自动刷新并跳转
+  useEffect(() => {
+    if (paySuccess) {
+      if (isNormalUser) {
+        // 普通用户升级后，刷新用户信息后跳转到用户控制台（不是 /developer，因为普通用户无权限访问）
+        message.success({ content: '充值成功！正在刷新用户状态...', key: 'rechargeSuccess' })
+        setTimeout(async () => {
+          try {
+            // 刷新用户信息（获取最新的 user_type）
+            const updatedUser = await authApi.me()
+            useAuthStore.getState().setUser(updatedUser)
+            message.success({ content: '充值成功！', key: 'rechargeSuccess' })
+            // 普通用户跳转到 /user 页面，而不是 /developer
+            // 因为 /developer 是开发者专属路由，普通用户无法访问
+            navigate('/user')
+          } catch (error) {
+            console.error('刷新用户信息失败', error)
+            // 即使刷新失败也跳转
+            navigate('/user')
+          }
+        }, 2000)
+      } else {
+        // 开发者续费，直接刷新页面更新余额
+        message.loading({ content: '充值成功，正在刷新页面...', key: 'rechargeSuccess' })
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000)
+      }
+    }
+  }, [paySuccess])
 
   const handleRefreshStatus = async () => {
     if (!currentPayment) return
@@ -291,6 +329,33 @@ export default function DeveloperRecharge() {
   return (
     <div className={styles.container}>
       <ErrorModalComponent />
+      
+      {/* 普通用户升级引导 - 明确告知充值即升级 */}
+      {isNormalUser && (
+        <Alert
+          type="warning"
+          showIcon
+          icon={<RocketOutlined />}
+          message="充值即可升级为开发者"
+          description={
+            <div>
+              <p style={{ marginBottom: 8 }}>
+                <strong>升级说明：</strong>充值成功后，您的账户将自动升级为开发者，可享受：
+              </p>
+              <ul style={{ marginBottom: 0, paddingLeft: 20 }}>
+                <li>创建API仓库并获得收益分成</li>
+                <li>充值金额将作为账户余额使用</li>
+              </ul>
+            </div>
+          }
+          action={
+            <Button type="primary" size="small" onClick={() => navigate('/user')}>
+              查看升级详情
+            </Button>
+          }
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <div className={styles.header}>
         <div>
@@ -464,12 +529,33 @@ export default function DeveloperRecharge() {
         {paySuccess ? (
           <Result
             status="success"
-            title="支付成功！"
-            subTitle={`已成功充值 ¥${currentPayment?.amount.toFixed(2)}，请检查账户余额。`}
+            title={isNormalUser ? "升级成功！" : "充值成功！"}
+            subTitle={isNormalUser 
+              ? `已成功充值 ¥${currentPayment?.amount.toFixed(2)}，并升级为开发者`
+              : `已成功充值 ¥${currentPayment?.amount.toFixed(2)}，余额已到账`
+            }
             extra={[
-              <Button type="primary" key="done" onClick={handlePayModalClose}>
-                完成
-              </Button>,
+              <Alert 
+                key="info"
+                type="success" 
+                message={isNormalUser 
+                  ? "恭喜！您已成为开发者，页面将自动跳转..." 
+                  : "充值已到账，页面将自动刷新..."
+                } 
+                style={{ marginBottom: 16, textAlign: 'center' }}
+                showIcon
+              />,
+              <Space key="actions">
+                <Button 
+                  type="primary" 
+                  onClick={() => isNormalUser ? navigate('/user') : window.location.reload()}
+                >
+                  {isNormalUser ? '查看用户状态' : '刷新页面'}
+                </Button>
+                <Button onClick={handlePayModalClose}>
+                  返回充值中心
+                </Button>
+              </Space>
             ]}
           />
         ) : (

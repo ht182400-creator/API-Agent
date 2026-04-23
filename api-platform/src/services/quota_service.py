@@ -132,7 +132,15 @@ class QuotaService:
                 )
             )
         )
-        quota = result.scalar_one_or_none()
+        # 安全处理：使用 scalars().all() 检查多记录情况
+        quotas = result.scalars().all()
+        if len(quotas) > 1:
+            logger.warning(f"[Quota] Multiple quotas found for key {api_key_id}, using first one")
+            quota = quotas[0]
+        elif len(quotas) == 0:
+            quota = None
+        else:
+            quota = quotas[0]
 
         if quota:
             quota.quota_used += int(amount)

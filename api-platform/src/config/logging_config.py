@@ -364,8 +364,13 @@ def setup_module_loggers(
         # 控制台处理器
         if enable_console:
             try:
+                # Windows 兼容：使用更安全的方式处理异步环境的日志输出
                 if sys.platform == 'win32':
-                    console_handler = logging.StreamHandler(sys.stdout.buffer if hasattr(sys.stdout, 'buffer') else open(os.devnull, 'w'))
+                    import io
+                    try:
+                        console_handler = logging.StreamHandler(io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True))
+                    except Exception:
+                        console_handler = logging.StreamHandler(sys.stdout)
                 else:
                     console_handler = logging.StreamHandler(sys.stdout)
                 console_handler.setLevel(level)
@@ -438,9 +443,15 @@ def setup_logger(
     # 控制台处理器
     if enable_console:
         try:
-            # Windows 异步环境兼容：使用 NullHandler 作为后备
+            # Windows 兼容：使用更安全的方式处理异步环境的日志输出
             if sys.platform == 'win32':
-                console_handler = logging.StreamHandler(sys.stdout.buffer if hasattr(sys.stdout, 'buffer') else open(os.devnull, 'w'))
+                import io
+                # 使用 TextIOWrapper 包装 buffer 以支持字符串输出
+                try:
+                    console_handler = logging.StreamHandler(io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True))
+                except Exception:
+                    # 如果失败，使用标准的 StreamHandler（让它自己处理）
+                    console_handler = logging.StreamHandler(sys.stdout)
             else:
                 console_handler = logging.StreamHandler(sys.stdout)
             console_handler.setLevel(LogConfig.LEVELS.get(level.upper(), logging.INFO))

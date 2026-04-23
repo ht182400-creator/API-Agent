@@ -39,6 +39,26 @@ export interface ClaimTrialResponse {
 }
 
 /**
+ * 升级信息
+ */
+export interface UpgradeInfo {
+  is_developer: boolean
+  upgrade_fee: number
+  current_balance: number
+  can_upgrade: boolean
+  balance_tip: string
+}
+
+/**
+ * 试用配置
+ */
+export interface TrialConfig {
+  trial_amount: number
+  trial_enabled: boolean
+  trial_one_time_only: boolean
+}
+
+/**
  * 用户 API
  */
 export const userApi = {
@@ -50,10 +70,31 @@ export const userApi = {
   },
 
   /**
+   * 获取试用配置
+   */
+  getTrialConfig: () => {
+    return api.get<TrialConfig>('/user/config')
+  },
+
+  /**
    * 升级为开发者
    */
   upgrade: () => {
     return api.post<UpgradeResponse>('/user/upgrade')
+  },
+
+  /**
+   * 付费1元升级为开发者 (V4.1)
+   */
+  upgradeWithPayment: () => {
+    return api.post<UpgradeResponse>('/user/upgrade-with-payment')
+  },
+
+  /**
+   * 获取升级信息 (V4.1)
+   */
+  getUpgradeInfo: () => {
+    return api.get<UpgradeInfo>('/user/upgrade-info')
   },
 
   /**

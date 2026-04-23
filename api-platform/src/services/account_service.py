@@ -32,36 +32,80 @@ class AccountService:
         """
         获取或创建用户账户
         
+        【重要】此方法假设调用者会负责事务提交（commit）。
+        使用数据库唯一约束保证并发场景下只会创建一个账户。
+        如果唯一约束冲突（并发创建），会回滚并重新查询已创建的账户。
+        
         Args:
             user_id: 用户ID
             
         Returns:
             账户对象
         """
-        result = await self.db.execute(
-            select(Account).where(
-                and_(
-                    Account.user_id == uuid.UUID(user_id),
-                    Account.account_type == "balance"
+        from src.config.logging_config import get_logger
+        from sqlalchemy.exc import IntegrityError
+        
+        logger = get_logger("account")
+        
+        try:
+            logger.info(f"[GetOrCreate] Looking for account: user_id={user_id}")
+            result = await self.db.execute(
+                select(Account).where(
+                    and_(
+                        Account.user_id == uuid.UUID(user_id),
+                        Account.account_type == "balance"
+                    )
                 )
             )
-        )
-        account = result.scalar_one_or_none()
-        
-        if not account:
-            account = Account(
-                user_id=uuid.UUID(user_id),
-                account_type="balance",
-                balance="0",
-                frozen_balance="0",
-                total_recharge="0",
-                total_consume="0",
+            accounts = result.scalars().all()
+            logger.info(f"[GetOrCreate] Found {len(accounts)} account(s) for user {user_id}")
+            
+            # 处理多记录情况（理论上在唯一约束下不会发生）
+            if len(accounts) > 1:
+                logger.warning(f"[GetOrCreate] Multiple accounts found for user {user_id}, using first one")
+                account = accounts[0]
+            elif len(accounts) == 0:
+                logger.info(f"[GetOrCreate] No account found, creating new one for user {user_id}")
+                account = None
+            else:
+                account = accounts[0]
+            
+            if not account:
+                account = Account(
+                    user_id=uuid.UUID(user_id),
+                    account_type="balance",
+                    balance="0",
+                    frozen_balance="0",
+                    total_recharge="0",
+                    total_consume="0",
+                )
+                self.db.add(account)
+                # 【修复】这里只 flush 不 commit，由调用者统一管理事务
+                await self.db.flush()
+                logger.info(f"[GetOrCreate] Account staged (not committed yet): user_id={user_id}")
+            
+            return account
+        except IntegrityError as e:
+            logger.error(f"[GetOrCreate] IntegrityError for user {user_id}: {e}")
+            await self.db.rollback()
+            # 唯一约束冲突：说明其他请求已经创建了账户
+            logger.info(f"[GetOrCreate] Account already exists (concurrent creation), querying...")
+            result = await self.db.execute(
+                select(Account).where(
+                    and_(
+                        Account.user_id == uuid.UUID(user_id),
+                        Account.account_type == "balance"
+                    )
+                )
             )
-            self.db.add(account)
-            await self.db.commit()
-            await self.db.refresh(account)
-        
-        return account
+            account = result.scalars().first()
+            if not account:
+                raise RuntimeError(f"账户创建失败且无法查询到账户: {user_id}")
+            logger.info(f"[GetOrCreate] Retrieved existing account: id={account.id}")
+            return account
+        except Exception as e:
+            logger.error(f"[GetOrCreate] Error getting account for user {user_id}: {e}")
+            raise
     
     async def get_balance(self, user_id: str) -> float:
         """
@@ -88,6 +132,9 @@ class AccountService:
         """
         增加账户余额
         
+        【重要】此方法假设调用者会负责事务提交（commit）。
+        主要目的是确保账户更新和账单创建在同一事务中。
+        
         Args:
             user_id: 用户ID
             amount: 增加金额
@@ -99,6 +146,11 @@ class AccountService:
         Returns:
             (更新后的账户, 账单记录)
         """
+        from src.config.logging_config import get_logger
+        logger = get_logger("account")
+        
+        logger.info(f"[AddBalance] Starting add_balance: user_id={user_id}, amount={amount}, source_type={source_type}")
+        
         if amount <= 0:
             raise ValidationError("增加金额必须大于0")
         
@@ -108,18 +160,22 @@ class AccountService:
             environment = "simulation" if settings.payment_mock_mode else "production"
         
         account = await self.get_or_create_account(user_id)
+        logger.info(f"[AddBalance] Account obtained: id={account.id}, user_id={account.user_id}, current_balance={account.balance}")
         
         # 计算新余额
-        old_balance = float(account.balance)
+        old_balance = float(account.balance or "0")
         new_balance = old_balance + amount
+        old_total_recharge = float(account.total_recharge or "0")
+        new_total_recharge = old_total_recharge + amount if source_type == "recharge" else old_total_recharge
         
-        # 更新账户
+        logger.info(f"[AddBalance] Balance update: {old_balance} + {amount} = {new_balance}")
+        
+        # 更新账户余额
         account.balance = str(new_balance)
-        
         if source_type == "recharge":
-            account.total_recharge = str(float(account.total_recharge) + amount)
+            account.total_recharge = str(new_total_recharge)
         
-        await self.db.flush()
+        logger.info(f"[AddBalance] Account object updated, balance={account.balance}, total_recharge={account.total_recharge}")
         
         # 创建账单记录
         bill = Bill(
@@ -137,9 +193,11 @@ class AccountService:
             environment=environment,
         )
         self.db.add(bill)
-        await self.db.commit()
-        await self.db.refresh(account)
-        await self.db.refresh(bill)
+        
+        # 【修复】确保 flush 在 commit 之前，并且只 flush 不 commit
+        # 由调用者统一管理事务提交
+        await self.db.flush()
+        logger.info(f"[AddBalance] Flushed: balance={account.balance}, bill_no={bill.bill_no}")
         
         return account, bill
     
@@ -154,6 +212,8 @@ class AccountService:
         """
         扣除账户余额
         
+        【重要】此方法假设调用者会负责事务提交（commit）。
+        
         Args:
             user_id: 用户ID
             amount: 扣除金额
@@ -164,6 +224,9 @@ class AccountService:
         Returns:
             (更新后的账户, 账单记录)
         """
+        from src.config.logging_config import get_logger
+        logger = get_logger("account")
+        
         if amount <= 0:
             raise ValidationError("扣除金额必须大于0")
         
@@ -177,11 +240,11 @@ class AccountService:
         # 计算新余额
         new_balance = old_balance - amount
         
+        logger.info(f"[DeductBalance] Deducting: user_id={user_id}, amount={amount}, {old_balance} - {amount} = {new_balance}")
+        
         # 更新账户
         account.balance = str(new_balance)
         account.total_consume = str(float(account.total_consume) + amount)
-        
-        await self.db.flush()
         
         # 创建账单记录
         bill = Bill(
@@ -198,9 +261,10 @@ class AccountService:
             completed_at=datetime.utcnow(),
         )
         self.db.add(bill)
-        await self.db.commit()
-        await self.db.refresh(account)
-        await self.db.refresh(bill)
+        
+        # 【修复】只 flush 不 commit，由调用者统一管理事务
+        await self.db.flush()
+        logger.info(f"[DeductBalance] Flushed: balance={account.balance}, bill_no={bill.bill_no}")
         
         return account, bill
     

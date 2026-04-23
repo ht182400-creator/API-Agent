@@ -17,6 +17,7 @@ from src.core.exceptions import (
     PaymentError,
     InvalidParameterError,
 )
+from src.config.logging_config import get_logger
 
 
 class PaymentService:
@@ -378,6 +379,47 @@ class PaymentService:
             source_id=str(payment.id),
             description=description,
         )
+        
+        # 【V4.0 新增】充值成功后，自动升级普通用户为开发者
+        await self._upgrade_user_after_recharge(str(payment.user_id))
+    
+    async def _upgrade_user_after_recharge(self, user_id: str) -> None:
+        """
+        充值成功后升级用户为开发者
+        
+        Args:
+            user_id: 用户ID
+        """
+        from src.models.user import User
+        from sqlalchemy import select
+        
+        logger = get_logger("payment")
+        logger.info(f"[Recharge-Upgrade] Starting: user_id={user_id}")
+        
+        result = await self.db.execute(
+            select(User).where(User.id == user_id)
+        )
+        user = result.scalar_one_or_none()
+        
+        if user is None:
+            logger.warning(f"[Recharge-Upgrade] User not found: user_id={user_id}")
+            return
+        
+        logger.info(f"[Recharge-Upgrade] User found: email={user.email}, role={user.role}, user_type={user.user_type}")
+        
+        if user.role == "user":
+            # 【场景1】普通用户充值后自动升级为开发者
+            old_role = user.role
+            old_user_type = user.user_type
+            user.role = "developer"
+            user.user_type = "developer"
+            user.updated_at = datetime.utcnow()
+            # 【重要】立即 flush 确保修改被写入数据库（后续 commit 会统一提交）
+            await self.db.flush()
+            logger.info(f"[Recharge-Upgrade] UPGRADED: {user.email} role {old_role}->developer, user_type {old_user_type}->developer")
+        else:
+            # 【场景2】开发者续费，无需升级操作
+            logger.info(f"[Recharge-Upgrade] SKIP: User {user.email} has role={user.role}, not 'user'")
     
     # ==================== 支付取消/退款 ====================
     

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App } from 'antd'
+import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App, Alert } from 'antd'
 import { 
   WalletOutlined, 
   RiseOutlined, 
@@ -15,11 +15,13 @@ import {
   FieldTimeOutlined,
   PieChartOutlined,
   FileTextOutlined,
-  HistoryOutlined
+  HistoryOutlined,
+  RocketOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
+import { useAuthStore } from '../../stores/auth'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Billing.module.css'
@@ -30,6 +32,7 @@ const COLORS = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1']
 
 export default function DeveloperBilling() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const [bills, setBills] = useState<Bill[]>([])
@@ -41,6 +44,9 @@ export default function DeveloperBilling() {
   const [mockMode, setMockMode] = useState<boolean>(true)
 
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
+  
+  // 判断是否是普通用户
+  const isNormalUser = user?.user_type === 'user'
 
   useEffect(() => {
     fetchData()
@@ -151,6 +157,23 @@ export default function DeveloperBilling() {
   return (
     <div className={styles.container}>
       <ErrorModalComponent />
+      
+      {/* 普通用户升级引导 */}
+      {isNormalUser && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<RocketOutlined />}
+          message="升级为开发者，解锁更多功能"
+          description="成为开发者后，您可以查看完整的消费统计、充值账户、管理账单等功能。"
+          action={
+            <Button type="primary" size="small" onClick={() => navigate('/user')}>
+              前往升级
+            </Button>
+          }
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <div className={styles.header}>
         <div>

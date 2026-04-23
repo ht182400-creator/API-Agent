@@ -38,6 +38,6 @@ api_router.include_router(admin_billing_router, prefix="/admin/billing", tags=["
 api_router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 api_router.include_router(analytics_router, prefix="", tags=["Analytics"])
 api_router.include_router(superadmin_router, prefix="/superadmin", tags=["Super Admin"])
-api_router.include_router(user_router, prefix="/user", tags=["User"])  # 用户升级与试用
+api_router.include_router(user_router, tags=["User"])  # 用户升级与试用 (router已有 /user 前缀)
 
 __all__ = ["api_router"]

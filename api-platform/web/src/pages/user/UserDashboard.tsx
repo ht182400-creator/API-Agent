@@ -5,13 +5,18 @@
  * - 领取试用金额
  * - 升级为开发者
  * - 引导用户开始使用平台
+ * 
+ * V4.0 更新：
+ * - 修复升级后页面不刷新的问题
+ * - 确保 localStorage 持久化完成后再刷新
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Row, Col, Statistic, Button, Typography, Space, message, Spin, Alert } from 'antd'
-import { GiftOutlined, RocketOutlined, DollarOutlined, CheckCircleOutlined, RightOutlined } from '@ant-design/icons'
-import { userApi, UserStatus } from '../../api/user'
+import { Card, Row, Col, Statistic, Button, Typography, Space, message, Spin, Alert, Modal, Divider } from 'antd'
+import { GiftOutlined, RocketOutlined, DollarOutlined, CheckCircleOutlined, RightOutlined, SafetyCertificateOutlined } from '@ant-design/icons'
+import { userApi, UserStatus, UpgradeInfo } from '../../api/user'
+import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import styles from './UserDashboard.module.css'
 
@@ -19,15 +24,43 @@ const { Title, Text, Paragraph } = Typography
 
 export default function UserDashboard() {
   const navigate = useNavigate()
-  const { setAuth } = useAuthStore()
+  const { setAuth, accessToken, refreshToken } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(false)
+  const [upgrading, setUpgrading] = useState(false)
   const [userStatus, setUserStatus] = useState<UserStatus | null>(null)
+  const [trialAmount, setTrialAmount] = useState<number>(0)
+  const [upgradeInfo, setUpgradeInfo] = useState<UpgradeInfo | null>(null)
 
-  // 获取用户状态
+  // 获取用户状态和试用配置
   useEffect(() => {
     fetchUserStatus()
+    fetchTrialConfig()
+    fetchUpgradeInfo()
   }, [])
+
+  // 获取试用配置
+  const fetchTrialConfig = async () => {
+    try {
+      const config = await userApi.getTrialConfig()
+      // 始终设置试用金额，不管是否启用
+      setTrialAmount(config.trial_amount || 0)
+    } catch (error) {
+      console.error('获取试用配置失败:', error)
+      // API失败时使用默认值
+      setTrialAmount(20)
+    }
+  }
+
+  // 获取升级信息 (V4.1)
+  const fetchUpgradeInfo = async () => {
+    try {
+      const info = await userApi.getUpgradeInfo()
+      setUpgradeInfo(info)
+    } catch (error) {
+      console.error('获取升级信息失败:', error)
+    }
+  }
 
   const fetchUserStatus = async () => {
     setLoading(true)
@@ -38,7 +71,8 @@ export default function UserDashboard() {
       // 如果已经是开发者，跳转到开发者首页
       if (status.is_developer) {
         message.info('您已是开发者，正在跳转...')
-        navigate('/', { replace: true })
+        // 使用 window.location 直接跳转，避免 React Router 循环
+        window.location.href = '/'
       }
     } catch (error: any) {
       console.error('获取用户状态失败:', error)
@@ -47,6 +81,63 @@ export default function UserDashboard() {
       setLoading(false)
     }
   }
+
+  /**
+   * 刷新认证状态并等待持久化完成
+   * 确保 localStorage 更新后再刷新页面
+   */
+  const refreshAuthAndReload = useCallback(async () => {
+    try {
+      // 1. 获取最新的用户信息
+      const user = await authApi.me()
+      console.log('[UserDashboard] 刷新后的用户信息:', user)
+      console.log('[UserDashboard] user_type:', user.user_type)
+      
+      // 2. 验证用户数据
+      if (!user || !user.user_type) {
+        console.error('[UserDashboard] 用户数据不完整:', user)
+        throw new Error('用户数据不完整')
+      }
+      
+      // 3. 更新 auth store（persist 中间件会自动写入 localStorage）
+      setAuth(user, accessToken || '', refreshToken || '')
+      
+      // 4. 等待 localStorage 写入完成
+      // zustand persist 默认使用 requestIdleCallback 或 setTimeout，延迟约 50-100ms
+      // 增加等待时间到 500ms 确保写入完成
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // 5. 验证 localStorage 是否已更新
+      const storedData = localStorage.getItem('auth-storage')
+      if (storedData) {
+        const parsed = JSON.parse(storedData)
+        const storedUserType = parsed.state?.user?.user_type
+        console.log('[UserDashboard] localStorage 中的 user_type:', storedUserType)
+        
+        // 如果 localStorage 中的 user_type 不是 developer，再等待一段时间
+        if (storedUserType !== 'developer') {
+          console.warn('[UserDashboard] localStorage 还未更新，再等待 500ms...')
+          await new Promise(resolve => setTimeout(resolve, 500))
+          
+          // 再次检查
+          const storedData2 = localStorage.getItem('auth-storage')
+          if (storedData2) {
+            const parsed2 = JSON.parse(storedData2)
+            console.log('[UserDashboard] 再次检查 localStorage user_type:', parsed2.state?.user?.user_type)
+          }
+        }
+      }
+      
+      // 6. 刷新页面
+      console.log('[UserDashboard] 刷新页面...')
+      window.location.reload()
+    } catch (error) {
+      console.error('[UserDashboard] 刷新认证状态失败:', error)
+      // 即使出错也尝试刷新页面
+      message.warning('刷新页面以更新状态...')
+      window.location.reload()
+    }
+  }, [accessToken, refreshToken, setAuth])
 
   // 领取试用金额
   const handleClaimTrial = async () => {
@@ -60,28 +151,14 @@ export default function UserDashboard() {
         ...prev,
         balance: result.new_balance,
         trial_claimed: true,
+        trial_amount_claimed: result.amount,  // 【修复】更新领取金额
         is_developer: true,
       } : null)
       
-      // 刷新用户信息
-      const me = await fetch('/api/v1/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${useAuthStore.getState().accessToken}`,
-        },
-      }).then(r => r.json())
-      
-      if (me.data) {
-        setAuth(
-          me.data,
-          useAuthStore.getState().accessToken || '',
-          useAuthStore.getState().refreshToken || ''
-        )
-      }
-      
-      // 延迟跳转，让用户看到成功提示
+      // 延迟显示跳转信息，然后刷新
       setTimeout(() => {
         message.info('正在跳转到开发者工作台...')
-        navigate('/', { replace: true })
+        refreshAuthAndReload()
       }, 1500)
     } catch (error: any) {
       console.error('领取试用失败:', error)
@@ -91,20 +168,66 @@ export default function UserDashboard() {
     }
   }
 
-  // 升级为开发者（不领取试用）
+  // 升级为开发者（付费1元升级 V4.1）
   const handleUpgrade = async () => {
-    try {
-      await userApi.upgrade()
-      message.success('升级成功！正在刷新页面...')
-      
-      // 刷新页面
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    } catch (error: any) {
-      console.error('升级失败:', error)
-      message.error(error.message || '升级失败')
-    }
+    // 1. 二次确认弹窗
+    Modal.confirm({
+      title: (
+        <div>
+          <SafetyCertificateOutlined style={{ color: '#1890ff', marginRight: 8 }} />
+          确认升级为开发者
+        </div>
+      ),
+      icon: null,
+      content: (
+        <div style={{ padding: '8px 0' }}>
+          <Alert 
+            type="warning" 
+            message="升级后无法降级为普通用户" 
+            showIcon 
+            style={{ marginBottom: 16 }}
+          />
+          <p><strong>升级为开发者后，您将享受：</strong></p>
+          <ul style={{ paddingLeft: 20, marginBottom: 16 }}>
+            <li>创建API仓库并获得收益分成</li>
+            <li>专属开发者管理后台</li>
+            <li>API调用详细日志</li>
+            <li>完整的API管理功能</li>
+          </ul>
+          <Divider style={{ margin: '12px 0' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>支付金额：</span>
+            <Text strong style={{ fontSize: 18, color: '#ff4d4f' }}>
+              ¥{upgradeInfo?.upgrade_fee || 1.00}
+            </Text>
+          </div>
+          <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
+            {upgradeInfo?.balance_tip || `当前余额 ¥${userStatus?.balance || 0}`}
+          </Text>
+        </div>
+      ),
+      okText: '确认支付并升级',
+      cancelText: '取消',
+      onOk: async () => {
+        setUpgrading(true)
+        try {
+          const result = await userApi.upgradeWithPayment()
+          message.success(result.message || '升级成功！正在刷新页面...')
+          
+          // 延迟刷新，确保 localStorage 持久化完成
+          setTimeout(() => {
+            refreshAuthAndReload()
+          }, 1500)
+        } catch (error: any) {
+          console.error('升级失败:', error)
+          message.error(error.message || '升级失败')
+          // 刷新升级信息
+          fetchUpgradeInfo()
+        } finally {
+          setUpgrading(false)
+        }
+      },
+    })
   }
 
   if (loading) {
@@ -136,7 +259,7 @@ export default function UserDashboard() {
                 <div className={styles.trialBadge}>
                   <GiftOutlined /> 新用户专享
                 </div>
-                <Title level={3}>领取 {userStatus?.balance === 0 ? '10' : '0'} 元试用金额</Title>
+                <Title level={3}>领取 {trialAmount} 元试用金额</Title>
                 <Paragraph type="secondary">
                   立即体验平台全部功能，无需充值
                 </Paragraph>
@@ -213,10 +336,20 @@ export default function UserDashboard() {
           <div className={styles.actionItem}>
             <div className={styles.actionInfo}>
               <Title level={5}>升级为开发者</Title>
-              <Text type="secondary">获得创建 API、管理密钥等全部功能</Text>
+              <Text type="secondary">
+                {upgradeInfo?.can_upgrade 
+                  ? `支付 ¥${upgradeInfo.upgrade_fee || 1} 升级，解锁全部开发者功能`
+                  : upgradeInfo?.balance_tip || `账户余额：${userStatus?.balance || 0} 元`
+                }
+              </Text>
             </div>
-            <Button onClick={handleUpgrade}>
-              立即升级
+            <Button 
+              type="primary" 
+              onClick={handleUpgrade}
+              loading={upgrading}
+              disabled={!upgradeInfo?.can_upgrade}
+            >
+              <SafetyCertificateOutlined /> {upgradeInfo?.can_upgrade ? `付费升级 ¥${upgradeInfo.upgrade_fee || 1.00}` : '余额不足'}
             </Button>
           </div>
           <div className={styles.actionItem}>
@@ -224,7 +357,7 @@ export default function UserDashboard() {
               <Title level={5}>充值账户</Title>
               <Text type="secondary">账户余额：{userStatus?.balance || 0} 元</Text>
             </div>
-            <Button type="primary" onClick={() => navigate('/developer/recharge')}>
+            <Button onClick={() => navigate('/user/recharge')}>
               前往充值
             </Button>
           </div>
