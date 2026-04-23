@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Statistic, Table, Progress, Typography, Space, Tag, Empty } from 'antd'
+import { Row, Col, Card, Statistic, Table, Progress, Typography, Space, Tag, Empty, Alert, Button } from 'antd'
 import {
   RiseOutlined,
   FallOutlined,
@@ -11,10 +11,12 @@ import {
   PieChartOutlined,
   FileTextOutlined,
   WalletOutlined,
+  DollarOutlined,
+  WarningOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
-import { billingApi, Account } from '../../api/billing'
+import { billingApi, UserAccount } from '../../api/billing'
 import { repoApi, Repository } from '../../api/repo'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import dayjs from 'dayjs'
@@ -25,7 +27,7 @@ const { Title, Text } = Typography
 export default function DeveloperDashboard() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [account, setAccount] = useState<Account | null>(null)
+  const [account, setAccount] = useState<UserAccount | null>(null)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [quotaOverview, setQuotaOverview] = useState<QuotaInfo[]>([])
   const [topRepos, setTopRepos] = useState<any[]>([])
@@ -104,6 +106,30 @@ export default function DeveloperDashboard() {
   return (
     <div className={styles.dashboard}>
       <Title level={4}>开发者工作台</Title>
+
+      {/* 【V4.1 新增】余额为0或获取失败时的引导提示 */}
+      {account && account.balance === 0 && !loading && (
+        <Alert
+          message="账户余额为0"
+          description={
+            <span>
+              您需要充值后才能调用付费API。
+              <Button 
+                type="link" 
+                icon={<DollarOutlined />}
+                onClick={() => navigate('/developer/recharge')}
+                style={{ padding: 0, marginLeft: 8 }}
+              >
+                立即充值
+              </Button>
+            </span>
+          }
+          type="warning"
+          showIcon
+          icon={<WarningOutlined />}
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {/* 统计卡片 */}
       <Row gutter={[16, 16]} className={styles.stats}>

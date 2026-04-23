@@ -194,7 +194,15 @@ class ReconciliationScheduler:
             )
         )
         existing_result = await db.execute(existing_query)
-        existing_record = existing_result.scalar_one_or_none()
+        # 安全处理：使用 scalars().all() 检查多记录情况
+        existing_records = existing_result.scalars().all()
+        if len(existing_records) > 1:
+            logger.warning(f"[Reconciliation] Multiple records found for {date.date()}/{channel}, using first one")
+            existing_record = existing_records[0]
+        elif len(existing_records) == 0:
+            existing_record = None
+        else:
+            existing_record = existing_records[0]
         
         if existing_record:
             record = existing_record

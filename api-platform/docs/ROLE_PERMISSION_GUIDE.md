@@ -6,6 +6,7 @@
 |------|------|------|----------|
 | v1.0 | 2024-04-19 | - | 初始版本，定义用户类型、角色和权限体系 |
 | v1.1 | 2024-04-19 | AI | 更新普通用户界面菜单，区分 developer 和 user 权限，添加 DeveloperOnlyRoute 路由守卫 |
+| V4.2 | 2026-04-23 | AI | 新增仓库创建权限设计，任何用户可创建仓库，动态菜单，仓库所有者功能权限配置 |
 
 ---
 
@@ -324,3 +325,108 @@ const developerMenu = [
 2. **后端权限控制**：必须在API层面验证用户权限
 3. **角色提升限制**：只有super_admin可以分配admin角色
 4. **审计日志**：记录所有敏感操作
+
+---
+
+## 10. 仓库创建权限 (V4.2新增)
+
+### 10.1 设计原则
+
+- **降低门槛**：任何注册用户都可以创建仓库
+- **质量把控**：管理员审核确保平台API质量
+- **效率优先**：管理员创建的仓库直接上线
+
+### 10.2 创建权限配置
+
+| 用户类型 | 创建仓库 | 初始状态 | 说明 |
+|---------|---------|---------|------|
+| user | ✅ | pending | 进入审核队列 |
+| developer | ✅ | pending | 进入审核队列 |
+| admin | ✅ | online | 直接上线 |
+| super_admin | ✅ | online | 直接上线 |
+
+### 10.3 PermissionService 修改
+
+```python
+@staticmethod
+def can_create_repo(user: User) -> bool:
+    """
+    检查是否可以创建仓库
+
+    【V4.2更新】任何已登录用户都可以创建仓库
+
+    Returns:
+        True: 可以创建
+    """
+    # 【V4.2更新】允许所有已登录用户创建仓库
+    return True
+```
+
+### 10.4 仓库创建逻辑
+
+```python
+async def create_repository(user, repo_data):
+    """创建仓库"""
+    # 【V4.2更新】根据用户类型设置初始状态
+    if user.user_type in ['admin', 'super_admin']:
+        status = "online"  # 管理员直接上线
+    else:
+        status = "pending"  # 普通用户/开发者需要审核
+
+    repo = Repository(
+        name=repo_data.name,
+        status=status,
+        owner_id=user.id,
+        owner_type="external"
+    )
+    return repo
+```
+
+### 10.5 仓库所有者权限 (V4.2新增)
+
+| 权限 | user | developer (有仓库) | admin | 说明 |
+|------|------|-------------------|-------|------|
+| repo:read | ✅ | ✅ | ✅ | 查看仓库 |
+| repo:write | ✅ | ✅ | ✅ | 创建/编辑仓库 |
+| owner:view | ❌ | ✅ | ✅ | 查看收入统计 |
+| owner:analytics | ❌ | ✅ | ✅ | 数据分析 |
+| owner:settlement | ❌ | ✅ | ✅ | 收益结算 |
+
+### 10.6 动态菜单配置
+
+```typescript
+// Layout.tsx 菜单配置
+const getMenuItems = (user: User, hasRepos: boolean) => {
+  // 基础菜单
+  const baseMenu = [
+    { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+    { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
+    // ...
+  ]
+
+  // 【V4.2更新】根据用户是否有仓库显示Owner功能
+  if (hasRepos) {
+    return [
+      ...baseMenu,
+      { type: 'divider', label: '仓库所有者功能' },
+      { key: '/owner/repos', icon: <ShopOutlined />, label: '仓库管理' },
+      { key: '/owner/analytics', icon: <BarChartOutlined />, label: '收入明细' },
+      { key: '/owner/settlement', icon: <DollarOutlined />, label: '账户转出' },
+    ]
+  }
+
+  // 普通用户 - 添加创建仓库入口
+  return [
+    ...baseMenu,
+    { key: '/developer/create-repo', icon: <PlusOutlined />, label: '创建仓库' },
+  ]
+}
+```
+
+### 10.7 相关文档
+
+| 文档 | 说明 |
+|------|------|
+| Doc/38_仓库发布与审核流程设计文档.md | 详细设计文档 |
+| Doc/01_项目需求规格说明书.md | 第十九章需求说明 |
+| Doc/02_项目实施方案.md | 第十一章实施说明 |

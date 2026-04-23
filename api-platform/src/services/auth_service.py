@@ -55,7 +55,15 @@ async def get_current_user(
     
     # 从数据库获取用户
     result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
+    # 安全处理：使用 scalars().all() 检查多记录情况
+    users = result.scalars().all()
+    if len(users) > 1:
+        logger.warning(f"[Auth] Multiple users found for {user_id}, using first one")
+        user = users[0]
+    elif len(users) == 0:
+        user = None
+    else:
+        user = users[0]
     
     if not user:
         raise TokenExpiredError("用户不存在，请重新登录")
@@ -73,11 +81,13 @@ async def get_current_admin_user(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """
-    获取当前管理员用户
+    【V4.0 重构】获取当前管理员用户
     
     验证当前用户是否为管理员
     """
-    if current_user.user_type != "admin":
+    from src.services.permission_service import PermissionService
+    
+    if not PermissionService.is_admin(current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="需要管理员权限",
@@ -97,11 +107,13 @@ async def get_current_super_admin_user(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """
-    获取当前超级管理员用户
+    【V4.0 重构】获取当前超级管理员用户
     
     验证当前用户是否为超级管理员
     """
-    if current_user.user_type != "super_admin":
+    from src.services.permission_service import PermissionService
+    
+    if not PermissionService.is_super_admin(current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="需要超级管理员权限",

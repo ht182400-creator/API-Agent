@@ -87,6 +87,11 @@ async def create_key(
     """
     创建新的API Key
     """
+    # 权限检查：只有开发者才能创建 API Key
+    if current_user.user_type != "developer" and current_user.role != "developer":
+        from src.core.exceptions import APIError
+        raise APIError("只有开发者才能创建API Key，请先升级为开发者")
+    
     # 生成 key
     key_prefix = f"sk_{secrets.token_hex(4)}"
     full_key = f"{key_prefix}_{secrets.token_hex(24)}"

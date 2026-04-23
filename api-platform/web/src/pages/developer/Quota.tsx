@@ -14,11 +14,13 @@ import {
   CheckCircleOutlined,
   CalendarOutlined,
   RiseOutlined,
-  FallOutlined
+  FallOutlined,
+  RocketOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
+import { useAuthStore } from '../../stores/auth'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Quota.module.css'
@@ -27,12 +29,16 @@ const { Title, Text } = Typography
 
 export default function DeveloperQuota() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [selectedKey, setSelectedKey] = useState<string>('')
   const [quota, setQuota] = useState<QuotaInfo | null>(null)
   const [usageHistory, setUsageHistory] = useState<any[]>([])
   const [topRepos, setTopRepos] = useState<any[]>([])
+  
+  // 判断是否是普通用户
+  const isNormalUser = user?.user_type === 'user'
 
   // 使用统一的错误提示
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
@@ -115,6 +121,23 @@ export default function DeveloperQuota() {
   return (
     <div className={styles.container}>
       <ErrorModalComponent />
+      
+      {/* 普通用户升级引导 */}
+      {isNormalUser && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<RocketOutlined />}
+          message="升级为开发者，解锁更多功能"
+          description="成为开发者后，您可以创建API Keys、查看完整的配额使用统计等功能。"
+          action={
+            <Button type="primary" size="small" onClick={() => navigate('/user')}>
+              前往升级
+            </Button>
+          }
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <div className={styles.header}>
         <Title level={4}>配额使用情况</Title>

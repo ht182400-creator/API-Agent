@@ -127,28 +127,30 @@ async def register(
     if existing_user:
         raise AuthenticationError("邮箱已被注册")
     
+    # 【V4.0 重构】统一使用 user_type，role 保留兼容
     # Validate role
     valid_roles = ["user", "developer", "admin", "super_admin"]
     if user_data.role not in valid_roles:
         raise AuthenticationError(f"无效的角色，可选值: {', '.join(valid_roles)}")
     
-    # 设置默认权限
-    default_permissions = {
-        "user": ["user:read"],
-        "developer": ["user:read", "user:write", "api:read", "api:write"],
-        "admin": ["user:read", "user:write", "user:delete", "api:read", "api:write", "api:delete", "quota:manage"],
-        "super_admin": ["*"]  # 所有权限
-    }
+    # 【V4.0 重构】使用统一的权限配置
+    from src.services.permission_service import DEFAULT_PERMISSIONS
+    default_permissions = DEFAULT_PERMISSIONS
     
     # Create new user
     hashed_password = hash_password(user_data.password)
+    
+    # 【V4.0 重构】统一设置 user_type 和 role
+    # user_type 作为主要角色标识，role 保持兼容
+    user_type = user_data.user_type or user_data.role
+    
     new_user = User(
         username=user_data.username,  # 可能为 None
         email=user_data.email,
         password_hash=hashed_password,
-        user_type=user_data.user_type,
-        role=user_data.role,
-        permissions=default_permissions.get(user_data.role, ["user:read"]),
+        user_type=user_type,  # 统一使用 user_type
+        role=user_data.role,   # role 保留用于兼容
+        permissions=default_permissions.get(user_type, default_permissions.get(user_data.role, ["user:read"])),
         email_verified=False,
     )
     

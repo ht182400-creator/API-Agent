@@ -387,6 +387,10 @@ async def payment_callback(
         request: 回调参数
     """
     from src.config.settings import settings
+    from src.config.logging_config import get_logger
+    
+    logger = get_logger("payment")
+    logger.info(f"[PaymentCallback] Received callback: payment_no={request.payment_no}, status={request.status}")
     
     # 检查是否启用模拟模式
     if not settings.payment_mock_mode:
@@ -420,6 +424,7 @@ async def payment_callback(
         
         return BaseResponse(data={"success": success, "message": "回调处理成功"})
     except Exception as e:
+        logger.error(f"[PaymentCallback] Error processing callback: {e}", exc_info=True)
         return BaseResponse(data={"success": False, "message": str(e)})
 
 

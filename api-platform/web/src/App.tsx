@@ -41,53 +41,18 @@ import UserDashboard from './pages/user/UserDashboard'
 // 用户类型
 type UserType = 'super_admin' | 'admin' | 'owner' | 'developer' | 'user'
 
-// 路由守卫
+// 路由守卫 - 只检查登录状态，不限制用户类型
+// 用户类型限制通过页面内的组件实现（升级引导等）
 const ProtectedRoute = ({ 
   children, 
-  allowedUserTypes 
 }: { 
   children: React.ReactNode
-  allowedUserTypes?: UserType[] 
 }) => {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   
+  // 只检查是否登录，不限制用户类型
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
-  }
-  
-  // 如果指定了允许的用户类型，检查用户类型
-  if (allowedUserTypes && user && !allowedUserTypes.includes(user.user_type as UserType)) {
-    // 根据用户类型重定向到对应页面
-    const userType = user.user_type as UserType
-    switch (userType) {
-      case 'super_admin':
-        return <Navigate to="/superadmin" replace />
-      case 'admin':
-        return <Navigate to="/admin" replace />
-      case 'owner':
-        return <Navigate to="/owner" replace />
-      case 'user':
-        return <Navigate to="/user" replace />
-      case 'developer':
-      default:
-        return <Navigate to="/" replace />
-    }
-  }
-  
-  return <>{children}</>
-}
-
-// 开发者专属路由守卫（仅允许 developer 类型）
-const DeveloperOnlyRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user } = useAuthStore()
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-  
-  // 仅 developer 类型可以访问
-  if (user && user.user_type !== 'developer') {
-    return <Navigate to="/" replace />
   }
   
   return <>{children}</>
@@ -161,9 +126,10 @@ function App() {
         <Route path="notifications" element={<Notifications />} />
       </Route>
       
-      {/* 仓库所有者路由 */}
+      {/* 【V4.0 重构】仓库所有者路由 */}
+      {/* owner 和 developer 使用相同的菜单，但 owner 可以访问更多功能 */}
       <Route path="/owner" element={
-        <ProtectedRoute allowedUserTypes={['owner']}>
+        <ProtectedRoute allowedUserTypes={['owner', 'developer']}>
           <Layout />
         </ProtectedRoute>
       }>
@@ -181,24 +147,24 @@ function App() {
         </ProtectedRoute>
       }>
         <Route index element={<UserDashboard />} />
+        <Route path="repos" element={<DeveloperRepos />} />
+        <Route path="quota" element={<DeveloperQuota />} />
+        <Route path="billing" element={<DeveloperBilling />} />
+        <Route path="recharge" element={<DeveloperRecharge />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
       
-      {/* 开发者路由 */}
+      {/* 【V4.0 重构】开发者路由 - owner 也可以访问 */}
       <Route path="/" element={
-        <ProtectedRoute allowedUserTypes={['developer']}>
+        <ProtectedRoute allowedUserTypes={['developer', 'owner']}>
           <Layout />
         </ProtectedRoute>
       }>
         <Route index element={<DeveloperDashboard />} />
         <Route path="developer">
           <Route index element={<DeveloperDashboard />} />
-          {/* API Keys 仅开发者类型可访问 */}
-          <Route path="keys" element={
-            <DeveloperOnlyRoute>
-              <DeveloperKeys />
-            </DeveloperOnlyRoute>
-          } />
+          {/* API Keys 页面 - 普通用户会看到升级引导 */}
+          <Route path="keys" element={<DeveloperKeys />} />
           <Route path="quota" element={<DeveloperQuota />} />
           <Route path="logs" element={<DeveloperLogs />} />
           <Route path="billing" element={<DeveloperBilling />} />

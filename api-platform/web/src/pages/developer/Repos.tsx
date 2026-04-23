@@ -5,10 +5,11 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Row, Col, Input, Select, Tag, Button, Empty, Spin, Typography, Space, Statistic, Tooltip, Badge } from 'antd'
-import { SearchOutlined, ApiOutlined, ThunderboltOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons'
+import { Card, Row, Col, Input, Select, Tag, Button, Empty, Spin, Typography, Space, Statistic, Tooltip, Badge, Alert } from 'antd'
+import { SearchOutlined, ApiOutlined, ThunderboltOutlined, DollarOutlined, EyeOutlined, RocketOutlined } from '@ant-design/icons'
 import { repoApi, Repository } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
+import { useAuthStore } from '../../stores/auth'
 import styles from './Repos.module.css'
 
 const { Title, Text, Paragraph } = Typography
@@ -27,11 +28,15 @@ const getMethodColor = (method: string) => {
 
 export default function Repos() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [repos, setRepos] = useState<Repository[]>([])
   const [loading, setLoading] = useState(true)
   const [searchText, setSearchText] = useState('')
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const { showError } = useError()
+  
+  // 判断是否是普通用户（不是开发者）
+  const isNormalUser = user?.user_type === 'user'
 
   useEffect(() => {
     fetchRepos()
@@ -78,6 +83,22 @@ export default function Repos() {
 
   return (
     <div className={styles.container}>
+      {/* 普通用户升级引导 */}
+      {isNormalUser && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<RocketOutlined />}
+          message="升级为开发者，解锁更多功能"
+          description="成为开发者后，您可以创建API Keys、调用API、查看使用统计等功能。"
+          action={
+            <Button type="primary" size="small" onClick={() => navigate('/user')}>
+              前往升级
+            </Button>
+          }
+          style={{ marginBottom: 16 }}
+        />
+      )}
       {/* 页面标题和统计 */}
       <div className={styles.header}>
         <div>

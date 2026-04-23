@@ -12,6 +12,7 @@ from .role import Role, DEFAULT_ROLES, PERMISSION_DEFINITIONS
 from .payment import Payment, RechargePackage, PaymentCallback
 from .reconciliation import PlatformAccount, ReconciliationRecord, ReconciliationDispute
 from .pricing_config import PricingConfig
+from .user_operation_log import UserOperationLog, OperationCategory, OperationAction, get_action_name
 
 __all__ = [
     "User",
@@ -52,4 +53,9 @@ __all__ = [
     "ReconciliationDispute",
     # 计费配置模块
     "PricingConfig",
+    # 用户操作日志模块
+    "UserOperationLog",
+    "OperationCategory",
+    "OperationAction",
+    "get_action_name",
 ]

@@ -39,23 +39,28 @@ import styles from './Layout.module.css'
 const { Header, Sider, Content } = AntLayout
 const { Text } = Typography
 
-// 用户类型显示配置
+// 【V4.0 重构】用户类型显示配置
+// owner 不再作为独立用户类型，统一归为 developer
 const userTypeConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   super_admin: { label: '超级管理员', color: 'red', icon: <SafetyCertificateOutlined /> },
   admin: { label: '管理员', color: 'orange', icon: <ToolOutlined /> },
-  owner: { label: '仓库所有者', color: 'blue', icon: <ShopOutlined /> },
+  // 【V4.0 重构】owner 统一显示为 developer
+  // owner = developer + 有仓库 的业务状态
+  owner: { label: '开发者', color: 'green', icon: <KeyOutlined /> },
   developer: { label: '开发者', color: 'green', icon: <KeyOutlined /> },
   user: { label: '普通用户', color: 'default', icon: <UserOutlined /> },
 }
 
 // 普通用户菜单（简化版，只能查看）
 const userMenu: MenuProps['items'] = [
-  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
-  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
-  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+  { key: '/user', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/user/repos', icon: <ShopOutlined />, label: '仓库市场' },
+  { key: '/user/quota', icon: <PieChartOutlined />, label: '配额使用' },
+  { key: '/user/billing', icon: <WalletOutlined />, label: '账单中心' },
+  { key: '/user/recharge', icon: <DollarOutlined />, label: '充值中心' },
 ]
 
-// 开发者菜单
+// 【V4.0 重构】开发者菜单（包含所有功能）
 const developerMenu: MenuProps['items'] = [
   { key: '/', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
@@ -63,7 +68,7 @@ const developerMenu: MenuProps['items'] = [
   { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
-  // V2.8 新增：消费明细子菜单
+  // 【V4.0 重构】消费分析子菜单
   {
     key: 'consumption',
     icon: <BarChartOutlined />,
@@ -76,11 +81,20 @@ const developerMenu: MenuProps['items'] = [
   { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
 ]
 
-// 仓库所有者菜单（不包含开发者菜单，避免路由冲突）
+// 【V4.0 重构】仓库所有者菜单（合并到 developer，统一使用 /developer/* 路由）
+// owner 和 developer 使用相同的菜单结构
+// owner 的特点：有仓库，可以看到仓库管理入口
 const ownerMenu: MenuProps['items'] = [
-  { key: '/owner', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+  // 【V4.0 重构】owner 可以看到仓库管理入口
   { key: '/owner/repos', icon: <ShopOutlined />, label: '仓库管理' },
+  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
+  { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
+  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+  // 【V4.0 重构】数据分析是 owner 独有的
   { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
+  // 【V4.0 重构】收益结算是 owner 独有的
   { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
 
@@ -175,11 +189,16 @@ export default function Layout() {
     }
   }, [])
 
-  // 获取用户信息
+  // 获取用户信息（始终从后端刷新，避免本地缓存过期）
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await authApi.me()
+        const currentUser = useAuthStore.getState().user
+        // 如果用户类型发生变化，打印日志
+        if (currentUser && userData.user_type !== currentUser.user_type) {
+          console.log(`[Layout] 用户类型变化: ${currentUser.user_type} -> ${userData.user_type}`)
+        }
         useAuthStore.getState().setUser(userData)
       } catch (error) {
         console.error('获取用户信息失败:', error)
@@ -188,12 +207,13 @@ export default function Layout() {
       }
     }
 
-    if (!user) {
-      fetchUser()
-    } else {
-      setLoading(false)
-    }
-  }, [user])
+    // 始终刷新用户信息，从后端获取最新数据
+    fetchUser()
+    
+    // 【V4.0 新增】每30秒定期刷新用户信息，确保角色变化后能及时更新
+    const intervalId = setInterval(fetchUser, 30000)
+    return () => clearInterval(intervalId)
+  }, [])
 
   // 初始化获取通知数据
   useEffect(() => {

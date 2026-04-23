@@ -9,6 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from src.models.notification import Notification, NotificationPreference
+from src.config.logging_config import get_logger
+
+logger = get_logger("notification")
 
 
 class NotificationService:
@@ -180,7 +183,15 @@ class NotificationService:
             NotificationPreference.user_id == user_id
         )
         result = await db.execute(query)
-        preference = result.scalar_one_or_none()
+        # 安全处理：使用 scalars().all() 检查多记录情况
+        preferences = result.scalars().all()
+        if len(preferences) > 1:
+            logger.warning(f"[Notification] Multiple preferences found for user {user_id}, using first one")
+            preference = preferences[0]
+        elif len(preferences) == 0:
+            preference = None
+        else:
+            preference = preferences[0]
         
         if not preference:
             preference = NotificationPreference(user_id=user_id)
