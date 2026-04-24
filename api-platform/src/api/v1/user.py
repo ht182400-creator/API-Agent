@@ -29,6 +29,12 @@ from src.services.auth_service import get_current_user
 from src.services.billing_service import generate_bill_no
 from src.core.exceptions import APIError
 
+
+class HasReposResponse(BaseModel):
+    """用户是否有仓库响应"""
+    has_repos: bool
+    repo_count: int
+
 router = APIRouter(prefix="/user", tags=["用户"])
 
 
@@ -291,6 +297,35 @@ async def get_user_status(
             "trial_amount_claimed": float(current_user.trial_amount_claimed or 0),
             "is_developer": is_developer,
         }
+    )
+
+
+@router.get("/has-repos", response_model=BaseResponse[HasReposResponse])
+async def check_user_has_repos(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    【V4.2新增】检查用户是否有仓库
+    
+    用于前端判断是否显示仓库所有者相关菜单
+    """
+    from sqlalchemy import select, func
+    from src.models.repository import Repository
+    
+    # 查询用户拥有的仓库数量
+    result = await db.execute(
+        select(func.count()).select_from(Repository).where(
+            Repository.owner_id == current_user.id
+        )
+    )
+    repo_count = result.scalar() or 0
+    
+    return BaseResponse(
+        data=HasReposResponse(
+            has_repos=repo_count > 0,
+            repo_count=repo_count,
+        )
     )
 
 

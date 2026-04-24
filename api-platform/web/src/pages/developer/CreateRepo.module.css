@@ -1,0 +1,48 @@
+/**
+ * 创建仓库页面样式
+ */
+
+.container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h3 {
+  margin-bottom: 4px !important;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.tipsCard {
+  margin-top: 24px;
+  background-color: #fafafa;
+}
+
+.tipsCard h5 {
+  margin-bottom: 12px !important;
+}
+
+.tips {
+  margin: 0;
+  padding-left: 20px;
+  color: #666;
+}
+
+.tips li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.tips li:last-child {
+  margin-bottom: 0;
+}

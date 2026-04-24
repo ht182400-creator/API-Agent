@@ -9,6 +9,7 @@ import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfi
 import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest, Endpoint, CreateEndpointRequest, UpdateEndpointRequest, UpdateLimitsRequest } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
+import { useAuthStore } from '../../stores/auth'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 
@@ -18,6 +19,8 @@ const { Title, Text } = Typography
 const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 export default function OwnerRepos() {
+  const { user } = useAuthStore()
+  const isAdmin = user?.user_type === 'admin' || user?.role === 'admin'
   const [loading, setLoading] = useState(false)
   const [repos, setRepos] = useState<Repository[]>([])
   const [total, setTotal] = useState(0)
@@ -610,14 +613,16 @@ export default function OwnerRepos() {
         </Col>
       </Row>
 
-      {/* 提示信息 */}
-      <Alert
-        message="仓库审核流程"
-        description="创建仓库后需要管理员审核通过才能上线。请耐心等待审核结果，如有疑问请联系管理员。"
-        type="info"
-        showIcon
-        style={{ marginBottom: 16 }}
-      />
+      {/* 提示信息 - 仅对非管理员显示 */}
+      {!isAdmin && (
+        <Alert
+          message="仓库审核流程"
+          description="创建仓库后需要管理员审核通过才能上线。请耐心等待审核结果，如有疑问请联系管理员。"
+          type="info"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <Table
         dataSource={repos}
