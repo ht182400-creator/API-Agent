@@ -14,6 +14,7 @@ import DeveloperRepos from './pages/developer/Repos'
 import DeveloperUsage from './pages/developer/Usage'
 import DeveloperConsumptionDetails from './pages/developer/ConsumptionDetails'
 import DeveloperRepoDetail from './pages/developer/RepoDetail'
+import DeveloperCreateRepo from './pages/developer/CreateRepo'
 import OwnerDashboard from './pages/owner/Dashboard'
 import OwnerRepos from './pages/owner/Repos'
 import OwnerAnalytics from './pages/owner/Analytics'
@@ -29,6 +30,7 @@ import AdminPlatformAccounts from './pages/admin/PlatformAccounts'
 import AdminReconciliation from './pages/admin/Reconciliation'
 import AdminPricingConfig from './pages/admin/PricingConfig'
 import AdminMonthlyBills from './pages/admin/AdminMonthlyBills'
+import AdminAnalytics from './pages/admin/Analytics'
 import DevTools from './pages/admin/DevTools'
 import ApiTester from './pages/developer/ApiTester'
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard'
@@ -123,13 +125,15 @@ function App() {
         <Route path="reconciliation" element={<AdminReconciliation />} />
         <Route path="pricing-config" element={<AdminPricingConfig />} />
         <Route path="monthly-bills" element={<AdminMonthlyBills />} />
+        <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
       
       {/* 【V4.0 重构】仓库所有者路由 */}
       {/* owner 和 developer 使用相同的菜单，但 owner 可以访问更多功能 */}
+      {/* admin 也允许访问，用于管理自己的仓库端点 */}
       <Route path="/owner" element={
-        <ProtectedRoute allowedUserTypes={['owner', 'developer']}>
+        <ProtectedRoute allowedUserTypes={['owner', 'developer', 'admin']}>
           <Layout />
         </ProtectedRoute>
       }>
@@ -173,6 +177,7 @@ function App() {
           <Route path="recharge" element={<DeveloperRecharge />} />
           <Route path="repos" element={<DeveloperRepos />} />
           <Route path="repos/:slug" element={<DeveloperRepoDetail />} />
+          <Route path="create-repo" element={<DeveloperCreateRepo />} />
           <Route path="api-tester" element={<ApiTester />} />
         </Route>
         <Route path="notifications" element={<Notifications />} />

@@ -1,23 +1,41 @@
 /**
  * 管理员仓库管理页面
- * 功能：审核仓库、上线/下线管理
+ * 功能：审核仓库、上线/下线管理、删除仓库、我的仓库统计
+ * V2.0 - 添加删除功能、"我的仓库"Tab、调用统计
  */
 
-import { Table, Tag, Button, Space, Modal, Input, message, Statistic, Card, Row, Col } from 'antd'
-import { CheckCircleOutlined, CloseCircleOutlined, ArrowUpOutlined, ArrowDownOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { Table, Tag, Button, Space, Modal, Input, message, Statistic, Card, Row, Col, Tabs, Popconfirm, Spin } from 'antd'
+import { CheckCircleOutlined, CloseCircleOutlined, ArrowUpOutlined, ArrowDownOutlined, ExclamationCircleOutlined, PlusOutlined, DeleteOutlined, ApiOutlined, ThunderboltOutlined, EyeOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { repoApi, Repository } from '../../api/repo'
+import { useAuthStore } from '../../stores/auth'
 import styles from './Repos.module.css'
 
 const { TextArea } = Input
+const { TabPane } = Tabs
+
+// 仓库统计信息接口
+interface RepoStats {
+  total_calls: number
+  successful_calls: number
+  failed_calls: number
+  total_cost: number
+  period: string
+}
 
 export default function AdminRepos() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [repos, setRepos] = useState<Repository[]>([])
+  const [myRepos, setMyRepos] = useState<Repository[]>([])
+  const [myRepoStats, setMyRepoStats] = useState<Record<string, RepoStats>>({})
   const [pagination, setPagination] = useState({ page: 1, page_size: 20, total: 0 })
+  const [myPagination, setMyPagination] = useState({ page: 1, page_size: 10, total: 0 })
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState('all')
+  const [statsLoading, setStatsLoading] = useState(false)
   
   // 审核弹窗
   const [approveModalVisible, setApproveModalVisible] = useState(false)
@@ -35,7 +53,15 @@ export default function AdminRepos() {
     rejected: 0,
   })
 
-  // 加载仓库列表
+  // 我的仓库统计
+  const [myStats, setMyStats] = useState({
+    total: 0,
+    online: 0,
+    totalCalls: 0,
+    totalCost: 0,
+  })
+
+  // 加载仓库列表（所有仓库）
   const loadRepos = async () => {
     setLoading(true)
     try {
@@ -44,7 +70,6 @@ export default function AdminRepos() {
         page: pagination.page,
         page_size: pagination.page_size,
       })
-      // API 拦截器已提取 data 字段，直接使用
       setRepos(res.items || [])
       setPagination(prev => ({
         ...prev,
@@ -58,6 +83,65 @@ export default function AdminRepos() {
     }
   }
 
+  // 加载我的仓库
+  const loadMyRepos = async () => {
+    setLoading(true)
+    setStatsLoading(true)
+    try {
+      const res = await repoApi.getMyRepos({
+        page: myPagination.page,
+        page_size: myPagination.page_size,
+      })
+      setMyRepos(res.items || [])
+      setMyPagination(prev => ({
+        ...prev,
+        total: res.pagination?.total || 0,
+      }))
+      
+      // 统计我的仓库信息
+      const items = res.items || []
+      let onlineCount = 0
+      let totalCalls = 0
+      let totalCost = 0
+      const statsMap: Record<string, RepoStats> = {}
+      
+      for (const repo of items) {
+        if (repo.status === 'online') onlineCount++
+        
+        // 获取每个仓库的统计
+        try {
+          const statsRes = await repoApi.getStats(repo.id)
+          const repoStats = statsRes as any
+          totalCalls += repoStats.total_calls || 0
+          totalCost += repoStats.total_cost || 0
+          statsMap[repo.id] = repoStats
+        } catch (e) {
+          statsMap[repo.id] = {
+            total_calls: 0,
+            successful_calls: 0,
+            failed_calls: 0,
+            total_cost: 0,
+            period: 'all',
+          }
+        }
+      }
+      
+      setMyRepoStats(statsMap)
+      setMyStats({
+        total: res.pagination?.total || 0,
+        online: onlineCount,
+        totalCalls,
+        totalCost,
+      })
+    } catch (err: any) {
+      console.error('加载我的仓库失败', err)
+      message.error(err.userMessage || err.message || '加载失败')
+    } finally {
+      setLoading(false)
+      setStatsLoading(false)
+    }
+  }
+
   // 加载统计数据
   const loadStats = async () => {
     try {
@@ -66,7 +150,6 @@ export default function AdminRepos() {
       
       for (const status of statuses) {
         const res = await repoApi.adminList({ status, page: 1, page_size: 1 })
-        // API 拦截器已提取 data 字段，直接使用
         newStats[status as keyof typeof stats] = res.pagination?.total || 0
       }
       
@@ -77,9 +160,25 @@ export default function AdminRepos() {
   }
 
   useEffect(() => {
-    loadRepos()
+    if (activeTab === 'all') {
+      loadRepos()
+    } else if (activeTab === 'my') {
+      loadMyRepos()
+    }
     loadStats()
-  }, [statusFilter, pagination.page])
+  }, [statusFilter, pagination.page, myPagination.page, activeTab])
+
+  // 删除仓库
+  const handleDelete = async (repoId: string) => {
+    try {
+      await repoApi.delete(repoId)
+      message.success('仓库已删除')
+      loadRepos()
+      loadStats()
+    } catch (err: any) {
+      message.error(err.userMessage || err.message || '删除失败')
+    }
+  }
 
   // 审核通过
   const handleApprove = async () => {
@@ -166,6 +265,11 @@ export default function AdminRepos() {
     navigate(`/admin/repos/${repo.slug}`)
   }
 
+  // 查看我的仓库详情
+  const handleViewMyRepoDetail = (repo: Repository) => {
+    navigate(`/developer/repos/${repo.slug}`)
+  }
+
   // 状态标签
   const getStatusTag = (status: string) => {
     const statusMap: Record<string, { color: string; text: string }> = {
@@ -179,6 +283,7 @@ export default function AdminRepos() {
     return <Tag color={config.color}>{config.text}</Tag>
   }
 
+  // 所有仓库表格列
   const columns = [
     {
       title: '仓库名称',
@@ -231,7 +336,7 @@ export default function AdminRepos() {
     {
       title: '操作',
       key: 'action',
-      width: 280,
+      width: 320,
       fixed: 'right' as const,
       render: (_: any, record: Repository) => {
         const actions = []
@@ -331,68 +436,331 @@ export default function AdminRepos() {
           )
         }
         
+        // 删除按钮
+        actions.push(
+          <Popconfirm
+            key="delete"
+            title="确认删除？"
+            description="删除后无法恢复"
+            onConfirm={() => handleDelete(record.id)}
+            okText="确认删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              type="link"
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
+        )
+        
         // 详情按钮
         actions.push(
           <Button
             key="detail"
             type="link"
             size="small"
+            icon={<EyeOutlined />}
             onClick={() => handleViewDetail(record)}
           >
             详情
           </Button>
         )
         
-        return <Space size="small">{actions}</Space>
+        return <Space size="small" wrap>{actions}</Space>
       },
+    },
+  ]
+
+  // 我的仓库表格列
+  const myRepoColumns = [
+    {
+      title: '仓库名称',
+      dataIndex: 'display_name',
+      key: 'display_name',
+      render: (_: any, record: Repository) => (
+        <div>
+          <div style={{ fontWeight: 500 }}>{record.display_name || record.name}</div>
+          <div style={{ color: '#999', fontSize: 12 }}>{record.name}</div>
+        </div>
+      ),
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
+      render: getStatusTag,
+    },
+    {
+      title: '总调用次数',
+      key: 'total_calls',
+      width: 130,
+      render: (_: any, record: Repository) => {
+        const stats = myRepoStats[record.id]
+        return (
+          <span style={{ color: stats?.total_calls > 0 ? '#1890ff' : '#999' }}>
+            {(stats?.total_calls || 0).toLocaleString()} 次
+          </span>
+        )
+      },
+    },
+    {
+      title: '成功调用',
+      key: 'successful_calls',
+      width: 110,
+      render: (_: any, record: Repository) => {
+        const stats = myRepoStats[record.id]
+        return (
+          <span style={{ color: '#52c41a' }}>
+            {(stats?.successful_calls || 0).toLocaleString()} 次
+          </span>
+        )
+      },
+    },
+    {
+      title: '失败调用',
+      key: 'failed_calls',
+      width: 110,
+      render: (_: any, record: Repository) => {
+        const stats = myRepoStats[record.id]
+        return (
+          <span style={{ color: stats?.failed_calls > 0 ? '#ff4d4f' : '#999' }}>
+            {(stats?.failed_calls || 0).toLocaleString()} 次
+          </span>
+        )
+      },
+    },
+    {
+      title: '总收入',
+      key: 'total_cost',
+      width: 110,
+      render: (_: any, record: Repository) => {
+        const stats = myRepoStats[record.id]
+        return (
+          <span style={{ color: '#faad14', fontWeight: 500 }}>
+            ¥{(stats?.total_cost || 0).toFixed(2)}
+          </span>
+        )
+      },
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      width: 170,
+      render: (time: string) => time ? new Date(time).toLocaleString('zh-CN') : '-',
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 220,
+      fixed: 'right' as const,
+      render: (_: any, record: Repository) => (
+        <Space size="small" wrap>
+          <Button
+            type="primary"
+            size="small"
+            icon={<ApiOutlined />}
+            onClick={() => navigate('/owner/repos')}
+          >
+            编辑端点
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewMyRepoDetail(record)}
+          >
+            详情
+          </Button>
+          <Popconfirm
+            title="确认删除？"
+            description="删除后无法恢复"
+            onConfirm={() => handleDelete(record.id)}
+            okText="确认删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              type="link"
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ]
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h2>仓库管理</h2>
-        <div style={{ marginBottom: 16 }}>
-          <Space wrap>
-            <Button onClick={() => setStatusFilter(undefined)} type={!statusFilter ? 'primary' : 'default'}>
-              全部 ({stats.pending + stats.approved + stats.online + stats.offline + stats.rejected})
-            </Button>
-            <Button onClick={() => setStatusFilter('pending')} type={statusFilter === 'pending' ? 'primary' : 'default'}>
-              待审核 ({stats.pending})
-            </Button>
-            <Button onClick={() => setStatusFilter('approved')} type={statusFilter === 'approved' ? 'primary' : 'default'}>
-              已审核 ({stats.approved})
-            </Button>
-            <Button onClick={() => setStatusFilter('online')} type={statusFilter === 'online' ? 'primary' : 'default'}>
-              已上线 ({stats.online})
-            </Button>
-            <Button onClick={() => setStatusFilter('offline')} type={statusFilter === 'offline' ? 'primary' : 'default'}>
-              已下线 ({stats.offline})
-            </Button>
-            <Button onClick={() => setStatusFilter('rejected')} type={statusFilter === 'rejected' ? 'primary' : 'default'}>
-              已拒绝 ({stats.rejected})
-            </Button>
-          </Space>
-        </div>
-      </div>
+      <Tabs 
+        activeKey={activeTab} 
+        onChange={setActiveTab}
+        items={[
+          {
+            key: 'all',
+            label: (
+              <span>
+                <ApiOutlined />
+                所有仓库
+              </span>
+            ),
+            children: (
+              <>
+                <div className={styles.header}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <h2>仓库管理</h2>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => navigate('/developer/create-repo')}
+                    >
+                      创建仓库
+                    </Button>
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <Space wrap>
+                      <Button onClick={() => setStatusFilter(undefined)} type={!statusFilter ? 'primary' : 'default'}>
+                        全部 ({stats.pending + stats.approved + stats.online + stats.offline + stats.rejected})
+                      </Button>
+                      <Button onClick={() => setStatusFilter('pending')} type={statusFilter === 'pending' ? 'primary' : 'default'}>
+                        待审核 ({stats.pending})
+                      </Button>
+                      <Button onClick={() => setStatusFilter('approved')} type={statusFilter === 'approved' ? 'primary' : 'default'}>
+                        已审核 ({stats.approved})
+                      </Button>
+                      <Button onClick={() => setStatusFilter('online')} type={statusFilter === 'online' ? 'primary' : 'default'}>
+                        已上线 ({stats.online})
+                      </Button>
+                      <Button onClick={() => setStatusFilter('offline')} type={statusFilter === 'offline' ? 'primary' : 'default'}>
+                        已下线 ({stats.offline})
+                      </Button>
+                      <Button onClick={() => setStatusFilter('rejected')} type={statusFilter === 'rejected' ? 'primary' : 'default'}>
+                        已拒绝 ({stats.rejected})
+                      </Button>
+                    </Space>
+                  </div>
+                </div>
 
-      <Table
-        dataSource={repos}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: pagination.page,
-          pageSize: pagination.page_size,
-          total: pagination.total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条`,
-          onChange: (page, pageSize) => {
-            setPagination({ ...pagination, page, page_size: pageSize })
+                <Table
+                  dataSource={repos}
+                  columns={columns}
+                  rowKey="id"
+                  loading={loading}
+                  pagination={{
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    total: pagination.total,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total) => `共 ${total} 条`,
+                    onChange: (page, pageSize) => {
+                      setPagination({ ...pagination, page, page_size: pageSize })
+                    },
+                  }}
+                  scroll={{ x: 1100 }}
+                />
+              </>
+            ),
           },
-        }}
-        scroll={{ x: 1000 }}
+          {
+            key: 'my',
+            label: (
+              <span>
+                <ThunderboltOutlined />
+                我的仓库
+              </span>
+            ),
+            children: (
+              <>
+                {/* 我的仓库统计卡片 */}
+                <Row gutter={16} style={{ marginBottom: 16 }}>
+                  <Col span={6}>
+                    <Card size="small">
+                      <Statistic 
+                        title="我的仓库总数" 
+                        value={myStats.total} 
+                        prefix={<ApiOutlined />} 
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={6}>
+                    <Card size="small">
+                      <Statistic 
+                        title="已上线仓库" 
+                        value={myStats.online} 
+                        valueStyle={{ color: '#52c41a' }}
+                        prefix={<ArrowUpOutlined />} 
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={6}>
+                    <Card size="small">
+                      <Statistic 
+                        title="总调用次数" 
+                        value={myStats.totalCalls} 
+                        valueStyle={{ color: '#1890ff' }}
+                        suffix="次"
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={6}>
+                    <Card size="small">
+                      <Statistic 
+                        title="总收入" 
+                        value={myStats.totalCost} 
+                        valueStyle={{ color: '#faad14' }}
+                        prefix="¥"
+                        precision={2}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+
+                {/* 创建仓库按钮 */}
+                <div style={{ marginBottom: 16 }}>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/developer/create-repo')}
+                  >
+                    创建新仓库
+                  </Button>
+                </div>
+
+                <Spin spinning={statsLoading}>
+                  <Table
+                    dataSource={myRepos}
+                    columns={myRepoColumns}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                      current: myPagination.page,
+                      pageSize: myPagination.page_size,
+                      total: myPagination.total,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total) => `共 ${total} 条`,
+                      onChange: (page, pageSize) => {
+                        setMyPagination({ ...myPagination, page, page_size: pageSize })
+                      },
+                    }}
+                    scroll={{ x: 1000 }}
+                  />
+                </Spin>
+              </>
+            ),
+          },
+        ]}
       />
 
       {/* 审核通过弹窗 */}

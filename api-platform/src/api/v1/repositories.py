@@ -936,205 +936,6 @@ async def recognize(
     )
 
 
-@router.api_route("/{repo_slug}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-async def proxy_repository_endpoint(
-    repo_slug: str,
-    path: str,
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    通用仓库端点代理
-    
-    动态代理请求到仓库的实际后端服务。
-    支持 GET、POST、PUT、DELETE、PATCH 方法。
-    
-    Args:
-        repo_slug: 仓库 slug
-        path: 仓库内部路径（如 weather/current）
-    
-    Returns:
-        后端服务响应
-    """
-    import httpx
-    from src.services.auth_service import AuthService
-    
-    # 1. 获取仓库信息
-    repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
-    repo = repo_result.scalar_one_or_none()
-    
-    if not repo:
-        raise HTTPException(status_code=404, detail=f"Repository '{repo_slug}' not found")
-    
-    # 2. 检查仓库状态
-    if repo.status != "online":
-        raise HTTPException(status_code=403, detail="Repository is not online")
-    
-    # 3. 如果没有配置后端URL，返回模拟响应
-    if not repo.endpoint_url:
-        return BaseResponse(
-            code=200,
-            message="Success",
-            data={
-                "mock": True,
-                "repo": repo.name,
-                "path": f"/{path}",
-                "message": "后端服务未配置，返回模拟响应",
-            }
-        )
-    
-    # 4. 从请求头获取 API Key
-    x_access_key = request.headers.get("X-Access-Key")
-    
-    # 5. 验证 API Key（必填）
-    if not x_access_key:
-        raise HTTPException(
-            status_code=401,
-            detail="API Key is required. Please provide X-Access-Key header."
-        )
-    
-    auth_service = AuthService(db)
-    try:
-        user, key_obj = await auth_service.verify_api_key(x_access_key, repo_id=str(repo.id))
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Invalid API Key: {type(e).__name__}: {str(e)}")
-    
-    # 5. 转发请求到后端
-    status_code = 200
-    response_data = None
-    response_time = 0
-    
-    try:
-        # 构建后端 URL
-        backend_url = f"{repo.endpoint_url.rstrip('/')}/{path}"
-        
-        # 获取查询参数
-        query_params = dict(request.query_params)
-        
-        # 获取请求体
-        body = await request.body()
-        
-        import time
-        start_time = time.time()
-        
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            # 构建转发请求
-            headers = dict(request.headers)
-            headers.pop("host", None)  # 移除 host 头
-            
-            if x_access_key:
-                headers["X-API-Key"] = x_access_key
-            
-            resp = await client.request(
-                method=request.method,
-                url=backend_url,
-                params=query_params,
-                content=body if body else None,
-                headers=headers,
-            )
-            
-            status_code = resp.status_code
-            response_time = int((time.time() - start_time) * 1000)
-            
-            # 返回后端响应
-            try:
-                resp_data = resp.json()
-                response_data = resp_data
-                return resp_data
-            except Exception:
-                response_data = {"status_code": resp.status_code, "content": resp.text}
-                return {"status_code": resp.status_code, "content": resp.text}
-                
-    except httpx.TimeoutException:
-        status_code = 504
-        response_data = {"error": "Backend service timeout"}
-        raise HTTPException(status_code=504, detail="Backend service timeout")
-    except httpx.RequestError as e:
-        status_code = 502
-        response_data = {"error": f"Backend service error: {str(e)}"}
-        raise HTTPException(status_code=502, detail=f"Backend service error: {str(e)}")
-    finally:
-        # 6. 记录 API 调用日志并计费
-        try:
-            from src.models.billing import APICallLog, Quota
-            from datetime import datetime, timedelta
-            import json
-            
-            # 合并请求参数（查询参数 + 请求体）
-            request_params = dict(query_params)
-            if body:
-                try:
-                    body_params = json.loads(body.decode('utf-8'))
-                    if isinstance(body_params, dict):
-                        request_params.update(body_params)
-                except Exception:
-                    pass
-            
-            # 计算并扣除费用
-            tokens_used = response_data.get("tokens_used", 0) if isinstance(response_data, dict) else 0
-            call_cost, cost_description = await calculate_and_charge(
-                db=db,
-                user_id=user.id,
-                repo_id=repo.id,
-                api_key_id=key_obj.id,
-                tokens_used=tokens_used,
-            )
-            
-            # 使用北京时间记录，保存 request_id 用于追踪
-            log_entry = APICallLog(
-                repo_id=repo.id,
-                api_key_id=key_obj.id,
-                user_id=user.id,
-                request_id=getattr(request.state, "request_id", None),
-                endpoint=f"/{path}",
-                method=request.method,
-                request_params=json.dumps(request_params) if request_params else None,
-                tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
-                status_code=status_code,
-                response_time=str(response_time),
-                cost=str(call_cost),
-                created_at=datetime.now(),  # 使用北京时间
-            )
-            db.add(log_entry)
-            
-            # 更新每日配额使用量
-            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            quota_result = await db.execute(
-                select(Quota).where(
-                    and_(
-                        Quota.key_id == key_obj.id,
-                        Quota.quota_type == "daily",
-                        Quota.reset_at >= today_start
-                    )
-                )
-            )
-            quota = quota_result.scalar_one_or_none()
-            
-            if quota:
-                quota.quota_used += 1
-            else:
-                quota = Quota(
-                    user_id=user.id,
-                    key_id=key_obj.id,
-                    repo_id=repo.id,
-                    quota_type="daily",
-                    quota_limit=key_obj.daily_quota or 0,
-                    quota_used=1,
-                    reset_type="daily",
-                    reset_at=today_start + timedelta(days=1),
-                )
-                db.add(quota)
-            
-            await db.commit()
-        except HTTPException:
-            # HTTPException（如余额不足）正常抛出
-            await db.rollback()
-            raise
-        except Exception as log_error:
-            await db.rollback()
-            print(f"Failed to log API call: {log_error}")
 
 
 # ==================== 仓库所有者 CRUD 接口 ====================
@@ -1174,6 +975,13 @@ async def create_repository(
     if existing.scalar_one_or_none():
         slug = f"{slug}-{uuid4().hex[:8]}"
     
+    # 【V4.2 修改】根据用户类型设置初始状态
+    # 管理员和超级管理员创建的仓库直接上线，其他用户需要审核
+    if current_user.user_type in ['admin', 'super_admin']:
+        initial_status = "online"  # 管理员创建的直接上线
+    else:
+        initial_status = "pending"  # 其他用户需要审核
+    
     # 创建仓库
     repo = Repository(
         name=repo_data.name,
@@ -1182,7 +990,7 @@ async def create_repository(
         description=repo_data.description,
         repo_type=repo_data.repo_type,
         protocol=repo_data.protocol or "http",
-        status="pending",  # 初始状态为待审核
+        status=initial_status,
         owner_id=current_user.id,
         owner_type="external",  # 外部用户创建
     )
@@ -1333,8 +1141,8 @@ async def delete_repository(
     
     # 【V4.0 重构】使用统一的权限检查
     from src.services.permission_service import PermissionService
-    # 检查权限（必须是仓库所有者或超级管理员）
-    if repo.owner_id != current_user.id and not PermissionService.is_super_admin(current_user):
+    # 检查权限（必须是仓库所有者或管理员/超级管理员）
+    if repo.owner_id != current_user.id and not PermissionService.is_admin(current_user):
         raise AuthorizationError("无权删除此仓库")
     
     await db.delete(repo)
@@ -2330,3 +2138,208 @@ async def update_repository_config(
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )
     )
+
+
+
+@router.api_route("/{repo_slug}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def proxy_repository_endpoint(
+    repo_slug: str,
+    path: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    通用仓库端点代理
+    
+    动态代理请求到仓库的实际后端服务。
+    支持 GET、POST、PUT、DELETE、PATCH 方法。
+    
+    Args:
+        repo_slug: 仓库 slug
+        path: 仓库内部路径（如 weather/current）
+    
+    Returns:
+        后端服务响应
+    """
+    import httpx
+    from src.services.auth_service import AuthService
+    
+    # 1. 获取仓库信息
+    repo_result = await db.execute(select(Repository).where(Repository.slug == repo_slug))
+    repo = repo_result.scalar_one_or_none()
+    
+    if not repo:
+        raise HTTPException(status_code=404, detail=f"Repository '{repo_slug}' not found")
+    
+    # 2. 检查仓库状态
+    if repo.status != "online":
+        raise HTTPException(status_code=403, detail="Repository is not online")
+    
+    # 3. 如果没有配置后端URL，返回模拟响应
+    if not repo.endpoint_url:
+        return BaseResponse(
+            code=200,
+            message="Success",
+            data={
+                "mock": True,
+                "repo": repo.name,
+                "path": f"/{path}",
+                "message": "后端服务未配置，返回模拟响应",
+            }
+        )
+    
+    # 4. 从请求头获取 API Key
+    x_access_key = request.headers.get("X-Access-Key")
+    
+    # 5. 验证 API Key（必填）
+    if not x_access_key:
+        raise HTTPException(
+            status_code=401,
+            detail="API Key is required. Please provide X-Access-Key header."
+        )
+    
+    auth_service = AuthService(db)
+    try:
+        user, key_obj = await auth_service.verify_api_key(x_access_key, repo_id=str(repo.id))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid API Key: {type(e).__name__}: {str(e)}")
+    
+    # 5. 转发请求到后端
+    status_code = 200
+    response_data = None
+    response_time = 0
+    
+    try:
+        # 构建后端 URL
+        backend_url = f"{repo.endpoint_url.rstrip('/')}/{path}"
+        
+        # 获取查询参数
+        query_params = dict(request.query_params)
+        
+        # 获取请求体
+        body = await request.body()
+        
+        import time
+        start_time = time.time()
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # 构建转发请求
+            headers = dict(request.headers)
+            headers.pop("host", None)  # 移除 host 头
+            
+            if x_access_key:
+                headers["X-API-Key"] = x_access_key
+            
+            resp = await client.request(
+                method=request.method,
+                url=backend_url,
+                params=query_params,
+                content=body if body else None,
+                headers=headers,
+            )
+            
+            status_code = resp.status_code
+            response_time = int((time.time() - start_time) * 1000)
+            
+            # 返回后端响应
+            try:
+                resp_data = resp.json()
+                response_data = resp_data
+                return resp_data
+            except Exception:
+                response_data = {"status_code": resp.status_code, "content": resp.text}
+                return {"status_code": resp.status_code, "content": resp.text}
+                
+    except httpx.TimeoutException:
+        status_code = 504
+        response_data = {"error": "Backend service timeout"}
+        raise HTTPException(status_code=504, detail="Backend service timeout")
+    except httpx.RequestError as e:
+        status_code = 502
+        response_data = {"error": f"Backend service error: {str(e)}"}
+        raise HTTPException(status_code=502, detail=f"Backend service error: {str(e)}")
+    finally:
+        # 6. 记录 API 调用日志并计费
+        try:
+            from src.models.billing import APICallLog, Quota
+            from datetime import datetime, timedelta
+            import json
+            
+            # 合并请求参数（查询参数 + 请求体）
+            request_params = dict(query_params)
+            if body:
+                try:
+                    body_params = json.loads(body.decode('utf-8'))
+                    if isinstance(body_params, dict):
+                        request_params.update(body_params)
+                except Exception:
+                    pass
+            
+            # 计算并扣除费用
+            tokens_used = response_data.get("tokens_used", 0) if isinstance(response_data, dict) else 0
+            call_cost, cost_description = await calculate_and_charge(
+                db=db,
+                user_id=user.id,
+                repo_id=repo.id,
+                api_key_id=key_obj.id,
+                tokens_used=tokens_used,
+            )
+            
+            # 使用北京时间记录，保存 request_id 用于追踪
+            log_entry = APICallLog(
+                repo_id=repo.id,
+                api_key_id=key_obj.id,
+                user_id=user.id,
+                request_id=getattr(request.state, "request_id", None),
+                endpoint=f"/{path}",
+                method=request.method,
+                request_params=json.dumps(request_params) if request_params else None,
+                tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
+                status_code=status_code,
+                response_time=str(response_time),
+                cost=str(call_cost),
+                created_at=datetime.now(),  # 使用北京时间
+            )
+            db.add(log_entry)
+            
+            # 更新每日配额使用量
+            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            quota_result = await db.execute(
+                select(Quota).where(
+                    and_(
+                        Quota.key_id == key_obj.id,
+                        Quota.quota_type == "daily",
+                        Quota.reset_at >= today_start
+                    )
+                )
+            )
+            quota = quota_result.scalar_one_or_none()
+            
+            if quota:
+                quota.quota_used += 1
+            else:
+                quota = Quota(
+                    user_id=user.id,
+                    key_id=key_obj.id,
+                    repo_id=repo.id,
+                    quota_type="daily",
+                    quota_limit=key_obj.daily_quota or 0,
+                    quota_used=1,
+                    reset_type="daily",
+                    reset_at=today_start + timedelta(days=1),
+                )
+                db.add(quota)
+            
+            await db.commit()
+        except HTTPException:
+            # HTTPException（如余额不足）正常抛出
+            await db.rollback()
+            raise
+        except Exception as log_error:
+            await db.rollback()
+            print(f"Failed to log API call: {log_error}")
+
+
+

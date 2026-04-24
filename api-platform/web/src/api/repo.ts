@@ -224,6 +224,20 @@ export interface AdminRejectRequest {
   reason?: string
 }
 
+// 【V4.2新增】待审核仓库项
+export interface PendingRepoItem {
+  id: string
+  name: string
+  slug: string
+  display_name?: string
+  description?: string
+  repo_type?: string
+  status: string
+  owner_id: string
+  owner_email: string
+  created_at: string
+}
+
 // ============================================
 // API 调用函数
 // ============================================
@@ -345,6 +359,19 @@ export const repoApi = {
     page_size?: number
   }) => {
     return api.get<PaginatedResponse<Repository>>('/repositories/admin/all', params)
+  },
+
+  // 【V4.2新增】获取待审核仓库列表（管理员）
+  getPendingRepos: (params?: {
+    page?: number
+    page_size?: number
+  }) => {
+    return api.get<{
+      items: PendingRepoItem[]
+      total: number
+      page: number
+      page_size: number
+    }>('/repositories/pending', params)
   },
 
   // 审核通过仓库（管理员）

@@ -115,15 +115,17 @@ class PermissionService:
         """
         检查是否可以创建仓库
         
-        可以创建仓库的角色:
+        【V4.2更新】任何已登录用户都可以创建仓库
         - developer: API开发者
         - admin: 管理员
         - super_admin: 超级管理员
+        - user: 普通用户（V4.2新增）
         
-        注意: 普通用户(user)不能创建仓库
+        Returns:
+            True: 可以创建
         """
-        role = PermissionService.get_user_role(user)
-        return role in PermissionService.REPO_CREATOR_ROLES
+        # 【V4.2更新】允许所有已登录用户创建仓库
+        return True
     
     @staticmethod
     def has_permission(user: User, permission: str) -> bool:
@@ -194,6 +196,7 @@ DEFAULT_PERMISSIONS = {
     UserRole.USER.value: [
         "billing:read",
         "repo:read",
+        "repo:write",  # 【V4.2新增】普通用户可以创建仓库（pending状态）
     ],
     UserRole.DEVELOPER.value: [
         "billing:read",

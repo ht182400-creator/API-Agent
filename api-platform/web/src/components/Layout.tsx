@@ -29,11 +29,14 @@ import {
   AccountBookOutlined,
   BankOutlined,
   CheckCircleOutlined,
+  PlusCircleOutlined,
+  LineChartOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useAuthStore } from '../stores/auth'
 import { authApi } from '../api/auth'
 import { notificationApi, Notification } from '../api/notification'
+import { api } from '../api/client'
 import styles from './Layout.module.css'
 
 const { Header, Sider, Content } = AntLayout
@@ -84,6 +87,7 @@ const developerMenu: MenuProps['items'] = [
 // 【V4.0 重构】仓库所有者菜单（合并到 developer，统一使用 /developer/* 路由）
 // owner 和 developer 使用相同的菜单结构
 // owner 的特点：有仓库，可以看到仓库管理入口
+// 【V4.2更新】ownerMenu 现在用于有仓库的开发者
 const ownerMenu: MenuProps['items'] = [
   { key: '/', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
@@ -98,11 +102,41 @@ const ownerMenu: MenuProps['items'] = [
   { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
 
+// 【V4.2新增】开发者菜单（有仓库版本）
+const developerWithReposMenu: MenuProps['items'] = [
+  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+  // 【V4.2新增】有仓库的开发者可以看到仓库管理
+  { key: '/owner/repos', icon: <ShopOutlined />, label: '仓库管理' },
+  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
+  { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
+  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+  { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
+  { type: 'divider', label: '仓库所有者功能' },
+  { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
+  { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
+]
+
+// 【V4.2新增】开发者菜单（无仓库版本）
+const developerWithoutReposMenu: MenuProps['items'] = [
+  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
+  { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
+  { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
+  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
+  { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
+  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
+  { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
+  { type: 'divider', label: '成为仓库所有者' },
+  { key: '/developer/create-repo', icon: <PlusCircleOutlined />, label: '创建仓库' },
+]
+
 // 管理员菜单
 const adminMenu: MenuProps['items'] = [
   { key: '/admin', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/admin/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: '/admin/repos', icon: <ShopOutlined />, label: '仓库管理' },
+  // 【V1.0新增】数据分析
+  { key: '/admin/analytics', icon: <LineChartOutlined />, label: '数据分析' },
   { key: '/admin/logs', icon: <FolderOutlined />, label: '日志管理' },
   // V2.6 新增：对账子菜单
   {
@@ -139,7 +173,8 @@ const superAdminMenu: MenuProps['items'] = [
 ]
 
 // 根据用户类型获取菜单
-const getMenuItems = (userType: string): MenuProps['items'] => {
+// 【V4.2更新】开发者菜单根据是否有仓库动态显示
+const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProps['items'] => {
   switch (userType) {
     case 'super_admin':
       return superAdminMenu
@@ -149,8 +184,12 @@ const getMenuItems = (userType: string): MenuProps['items'] => {
       // 仓库所有者只能看到自己的菜单
       return ownerMenu
     case 'developer':
-      // 开发者可以创建 API Keys
-      return developerMenu
+      // 【V4.2更新】开发者菜单根据是否有仓库动态显示
+      if (userHasRepos) {
+        return developerWithReposMenu
+      } else {
+        return developerWithoutReposMenu
+      }
     case 'user':
     default:
       // 普通用户只能查看，不能创建 API Keys
@@ -167,6 +206,8 @@ export default function Layout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [notificationOpen, setNotificationOpen] = useState(false)
+  // 【V4.2新增】用户是否有仓库的状态
+  const [hasRepos, setHasRepos] = useState(false)
 
 
   // 获取未读通知数量
@@ -176,6 +217,17 @@ export default function Layout() {
       setUnreadCount(data.unread_count)
     } catch (error) {
       console.error('获取未读数量失败:', error)
+    }
+  }, [])
+
+  // 【V4.2新增】检查用户是否有仓库
+  const fetchHasRepos = useCallback(async () => {
+    try {
+      const result = await api.get<{ has_repos: boolean; repo_count: number }>('/user/has-repos')
+      setHasRepos(result.has_repos || false)
+    } catch (error) {
+      console.error('检查仓库失败:', error)
+      setHasRepos(false)
     }
   }, [])
 
@@ -220,8 +272,12 @@ export default function Layout() {
     if (user && !loading) {
       fetchUnreadCount()
       fetchRecentNotifications()
+      // 【V4.2新增】检查用户是否有仓库（开发者及以上角色）
+      if (['developer', 'owner', 'admin', 'super_admin'].includes(user.user_type)) {
+        fetchHasRepos()
+      }
     }
-  }, [user, loading, fetchUnreadCount, fetchRecentNotifications])
+  }, [user, loading, fetchUnreadCount, fetchRecentNotifications, fetchHasRepos])
 
   // 标记单条通知已读
   const handleMarkAsRead = async (notificationId: string, e: React.MouseEvent) => {
@@ -376,7 +432,7 @@ export default function Layout() {
           mode="inline"
           selectedKeys={[selectedKeys]}
           defaultOpenKeys={[firstLevelPath]}
-          items={getMenuItems(user?.user_type || 'user')}
+          items={getMenuItems(user?.user_type || 'user', hasRepos)}
           onClick={({ key }) => navigate(key)}
           className={styles.menu}
         />
