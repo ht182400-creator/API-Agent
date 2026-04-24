@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Row, Col, Card, Progress, Table, Select, Typography, Space, Statistic, Empty, Button, Alert, Tag, Tooltip, Badge } from 'antd'
 import { 
   PieChartOutlined, 
@@ -119,7 +120,7 @@ export default function DeveloperQuota() {
   const COLORS = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1', '#13c2c2']
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
       
       {/* 普通用户升级引导 */}

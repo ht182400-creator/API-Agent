@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Table, Button, Space, Select, Tag, Empty, Popconfirm, message } from 'antd'
 import { ReloadOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
 import { log } from '../../utils/logger'
@@ -83,7 +84,7 @@ export default function DevTools() {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24 }} className="bamboo-bg-pattern">
       <Card
         title="📋 应用日志"
         extra={

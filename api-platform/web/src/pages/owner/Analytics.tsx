@@ -1,8 +1,9 @@
 /**
- * 数据分析页面 - 现代化设计
+ * 数据分析页面 - 竹韵赛博风主题
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import { Spin } from 'antd'
 import { 
   ApiOutlined, 
@@ -34,7 +35,8 @@ import {
 import { analyticsApi, OverviewStats, WeeklyStats, HourlyStats, SourceStats } from '../../api/analytics'
 import styles from './Analytics.module.css'
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe']
+// 竹韵主题配色
+const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5']
 
 // 自定义 Tooltip 组件
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -153,14 +155,9 @@ export default function OwnerAnalytics() {
   }
 
   return (
-    <div className={styles.container}>
-      {/* 背景装饰 */}
-      <div className={styles.backgroundDecoration}>
-        <div className={styles.floatingCircle} />
-        <div className={styles.floatingCircle} />
-        <div className={styles.floatingCircle} />
-        <div className={styles.floatingCircle} />
-      </div>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
+      {/* 竹韵背景装饰 */}
+      <div className={styles.bambooDecoration} />
 
       {/* 内容区域 */}
       <div className={styles.content}>
@@ -178,11 +175,11 @@ export default function OwnerAnalytics() {
           </div>
         </div>
 
-        {/* 统计卡片 */}
+        {/* 统计卡片 - 竹韵主题 */}
         <div className={styles.statsGrid}>
-          {/* 总调用量 */}
-          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay1}`} style={{ '--card-color': '#667eea' } as React.CSSProperties}>
-            <div className={styles.statIconWrapper}>
+          {/* 总调用量 - 竹韵绿 */}
+          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay1}`} style={{ '--card-color': '#059669' } as React.CSSProperties}>
+            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
               <ApiOutlined className={styles.statIcon} />
             </div>
             <div className={styles.statLabel}>总调用量</div>
@@ -193,9 +190,9 @@ export default function OwnerAnalytics() {
             </div>
           </div>
 
-          {/* 本月调用 */}
-          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay2}`} style={{ '--card-color': '#52c41a' } as React.CSSProperties}>
-            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #52c41a, #73d13d)' }}>
+          {/* 本月调用 - 翡翠绿 */}
+          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay2}`} style={{ '--card-color': '#10b981' } as React.CSSProperties}>
+            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #10b981, #34d399)' }}>
               <LineChartOutlined className={styles.statIcon} />
             </div>
             <div className={styles.statLabel}>本月调用</div>
@@ -203,9 +200,9 @@ export default function OwnerAnalytics() {
             <div className={styles.statMeta}>占总量的 {overview?.total_calls ? Math.round((overview.month_calls / overview.total_calls) * 100) : 0}%</div>
           </div>
 
-          {/* 总收益 */}
-          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay3}`} style={{ '--card-color': '#faad14' } as React.CSSProperties}>
-            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #faad14, #ffc53d)' }}>
+          {/* 总收益 - 琥珀色 */}
+          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay3}`} style={{ '--card-color': '#d97706' } as React.CSSProperties}>
+            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}>
               <DollarOutlined className={styles.statIcon} />
             </div>
             <div className={styles.statLabel}>总收益</div>
@@ -213,9 +210,9 @@ export default function OwnerAnalytics() {
             <div className={styles.statMeta}>持续增长中</div>
           </div>
 
-          {/* 活跃仓库 */}
-          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay4}`} style={{ '--card-color': '#722ed1' } as React.CSSProperties}>
-            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #722ed1, #9254de)' }}>
+          {/* 活跃仓库 - 深绿 */}
+          <div className={`${styles.statCard} ${styles.animateSlideUp} ${styles.animateDelay4}`} style={{ '--card-color': '#047857' } as React.CSSProperties}>
+            <div className={styles.statIconWrapper} style={{ background: 'linear-gradient(135deg, #047857, #059669)' }}>
               <BarChartOutlined className={styles.statIcon} />
             </div>
             <div className={styles.statLabel}>活跃仓库</div>
@@ -257,18 +254,18 @@ export default function OwnerAnalytics() {
                   <AreaChart data={formatWeeklyData}>
                     <defs>
                       <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#667eea" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#667eea" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#059669" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#52c41a" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#52c41a" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#d97706" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#d97706" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="dateLabel" stroke="#999" fontSize={12} />
-                    <YAxis yAxisId="left" stroke="#667eea" fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#52c41a" fontSize={12} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="dateLabel" stroke="#64748b" fontSize={12} />
+                    <YAxis yAxisId="left" stroke="#059669" fontSize={12} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#d97706" fontSize={12} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Area 
@@ -276,7 +273,7 @@ export default function OwnerAnalytics() {
                       type="monotone" 
                       dataKey="calls" 
                       name="调用量"
-                      stroke="#667eea" 
+                      stroke="#059669" 
                       fillOpacity={1} 
                       fill="url(#colorCalls)" 
                     />
@@ -285,21 +282,21 @@ export default function OwnerAnalytics() {
                       type="monotone" 
                       dataKey="revenue" 
                       name="收益"
-                      stroke="#52c41a" 
+                      stroke="#d97706" 
                       fillOpacity={1} 
                       fill="url(#colorRevenue)" 
                     />
                   </AreaChart>
                 ) : (
                   <BarChart data={formatWeeklyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="dateLabel" stroke="#999" fontSize={12} />
-                    <YAxis yAxisId="left" orientation="left" stroke="#667eea" fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#52c41a" fontSize={12} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="dateLabel" stroke="#64748b" fontSize={12} />
+                    <YAxis yAxisId="left" orientation="left" stroke="#059669" fontSize={12} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#d97706" fontSize={12} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <Bar yAxisId="left" dataKey="calls" name="调用量" fill="#667eea" radius={[4, 4, 0, 0]} />
-                    <Bar yAxisId="right" dataKey="revenue" name="收益" fill="#52c41a" radius={[4, 4, 0, 0]} />
+                    <Bar yAxisId="left" dataKey="calls" name="调用量" fill="#059669" radius={[4, 4, 0, 0]} />
+                    <Bar yAxisId="right" dataKey="revenue" name="收益" fill="#d97706" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 )}
               </ResponsiveContainer>
@@ -316,7 +313,7 @@ export default function OwnerAnalytics() {
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <h3 className={styles.chartTitle}>
-                <div className={styles.chartTitleIcon} style={{ background: 'linear-gradient(135deg, #f093fb, #f5576c)' }}>
+                <div className={styles.chartTitleIcon} style={{ background: 'linear-gradient(135deg, #10b981, #34d399)' }}>
                   <PieChartOutlined />
                 </div>
                 调用来源
@@ -363,7 +360,7 @@ export default function OwnerAnalytics() {
         <div className={`${styles.chartCard} ${styles.animateSlideUp}`} style={{ animationDelay: '0.6s', opacity: 0 }}>
           <div className={styles.chartHeader}>
             <h3 className={styles.chartTitle}>
-              <div className={styles.chartTitleIcon} style={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)' }}>
+              <div className={styles.chartTitleIcon} style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
                 <ClockCircleOutlined />
               </div>
               24小时调用分布
@@ -381,8 +378,8 @@ export default function OwnerAnalytics() {
               <BarChart data={hourlyData}>
                 <defs>
                   <linearGradient id="colorHourly" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4facfe" stopOpacity={1}/>
-                    <stop offset="95%" stopColor="#4facfe" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#059669" stopOpacity={1}/>
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0.3}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -414,7 +411,7 @@ export default function OwnerAnalytics() {
         {/* 底部统计 */}
         <div className={`${styles.bottomStats} ${styles.animateSlideUp}`} style={{ animationDelay: '0.7s', opacity: 0 }}>
           <div className={styles.bottomStatCard}>
-            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white' }}>
+            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
               <CheckCircleOutlined />
             </div>
             <div className={styles.bottomStatInfo}>
@@ -424,7 +421,7 @@ export default function OwnerAnalytics() {
           </div>
           
           <div className={styles.bottomStatCard}>
-            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #52c41a, #73d13d)', color: 'white' }}>
+            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #10b981, #34d399)' }}>
               <ClockCircleOutlined />
             </div>
             <div className={styles.bottomStatInfo}>
@@ -434,7 +431,7 @@ export default function OwnerAnalytics() {
           </div>
           
           <div className={styles.bottomStatCard}>
-            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #faad14, #ffc53d)', color: 'white' }}>
+            <div className={styles.bottomStatIcon} style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}>
               <ThunderboltOutlined />
             </div>
             <div className={styles.bottomStatInfo}>

@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { Form, Input, Button, Card, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
@@ -174,7 +175,7 @@ export default function Login() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.content}>
         <Card className={styles.card}>
           <div className={styles.header}>

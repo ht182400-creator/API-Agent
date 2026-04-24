@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Row, Col, Statistic, Table, Typography, Button, message, Space, Tag, Tabs } from 'antd'
 import { DollarOutlined, BankOutlined, AlipayOutlined, WechatOutlined } from '@ant-design/icons'
 import { billingApi, Account, Bill } from '../../api/billing'
@@ -66,7 +67,7 @@ export default function OwnerSettlement() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Title level={4}>收益结算</Title>
 
       <Row gutter={[16, 16]}>

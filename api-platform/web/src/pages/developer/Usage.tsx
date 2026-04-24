@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import {
   Card,
   Row,
@@ -227,7 +228,7 @@ const Usage: React.FC = () => {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Card
         title={
           <Space>

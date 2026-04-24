@@ -69,6 +69,17 @@
   margin-bottom: 16px;
 }
 
+/* API调用指南卡片 */
+.guideCard {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.guideCard pre {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
 /* 响应式布局 */
 @media (max-width: 768px) {
   .container {

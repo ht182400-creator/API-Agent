@@ -1,0 +1,774 @@
+/**
+ * 翠竹主题 - Bamboo Theme
+ * 清新明亮的翡翠绿配色
+ * V2.1 - 竹韵版
+ */
+
+/* ==================== 色彩系统 ==================== */
+:root {
+  /* 主色调 - 明亮系 */
+  --ink-black: #f8fafc;
+  --ink-deep: #f1f5f9;
+  --ink-surface: #ffffff;
+  --ink-elevated: #e2e8f0;
+
+  /* 强调色 - 朱砂红 */
+  --cinnabar: #dc2626;
+  --cinnabar-glow: rgba(220, 38, 38, 0.3);
+  --cinnabar-light: #ef4444;
+
+  /* 科技蓝 - 青花 */
+  --azure: #2563eb;
+  --azure-glow: rgba(37, 99, 235, 0.3);
+  --azure-dark: #1d4ed8;
+
+  /* 翡翠绿 */
+  --jade: #059669;
+  --jade-glow: rgba(5, 150, 105, 0.3);
+
+  /* 鎏金色 */
+  --gold: #b45309;
+  --gold-glow: rgba(180, 83, 9, 0.3);
+  --gold-light: #d97706;
+
+  /* 紫罗兰 - 辅助色 */
+  --violet: #7c3aed;
+  --violet-glow: rgba(124, 58, 237, 0.3);
+  --violet-light: #8b5cf6;
+
+  /* 背景色 - 翠竹明快 */
+  --bg-primary: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 30%, #f0fdfa 70%, #f8fafc 100%);
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.7);
+
+  /* 文字色 */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* 边框色 */
+  --border-default: rgba(148, 163, 184, 0.2);
+  --border-glow: rgba(124, 58, 237, 0.4);
+
+  /* 渐变色 */
+  --gradient-primary: linear-gradient(135deg, var(--violet) 0%, var(--azure) 100%);
+  --gradient-gold: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  --gradient-cinnabar: linear-gradient(135deg, var(--cinnabar) 0%, var(--cinnabar-light) 100%);
+  --gradient-cyber: linear-gradient(135deg, var(--azure) 0%, var(--violet) 100%);
+
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow-violet: 0 4px 20px var(--violet-glow);
+  --shadow-glow-gold: 0 4px 20px var(--gold-glow);
+  --shadow-glow-cinnabar: 0 4px 20px var(--cinnabar-glow);
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+/* ==================== 竹韵背景图案 ==================== */
+
+/* 竹韵纹理 SVG */
+.bamboo-bg-pattern {
+  position: relative;
+  background: var(--bg-primary);
+  background-attachment: fixed;
+}
+
+/* 竹韵装饰层 - 竹林纹理 */
+.bamboo-bg-pattern::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0.7;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cg fill='none' stroke='%23059669' stroke-width='2' opacity='0.25'%3E%3C!-- 竹竿 --%3E%3Cline x1='30' y1='0' x2='30' y2='300'/%3E%3Cline x1='70' y1='0' x2='70' y2='300'/%3E%3Cline x1='150' y1='0' x2='150' y2='300'/%3E%3Cline x1='200' y1='0' x2='200' y2='300'/%3E%3Cline x1='270' y1='0' x2='270' y2='300'/%3E%3C!-- 竹节 --%3E%3Cline x1='25' y1='40' x2='35' y2='40'/%3E%3Cline x1='65' y1='80' x2='75' y2='80'/%3E%3Cline x1='145' y1='120' x2='155' y2='120'/%3E%3Cline x1='195' y1='160' x2='205' y2='160'/%3E%3Cline x1='265' y1='200' x2='275' y2='200'/%3E%3Cline x1='25' y1='140' x2='35' y2='140'/%3E%3Cline x1='65' y1='180' x2='75' y2='180'/%3E%3Cline x1='145' y1='220' x2='155' y2='220'/%3E%3Cline x1='195' y1='260' x2='205' y2='260'/%3E%3Cline x1='265' y1='60' x2='275' y2='60'/%3E%3C!-- 竹叶点缀 --%3E%3Cellipse cx='50' cy='50' rx='15' ry='6' fill='%23059669' opacity='0.2' transform='rotate(-30 50 50)'/%3E%3Cellipse cx='120' cy='100' rx='12' ry='5' fill='%23059669' opacity='0.15' transform='rotate(25 120 100)'/%3E%3Cellipse cx='230' cy='150' rx='14' ry='5' fill='%23059669' opacity='0.18' transform='rotate(-20 230 150)'/%3E%3Cellipse cx='80' cy='250' rx='13' ry='5' fill='%23059669' opacity='0.2' transform='rotate(30 80 250)'/%3E%3Cellipse cx='180' cy='30' rx='11' ry='4' fill='%23059669' opacity='0.15' transform='rotate(-15 180 30)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  z-index: 0;
+}
+
+/* 竹韵装饰层 - 角落光晕 */
+.bamboo-bg-pattern::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0.8;
+  background: 
+    /* 右上角翠竹光晕 */
+    radial-gradient(ellipse 150px 200px at 98% 0%, rgba(5, 150, 105, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 100px 150px at 92% 5%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+    /* 左下角翠竹光晕 */
+    radial-gradient(ellipse 120px 180px at 2% 100%, rgba(5, 150, 105, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 80px 120px at 8% 95%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    /* 左上角墨竹点缀 */
+    radial-gradient(ellipse 60px 80px at 3% 3%, rgba(5, 150, 105, 0.1) 0%, transparent 70%),
+    /* 右下角墨竹点缀 */
+    radial-gradient(ellipse 70px 90px at 97% 97%, rgba(5, 150, 105, 0.08) 0%, transparent 70%),
+    /* 顶部竹叶 */
+    radial-gradient(ellipse 40px 20px at 15% 2%, rgba(5, 150, 105, 0.15) 0%, transparent 80%),
+    radial-gradient(ellipse 35px 18px at 35% 1%, rgba(16, 185, 129, 0.12) 0%, transparent 80%),
+    /* 底部竹叶 */
+    radial-gradient(ellipse 45px 22px at 75% 98%, rgba(5, 150, 105, 0.12) 0%, transparent 80%),
+    radial-gradient(ellipse 30px 15px at 85% 99%, rgba(16, 185, 129, 0.1) 0%, transparent 80%);
+  z-index: 0;
+}
+
+/* 印章装饰 */
+.china-stamp {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 70px;
+  height: 70px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.2));
+}
+
+.china-stamp svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ==================== 全局样式 ==================== */
+.cyber-theme {
+  min-height: 100vh;
+  color: var(--text-primary);
+  position: relative;
+}
+
+/* 纸质感背景 */
+.cyber-bg {
+  position: relative;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* 柔和网格 */
+.cyber-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* 顶部渐变光晕 */
+.cyber-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ==================== 卡片组件 ==================== */
+
+/* 玻璃拟态卡片 */
+.cyber-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.cyber-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-md), 0 0 20px var(--violet-glow);
+  transform: translateY(-2px);
+}
+
+/* 发光边框卡片 */
+.cyber-card-glow {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.cyber-card-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-cyber);
+}
+
+.cyber-card-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(124, 58, 237, 0.08) 50%,
+    transparent 60%
+  );
+  animation: cyber-shine 4s ease-in-out infinite;
+}
+
+@keyframes cyber-shine {
+  0%, 100% { transform: translateX(-100%) rotate(45deg); }
+  50% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* 统计卡片 */
+.cyber-stat-card {
+  position: relative;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.cyber-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+/* 修复hover时图标看不清的问题 - 正常覆盖样式 */
+.cyber-stat-card:hover,
+.cyber-stat-card[class]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+  border-color: rgba(5, 150, 105, 0.4);
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 强制覆盖每种类型卡片的hover背景 - 最强优先级 */
+.cyber-stat-card.card-violet:hover,
+.cyber-stat-card.card-gold:hover,
+.cyber-stat-card.card-cinnabar:hover,
+.cyber-stat-card.card-jade:hover,
+div.cyber-stat-card:hover,
+div[class*="cyber-stat-card"]:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15) !important;
+  border-color: rgba(5, 150, 105, 0.4) !important;
+}
+
+/* jade类型卡片hover覆盖 */
+.card-jade:hover,
+.cyber-stat-card.card-jade:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 卡片hover时内部所有元素保持原样 - 正常覆盖即可 */
+.cyber-stat-card:hover .cyber-stat-icon,
+.cyber-stat-card:hover .ant-statistic {
+  background: transparent !important;
+  opacity: 1 !important;
+}
+
+/* 左边框颜色 - 只用于区分类型，不影响背景 */
+.cyber-stat-card.card-violet::before { background: linear-gradient(180deg, #7c3aed, #3b82f6); }
+.cyber-stat-card.card-gold::before { background: linear-gradient(180deg, #b45309, #d97706); }
+.cyber-stat-card.card-cinnabar::before { background: linear-gradient(180deg, #dc2626, #ef4444); }
+.cyber-stat-card.card-jade::before { background: linear-gradient(180deg, #059669, #10b981); }
+
+/* 统计卡片图标 */
+.cyber-stat-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: 24px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.cyber-stat-icon.icon-violet {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+  color: var(--violet);
+  box-shadow: 0 4px 15px var(--violet-glow);
+}
+
+.cyber-stat-icon.icon-gold {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%);
+  color: var(--gold);
+  box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+.cyber-stat-icon.icon-cinnabar {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
+  color: var(--cinnabar);
+  box-shadow: 0 4px 15px var(--cinnabar-glow);
+}
+
+.cyber-stat-icon.icon-jade {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
+  color: var(--jade);
+  box-shadow: 0 4px 15px var(--jade-glow);
+}
+
+/* 卡片hover时图标样式保持不变 */
+.cyber-stat-card:hover .cyber-stat-icon {
+  background: inherit !important;
+  box-shadow: 0 4px 15px currentColor;
+  opacity: 1;
+}
+
+/* ==================== 印章式标签 ==================== */
+.cyber-stamp {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.cyber-stamp::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border: 1px solid currentColor;
+  opacity: 0.3;
+}
+
+.cyber-stamp.stamp-online {
+  background: rgba(5, 150, 105, 0.15);
+  color: var(--jade);
+  border: 1px solid var(--jade);
+}
+
+.cyber-stamp.stamp-pending {
+  background: rgba(180, 83, 9, 0.15);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.cyber-stamp.stamp-error {
+  background: rgba(220, 38, 38, 0.15);
+  color: var(--cinnabar);
+  border: 1px solid var(--cinnabar);
+}
+
+/* ==================== 标题样式 ==================== */
+.cyber-title {
+  position: relative;
+  display: inline-block;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.cyber-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-cyber);
+  border-radius: 2px;
+}
+
+/* 副标题 */
+.cyber-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+/* ==================== 按钮样式 ==================== */
+.cyber-btn {
+  position: relative;
+  padding: 10px 24px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.cyber-btn:hover::before {
+  left: 100%;
+}
+
+.cyber-btn-primary {
+  background: var(--gradient-cyber);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px var(--violet-glow);
+}
+
+.cyber-btn-primary:hover {
+  box-shadow: 0 6px 25px var(--violet-glow);
+  transform: translateY(-2px);
+}
+
+.cyber-btn-gold {
+  background: var(--gradient-gold);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+/* ==================== 动画效果 ==================== */
+
+/* 脉冲动画 */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--violet-glow); }
+  50% { box-shadow: 0 0 20px var(--violet-glow), 0 0 30px var(--violet-glow); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 数字滚动动画 */
+@keyframes number-rolling {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.number-rolling {
+  animation: number-rolling 0.6s ease-out;
+}
+
+/* 渐入动画 */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* 边框流动动画 */
+@keyframes border-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.border-flow {
+  background: linear-gradient(90deg, var(--violet), var(--azure), var(--violet));
+  background-size: 200% 100%;
+  animation: border-flow 3s linear infinite;
+}
+
+/* ==================== 表格样式（竹韵主题）==================== */
+.cyber-table .ant-table {
+  background: transparent !important;
+}
+
+.cyber-table .ant-table-thead > tr > th {
+  /* 竹韵主题表头 - 淡绿色 */
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%) !important;
+  border-bottom: 2px solid #10b981 !important;
+  color: #059669 !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+.cyber-table .ant-table-tbody > tr > td {
+  /* 竹韵主题单元格 */
+  border-bottom: 1px solid rgba(5, 150, 105, 0.15) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: #374151;
+}
+
+.cyber-table .ant-table-tbody > tr:hover > td {
+  /* 竹韵主题行hover - 淡绿色 */
+  background: rgba(5, 150, 105, 0.08) !important;
+}
+
+/* 表格容器背景 */
+.cyber-table .ant-table-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* ==================== 告警卡片 ==================== */
+.cyber-alert {
+  position: relative;
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border-left: 3px solid;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.cyber-alert:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.cyber-alert.alert-warning {
+  border-color: var(--gold);
+  background: rgba(180, 83, 9, 0.08);
+}
+
+.cyber-alert.alert-error {
+  border-color: var(--cinnabar);
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.cyber-alert.alert-info {
+  border-color: var(--azure);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* 告警图标 */
+.cyber-alert-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+/* ==================== 响应式 ==================== */
+@media (max-width: 768px) {
+  .cyber-stat-card {
+    padding: 16px;
+  }
+  
+  .cyber-stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .cyber-title {
+    font-size: 22px;
+  }
+}
+
+/* ==================== Ant Design 组件覆盖（竹韵主题）==================== */
+
+/* Card 组件基础覆盖 */
+.ant-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(5, 150, 105, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+.ant-card-head {
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.8) 0%, rgba(209, 250, 229, 0.6) 100%) !important;
+  border-bottom: 1px solid rgba(5, 150, 105, 0.15) !important;
+  color: #059669 !important;
+}
+
+.ant-card-head-title {
+  color: #059669 !important;
+}
+
+.ant-card-body {
+  background: transparent !important;
+}
+
+/* 修复Card hover时背景变深的问题 */
+[class*="cyber-card"]:hover {
+  border-color: rgba(5, 150, 105, 0.3) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.12) !important;
+}
+
+/* 覆盖Statistic组件hover效果 */
+.ant-statistic:hover {
+  background: transparent !important;
+}
+
+/* 强制覆盖所有Card的hover背景色 - 使用最具体的选择器 */
+div[class*="statCard"]:hover,
+div[class*="cyber-stat-card"]:hover,
+[class*="statCard"]:hover,
+[class*="cyber-stat-card"]:hover {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(5, 150, 105, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Table 容器 */
+.ant-table-wrapper {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  border: 1px solid rgba(5, 150, 105, 0.15);
+}
+
+/* Modal 弹窗背景 */
+.ant-modal-content {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(5, 150, 105, 0.2) !important;
+}
+
+.ant-modal-header {
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%) !important;
+  border-bottom: 1px solid rgba(5, 150, 105, 0.15) !important;
+}
+
+.ant-modal-title {
+  color: #059669 !important;
+}
+
+/* Drawer 抽屉背景 */
+.ant-drawer-content {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+.ant-drawer-header {
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%) !important;
+  border-bottom: 1px solid rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Select 下拉框 */
+.ant-select-dropdown {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Dropdown 下拉菜单 */
+.ant-dropdown-menu {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Popover 气泡卡片 */
+.ant-popover-inner {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+/* Tooltip 提示 */
+.ant-tooltip-inner {
+  background: linear-gradient(180deg, #059669 0%, #10b981 100%) !important;
+}
+
+/* Tag 标签 */
+.ant-tag {
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  background: rgba(5, 150, 105, 0.08);
+  color: #059669;
+}
+
+/* Button primary */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  border-color: #059669 !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  border-color: #047857 !important;
+}
+
+/* Tag 组件 */
+.ant-tag {
+  border-radius: var(--radius-sm);
+}
+
+/* Button 组件 */
+.ant-btn-primary {
+  background: var(--gradient-cyber);
+  border: none;
+}
+
+/* Statistic 组件 */
+.ant-statistic-title {
+  color: var(--text-secondary) !important;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.ant-statistic-content {
+  color: var(--text-primary) !important;
+}
+
+/* Tabs 组件 */
+.ant-tabs-tab {
+  color: var(--text-secondary) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--violet) !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--gradient-cyber) !important;
+}
+
+/* 输入框 */
+.ant-input,
+.ant-select-selector {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-default) !important;
+}
+
+.ant-input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--violet) !important;
+  box-shadow: 0 0 0 2px var(--violet-glow) !important;
+}

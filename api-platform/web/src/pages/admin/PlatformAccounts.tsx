@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Row, Col, Statistic, Tag, Space, Typography, Spin, Button, Modal, Form, Input, message } from 'antd'
 import { 
   AlipayOutlined, 
@@ -165,7 +166,7 @@ export default function AdminPlatformAccounts() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
 
       <div className={styles.header}>

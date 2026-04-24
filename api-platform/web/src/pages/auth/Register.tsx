@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { Form, Input, Button, Card, message, Radio } from 'antd'
 import { MailOutlined, LockOutlined, UserOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
@@ -99,7 +100,7 @@ export default function Register() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.content}>
         <Card className={styles.card}>
           <div className={styles.header}>

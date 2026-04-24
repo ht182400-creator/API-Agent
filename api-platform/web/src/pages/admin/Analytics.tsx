@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import {
   Card,
   Row,
@@ -269,7 +270,7 @@ export default function AdminAnalytics() {
       width: 120,
       sorter: true,
       render: (value: number) => (
-        <span style={{ color: '#1890ff' }}>
+        <span style={{ color: '#059669' }}>
           {value.toLocaleString()} 次
         </span>
       )
@@ -356,7 +357,7 @@ export default function AdminAnalytics() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <Title level={4}>
           <LineChartOutlined style={{ marginRight: 8 }} />
@@ -394,7 +395,7 @@ export default function AdminAnalytics() {
                         title="仓库总数"
                         value={overview?.repos.total || 0}
                         prefix={<ApiOutlined />}
-                        valueStyle={{ color: '#1890ff' }}
+                        valueStyle={{ color: '#10b981' }}
                       />
                       <div className={styles.statSub}>
                         <Tag color="green">{overview?.repos.online || 0} 已上线</Tag>
@@ -408,7 +409,7 @@ export default function AdminAnalytics() {
                         title="今日调用"
                         value={overview?.calls.today || 0}
                         prefix={<ThunderboltOutlined />}
-                        valueStyle={{ color: '#722ed1' }}
+                        valueStyle={{ color: '#059669' }}
                         suffix="次"
                       />
                       <div className={styles.statSub}>
@@ -427,7 +428,7 @@ export default function AdminAnalytics() {
                         title="本周调用"
                         value={overview?.calls.week || 0}
                         prefix={<LineChartOutlined />}
-                        valueStyle={{ color: '#13c2c2' }}
+                        valueStyle={{ color: '#10b981' }}
                         suffix="次"
                       />
                       <div className={styles.statSub}>
@@ -445,7 +446,6 @@ export default function AdminAnalytics() {
                         prefix={<DollarOutlined />}
                         valueStyle={{ color: '#faad14' }}
                         precision={2}
-                        prefix="¥"
                       />
                       <div className={styles.statSub}>
                         <Text type="secondary">
@@ -464,7 +464,7 @@ export default function AdminAnalytics() {
                         title="活跃用户（本周）"
                         value={overview?.active_users || 0}
                         prefix={<UserOutlined />}
-                        valueStyle={{ color: '#eb2f96' }}
+                        valueStyle={{ color: '#059669' }}
                       />
                     </Card>
                   </Col>
@@ -474,7 +474,7 @@ export default function AdminAnalytics() {
                         title="本月调用"
                         value={overview?.calls.month || 0}
                         suffix="次"
-                        valueStyle={{ color: '#13c2c2' }}
+                        valueStyle={{ color: '#10b981' }}
                       />
                     </Card>
                   </Col>
@@ -548,7 +548,7 @@ export default function AdminAnalytics() {
                           yAxisId="left"
                           type="monotone" 
                           dataKey="calls" 
-                          stroke="#722ed1" 
+                          stroke="#10b981" 
                           strokeWidth={2}
                           dot={{ r: 3 }}
                           activeDot={{ r: 5 }}
@@ -634,7 +634,7 @@ export default function AdminAnalytics() {
                         yAxisId="left"
                         type="monotone" 
                         dataKey="calls" 
-                        stroke="#722ed1" 
+                        stroke="#10b981" 
                         strokeWidth={2}
                         dot={{ r: 4 }}
                         activeDot={{ r: 6 }}
@@ -793,7 +793,7 @@ export default function AdminAnalytics() {
                 <Statistic
                   title="总调用次数"
                   value={detailModalRepo?.total_calls || 0}
-                  valueStyle={{ color: '#722ed1' }}
+                  valueStyle={{ color: '#059669' }}
                 />
               </Card>
             </Col>
@@ -902,7 +902,7 @@ export default function AdminAnalytics() {
                       yAxisId="left"
                       type="monotone"
                       dataKey="calls"
-                      stroke="#722ed1"
+                      stroke="#10b981"
                       strokeWidth={2}
                       dot={{ r: 3 }}
                       name="调用次数"

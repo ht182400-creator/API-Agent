@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Tabs, Table, Button, Space, Tag, Modal, Form, Select, Input, DatePicker, 
          Row, Col, Statistic, message, Spin, Typography, Alert, Descriptions, Badge, 
          Timeline, Progress, Divider } from 'antd'
@@ -463,7 +464,7 @@ export default function AdminReconciliation() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {contextHolder}
       <ErrorModalComponent />
 

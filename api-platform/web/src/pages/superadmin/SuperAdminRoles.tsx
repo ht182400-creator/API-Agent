@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Table, Tag, Button, Space, Modal, Tree, Checkbox, message, Typography, Spin } from 'antd'
 import { SafetyCertificateOutlined, EditOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
@@ -149,7 +150,7 @@ export default function SuperAdminRoles() {
   }
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24 }} className="bamboo-bg-pattern">
       <div style={{ marginBottom: 24 }}>
         <Title level={2}><SafetyCertificateOutlined /> 角色权限管理</Title>
         <Text type="secondary">管理系统角色和细粒度权限</Text>

@@ -1,15 +1,18 @@
 /**
  * 仓库市场页面 - 开发者视角
  * 展示所有可用的API仓库
+ * V5.0 - 显示仓库自定义图标
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { useNavigate } from 'react-router-dom'
 import { Card, Row, Col, Input, Select, Tag, Button, Empty, Spin, Typography, Space, Statistic, Tooltip, Badge, Alert } from 'antd'
 import { SearchOutlined, ApiOutlined, ThunderboltOutlined, DollarOutlined, EyeOutlined, RocketOutlined } from '@ant-design/icons'
 import { repoApi, Repository } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
 import { useAuthStore } from '../../stores/auth'
+import { RepoLogo } from '../../components/RepoLogo'
 import styles from './Repos.module.css'
 
 const { Title, Text, Paragraph } = Typography
@@ -82,7 +85,7 @@ export default function Repos() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {/* 普通用户升级引导 */}
       {isNormalUser && (
         <Alert
@@ -167,9 +170,7 @@ export default function Repos() {
               >
                 {/* 卡片头部 - Logo和名称 */}
                 <div className={styles.cardHeader}>
-                  <div className={styles.repoLogo}>
-                    {repo.display_name?.charAt(0) || repo.name.charAt(0).toUpperCase()}
-                  </div>
+                  <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={48} />
                   <div className={styles.repoInfo}>
                     <Text strong className={styles.repoName}>
                       {repo.display_name || repo.name}

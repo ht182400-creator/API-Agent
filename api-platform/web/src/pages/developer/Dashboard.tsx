@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Row, Col, Card, Statistic, Table, Progress, Typography, Space, Tag, Empty, Alert, Button } from 'antd'
 import {
   RiseOutlined,
@@ -104,7 +105,7 @@ export default function DeveloperDashboard() {
   ]
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} bamboo-bg-pattern`}>
       <Title level={4}>开发者工作台</Title>
 
       {/* 【V4.1 新增】余额为0或获取失败时的引导提示 */}

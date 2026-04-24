@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Table, Card, Select, DatePicker, Button, Typography, Tag, Space, Empty, Tooltip, Badge } from 'antd'
 import { ReloadOutlined, FilterOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { quotaApi, APICallLog, APIKey } from '../../api/quota'
@@ -216,7 +217,7 @@ export default function DeveloperLogs() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
 
       <div className={styles.header}>

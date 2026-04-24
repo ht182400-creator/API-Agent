@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Row, Col, Card, Statistic, Table, Tag, Progress, Typography, Space, Button } from 'antd'
 import { 
   UserOutlined, 
@@ -144,7 +145,7 @@ export default function SuperAdminDashboard() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <div>
           <Title level={2} className={styles.title}>

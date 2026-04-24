@@ -161,6 +161,7 @@ export interface Repository {
   endpoints?: RepositoryEndpoint[]
   docs_url?: string
   sla?: RepositorySLA
+  logo_url?: string  // 仓库图标URL（支持自定义上传）
   // 兼容旧字段
   category?: string
   endpoint?: string
@@ -193,6 +194,7 @@ export interface CreateRepoRequest {
   protocol?: 'http' | 'grpc' | 'websocket'
   endpoint_url?: string
   api_docs_url?: string
+  logo_url?: string  // Base64 编码的图标
 }
 
 // 更新仓库请求
@@ -202,6 +204,7 @@ export interface UpdateRepoRequest {
   endpoint_url?: string
   api_docs_url?: string
   status?: string
+  logo_url?: string  // Base64 编码的图标
 }
 
 // 仓库筛选参数

@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, List, Tag, Typography, Space, Button, Empty, Tabs, message } from 'antd'
 import { BellOutlined, CheckCircleOutlined, WarningOutlined, InfoCircleOutlined, DeleteOutlined } from '@ant-design/icons'
 import { notificationApi, Notification } from '../../api/notification'
@@ -281,7 +282,7 @@ export default function Notifications() {
   ]
 
   return (
-    <div className={styles.notifications}>
+    <div className={`${styles.notifications} bamboo-bg-pattern`}>
       <Card
         title={
           <Space size="middle">

@@ -1,20 +1,48 @@
-/* Register Page Styles */
+/* 翠竹主题注册页面 */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* 翠竹主题背景 */
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 30%, #f0fdf4 70%, #f8fafc 100%);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 翠竹装饰 */
+.container::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(5, 150, 105, 0.15);
   width: 100%;
   max-width: 420px;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .header {
@@ -25,12 +53,14 @@
 .title {
   font-size: 28px;
   font-weight: 700;
-  color: #333;
+  /* 翠竹主题色 */
+  color: #059669;
   margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(5, 150, 105, 0.1);
 }
 
 .subtitle {
-  color: #666;
+  color: #64748b;
   font-size: 14px;
 }
 
@@ -48,30 +78,41 @@
   height: 44px;
   font-size: 16px;
   margin-top: 8px;
+  /* 翠竹主题按钮色 */
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
 }
 
 .footer {
   text-align: center;
   margin-top: 24px;
-  color: #666;
+  color: #64748b;
   font-size: 14px;
 }
 
 .link {
-  color: #667eea;
+  /* 翠竹主题链接色 */
+  color: #059669;
   cursor: pointer;
   font-weight: 500;
 }
 
 .link:hover {
+  color: #10b981;
   text-decoration: underline;
 }
 
 .error {
-  background: #fff2f0;
-  border: 1px solid #ffccc7;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
   padding: 12px;
-  border-radius: 6px;
-  color: #ff4d4f;
+  border-radius: 8px;
+  color: #dc2626;
   margin-bottom: 16px;
 }

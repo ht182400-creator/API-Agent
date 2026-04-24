@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Row, Col, Card, Statistic, Typography, Space, Table, Tag } from 'antd'
 import { 
   ShopOutlined, 
@@ -110,7 +111,7 @@ export default function OwnerDashboard() {
   ]
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} bamboo-bg-pattern`}>
       <Title level={4}>仓库所有者工作台</Title>
 
       <Row gutter={[16, 16]} className={styles.stats}>

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Form, Input, Switch, Select, Button, Tabs, Space, message, Typography, Divider, Spin, Tag } from 'antd'
 import { SettingOutlined, GlobalOutlined, SafetyOutlined, DatabaseOutlined, SaveOutlined } from '@ant-design/icons'
 import { configApi, ConfigItem } from '../../api/superadmin'
@@ -411,7 +412,7 @@ export default function SuperAdminSystem() {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24 }} className="bamboo-bg-pattern">
       <div style={{ marginBottom: 24 }}>
         <Title level={2}><SettingOutlined /> 系统配置</Title>
         <Text type="secondary">全局系统参数配置</Text>

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, DatePicker, Row, Col, Statistic, Tag, Space, Typography, Spin, Progress } from 'antd'
 import { 
   AlipayOutlined, 
@@ -133,7 +134,7 @@ export default function AdminChannelSummary() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
 
       <div className={styles.header}>

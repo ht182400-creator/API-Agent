@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import {
   Row, Col, Card, Table, Button, Typography, Tag, Space, DatePicker, Select,
   Modal, Form, Input, message, Drawer, Descriptions, Statistic, Empty, App, Popconfirm
@@ -244,7 +245,7 @@ export default function AdminMonthlyBills() {
   }))
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {contextHolder}
       <ErrorModalComponent />
 

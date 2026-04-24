@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Card, Table, DatePicker, Select, Tag, Space, Typography, Row, Col, Statistic, Button, Input } from 'antd'
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import { adminReconciliationApi, RechargeRecordItem, RechargeSummary } from '../../api/adminReconciliation'
@@ -194,7 +195,7 @@ export default function AdminRechargeRecords() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
 
       <div className={styles.header}>

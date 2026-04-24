@@ -161,6 +161,7 @@ class RepositoryResponse(BaseModel):
     endpoints: List[RepositoryEndpointResponse] = []
     docs_url: Optional[str] = None
     sla: Optional[RepositorySLAResponse] = None
+    logo_url: Optional[str] = None  # 仓库图标 Base64
     created_at: datetime
     online_at: Optional[datetime] = None
 

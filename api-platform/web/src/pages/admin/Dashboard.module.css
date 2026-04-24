@@ -1,38 +1,327 @@
+/**
+ * 管理员工作台样式 - 翠竹主题
+ * V2.1 - 竹韵版
+ */
+
 .dashboard {
-  max-width: 1400px;
+  padding: 24px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
+/* 页面头部 */
+.header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-default);
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--violet), var(--azure));
+}
+
+/* 统计卡片网格 */
 .stats {
   margin-bottom: 24px;
 }
 
 .statCard {
-  border-radius: 8px;
-  cursor: pointer;
-  transition: box-shadow 0.3s;
+  height: 100%;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(5, 150, 105, 0.2) !important;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
+/* 竹韵主题统计卡片右上角光效 - 默认隐藏，hover时显示 */
+.statCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle at top right, rgba(5, 150, 105, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+/* 卡片 hover 效果 */
 .statCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(5, 150, 105, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+  transform: translateY(-4px);
 }
 
-.tableCard,
+/* hover 时显示右上角光效 */
+.statCard:hover::after {
+  opacity: 1;
+}
+
+/* 统计数字 */
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  background: transparent !important;
+}
+
+/* 卡片hover时Statistic保持透明 - 不需要all:unset，正常覆盖即可 */
+.statCard:hover :global(.ant-statistic),
+.statCard:hover :global(.ant-statistic-content),
+.statCard:hover :global(.ant-statistic-content-wrapper) {
+  background: transparent !important;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+/* 快捷入口卡片 */
+.quickActions {
+  margin-bottom: 24px;
+}
+
+.quickCard {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(5, 150, 105, 0.2) !important;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quickCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(5, 150, 105, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15);
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.quickCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.quickCard:hover::before {
+  width: 4px;
+  box-shadow: 0 0 15px currentColor;
+}
+
+.quickCard-violet::before { background: linear-gradient(180deg, #7c3aed, #3b82f6); }
+.quickCard-gold::before { background: linear-gradient(180deg, #b45309, #d97706); }
+.quickCard-cinnabar::before { background: linear-gradient(180deg, #dc2626, #ef4444); }
+.quickCard-jade::before { background: linear-gradient(180deg, #059669, #10b981); }
+
+.quickCard-violet:hover { border-color: rgba(124, 58, 237, 0.4) !important; }
+.quickCard-gold:hover { border-color: rgba(180, 83, 9, 0.4) !important; }
+.quickCard-cinnabar:hover { border-color: rgba(220, 38, 38, 0.4) !important; }
+.quickCard-jade:hover { border-color: rgba(5, 150, 105, 0.4) !important; }
+
+.quickIcon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: 24px;
+  margin-right: 16px;
+  /* 修改为半透明白色背景，保持浅色 */
+  background: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.quickCard:hover .quickIcon {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quickCard-violet .quickIcon { color: var(--violet); }
+.quickCard-gold .quickIcon { color: var(--gold); }
+.quickCard-cinnabar .quickIcon { color: var(--cinnabar); }
+.quickCard-jade .quickIcon { color: var(--jade); }
+
+.quickInfo {
+  flex: 1;
+}
+
+.quickTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.quickDesc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.quickArrow {
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.quickCard:hover .quickArrow {
+  color: var(--violet);
+  transform: translateX(4px);
+}
+
+/* 表格卡片 */
+.tableCard {
+  min-height: 400px;
+}
+
+.tableCard :global(.ant-card-head) {
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tableCard :global(.ant-card-head-title) {
+  color: var(--text-primary);
+}
+
+.tableCard :global(.ant-table) {
+  background: transparent !important;
+}
+
+/* 告警卡片 */
 .alertCard {
-  border-radius: 8px;
+  min-height: 400px;
 }
 
+.alertCard :global(.ant-card-head) {
+  border-bottom: 1px solid var(--border-default);
+}
+
+.alertCard :global(.ant-card-head-title) {
+  color: var(--text-primary);
+}
+
+/* 告警项 */
 .alertItem {
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-default);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  transition: all 0.3s ease;
 }
 
 .alertItem:last-child {
   border-bottom: none;
 }
 
-.alertTime {
-  font-size: 12px;
+.alertItem:hover {
+  padding-left: 8px;
 }
+
+/* 底部 */
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-default);
+  text-align: center;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--violet), transparent);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+  
+  .statCard {
+    min-height: 120px;
+    padding: 16px !important;
+  }
+  
+  .statValue {
+    font-size: 26px;
+  }
+  
+  .quickCard {
+    padding: 16px;
+  }
+  
+  .quickIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .quickTitle {
+    font-size: 14px;
+  }
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats > div,
+.quickActions > div {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.stats > div:nth-child(1) { animation-delay: 0.1s; }
+.stats > div:nth-child(2) { animation-delay: 0.2s; }
+.stats > div:nth-child(3) { animation-delay: 0.3s; }
+.stats > div:nth-child(4) { animation-delay: 0.4s; }
+
+.quickActions > div:nth-child(1) { animation-delay: 0.2s; }
+.quickActions > div:nth-child(2) { animation-delay: 0.3s; }
+.quickActions > div:nth-child(3) { animation-delay: 0.4s; }
+.quickActions > div:nth-child(4) { animation-delay: 0.5s; }

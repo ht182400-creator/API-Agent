@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Table, Tag, Button, Space, Modal, Form, Select, Input, message, Popconfirm } from 'antd'
 import { UserOutlined, EditOutlined, DeleteOutlined, SafetyOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
@@ -161,7 +162,7 @@ export default function SuperAdminUsers() {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24 }} className="bamboo-bg-pattern">
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2><UserOutlined /> 全局用户管理</h2>
