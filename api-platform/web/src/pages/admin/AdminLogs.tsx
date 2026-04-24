@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import {
   Card,
   Table,
@@ -452,7 +453,7 @@ export default function AdminLogs() {
   }
   
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Title level={4}>日志管理</Title>
       
       {/* 统计卡片 */}

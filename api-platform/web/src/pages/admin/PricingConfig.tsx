@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import {
   Tabs,
   Table,
@@ -358,7 +359,7 @@ const PricingConfigPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Card
         title={
           <Space>

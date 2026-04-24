@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography, Alert } from 'antd'
 import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined, EyeOutlined, RocketOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -227,7 +228,7 @@ export default function DeveloperKeys() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {/* 统一的错误提示组件 */}
       <ErrorModalComponent />
       

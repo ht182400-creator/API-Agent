@@ -2,14 +2,17 @@
  * 仓库管理页面 - 仓库所有者视角
  * 管理自己创建的仓库，包括端点配置和限流设置
  * 更新: V2.5 - 添加端点管理和限流配置Tab
+ * V5.0 - 支持仓库图标上传和显示
  */
 
 import { useState, useEffect } from 'react'
-import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined } from '@ant-design/icons'
+import '../../styles/cyber-theme.css'
+import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch, Upload } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest, Endpoint, CreateEndpointRequest, UpdateEndpointRequest, UpdateLimitsRequest } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
 import { useAuthStore } from '../../stores/auth'
+import { RepoLogo } from '../../components/RepoLogo'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 
@@ -47,6 +50,35 @@ export default function OwnerRepos() {
   const [editingEndpoint, setEditingEndpoint] = useState<Endpoint | null>(null)
   const [endpointModalVisible, setEndpointModalVisible] = useState(false)
   const [endpointForm] = Form.useForm()
+  const [logoPreview, setLogoPreview] = useState<string>('')  // 编辑时的图标预览
+
+  // 处理图标上传
+  const handleLogoChange = (file: File) => {
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+      message.error('只能上传图片文件！')
+      return false
+    }
+    const isLt200K = file.size / 1024 < 200
+    if (!isLt200K) {
+      message.error('图标大小不能超过 200KB！')
+      return false
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string
+      setLogoPreview(base64)
+      form.setFieldValue('logo_url', base64)
+    }
+    reader.readAsDataURL(file)
+    return false
+  }
+
+  // 删除图标
+  const handleRemoveLogo = () => {
+    setLogoPreview('')
+    form.setFieldValue('logo_url', '')
+  }
 
   // 使用统一错误处理
   const { showError, showSuccess } = useError()
@@ -115,6 +147,7 @@ export default function OwnerRepos() {
           description: values.description,
           endpoint_url: values.endpoint_url,
           repo_type: values.repo_type,
+          logo_url: values.logo_url,
           endpoints: endpoints,
           limits: limits,
         })
@@ -128,6 +161,7 @@ export default function OwnerRepos() {
       setEditingRepo(null)
       setEndpoints([])
       setLimits({})
+      setLogoPreview('')
       fetchRepos()
     } catch (error: any) {
       showError(error, () => handleCreate(values))
@@ -138,6 +172,7 @@ export default function OwnerRepos() {
 
   const handleEdit = async (repo: Repository) => {
     setEditingRepo(repo)
+    setLogoPreview(repo.logo_url || '')  // 设置图标预览
     form.setFieldsValue({
       name: repo.name,
       display_name: repo.display_name,
@@ -145,6 +180,7 @@ export default function OwnerRepos() {
       repo_type: repo.type,
       protocol: repo.protocol || 'http',
       endpoint_url: repo.endpoint || '',
+      logo_url: repo.logo_url || '',
     })
     // 加载端点和限流配置
     await loadRepoConfig(repo.id)
@@ -252,6 +288,14 @@ export default function OwnerRepos() {
   }
 
   const columns = [
+    {
+      title: '图标',
+      key: 'logo',
+      width: 70,
+      render: (_: any, record: Repository) => (
+        <RepoLogo logoUrl={record.logo_url} repoType={record.type} size={40} />
+      ),
+    },
     { 
       title: '仓库名称', 
       dataIndex: 'name', 
@@ -328,6 +372,60 @@ export default function OwnerRepos() {
   // Tab 内容组件
   const BasicInfoTab = () => (
     <>
+      {/* 仓库图标上传 */}
+      <Form.Item label="仓库图标">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {logoPreview ? (
+            <div style={{
+              width: 72,
+              height: 72,
+              borderRadius: 8,
+              overflow: 'hidden',
+              border: '1px solid #d1d5db',
+              position: 'relative',
+            }}>
+              <img
+                src={logoPreview}
+                alt="仓库图标预览"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <Button
+                type="text"
+                size="small"
+                icon={<DeleteOutlined />}
+                onClick={handleRemoveLogo}
+                style={{
+                  position: 'absolute',
+                  top: 2,
+                  right: 2,
+                  background: 'rgba(0,0,0,0.5)',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  width: 24,
+                  height: 24,
+                  minWidth: 24,
+                  padding: 0,
+                }}
+              />
+            </div>
+          ) : (
+            <Upload
+              accept="image/*"
+              showUploadList={false}
+              beforeUpload={handleLogoChange}
+            >
+              <Button icon={<UploadOutlined />}>上传图标</Button>
+            </Upload>
+          )}
+          {logoPreview && (
+            <Text type="secondary" style={{ fontSize: 12 }}>点击删除按钮可重新上传</Text>
+          )}
+          {!logoPreview && (
+            <Text type="secondary" style={{ fontSize: 12 }}>建议 64x64 像素，不超过 200KB</Text>
+          )}
+        </div>
+      </Form.Item>
+
       <Form.Item name="name" label="仓库标识" rules={[{ required: true, message: '请输入仓库标识' }]}>
         <Input placeholder="如：weather-api (唯一标识)" disabled={!!editingRepo} />
       </Form.Item>
@@ -552,7 +650,7 @@ export default function OwnerRepos() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <div>
           <Title level={4} style={{ marginBottom: 4 }}>仓库管理</Title>
@@ -643,7 +741,7 @@ export default function OwnerRepos() {
       <Modal
         title={editingRepo ? '编辑仓库配置' : '创建仓库'}
         open={modalVisible}
-        onCancel={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null); setEndpoints([]) }}
+        onCancel={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null); setEndpoints([]); setLogoPreview('') }}
         footer={null}
         width={800}
         destroyOnClose

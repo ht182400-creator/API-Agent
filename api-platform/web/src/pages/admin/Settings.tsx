@@ -3,6 +3,7 @@
  */
 
 import { Card, Form, Input, Button, Switch, Space, Typography, Divider, message, Slider } from 'antd'
+import '../../styles/cyber-theme.css'
 import { SaveOutlined, FolderOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -65,7 +66,7 @@ export default function AdminSettings() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Title level={4}>系统设置</Title>
 
       <Card title="基础设置" className={styles.card}>

@@ -27,7 +27,7 @@ class Repository(Base):
     slug = Column(String(100), nullable=False, index=True)  # URL-friendly name
     display_name = Column(String(200), nullable=True)
     description = Column(Text, nullable=True)
-    logo_url = Column(String(500), nullable=True)
+    logo_url = Column(Text, nullable=True)  # V5.0 使用 Text 存储 Base64 图标
 
     # Repository type
     repo_type = Column(String(50), nullable=False, index=True)  # psychology, stock, ai, translation

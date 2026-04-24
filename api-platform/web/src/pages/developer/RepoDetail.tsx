@@ -1,24 +1,221 @@
 /**
  * 仓库详情页面
  * 展示仓库的端点列表、限流配置、定价信息
+ * 【V5.0新增】API调用指南，帮助开发者了解如何调用仓库API
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { useParams, Link } from 'react-router-dom'
-import { Card, Descriptions, Table, Tag, Button, Space, Typography, Row, Col, Statistic, Alert, Spin, Breadcrumb, Tooltip } from 'antd'
+import { Card, Descriptions, Table, Tag, Button, Space, Typography, Row, Col, Statistic, Alert, Spin, Breadcrumb, Tooltip, Collapse, message } from 'antd'
 import { 
   ApiOutlined, 
-  SafetyCertificateOutlined, 
+  SafetyOutlined, 
   DollarOutlined, 
   ThunderboltOutlined,
   ArrowLeftOutlined,
   GlobalOutlined,
   ClockCircleOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  CopyOutlined,
+  QuestionCircleOutlined,
+  CodeOutlined,
 } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
+import { RepoLogo } from '../../components/RepoLogo'
 import styles from './RepoDetail.module.css'
+
+// 【V5.0新增】API调用指南组件
+const ApiCallGuide = ({ repo }: { repo: Repository }) => {
+  const apiBaseUrl = '/api/v1'
+  const repoSlug = repo.slug
+
+  // 复制到剪贴板
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      message.success(`${label}已复制到剪贴板`)
+    }).catch(() => {
+      message.error('复制失败，请手动复制')
+    })
+  }
+
+  // 生成curl示例
+  const generateCurlExample = (endpoint: RepositoryEndpoint) => {
+    const url = `${apiBaseUrl}/repositories/${repoSlug}${endpoint.path}`
+    return `curl -X ${endpoint.method} '${url}' \\
+  -H 'Content-Type: application/json' \\
+  -H 'X-Access-Key: YOUR_API_KEY' \\
+  -H 'X-Signature: YOUR_SIGNATURE' \\
+  -H 'X-Timestamp: TIMESTAMP' \\
+  -H 'X-Nonce: NONCE' \\
+  -d '${JSON.stringify({})}'`
+  }
+
+  // 生成请求代码示例
+  const generateCodeExample = (endpoint: RepositoryEndpoint, method: string) => {
+    const url = `${apiBaseUrl}/repositories/${repoSlug}${endpoint.path}`
+    
+    if (method === 'GET') {
+      return `// 使用 fetch
+fetch('${url}', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Access-Key': 'YOUR_API_KEY',
+    'X-Signature': 'YOUR_SIGNATURE',
+    'X-Timestamp': 'TIMESTAMP',
+    'X-Nonce': 'NONCE',
+  }
+})
+  .then(res => res.json())
+  .then(data => console.log(data))`
+    } else {
+      return `// 使用 fetch
+fetch('${url}', {
+  method: '${method}',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Access-Key': 'YOUR_API_KEY',
+    'X-Signature': 'YOUR_SIGNATURE',
+    'X-Timestamp': 'TIMESTAMP',
+    'X-Nonce': 'NONCE',
+  },
+  body: JSON.stringify({
+    // 您的请求参数
+  })
+})
+  .then(res => res.json())
+  .then(data => console.log(data))`
+    }
+  }
+
+  const collapseItems = repo.endpoints?.map((endpoint, index) => ({
+    key: String(index),
+    label: (
+      <Space>
+        <Tag color={endpoint.method === 'GET' ? 'green' : endpoint.method === 'POST' ? 'blue' : endpoint.method === 'PUT' ? 'orange' : endpoint.method === 'DELETE' ? 'red' : 'purple'}>
+          {endpoint.method}
+        </Tag>
+        <Text code>{endpoint.path}</Text>
+        {endpoint.description && <Text type="secondary"> - {endpoint.description}</Text>}
+      </Space>
+    ),
+    children: (
+      <div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <div style={{ marginBottom: 16 }}>
+              <Text strong style={{ marginBottom: 8, display: 'block' }}>调用地址</Text>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Text code copyable={{ text: `${apiBaseUrl}/repositories/${repoSlug}${endpoint.path}` }}>
+                  {apiBaseUrl}/repositories/{repoSlug}{endpoint.path}
+                </Text>
+              </div>
+            </div>
+          </Col>
+          <Col span={12}>
+            <div style={{ marginBottom: 16 }}>
+              <Text strong style={{ marginBottom: 8, display: 'block' }}>请求方式</Text>
+              <Tag color={endpoint.method === 'GET' ? 'green' : 'blue'} style={{ fontSize: 14 }}>
+                {endpoint.method}
+              </Tag>
+            </div>
+          </Col>
+        </Row>
+
+        <div style={{ marginBottom: 16 }}>
+          <Text strong style={{ marginBottom: 8, display: 'block' }}>请求头 (Headers)</Text>
+          <pre style={{ 
+            background: '#f5f5f5', 
+            padding: 12, 
+            borderRadius: 4, 
+            fontSize: 12,
+            overflow: 'auto'
+          }}>
+{`Content-Type: application/json
+X-Access-Key: YOUR_API_KEY       // 您的API Key
+X-Signature: YOUR_SIGNATURE      // HMAC签名
+X-Timestamp: TIMESTAMP           // 时间戳
+X-Nonce: NONCE                   // 随机字符串`}
+          </pre>
+        </div>
+
+        <Collapse 
+          ghost 
+          size="small"
+          items={[{
+            key: 'curl',
+            label: <Text><CodeOutlined /> Curl 示例</Text>,
+            children: (
+              <pre style={{ 
+                background: '#1e1e1e', 
+                color: '#d4d4d4',
+                padding: 12, 
+                borderRadius: 4, 
+                fontSize: 11,
+                overflow: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all'
+              }}>
+                {generateCurlExample(endpoint)}
+              </pre>
+            )
+          }, {
+            key: 'code',
+            label: <Text><CodeOutlined /> JavaScript 示例</Text>,
+            children: (
+              <pre style={{ 
+                background: '#1e1e1e', 
+                color: '#d4d4d4',
+                padding: 12, 
+                borderRadius: 4, 
+                fontSize: 11,
+                overflow: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all'
+              }}>
+                {generateCodeExample(endpoint, endpoint.method)}
+              </pre>
+            )
+          }]}
+        />
+      </div>
+    ),
+  })) || []
+
+  return (
+    <Card 
+      title={
+        <Space>
+          <QuestionCircleOutlined />
+          <span>API调用指南</span>
+        </Space>
+      }
+      className={styles.guideCard}
+    >
+      <Alert
+        type="info"
+        showIcon
+        icon={<SafetyOutlined />}
+        message="调用此API需要先获取API Key"
+        description={
+          <span>
+            在 <Link to="/developer/keys">API Keys</Link> 页面创建和管理您的API Key。
+            详细签名验证说明请查看 <a href="/docs/auth" target="_blank">认证文档</a>。
+          </span>
+        }
+        style={{ marginBottom: 16 }}
+      />
+
+      <Collapse 
+        size="small"
+        items={collapseItems}
+        defaultActiveKey={repo.endpoints?.length === 1 ? ['0'] : undefined}
+      />
+    </Card>
+  )
+}
 
 const { Title, Text, Paragraph } = Typography
 
@@ -113,7 +310,7 @@ export default function RepoDetail() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {/* 面包屑导航 */}
       <Breadcrumb
         items={[
@@ -127,9 +324,7 @@ export default function RepoDetail() {
       <Card className={styles.basicInfoCard}>
         <Row gutter={24} align="middle">
           <Col flex="none">
-            <div className={styles.repoLogo}>
-              {repo.display_name?.charAt(0) || repo.name.charAt(0).toUpperCase()}
-            </div>
+            <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={64} />
           </Col>
           <Col flex="auto">
             <Title level={3} style={{ marginBottom: 8 }}>
@@ -358,6 +553,9 @@ export default function RepoDetail() {
           {repo.online_at && <Descriptions.Item label="上线时间">{repo.online_at}</Descriptions.Item>}
         </Descriptions>
       </Card>
+
+      {/* 【V5.0新增】API调用指南 */}
+      <ApiCallGuide repo={repo} />
     </div>
   )
 }

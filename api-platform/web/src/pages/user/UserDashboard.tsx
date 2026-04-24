@@ -12,6 +12,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import '../../styles/cyber-theme.css'
 import { useNavigate } from 'react-router-dom'
 import { Card, Row, Col, Statistic, Button, Typography, Space, message, Spin, Alert, Modal, Divider } from 'antd'
 import { GiftOutlined, RocketOutlined, DollarOutlined, CheckCircleOutlined, RightOutlined, SafetyCertificateOutlined } from '@ant-design/icons'
@@ -239,7 +240,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {/* 顶部欢迎区域 */}
       <div className={styles.welcomeSection}>
         <Title level={2} className={styles.welcomeTitle}>

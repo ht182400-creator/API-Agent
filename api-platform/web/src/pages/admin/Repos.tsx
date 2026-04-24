@@ -2,14 +2,17 @@
  * 管理员仓库管理页面
  * 功能：审核仓库、上线/下线管理、删除仓库、我的仓库统计
  * V2.0 - 添加删除功能、"我的仓库"Tab、调用统计
+ * V5.0 - 显示仓库自定义图标
  */
 
 import { Table, Tag, Button, Space, Modal, Input, message, Statistic, Card, Row, Col, Tabs, Popconfirm, Spin } from 'antd'
 import { CheckCircleOutlined, CloseCircleOutlined, ArrowUpOutlined, ArrowDownOutlined, ExclamationCircleOutlined, PlusOutlined, DeleteOutlined, ApiOutlined, ThunderboltOutlined, EyeOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import '../../styles/cyber-theme.css'
 import { repoApi, Repository } from '../../api/repo'
 import { useAuthStore } from '../../stores/auth'
+import { RepoLogo } from '../../components/RepoLogo'
 import styles from './Repos.module.css'
 
 const { TextArea } = Input
@@ -286,6 +289,14 @@ export default function AdminRepos() {
   // 所有仓库表格列
   const columns = [
     {
+      title: '图标',
+      key: 'logo',
+      width: 70,
+      render: (_: any, record: Repository) => (
+        <RepoLogo logoUrl={record.logo_url} repoType={record.type} size={40} />
+      ),
+    },
+    {
       title: '仓库名称',
       dataIndex: 'display_name',
       key: 'display_name',
@@ -479,6 +490,14 @@ export default function AdminRepos() {
   // 我的仓库表格列
   const myRepoColumns = [
     {
+      title: '图标',
+      key: 'logo',
+      width: 70,
+      render: (_: any, record: Repository) => (
+        <RepoLogo logoUrl={record.logo_url} repoType={record.type} size={40} />
+      ),
+    },
+    {
       title: '仓库名称',
       dataIndex: 'display_name',
       key: 'display_name',
@@ -601,7 +620,7 @@ export default function AdminRepos() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <Tabs 
         activeKey={activeTab} 
         onChange={setActiveTab}

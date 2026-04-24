@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
+import '../../styles/cyber-theme.css';
 import { repositories, selfRepositories, thirdPartyRepositories, repositoryStats } from '../../config/repositories.config';
 import { Repository, Endpoint, RequestHistory, HttpMethod } from '../../types/api-tester';
 import { RepositoryCard } from '../../components/api-tester/RepositoryCard';
@@ -226,7 +227,7 @@ export const ApiTester: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       {/* 加载遮罩 */}
       {loading && (
         <div className={styles.loadingOverlay}>

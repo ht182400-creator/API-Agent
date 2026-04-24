@@ -1,6 +1,6 @@
 """
 Analytics API - 分析报表接口
-提供管理员视角的全局数据统计和趋势分析
+提供管理员/开发者视角的数据统计和趋势分析
 """
 
 import uuid
@@ -31,6 +31,30 @@ def check_admin_permission(current_user: User):
         raise AuthorizationError("需要管理员权限")
 
 
+def check_analytics_permission(current_user: User):
+    """检查是否有数据分析权限（管理员或开发者）"""
+    if not PermissionService.is_developer(current_user):
+        raise AuthorizationError("需要开发者或管理员权限")
+
+
+def is_admin_user(current_user: User) -> bool:
+    """检查是否为管理员（管理员可看全局数据）"""
+    return PermissionService.is_admin(current_user)
+
+
+async def get_user_repo_ids(db: AsyncSession, current_user: User) -> List[uuid.UUID]:
+    """获取用户可以访问的仓库ID列表（非管理员只能访问自己创建的仓库）"""
+    if is_admin_user(current_user):
+        # 管理员可以访问所有仓库
+        return None  # None 表示不限制
+    
+    # 非管理员只能访问自己创建的仓库
+    result = await db.execute(
+        select(Repository.id).where(Repository.owner_id == current_user.id)
+    )
+    return list(result.scalars().all())
+
+
 # ==================== 概览统计 ====================
 
 @router.get("/overview", response_model=BaseResponse[dict])
@@ -41,9 +65,9 @@ async def get_analytics_overview(
     """
     获取分析概览统计数据
     
-    返回全局的仓库统计、调用统计、收入统计
+    管理员返回全局数据，开发者返回自己的仓库汇总数据
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
     
     # 当前北京时间
     now = datetime.now()
@@ -51,103 +75,123 @@ async def get_analytics_overview(
     week_ago = now - timedelta(days=7)
     month_ago = now - timedelta(days=30)
     
+    # 获取用户可访问的仓库
+    user_repo_ids = await get_user_repo_ids(db, current_user)
+    
+    # 构建调用日志的过滤条件
+    def build_call_log_conditions():
+        """构建调用日志的过滤条件"""
+        conditions = []
+        if user_repo_ids is not None:
+            conditions.append(APICallLog.repo_id.in_(user_repo_ids))
+        return conditions
+    
     # 1. 仓库统计
-    repos_result = await db.execute(select(Repository))
+    repos_query = select(Repository)
+    if user_repo_ids is not None:
+        repos_query = repos_query.where(Repository.id.in_(user_repo_ids))
+    repos_result = await db.execute(repos_query)
     all_repos = repos_result.scalars().all()
     total_repos = len(all_repos)
     online_repos = sum(1 for r in all_repos if r.status == "online")
     pending_repos = sum(1 for r in all_repos if r.status == "pending")
     
     # 2. 今日调用统计
+    conditions = build_call_log_conditions()
+    conditions.append(func.date(APICallLog.created_at) == today)
     today_calls_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            func.date(APICallLog.created_at) == today
-        )
+        select(func.count(APICallLog.id)).where(and_(*conditions))
     )
     today_calls = today_calls_result.scalar() or 0
     
     # 今日成功调用
+    conditions = build_call_log_conditions()
+    conditions.extend([
+        func.date(APICallLog.created_at) == today,
+        APICallLog.status_code >= 200,
+        APICallLog.status_code < 300
+    ])
     today_success_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            and_(
-                func.date(APICallLog.created_at) == today,
-                APICallLog.status_code >= 200,
-                APICallLog.status_code < 300
-            )
-        )
+        select(func.count(APICallLog.id)).where(and_(*conditions))
     )
     today_success = today_success_result.scalar() or 0
     
     # 3. 本周调用统计
+    conditions = build_call_log_conditions()
+    conditions.append(APICallLog.created_at >= week_ago)
     week_calls_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            APICallLog.created_at >= week_ago
-        )
+        select(func.count(APICallLog.id)).where(and_(*conditions))
     )
     week_calls = week_calls_result.scalar() or 0
     
     # 4. 本月调用统计
+    conditions = build_call_log_conditions()
+    conditions.append(APICallLog.created_at >= month_ago)
     month_calls_result = await db.execute(
-        select(func.count(APICallLog.id)).where(
-            APICallLog.created_at >= month_ago
-        )
+        select(func.count(APICallLog.id)).where(and_(*conditions))
     )
     month_calls = month_calls_result.scalar() or 0
     
     # 5. 总调用统计
+    conditions = build_call_log_conditions()
     total_calls_result = await db.execute(
+        select(func.count(APICallLog.id)).where(and_(*conditions)) if conditions else
         select(func.count(APICallLog.id))
     )
     total_calls = total_calls_result.scalar() or 0
     
-    # 6. 总收入（从调用日志的cost字段汇总）
+    # 6. 总收入
+    conditions = build_call_log_conditions()
+    conditions.append(APICallLog.cost != None)
     total_cost_result = await db.execute(
-        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
-            APICallLog.cost != None
-        )
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(and_(*conditions)) if conditions else
+        select(func.sum(func.cast(APICallLog.cost, Numeric)))
     )
     total_cost = float(total_cost_result.scalar() or 0)
     
     # 7. 今日收入
+    conditions = build_call_log_conditions()
+    conditions.extend([
+        func.date(APICallLog.created_at) == today,
+        APICallLog.cost != None
+    ])
     today_cost_result = await db.execute(
-        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
-            and_(
-                func.date(APICallLog.created_at) == today,
-                APICallLog.cost != None
-            )
-        )
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(and_(*conditions))
     )
     today_cost = float(today_cost_result.scalar() or 0)
     
     # 8. 本周收入
+    conditions = build_call_log_conditions()
+    conditions.extend([
+        APICallLog.created_at >= week_ago,
+        APICallLog.cost != None
+    ])
     week_cost_result = await db.execute(
-        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
-            and_(
-                APICallLog.created_at >= week_ago,
-                APICallLog.cost != None
-            )
-        )
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(and_(*conditions))
     )
     week_cost = float(week_cost_result.scalar() or 0)
     
     # 9. 本月收入
+    conditions = build_call_log_conditions()
+    conditions.extend([
+        APICallLog.created_at >= month_ago,
+        APICallLog.cost != None
+    ])
     month_cost_result = await db.execute(
-        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(
-            and_(
-                APICallLog.created_at >= month_ago,
-                APICallLog.cost != None
-            )
-        )
+        select(func.sum(func.cast(APICallLog.cost, Numeric))).where(and_(*conditions))
     )
     month_cost = float(month_cost_result.scalar() or 0)
     
     # 10. 活跃用户数（本周有调用的独立用户数）
+    conditions = build_call_log_conditions()
+    conditions.append(APICallLog.created_at >= week_ago)
     week_users_result = await db.execute(
-        select(func.count(func.distinct(APICallLog.user_id))).where(
-            APICallLog.created_at >= week_ago
-        )
+        select(func.count(func.distinct(APICallLog.user_id))).where(and_(*conditions))
     )
     active_users = week_users_result.scalar() or 0
+    
+    # 标记是否为管理员视角
+    is_admin_view = is_admin_user(current_user)
     
     return BaseResponse(data={
         "repos": {
@@ -170,6 +214,7 @@ async def get_analytics_overview(
             "total": round(total_cost, 2),
         },
         "active_users": active_users,
+        "is_admin_view": is_admin_view,  # 标记数据范围
         "generated_at": datetime.now().isoformat(),
     })
 
@@ -188,19 +233,44 @@ async def get_analytics_trend(
     获取调用和收入趋势数据
     
     支持按小时/按天统计，可按仓库筛选
+    管理员返回全局数据，开发者只返回自己仓库的数据
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
     
     now = datetime.now()
     
+    # 获取用户可访问的仓库
+    user_repo_ids = await get_user_repo_ids(db, current_user)
+    
     # 构建查询条件
     conditions = []
-    if repo_id:
-        try:
-            repo_uuid = uuid.UUID(repo_id)
-            conditions.append(APICallLog.repo_id == repo_uuid)
-        except ValueError:
-            pass
+    
+    # 仓库过滤：开发者只能看自己的仓库
+    if user_repo_ids is not None:
+        if repo_id:
+            # 指定了特定仓库，需要验证是否有权限访问
+            try:
+                repo_uuid = uuid.UUID(repo_id)
+                if repo_uuid not in user_repo_ids:
+                    return BaseResponse(code=403, message="无权访问该仓库的数据")
+                conditions.append(APICallLog.repo_id == repo_uuid)
+            except ValueError:
+                pass
+        else:
+            # 未指定仓库，使用用户自己的仓库
+            if user_repo_ids:
+                conditions.append(APICallLog.repo_id.in_(user_repo_ids))
+            else:
+                # 用户没有仓库，返回空数据
+                return BaseResponse(data={
+                    "labels": [],
+                    "series": {"calls": [], "revenue": []},
+                    "period": period,
+                    "days": days,
+                    "repo_id": repo_id,
+                    "is_admin_view": False,
+                    "generated_at": datetime.now().isoformat(),
+                })
     
     # 按周期分组
     if period == "hour":
@@ -250,6 +320,7 @@ async def get_analytics_trend(
         "period": period,
         "days": days,
         "repo_id": repo_id,
+        "is_admin_view": is_admin_user(current_user),
         "generated_at": datetime.now().isoformat(),
     })
 
@@ -270,12 +341,21 @@ async def get_analytics_repo_details(
     获取各仓库的调用和收入明细
     
     返回仓库列表及其统计数据
+    管理员返回所有仓库，开发者只返回自己的仓库
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
+    
+    # 获取用户可访问的仓库
+    user_repo_ids = await get_user_repo_ids(db, current_user)
     
     # 构建查询
     query = select(Repository)
     count_query = select(func.count(Repository.id))
+    
+    # 非管理员只能看自己的仓库
+    if user_repo_ids is not None:
+        query = query.where(Repository.id.in_(user_repo_ids))
+        count_query = count_query.where(Repository.id.in_(user_repo_ids))
     
     if status:
         query = query.where(Repository.status == status)
@@ -372,6 +452,7 @@ async def get_analytics_repo_details(
             "total": total,
             "total_pages": (total + page_size - 1) // page_size if total > 0 else 0,
         },
+        "is_admin_view": is_admin_user(current_user),
         "generated_at": datetime.now().isoformat(),
     })
 
@@ -387,8 +468,10 @@ async def get_repo_analytics_trend(
 ):
     """
     获取指定仓库的调用和收入趋势
+    
+    开发者只能访问自己创建的仓库
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
     
     # 验证仓库
     try:
@@ -403,6 +486,10 @@ async def get_repo_analytics_trend(
     
     if not repo:
         return BaseResponse(code=404, message="仓库不存在")
+    
+    # 权限检查：开发者只能访问自己的仓库
+    if not is_admin_user(current_user) and repo.owner_id != current_user.id:
+        return BaseResponse(code=403, message="无权访问该仓库的数据")
     
     now = datetime.now()
     start_time = now - timedelta(days=days)
@@ -462,8 +549,10 @@ async def get_user_ranking(
 ):
     """
     获取用户调用量排行榜
+    
+    管理员返回全局排行，开发者只返回自己仓库相关的用户排行
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
     
     now = datetime.now()
     
@@ -476,14 +565,20 @@ async def get_user_ranking(
     else:
         start_time = datetime(2000, 1, 1)  # 全部时间
     
+    # 获取用户可访问的仓库
+    user_repo_ids = await get_user_repo_ids(db, current_user)
+    
+    # 构建查询条件
+    conditions = [APICallLog.created_at >= start_time]
+    if user_repo_ids is not None:
+        conditions.append(APICallLog.repo_id.in_(user_repo_ids))
+    
     # 按用户分组统计
     query = select(
         APICallLog.user_id,
         func.count(APICallLog.id).label('total_calls'),
         func.sum(func.cast(APICallLog.cost, Numeric)).label('total_cost')
-    ).where(
-        APICallLog.created_at >= start_time
-    ).group_by(APICallLog.user_id).order_by(func.count(APICallLog.id).desc()).limit(limit)
+    ).where(and_(*conditions)).group_by(APICallLog.user_id).order_by(func.count(APICallLog.id).desc()).limit(limit)
     
     result = await db.execute(query)
     rows = result.all()
@@ -508,6 +603,7 @@ async def get_user_ranking(
     return BaseResponse(data={
         "items": items,
         "period": period,
+        "is_admin_view": is_admin_user(current_user),
         "generated_at": datetime.now().isoformat(),
     })
 
@@ -523,8 +619,10 @@ async def get_repo_ranking(
 ):
     """
     获取仓库调用量排行榜
+    
+    管理员返回所有仓库排行，开发者只返回自己仓库的排行
     """
-    check_admin_permission(current_user)
+    check_analytics_permission(current_user)
     
     now = datetime.now()
     
@@ -537,14 +635,20 @@ async def get_repo_ranking(
     else:
         start_time = datetime(2000, 1, 1)
     
+    # 获取用户可访问的仓库
+    user_repo_ids = await get_user_repo_ids(db, current_user)
+    
+    # 构建查询条件
+    conditions = [APICallLog.created_at >= start_time]
+    if user_repo_ids is not None:
+        conditions.append(APICallLog.repo_id.in_(user_repo_ids))
+    
     # 按仓库分组统计
     query = select(
         APICallLog.repo_id,
         func.count(APICallLog.id).label('total_calls'),
         func.sum(func.cast(APICallLog.cost, Numeric)).label('total_cost')
-    ).where(
-        APICallLog.created_at >= start_time
-    ).group_by(APICallLog.repo_id).order_by(func.count(APICallLog.id).desc()).limit(limit)
+    ).where(and_(*conditions)).group_by(APICallLog.repo_id).order_by(func.count(APICallLog.id).desc()).limit(limit)
     
     result = await db.execute(query)
     rows = result.all()
@@ -570,5 +674,6 @@ async def get_repo_ranking(
     return BaseResponse(data={
         "items": items,
         "period": period,
+        "is_admin_view": is_admin_user(current_user),
         "generated_at": datetime.now().isoformat(),
     })

@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Table, Button, Input, Select, Tag, Space, Modal, message, Typography, Popconfirm } from 'antd'
 import { SearchOutlined, LockOutlined, DeleteOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -14,11 +15,11 @@ const { Title } = Typography
 
 // 用户类型映射
 const userTypeMap: Record<string, { label: string; color: string }> = {
-  super_admin: { label: '超级管理员', color: 'red' },
-  admin: { label: '管理员', color: 'orange' },
-  owner: { label: '仓库所有者', color: 'blue' },
-  developer: { label: '开发者', color: 'green' },
-  user: { label: '普通用户', color: 'default' },
+  super_admin: { label: '超级管理员', color: '#c41d7f' },  // 深红色
+  admin: { label: '管理员', color: '#d46b08' },            // 深橙色
+  owner: { label: '仓库所有者', color: '#0958d9' },        // 深蓝色
+  developer: { label: '开发者', color: '#237804' },        // 深绿色
+  user: { label: '普通用户', color: '#595959' },           // 深灰色
 }
 
 // 用户状态映射
@@ -183,7 +184,7 @@ export default function AdminUsers() {
   ]
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <Title level={4}>用户管理</Title>
         <Space>

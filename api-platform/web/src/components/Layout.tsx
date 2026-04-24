@@ -103,11 +103,14 @@ const ownerMenu: MenuProps['items'] = [
 ]
 
 // 【V4.2新增】开发者菜单（有仓库版本）
+// 【V5.0更新】同时显示仓库市场和仓库管理入口
 const developerWithReposMenu: MenuProps['items'] = [
   { key: '/', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
-  // 【V4.2新增】有仓库的开发者可以看到仓库管理
-  { key: '/owner/repos', icon: <ShopOutlined />, label: '仓库管理' },
+  // 【V5.0新增】仓库市场入口 - 可预览所有仓库（包括自建和平台仓库）
+  { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
+  // 仓库管理入口 - 仅管理自己创建的仓库
+  { key: '/owner/repos', icon: <FolderOutlined />, label: '仓库管理' },
   { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
@@ -173,7 +176,7 @@ const superAdminMenu: MenuProps['items'] = [
 ]
 
 // 根据用户类型获取菜单
-// 【V4.2更新】开发者菜单根据是否有仓库动态显示
+// 【V5.0更新】开发者也可以访问数据分析和收益结算
 const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProps['items'] => {
   switch (userType) {
     case 'super_admin':
@@ -184,11 +187,17 @@ const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProp
       // 仓库所有者只能看到自己的菜单
       return ownerMenu
     case 'developer':
-      // 【V4.2更新】开发者菜单根据是否有仓库动态显示
+      // 【V5.0更新】开发者也可以访问数据分析和收益结算
       if (userHasRepos) {
         return developerWithReposMenu
       } else {
-        return developerWithoutReposMenu
+        // 无仓库的开发者也显示数据分析和收益结算入口
+        return [
+          ...developerWithoutReposMenu.slice(0, 6),
+          { type: 'divider' as const, key: 'divider-owner', label: '仓库所有者功能' },
+          { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
+          { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
+        ]
       }
     case 'user':
     default:
@@ -428,7 +437,7 @@ export default function Layout() {
         )}
         
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[selectedKeys]}
           defaultOpenKeys={[firstLevelPath]}

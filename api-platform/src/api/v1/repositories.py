@@ -304,6 +304,7 @@ async def list_repositories(
                     uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
                     latency_p99=repo.sla_latency_p99,
                 ),
+                logo_url=repo.logo_url,
                 created_at=repo.created_at,
             )
         )
@@ -425,6 +426,7 @@ async def list_my_repositories(
                 uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
                 latency_p99=repo.sla_latency_p99,
             ),
+            "logo_url": repo.logo_url,
             "created_at": repo.created_at.isoformat() if repo.created_at else None,
             "updated_at": repo.updated_at.isoformat() if repo.updated_at else None,
         }
@@ -697,6 +699,7 @@ async def get_repository(
                 uptime=float(repo.sla_uptime.replace('%', '')) if repo.sla_uptime else None,
                 latency_p99=repo.sla_latency_p99,
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             online_at=repo.online_at,
         )
@@ -993,6 +996,7 @@ async def create_repository(
         status=initial_status,
         owner_id=current_user.id,
         owner_type="external",  # 外部用户创建
+        logo_url=repo_data.logo_url,  # V5.0 自定义图标
     )
     
     db.add(repo)
@@ -1013,6 +1017,7 @@ async def create_repository(
                 id=str(current_user.id),
                 name=current_user.email.split("@")[0],
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
         )
     )
@@ -1082,6 +1087,9 @@ async def update_repository(
         if repo_data.status == "online" and not repo.online_at:
             from datetime import datetime
             repo.online_at = datetime.utcnow()
+    # V5.0 自定义图标
+    if repo_data.logo_url is not None:
+        repo.logo_url = repo_data.logo_url
     
     await db.commit()
     await db.refresh(repo)
@@ -1100,6 +1108,7 @@ async def update_repository(
                 id=str(current_user.id),
                 name=current_user.email.split("@")[0],
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
         )
     )
@@ -1217,6 +1226,7 @@ async def list_all_repositories_for_admin(
                     id=str(repo.owner_id),
                     name=owner.email.split("@")[0] if owner else "未知",
                 ),
+                logo_url=repo.logo_url,
                 created_at=repo.created_at,
                 updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
                 online_at=repo.online_at.isoformat() if repo.online_at else None,
@@ -1306,6 +1316,7 @@ async def approve_repository(
                 id=str(repo.owner_id),
                 name=owner.email.split("@")[0] if owner else "未知",
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )
@@ -1380,6 +1391,7 @@ async def reject_repository(
                 id=str(repo.owner_id),
                 name=owner.email.split("@")[0] if owner else "未知",
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )
@@ -1454,6 +1466,7 @@ async def online_repository(
                 id=str(repo.owner_id),
                 name=owner.email.split("@")[0] if owner else "未知",
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
             online_at=repo.online_at.isoformat() if repo.online_at else None,
@@ -1527,6 +1540,7 @@ async def offline_repository(
                 id=str(repo.owner_id),
                 name=owner.email.split("@")[0] if owner else "未知",
             ),
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )
@@ -2134,6 +2148,7 @@ async def update_repository_config(
                 )
                 for ep in endpoints_list
             ],
+            logo_url=repo.logo_url,
             created_at=repo.created_at,
             updated_at=repo.updated_at.isoformat() if repo.updated_at else None,
         )

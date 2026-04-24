@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import '../../styles/cyber-theme.css'
 import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App, Alert } from 'antd'
 import { 
   WalletOutlined, 
@@ -155,7 +156,7 @@ export default function DeveloperBilling() {
   const distributionData = getConsumptionDistribution()
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
       
       {/* 普通用户升级引导 */}

@@ -1,23 +1,39 @@
 /**
- * 管理员工作台
+ * 管理员工作台 - 翠竹主题
+ * 清新明亮的翡翠绿配色
+ * V2.1 - 竹韵版
  */
 
-import { Row, Col, Card, Statistic, Typography, Table, Tag, Space } from 'antd'
+import { Row, Col, Card, Statistic, Typography, Table, Tag, Space, Avatar } from 'antd'
 import { 
   UserOutlined, 
   ShopOutlined, 
   LineChartOutlined, 
   DollarOutlined,
   SafetyCertificateOutlined,
-  WarningOutlined
+  WarningOutlined,
+  ThunderboltOutlined,
+  DatabaseOutlined,
+  ExclamationCircleOutlined,
+  ArrowRightOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useState, useEffect } from 'react'
 import { adminApi, userTypeMap } from '../../api/admin'
 import styles from './Dashboard.module.css'
+import '../../styles/cyber-theme.css'
 
 const { Title, Text } = Typography
+
+// 用户类型中文映射
+const userTypeLabels: Record<string, string> = {
+  super_admin: '超级管理员',
+  admin: '管理员',
+  owner: '所有者',
+  developer: '开发者',
+  user: '普通用户'
+}
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
@@ -36,9 +52,17 @@ export default function AdminDashboard() {
   })
 
   const alerts = [
-    { type: 'warning', message: '仓库 api-translate 响应超时率过高', time: '10分钟前' },
-    { type: 'info', message: '新用户注册审核通过', time: '30分钟前' },
-    { type: 'error', message: 'API Key sk_live_xxx 异常使用', time: '1小时前' },
+    { type: 'error', message: 'API Key sk_live_xxx 异常使用', time: '10分钟前' },
+    { type: 'warning', message: '仓库 api-translate 响应超时率过高', time: '30分钟前' },
+    { type: 'info', message: '新用户注册审核通过', time: '1小时前' },
+  ]
+
+  // 快捷入口
+  const quickActions = [
+    { icon: <UserOutlined />, title: '用户管理', desc: '管理系统用户', path: '/admin/users', color: 'violet' },
+    { icon: <ShopOutlined />, title: '仓库管理', desc: '审核API仓库', path: '/admin/repos', color: 'gold' },
+    { icon: <LineChartOutlined />, title: '数据分析', desc: '查看运营数据', path: '/admin/analytics', color: 'cinnabar' },
+    { icon: <DatabaseOutlined />, title: '日志管理', desc: '系统日志', path: '/admin/logs', color: 'jade' },
   ]
 
   // 加载统计数据和用户列表
@@ -47,13 +71,11 @@ export default function AdminDashboard() {
       setLoading(true)
       setStatsLoading(true)
       try {
-        // 并行加载统计数据和用户列表
         const [statsRes, usersRes] = await Promise.all([
           adminApi.getStats(),
           adminApi.listUsers({ page: 1, page_size: 10 }).catch(() => ({ items: [] }))
         ])
         
-        // 更新统计数据
         setSystemStats({
           totalUsers: statsRes.total_users || 0,
           todayNewUsers: statsRes.today_new_users || 0,
@@ -63,7 +85,6 @@ export default function AdminDashboard() {
           activeKeys: statsRes.total_api_keys || 0,
         })
         
-        // 更新用户列表
         if (usersRes.items) {
           setRecentUsers(usersRes.items)
         }
@@ -78,77 +99,173 @@ export default function AdminDashboard() {
   }, [])
 
   const columns = [
-    { title: '用户名', dataIndex: 'username', key: 'username' },
-    { title: '邮箱', dataIndex: 'email', key: 'email' },
+    { 
+      title: '用户', 
+      key: 'user',
+      render: (_: any, record: any) => (
+        <Space>
+          <Avatar 
+            size={32} 
+            style={{ 
+              background: 'var(--gradient-cyber)',
+              fontSize: 14
+            }}
+          >
+            {record.username?.charAt(0).toUpperCase() || 'U'}
+          </Avatar>
+          <div>
+            <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{record.username}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{record.email}</div>
+          </div>
+        </Space>
+      )
+    },
     { 
       title: '类型', 
       dataIndex: 'user_type', 
       key: 'user_type', 
       render: (t: string) => {
-        const config = userTypeMap[t] || { label: t, color: 'default' }
-        return <Tag color={config.color}>{config.label}</Tag>
+        // 不同用户类型对应不同颜色（加深20%）
+        const colorMap: Record<string, string> = {
+          super_admin: '#c41d7f',  // 深红色
+          admin: '#d46b08',        // 深橙色
+          owner: '#0958d9',        // 深蓝色
+          developer: '#237804',    // 深绿色
+          user: '#595959'          // 深灰色
+        }
+        return (
+          <Tag color={colorMap[t] || '#595959'}>
+            {userTypeLabels[t] || t}
+          </Tag>
+        )
       }
     },
     { 
       title: '注册时间', 
       dataIndex: 'created_at', 
       key: 'created_at', 
-      render: (d: string) => d ? dayjs(d).format('YYYY-MM-DD HH:mm') : '-' 
+      render: (d: string) => (
+        <Text style={{ color: 'var(--text-secondary)' }}>
+          {d ? dayjs(d).format('YYYY-MM-DD HH:mm') : '-'}
+        </Text>
+      )
     },
   ]
 
   return (
-    <div className={styles.dashboard}>
-      <Title level={4}>管理后台</Title>
+    <div className={`${styles.dashboard} bamboo-bg-pattern`}>
+      {/* 翠竹印章装饰 */}
+      <div className="china-stamp">
+        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="5" width="50" height="50" fill="none" stroke="#059669" strokeWidth="2" rx="4"/>
+          <rect x="10" y="10" width="40" height="40" fill="none" stroke="#059669" strokeWidth="0.5"/>
+          <text x="30" y="38" textAnchor="middle" fontSize="14" fill="#059669" fontFamily="serif" fontWeight="bold">API</text>
+          <text x="30" y="50" textAnchor="middle" fontSize="9" fill="#059669" fontFamily="serif">Manager</text>
+        </svg>
+      </div>
 
-      <Row gutter={[16, 16]} className={styles.stats}>
+      {/* 页面标题 */}
+      <div className={styles.header}>
+        <div>
+          <Title level={2} className="cyber-title">「控制台」</Title>
+          <Text className="cyber-subtitle">API 管 理 平 台</Text>
+        </div>
+      </div>
+
+      {/* 统计卡片区 */}
+      <Row gutter={[20, 20]} className={styles.stats}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard} onClick={() => navigate('/admin/users')}>
+          <div 
+            className={`cyber-stat-card card-violet ${styles.statCard}`} 
+            onClick={() => navigate('/admin/users')}
+          >
+            <div className={`cyber-stat-icon icon-violet pulse-glow`}>
+              <UserOutlined />
+            </div>
             <Statistic
-              title="总用户数"
+              title={<span style={{ color: 'var(--text-secondary)', fontSize: 12, letterSpacing: 1 }}>总用户数</span>}
               value={systemStats.totalUsers}
-              prefix={<UserOutlined />}
-              suffix={<Text type="secondary">+{systemStats.todayNewUsers}今日</Text>}
+              valueStyle={{ color: 'var(--text-primary)', fontSize: 32, fontWeight: 700 }}
+              suffix={<Text type="secondary" style={{ fontSize: 12 }}>+{systemStats.todayNewUsers} 今日</Text>}
             />
-          </Card>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard} onClick={() => navigate('/admin/repos')}>
+          <div 
+            className={`cyber-stat-card card-gold ${styles.statCard}`} 
+            onClick={() => navigate('/admin/repos')}
+          >
+            <div className={`cyber-stat-icon icon-gold`}>
+              <ShopOutlined />
+            </div>
             <Statistic
-              title="API仓库"
+              title={<span style={{ color: 'var(--text-secondary)', fontSize: 12, letterSpacing: 1 }}>API仓库</span>}
               value={systemStats.totalRepos}
-              prefix={<ShopOutlined />}
-              valueStyle={{ color: '#1677ff' }}
+              valueStyle={{ color: 'var(--gold)', fontSize: 32, fontWeight: 700 }}
             />
-          </Card>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <div className={`cyber-stat-card card-cinnabar ${styles.statCard}`}>
+            <div className={`cyber-stat-icon icon-cinnabar`}>
+              <ThunderboltOutlined />
+            </div>
             <Statistic
-              title="今日调用"
+              title={<span style={{ color: 'var(--text-secondary)', fontSize: 12, letterSpacing: 1 }}>今日调用</span>}
               value={systemStats.todayCalls}
-              prefix={<LineChartOutlined />}
-              suffix="次"
+              valueStyle={{ color: 'var(--cinnabar)', fontSize: 32, fontWeight: 700 }}
+              suffix={<Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>次</Text>}
             />
-          </Card>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
+          <div className={`cyber-stat-card card-jade ${styles.statCard}`}>
+            <div className={`cyber-stat-icon icon-jade`}>
+              <DollarOutlined />
+            </div>
             <Statistic
-              title="累计收入"
+              title={<span style={{ color: 'var(--text-secondary)', fontSize: 12, letterSpacing: 1 }}>累计收入</span>}
               value={systemStats.totalRevenue}
-              prefix={<DollarOutlined />}
               precision={2}
-              suffix="元"
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: 'var(--jade)', fontSize: 32, fontWeight: 700 }}
+              suffix={<Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>元</Text>}
             />
-          </Card>
+          </div>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]}>
+      {/* 快捷入口 */}
+      <Row gutter={[20, 20]} className={styles.quickActions}>
+        {quickActions.map((action, index) => (
+          <Col xs={12} sm={6} key={index}>
+            <div 
+              className={`cyber-card-glow ${styles.quickCard} ${styles[`quickCard-${action.color}`]}`}
+              onClick={() => navigate(action.path)}
+            >
+              <div className={styles.quickIcon}>{action.icon}</div>
+              <div className={styles.quickInfo}>
+                <div className={styles.quickTitle}>{action.title}</div>
+                <div className={styles.quickDesc}>{action.desc}</div>
+              </div>
+              <ArrowRightOutlined className={styles.quickArrow} />
+            </div>
+          </Col>
+        ))}
+      </Row>
+
+      {/* 主内容区 */}
+      <Row gutter={[20, 20]}>
+        {/* 最新用户表格 */}
         <Col xs={24} lg={16}>
-          <Card title="最新注册用户" className={styles.tableCard}>
+          <Card 
+            className={`cyber-card ${styles.tableCard}`}
+            title={
+              <Space>
+                <SafetyCertificateOutlined style={{ color: 'var(--violet)' }} />
+                <span style={{ color: 'var(--text-primary)' }}>最新注册用户</span>
+              </Space>
+            }
+          >
             <Table
               dataSource={recentUsers}
               columns={columns}
@@ -156,25 +273,54 @@ export default function AdminDashboard() {
               pagination={false}
               loading={loading}
               locale={{ emptyText: '暂无数据' }}
+              className="cyber-table"
             />
           </Card>
         </Col>
+
+        {/* 系统告警 */}
         <Col xs={24} lg={8}>
-          <Card title="系统告警" className={styles.alertCard}>
+          <Card 
+            className={`cyber-card ${styles.alertCard}`}
+            title={
+              <Space>
+                <WarningOutlined style={{ color: 'var(--cinnabar)' }} />
+                <span style={{ color: 'var(--text-primary)' }}>系统告警</span>
+              </Space>
+            }
+          >
             {alerts.map((alert, index) => (
-              <div key={index} className={styles.alertItem}>
-                <Space>
-                  {alert.type === 'warning' && <WarningOutlined style={{ color: '#faad14' }} />}
-                  {alert.type === 'error' && <WarningOutlined style={{ color: '#ff4d4f' }} />}
-                  {alert.type === 'info' && <SafetyCertificateOutlined style={{ color: '#1677ff' }} />}
-                  <Text>{alert.message}</Text>
+              <div key={index} className={`cyber-alert alert-${alert.type}`}>
+                <Space align="start" size={12}>
+                  <div className={`cyber-alert-icon`} style={{
+                    background: alert.type === 'error' ? 'rgba(220, 38, 38, 0.15)' : 
+                                 alert.type === 'warning' ? 'rgba(180, 83, 9, 0.15)' : 
+                                 'rgba(37, 99, 235, 0.15)',
+                    color: alert.type === 'error' ? 'var(--cinnabar)' : 
+                           alert.type === 'warning' ? 'var(--gold)' : 
+                           'var(--azure)'
+                  }}>
+                    {alert.type === 'error' ? <ExclamationCircleOutlined /> : 
+                     alert.type === 'warning' ? <WarningOutlined /> : 
+                     <SafetyCertificateOutlined />}
+                  </div>
+                  <div>
+                    <div style={{ color: 'var(--text-primary)', fontSize: 14 }}>{alert.message}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 4 }}>{alert.time}</div>
+                  </div>
                 </Space>
-                <Text type="secondary" className={styles.alertTime}>{alert.time}</Text>
               </div>
             ))}
           </Card>
         </Col>
       </Row>
+
+      {/* 底部装饰 */}
+      <div className={styles.footer}>
+        <Text type="secondary">
+          API 管理平台 · 翠竹主题 · {dayjs().format('YYYY年MM月DD日')}
+        </Text>
+      </div>
     </div>
   )
 }

@@ -154,15 +154,17 @@ export const RoutePermissions: RoutePermission[] = [
   
   // 开发者路由
   { path: '/developer/keys', userTypes: ['developer'], requiredPermissions: [Permission.DEV_API_KEYS] },
+  // 【V5.0新增】仓库市场 - 开发者可以预览所有在线仓库
+  { path: '/developer/repos', userTypes: ['developer', 'owner'] },
   { path: '/developer/quota', userTypes: ['developer'], requiredPermissions: [Permission.DEV_QUOTA] },
   { path: '/developer/logs', userTypes: ['developer'], requiredPermissions: [Permission.LOG_READ] },
   { path: '/developer/billing', userTypes: ['developer'], requiredPermissions: [Permission.DEV_BILLING] },
   
-  // 仓库所有者路由
-  { path: '/owner', userTypes: ['owner'] },
-  { path: '/owner/repos', userTypes: ['owner'], requiredPermissions: [Permission.OWNER_REPO] },
-  { path: '/owner/analytics', userTypes: ['owner'], requiredPermissions: [Permission.OWNER_ANALYTICS] },
-  { path: '/owner/settlement', userTypes: ['owner'], requiredPermissions: [Permission.OWNER_SETTLEMENT] },
+  // 仓库所有者路由 (开发者也可访问)
+  { path: '/owner', userTypes: ['owner', 'developer'] },
+  { path: '/owner/repos', userTypes: ['owner', 'developer'], requiredPermissions: [Permission.OWNER_REPO] },
+  { path: '/owner/analytics', userTypes: ['owner', 'developer'], requiredPermissions: [Permission.OWNER_ANALYTICS] },
+  { path: '/owner/settlement', userTypes: ['owner', 'developer'], requiredPermissions: [Permission.OWNER_SETTLEMENT] },
   
   // 管理员路由
   { path: '/admin', userTypes: ['admin'] },

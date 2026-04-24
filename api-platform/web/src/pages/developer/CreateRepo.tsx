@@ -3,9 +3,11 @@
  * 任何用户都可以创建仓库
  * 普通用户/开发者创建的仓库需要管理员审核
  * 管理员创建的仓库直接上线
+ * V5.0 新增：支持上传自定义仓库图标
  */
 
 import { useState } from 'react'
+import '../../styles/cyber-theme.css'
 import { useNavigate } from 'react-router-dom'
 import {
   Card,
@@ -18,12 +20,17 @@ import {
   Alert,
   Divider,
   message,
+  Upload,
+  Modal,
 } from 'antd'
 import {
   ShopOutlined,
   InfoCircleOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  UploadOutlined,
+  PlusOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../../stores/auth'
 import { repoApi, CreateRepoRequest } from '../../api/repo'
@@ -56,6 +63,7 @@ interface CreateRepoForm {
   repo_type: string
   protocol: string
   endpoint_url?: string
+  logo_url?: string
 }
 
 export default function CreateRepo() {
@@ -63,6 +71,41 @@ export default function CreateRepo() {
   const { user } = useAuthStore()
   const [form] = Form.useForm<CreateRepoForm>()
   const [loading, setLoading] = useState(false)
+  const [logoPreview, setLogoPreview] = useState<string>('')  // 图标预览
+
+  // 处理图标上传
+  const handleLogoChange = (file: File) => {
+    // 检查文件类型
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+      message.error('只能上传图片文件！')
+      return false
+    }
+
+    // 检查文件大小（限制 200KB）
+    const isLt200K = file.size / 1024 < 200
+    if (!isLt200K) {
+      message.error('图标大小不能超过 200KB！')
+      return false
+    }
+
+    // 转换为 Base64
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string
+      setLogoPreview(base64)
+      form.setFieldValue('logo_url', base64)
+    }
+    reader.readAsDataURL(file)
+
+    return false  // 阻止默认上传行为
+  }
+
+  // 删除图标
+  const handleRemoveLogo = () => {
+    setLogoPreview('')
+    form.setFieldValue('logo_url', undefined)
+  }
 
   // 判断是否是管理员
   const isAdmin = user?.user_type === 'admin' || user?.user_type === 'super_admin'
@@ -91,7 +134,7 @@ export default function CreateRepo() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <Title level={3}>
           <ShopOutlined style={{ marginRight: 8 }} />
@@ -171,6 +214,62 @@ export default function CreateRepo() {
               rows={4}
               placeholder="详细描述您的API服务功能、使用场景、调用方式等..."
             />
+          </Form.Item>
+
+          {/* 仓库图标上传 */}
+          <Form.Item
+            name="logo_url"
+            label="仓库图标"
+            extra="上传您的仓库图标（建议 64x64 像素，不超过 200KB）"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              {/* 图标预览 */}
+              {logoPreview ? (
+                <div style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  border: '1px solid #d1d5db',
+                  position: 'relative',
+                }}>
+                  <img
+                    src={logoPreview}
+                    alt="仓库图标预览"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={handleRemoveLogo}
+                    style={{
+                      position: 'absolute',
+                      top: 2,
+                      right: 2,
+                      background: 'rgba(0,0,0,0.5)',
+                      color: '#fff',
+                      borderRadius: '50%',
+                      width: 20,
+                      height: 20,
+                      minWidth: 20,
+                      padding: 0,
+                    }}
+                  />
+                </div>
+              ) : (
+                <Upload
+                  accept="image/*"
+                  showUploadList={false}
+                  beforeUpload={handleLogoChange}
+                >
+                  <Button icon={<UploadOutlined />}>上传图标</Button>
+                </Upload>
+              )}
+              {logoPreview && (
+                <Text type="secondary">点击删除按钮可重新上传</Text>
+              )}
+            </div>
           </Form.Item>
 
           <Divider />
