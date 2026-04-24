@@ -89,6 +89,7 @@ export const RolePermissions: Record<Role, PermissionKey[]> = {
   ],
   
   // 开发者 - 基本使用权限
+  // 【V5.0更新】添加 OWNER_REPO 权限，允许开发者管理自己的仓库
   developer: [
     Permission.DEV_API_KEYS,
     Permission.DEV_QUOTA,
@@ -96,6 +97,7 @@ export const RolePermissions: Record<Role, PermissionKey[]> = {
     Permission.LOG_READ,
     Permission.BILLING_READ,
     Permission.REPO_READ,
+    Permission.OWNER_REPO,  // 【V5.0新增】管理自己的仓库
   ],
   
   // 普通用户 - 受限权限
