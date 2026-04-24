@@ -10,14 +10,13 @@ import { useParams, Link } from 'react-router-dom'
 import { Card, Descriptions, Table, Tag, Button, Space, Typography, Row, Col, Statistic, Alert, Spin, Breadcrumb, Tooltip, Collapse, message } from 'antd'
 import { 
   ApiOutlined, 
-  SafetyOutlined, 
+  SafetyCertificateOutlined,
   DollarOutlined, 
   ThunderboltOutlined,
   ArrowLeftOutlined,
   GlobalOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  CopyOutlined,
   QuestionCircleOutlined,
   CodeOutlined,
 } from '@ant-design/icons'
@@ -197,7 +196,7 @@ X-Nonce: NONCE                   // 随机字符串`}
       <Alert
         type="info"
         showIcon
-        icon={<SafetyOutlined />}
+        icon={<SafetyCertificateOutlined />}
         message="调用此API需要先获取API Key"
         description={
           <span>

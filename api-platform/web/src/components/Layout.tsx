@@ -121,16 +121,20 @@ const developerWithReposMenu: MenuProps['items'] = [
 ]
 
 // 【V4.2新增】开发者菜单（无仓库版本）
+// 【V5.0更新】默认显示仓库管理入口，API 会正确返回空列表
 const developerWithoutReposMenu: MenuProps['items'] = [
   { key: '/', icon: <DashboardOutlined />, label: '工作台' },
   { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
   { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
+  // 【V5.0更新】仓库管理入口 - 默认显示，让开发者能访问
+  { key: '/owner/repos', icon: <FolderOutlined />, label: '仓库管理' },
   { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
   { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
-  { type: 'divider', label: '成为仓库所有者' },
-  { key: '/developer/create-repo', icon: <PlusCircleOutlined />, label: '创建仓库' },
+  { type: 'divider', label: '仓库所有者功能' },
+  { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
+  { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
 
 // 管理员菜单
@@ -176,7 +180,7 @@ const superAdminMenu: MenuProps['items'] = [
 ]
 
 // 根据用户类型获取菜单
-// 【V5.0更新】开发者也可以访问数据分析和收益结算
+// 【V5.0更新】统一开发者菜单，所有开发者都能看到仓库管理入口
 const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProps['items'] => {
   switch (userType) {
     case 'super_admin':
@@ -187,18 +191,9 @@ const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProp
       // 仓库所有者只能看到自己的菜单
       return ownerMenu
     case 'developer':
-      // 【V5.0更新】开发者也可以访问数据分析和收益结算
-      if (userHasRepos) {
-        return developerWithReposMenu
-      } else {
-        // 无仓库的开发者也显示数据分析和收益结算入口
-        return [
-          ...developerWithoutReposMenu.slice(0, 6),
-          { type: 'divider' as const, key: 'divider-owner', label: '仓库所有者功能' },
-          { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
-          { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
-        ]
-      }
+      // 【V5.0更新】统一使用相同菜单，仓库管理入口默认显示
+      // 有仓库的用户可以看到自己的仓库，无仓库的用户看到空列表
+      return developerWithReposMenu
     case 'user':
     default:
       // 普通用户只能查看，不能创建 API Keys
