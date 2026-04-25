@@ -388,8 +388,8 @@ export default function AdminAnalytics() {
             children: (
               <Spin spinning={overviewLoading}>
                 {/* 统计卡片 */}
-                <Row gutter={16} className={styles.statsRow}>
-                  <Col span={6}>
+                <Row gutter={[12, 12]} className={styles.statsRow}>
+                  <Col xs={24} sm={12} lg={6}>
                     <Card className={styles.statCard}>
                       <Statistic
                         title="仓库总数"
@@ -403,7 +403,7 @@ export default function AdminAnalytics() {
                       </div>
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} lg={6}>
                     <Card className={styles.statCard}>
                       <Statistic
                         title="今日调用"
@@ -422,7 +422,7 @@ export default function AdminAnalytics() {
                       </div>
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} lg={6}>
                     <Card className={styles.statCard}>
                       <Statistic
                         title="本周调用"
@@ -438,7 +438,7 @@ export default function AdminAnalytics() {
                       </div>
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} lg={6}>
                     <Card className={styles.statCard}>
                       <Statistic
                         title="总收入"
@@ -457,8 +457,8 @@ export default function AdminAnalytics() {
                 </Row>
 
                 {/* 快捷统计 */}
-                <Row gutter={16} className={styles.quickStats}>
-                  <Col span={8}>
+                <Row gutter={[12, 12]} className={styles.quickStats}>
+                  <Col xs={24} sm={8}>
                     <Card size="small">
                       <Statistic
                         title="活跃用户（本周）"
@@ -468,7 +468,7 @@ export default function AdminAnalytics() {
                       />
                     </Card>
                   </Col>
-                  <Col span={8}>
+                  <Col xs={24} sm={8}>
                     <Card size="small">
                       <Statistic
                         title="本月调用"
@@ -478,7 +478,7 @@ export default function AdminAnalytics() {
                       />
                     </Card>
                   </Col>
-                  <Col span={8}>
+                  <Col xs={24} sm={8}>
                     <Card size="small">
                       <Statistic
                         title="本月收入"
@@ -496,11 +496,11 @@ export default function AdminAnalytics() {
                   title="调用与收入趋势" 
                   className={styles.chartCard}
                   extra={
-                    <Space>
+                    <Space wrap size="small">
                       <Select 
                         value={trendPeriod} 
                         onChange={setTrendPeriod}
-                        style={{ width: 100 }}
+                        style={{ width: 90 }}
                         options={[
                           { label: '按小时', value: 'hour' },
                           { label: '按天', value: 'day' }
@@ -510,7 +510,7 @@ export default function AdminAnalytics() {
                         <Select 
                           value={trendDays} 
                           onChange={setTrendDays}
-                          style={{ width: 100 }}
+                          style={{ width: 90 }}
                           options={[
                             { label: '近7天', value: 7 },
                             { label: '近30天', value: 30 },
@@ -661,18 +661,21 @@ export default function AdminAnalytics() {
                     rowKey="time"
                     pagination={false}
                     size="small"
+                    tableLayout="fixed"
                     columns={[
-                      { title: '时间', dataIndex: 'time', key: 'time' },
+                      { title: '时间', dataIndex: 'time', key: 'time', width: 150 },
                       { 
                         title: '调用次数', 
                         dataIndex: 'calls', 
                         key: 'calls',
+                        width: 120,
                         render: (v) => v.toLocaleString()
                       },
                       { 
                         title: '收入', 
                         dataIndex: 'revenue', 
                         key: 'revenue',
+                        width: 100,
                         render: (v) => `¥${v.toFixed(2)}`
                       }
                     ]}
@@ -745,8 +748,9 @@ export default function AdminAnalytics() {
                         setRepoPagination(prev => ({ ...prev, page, page_size: pageSize }))
                       }
                     }}
-                    scroll={{ x: 1200 }}
-                    size="middle"
+                    scroll={{ x: 'max-content' }}
+                    size="small"
+                    tableLayout="fixed"
                   />
                 </Card>
               </Spin>
@@ -760,70 +764,76 @@ export default function AdminAnalytics() {
         title={
           <Space>
             <LineChartOutlined />
-            仓库收入与调用明细 - {detailModalRepo?.name}
+            <span style={{ fontSize: 14 }}>仓库收入明细</span>
           </Space>
         }
         open={detailModalVisible}
         onCancel={closeRepoDetail}
         footer={null}
-        width={900}
+        width="95%"
+        style={{ maxWidth: 900 }}
         destroyOnClose
       >
         <Spin spinning={detailModalLoading}>
           {/* 基本信息 */}
           {detailModalRepo && (
-            <Descriptions size="small" column={4} bordered style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="仓库ID">{detailModalRepo.repo_id}</Descriptions.Item>
-              <Descriptions.Item label="Slug">{detailModalRepo.slug}</Descriptions.Item>
+            <Descriptions size="small" column={{ xs: 1, sm: 2, md: 4 }} bordered style={{ marginBottom: 16 }}>
+              <Descriptions.Item label="仓库ID">
+                <Text code style={{ fontSize: 12 }}>{detailModalRepo.repo_id}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Slug">
+                <Text code style={{ fontSize: 12 }}>{detailModalRepo.slug}</Text>
+              </Descriptions.Item>
               <Descriptions.Item label="状态">
                 <Tag color={statusColors[detailModalRepo.status] || 'default'}>
                   {statusText[detailModalRepo.status] || detailModalRepo.status}
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="创建时间">
-                {detailModalRepo.created_at ? new Date(detailModalRepo.created_at).toLocaleString('zh-CN') : '-'}
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {detailModalRepo.created_at ? new Date(detailModalRepo.created_at).toLocaleString('zh-CN') : '-'}
+                </Text>
               </Descriptions.Item>
             </Descriptions>
           )}
 
           {/* 汇总统计 */}
-          <Row gutter={16} style={{ marginBottom: 16 }}>
-            <Col span={6}>
-              <Card size="small">
+          <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
+            <Col xs={12} sm={12} md={6}>
+              <Card size="small" bodyStyle={{ padding: 12 }}>
                 <Statistic
-                  title="总调用次数"
+                  title="总调用"
                   value={detailModalRepo?.total_calls || 0}
-                  valueStyle={{ color: '#059669' }}
+                  valueStyle={{ color: '#059669', fontSize: 18 }}
                 />
               </Card>
             </Col>
-            <Col span={6}>
-              <Card size="small">
+            <Col xs={12} sm={12} md={6}>
+              <Card size="small" bodyStyle={{ padding: 12 }}>
                 <Statistic
-                  title="成功调用"
+                  title="成功"
                   value={detailModalRepo?.success_calls || 0}
-                  suffix={`/ ${detailModalRepo?.total_calls || 0}`}
-                  valueStyle={{ color: '#52c41a' }}
+                  valueStyle={{ color: '#52c41a', fontSize: 18 }}
                 />
               </Card>
             </Col>
-            <Col span={6}>
-              <Card size="small">
+            <Col xs={12} sm={12} md={6}>
+              <Card size="small" bodyStyle={{ padding: 12 }}>
                 <Statistic
-                  title="失败调用"
+                  title="失败"
                   value={detailModalRepo?.failed_calls || 0}
-                  valueStyle={{ color: '#ff4d4f' }}
+                  valueStyle={{ color: '#ff4d4f', fontSize: 18 }}
                 />
               </Card>
             </Col>
-            <Col span={6}>
-              <Card size="small">
+            <Col xs={12} sm={12} md={6}>
+              <Card size="small" bodyStyle={{ padding: 12 }}>
                 <Statistic
                   title="总收入"
                   value={detailModalRepo?.total_cost || 0}
                   prefix="¥"
                   precision={2}
-                  valueStyle={{ color: '#faad14' }}
+                  valueStyle={{ color: '#faad14', fontSize: 18 }}
                 />
               </Card>
             </Col>
@@ -930,22 +940,26 @@ export default function AdminAnalytics() {
                     })).reverse()
                   }
                   columns={[
-                    { title: '日期', dataIndex: 'time', key: 'time', width: 150 },
+                    { title: '日期', dataIndex: 'time', key: 'time', width: 100 },
                     {
                       title: '调用次数',
                       dataIndex: 'calls',
                       key: 'calls',
+                      width: 100,
                       render: (v: number) => v.toLocaleString()
                     },
                     {
                       title: '收入',
                       dataIndex: 'revenue',
                       key: 'revenue',
+                      width: 80,
                       render: (v: number) => `¥${v.toFixed(2)}`
                     }
                   ]}
                   pagination={false}
                   size="small"
+                  scroll={{ x: 'max-content' }}
+                  tableLayout="fixed"
                   style={{ marginTop: 16 }}
                 />
               </>

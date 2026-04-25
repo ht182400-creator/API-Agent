@@ -88,11 +88,11 @@ export default function DevTools() {
       <Card
         title="📋 应用日志"
         extra={
-          <Space>
+          <Space wrap size="small">
             <Select
               value={levelFilter}
               onChange={setLevelFilter}
-              style={{ width: 100 }}
+              style={{ width: 90 }}
               options={[
                 { value: 'all', label: '全部' },
                 { value: 'DEBUG', label: 'DEBUG' },
@@ -101,13 +101,13 @@ export default function DevTools() {
                 { value: 'ERROR', label: 'ERROR' },
               ]}
             />
-            <Button icon={<ReloadOutlined />} onClick={handleRefresh}>
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh} size="small">
               刷新
             </Button>
             <Popconfirm title="确定清除所有日志？" onConfirm={handleClear}>
-              <Button icon={<DeleteOutlined />}>清除</Button>
+              <Button icon={<DeleteOutlined />} size="small">清除</Button>
             </Popconfirm>
-            <Button icon={<DownloadOutlined />} onClick={handleExport}>
+            <Button icon={<DownloadOutlined />} onClick={handleExport} size="small">
               导出
             </Button>
           </Space>
@@ -121,8 +121,8 @@ export default function DevTools() {
             columns={columns}
             rowKey={(record, index) => `${record.timestamp}-${index}`}
             size="small"
-            pagination={{ pageSize: 20 }}
-            scroll={{ y: 500 }}
+            pagination={{ pageSize: 15 }}
+            scroll={{ x: 700, y: 400 }}
           />
         )}
       </Card>

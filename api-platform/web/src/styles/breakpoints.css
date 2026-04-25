@@ -1,0 +1,170 @@
+/**
+ * 响应式断点定义
+ * 基于 Ant Design 的响应式设计标准
+ * 
+ * 使用方式：
+ * 1. 在组件中引入：import '../styles/breakpoints.css'
+ * 2. 在 CSS 中使用：@media (max-width: 575px) { ... }
+ * 3. 在 JS 中使用：import { BREAKPOINTS } from '../styles/breakpoints'
+ */
+
+/* ==================== 断点定义 ==================== */
+
+/* 超小屏幕（手机，小于 576px） */
+/* 默认 */
+
+/* 小屏幕（平板，大于等于 576px） */
+@media (min-width: 576px) {
+  /* 适配平板竖屏 */
+}
+
+/* 中等屏幕（平板横屏/小笔记本，大于等于 768px） */
+@media (min-width: 768px) {
+  /* 适配平板横屏 */
+}
+
+/* 大屏幕（桌面，大于等于 992px） */
+@media (min-width: 992px) {
+  /* 适配桌面 */
+}
+
+/* 超大屏幕（大桌面，大于等于 1200px） */
+@media (min-width: 1200px) {
+  /* 适配大桌面 */
+}
+
+/* 巨屏（超大桌面，大于等于 1600px） */
+@media (min-width: 1600px) {
+  /* 适配巨屏 */
+}
+
+/* ==================== 常用媒体查询类 ==================== */
+
+/* 仅手机显示 */
+.visible-mobile {
+  display: none;
+}
+
+@media (max-width: 575px) {
+  .visible-mobile {
+    display: block !important;
+  }
+  
+  .hidden-mobile {
+    display: none !important;
+  }
+}
+
+/* 仅平板及以上显示 */
+@media (min-width: 576px) {
+  .visible-desktop {
+    display: block !important;
+  }
+  
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+/* ==================== 响应式工具类 ==================== */
+
+/* 响应式间距 */
+@media (max-width: 575px) {
+  .responsive-padding {
+    padding: 8px !important;
+  }
+  
+  .responsive-margin {
+    margin: 8px !important;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .responsive-padding {
+    padding: 16px !important;
+  }
+  
+  .responsive-margin {
+    margin: 16px !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .responsive-padding {
+    padding: 24px !important;
+  }
+  
+  .responsive-margin {
+    margin: 24px !important;
+  }
+}
+
+/* 响应式字体大小 */
+@media (max-width: 575px) {
+  .responsive-text {
+    font-size: 14px !important;
+  }
+  
+  .responsive-title {
+    font-size: 20px !important;
+  }
+}
+
+@media (min-width: 576px) {
+  .responsive-text {
+    font-size: 14px !important;
+  }
+  
+  .responsive-title {
+    font-size: 24px !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .responsive-text {
+    font-size: 16px !important;
+  }
+  
+  .responsive-title {
+    font-size: 32px !important;
+  }
+}
+
+/* ==================== 响应式布局辅助 ==================== */
+
+/* 移动端全宽 */
+@media (max-width: 575px) {
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* 移动端居中 */
+@media (max-width: 575px) {
+  .mobile-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
+
+/* 移动端滚动 */
+@media (max-width: 575px) {
+  .mobile-scroll {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ==================== 打印样式 ==================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+}

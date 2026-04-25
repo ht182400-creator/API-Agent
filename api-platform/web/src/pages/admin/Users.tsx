@@ -4,14 +4,15 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Button, Input, Select, Tag, Space, Modal, message, Typography, Popconfirm } from 'antd'
-import { SearchOutlined, LockOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Table, Button, Input, Select, Tag, Space, Modal, message, Typography, Popconfirm, Card, Avatar, Row, Col, Pagination } from 'antd'
+import { SearchOutlined, LockOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { adminUserApi } from '../../api/admin'
 import { UserListItem } from '../../api/superadmin'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './Users.module.css'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 // 用户类型映射
 const userTypeMap: Record<string, { label: string; color: string }> = {
@@ -31,6 +32,7 @@ const userStatusMap: Record<string, { label: string; color: string }> = {
 }
 
 export default function AdminUsers() {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState<UserListItem[]>([])
   const [total, setTotal] = useState(0)
@@ -104,7 +106,7 @@ export default function AdminUsers() {
   const columns = [
     { title: '用户名', dataIndex: 'username', key: 'username', width: 120 },
     { title: 'ID', dataIndex: 'id', key: 'id', width: 220, ellipsis: true },
-    { title: '邮箱', dataIndex: 'email', key: 'email' },
+    { title: '邮箱', dataIndex: 'email', key: 'email', width: 180, ellipsis: true },
     { 
       title: '类型', 
       dataIndex: 'user_type', 
@@ -187,18 +189,18 @@ export default function AdminUsers() {
     <div className={`${styles.container} bamboo-bg-pattern`}>
       <div className={styles.header}>
         <Title level={4}>用户管理</Title>
-        <Space>
+        <Space wrap size={[8, 12]}>
           <Input
-            placeholder="搜索用户名/邮箱..."
+            placeholder="搜索..."
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 200 }}
+            style={{ width: '100%', minWidth: 150 }}
             allowClear
           />
           <Select 
             placeholder="用户类型" 
-            style={{ width: 120 }} 
+            style={{ width: '100%', minWidth: 100 }} 
             allowClear
             value={userTypeFilter}
             onChange={(v) => {
@@ -212,7 +214,7 @@ export default function AdminUsers() {
           </Select>
           <Select 
             placeholder="用户状态" 
-            style={{ width: 100 }} 
+            style={{ width: '100%', minWidth: 90 }} 
             allowClear
             value={userStatusFilter}
             onChange={(v) => {
@@ -227,24 +229,119 @@ export default function AdminUsers() {
         </Space>
       </div>
 
-      <Table
-        dataSource={users}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize: pageSize,
-          total: total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (t) => `共 ${t} 条`,
-          onChange: (p, ps) => {
-            setPage(p)
-            setPageSize(ps)
-          },
-        }}
-      />
+      {isMobile ? (
+        // 移动端：卡片列表
+        <>
+          <div className={styles.cardList}>
+            {users.map((user) => (
+              <Card
+                key={user.id}
+                size="small"
+                className={styles.userCard}
+                actions={[
+                  <Popconfirm
+                    key="toggle"
+                    title="确认禁用？"
+                    description="禁用后该用户将无法登录"
+                    onConfirm={() => handleToggleStatus(user)}
+                    okText="确认"
+                    cancelText="取消"
+                  >
+                    <Button type="text" size="small" danger={user.user_status === 'active'}>
+                      {user.user_status === 'active' ? '禁用' : '启用'}
+                    </Button>
+                  </Popconfirm>,
+                  <Popconfirm
+                    key="delete"
+                    title="确认删除？"
+                    description="删除后数据无法恢复"
+                    onConfirm={() => handleDeleteUser(user.id)}
+                    okText="确认"
+                    cancelText="取消"
+                    okButtonProps={{ danger: true }}
+                  >
+                    <Button type="text" size="small" danger icon={<DeleteOutlined />}>
+                      删除
+                    </Button>
+                  </Popconfirm>,
+                ]}
+              >
+                <div className={styles.cardHeader}>
+                  <Avatar
+                    size={40}
+                    style={{ background: 'var(--gradient-cyber)' }}
+                    icon={<UserOutlined />}
+                  />
+                  <div className={styles.cardInfo}>
+                    <Text strong className={styles.cardUsername}>{user.username}</Text>
+                    <Text type="secondary" className={styles.cardEmail}>{user.email}</Text>
+                  </div>
+                  <Tag color={userTypeMap[user.user_type]?.color}>
+                    {userTypeMap[user.user_type]?.label}
+                  </Tag>
+                </div>
+                <div className={styles.cardDetails}>
+                  <div className={styles.cardRow}>
+                    <Text type="secondary">ID：</Text>
+                    <Text code className={styles.cardId}>{user.id.slice(0, 12)}...</Text>
+                  </div>
+                  <div className={styles.cardRow}>
+                    <Text type="secondary">状态：</Text>
+                    <Tag color={userStatusMap[user.user_status]?.color} style={{ margin: 0 }}>
+                      {userStatusMap[user.user_status]?.label}
+                    </Tag>
+                  </div>
+                  <div className={styles.cardRow}>
+                    <Text type="secondary">VIP：</Text>
+                    {user.vip_level > 0 ? <Tag color="gold">VIP {user.vip_level}</Tag> : <Text type="secondary">-</Text>}
+                  </div>
+                  <div className={styles.cardRow}>
+                    <Text type="secondary">注册：</Text>
+                    <Text type="secondary">{dayjs(user.created_at).format('YYYY-MM-DD')}</Text>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+          <div className={styles.paginationWrapper}>
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={total}
+              showSizeChanger
+              showQuickJumper
+              showTotal={(t) => `共 ${t} 条`}
+              onChange={(p, ps) => {
+                setPage(p)
+                setPageSize(ps)
+              }}
+              size="small"
+            />
+          </div>
+        </>
+      ) : (
+        // 桌面端：表格
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 900 }}
+          size="small"
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            total: total,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (t) => `共 ${t} 条`,
+            onChange: (p, ps) => {
+              setPage(p)
+              setPageSize(ps)
+            },
+          }}
+        />
+      )}
     </div>
   )
 }

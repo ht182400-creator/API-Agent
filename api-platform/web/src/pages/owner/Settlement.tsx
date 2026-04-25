@@ -108,18 +108,18 @@ export default function OwnerSettlement() {
       </Row>
 
       <Card className={styles.actionCard}>
-        <Space size="large">
-          <Button type="primary" size="large" icon={<BankOutlined />}>
+        <Space wrap size="middle">
+          <Button type="primary" icon={<BankOutlined />}>
             银行卡转账
           </Button>
-          <Button size="large" icon={<AlipayOutlined />}>
+          <Button icon={<AlipayOutlined />}>
             支付宝
           </Button>
-          <Button size="large" icon={<WechatOutlined />}>
+          <Button icon={<WechatOutlined />}>
             微信支付
           </Button>
         </Space>
-        <Text type="secondary" className={styles.tip}>
+        <Text type="secondary" className={styles.tip} style={{ marginTop: 12, display: 'block' }}>
           * 结算将在1-3个工作日内到账
         </Text>
       </Card>

@@ -38,6 +38,7 @@ import { adminReconciliationApi,
 } from '../../api/adminReconciliation'
 import { useErrorModal } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './Reconciliation.module.css'
 
 const { Title, Text } = Typography
@@ -65,6 +66,7 @@ const STATUS_NAMES: Record<string, string> = {
 }
 
 export default function AdminReconciliation() {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('execute')
   const [executing, setExecuting] = useState(false)
@@ -470,7 +472,7 @@ export default function AdminReconciliation() {
 
       <div className={styles.header}>
         <Title level={4}>对账管理</Title>
-        <Space>
+        <Space wrap size="small">
           <Select
             value={queryChannel}
             onChange={setQueryChannel}
@@ -509,11 +511,11 @@ export default function AdminReconciliation() {
                       </Descriptions.Item>
                     </Descriptions>
                     
-                    <Row gutter={16} className={styles.statsRow}>
-                      <Col span={6}><Statistic title="平台交易" value={reconciliationResult.platform_trade_count} suffix="笔" /></Col>
-                      <Col span={6}><Statistic title="渠道交易" value={reconciliationResult.channel_trade_count} suffix="笔" /></Col>
-                      <Col span={6}><Statistic title="匹配" value={reconciliationResult.match_count} suffix="笔" valueStyle={{ color: '#52c41a' }} /></Col>
-                      <Col span={6}><Statistic title="差异" value={reconciliationResult.amount_diff_count} suffix="笔" valueStyle={{ color: reconciliationResult.amount_diff_count > 0 ? '#ff4d4f' : '#52c41a' }} /></Col>
+                    <Row gutter={[8, 8]} className={styles.statsRow}>
+                      <Col xs={12} sm={6}><Statistic title="平台交易" value={reconciliationResult.platform_trade_count} suffix="笔" /></Col>
+                      <Col xs={12} sm={6}><Statistic title="渠道交易" value={reconciliationResult.channel_trade_count} suffix="笔" /></Col>
+                      <Col xs={12} sm={6}><Statistic title="匹配" value={reconciliationResult.match_count} suffix="笔" valueStyle={{ color: '#52c41a' }} /></Col>
+                      <Col xs={12} sm={6}><Statistic title="差异" value={reconciliationResult.amount_diff_count} suffix="笔" valueStyle={{ color: reconciliationResult.amount_diff_count > 0 ? '#ff4d4f' : '#52c41a' }} /></Col>
                     </Row>
 
                     {reconciliationResult.amount_diff_count > 0 && (
@@ -549,8 +551,36 @@ export default function AdminReconciliation() {
                     <Button icon={<SearchOutlined />} onClick={loadDisputes}>查询</Button>
                   </Space>
                 </div>
-                <Table columns={disputeColumns} dataSource={disputes} rowKey="id" loading={disputeLoading}
-                  pagination={{ current: disputePage, pageSize: disputePageSize, total: disputeTotal, showSizeChanger: true, showTotal: (total) => `共 ${total} 条`, onChange: (page, size) => { setDisputePage(page); setDisputePageSize(size) }, }} />
+                {isMobile ? (
+                  // 移动端：卡片列表
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {disputes.map((dispute) => (
+                      <Card key={dispute.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          <Tag color={dispute.dispute_type === 'long' ? 'blue' : dispute.dispute_type === 'short' ? 'orange' : 'red'} style={{ marginInlineEnd: 0 }}>
+                            {dispute.dispute_type_name}
+                          </Tag>
+                          <Badge status={STATUS_COLORS[dispute.handle_status] as any} text={STATUS_NAMES[dispute.handle_status]} style={{ marginLeft: 'auto' }} />
+                        </div>
+                        <div style={{ fontSize: 12, color: '#666' }}>
+                          <div>本地订单：{dispute.local_order_no}</div>
+                          <div>渠道交易：{dispute.channel_trade_no}</div>
+                          <div>本地金额：{dispute.local_amount != null ? `¥${dispute.local_amount.toFixed(2)}` : '-'}</div>
+                          <div>差异金额：{dispute.diff_amount != null ? <Text type={dispute.diff_amount > 0 ? 'success' : 'danger'}>{dispute.diff_amount > 0 ? '+' : ''}{dispute.diff_amount.toFixed(2)}</Text> : '-'}</div>
+                        </div>
+                        {dispute.handle_status === 'pending' && (
+                          <Button type="link" size="small" onClick={() => openHandleModal(dispute)} style={{ padding: 0, marginTop: 8 }}>
+                            处理
+                          </Button>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  // 桌面端：表格
+                  <Table columns={disputeColumns} dataSource={disputes} rowKey="id" loading={disputeLoading}
+                    pagination={{ current: disputePage, pageSize: disputePageSize, total: disputeTotal, showSizeChanger: true, showTotal: (total) => `共 ${total} 条`, onChange: (page, size) => { setDisputePage(page); setDisputePageSize(size) }, }} />
+                )}
               </Card>
             ),
           },
@@ -566,8 +596,30 @@ export default function AdminReconciliation() {
                     <Button icon={<SearchOutlined />} onClick={loadHistory}>查询</Button>
                   </Space>
                 </div>
-                <Table columns={historyColumns} dataSource={history} rowKey="id" loading={historyLoading}
-                  pagination={{ current: historyPage, pageSize: historyPageSize, total: historyTotal, showSizeChanger: true, showTotal: (total) => `共 ${total} 条`, onChange: (page, size) => { setHistoryPage(page); setHistoryPageSize(size) }, }} />
+                {isMobile ? (
+                  // 移动端：卡片列表
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {history.map((item) => (
+                      <Card key={item.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          <Text strong>{dayjs(item.reconcile_date).format('YYYY-MM-DD')}</Text>
+                          <Badge status={STATUS_COLORS[item.status] as any} text={item.status_name} style={{ marginLeft: 'auto' }} />
+                        </div>
+                        <div style={{ fontSize: 12, color: '#666' }}>
+                          <div>渠道：{item.channel_name}</div>
+                          <div>匹配/长款/短款：<Tag color="green">{item.match_count}</Tag><Tag color="blue">{item.long_count}</Tag><Tag color="orange">{item.short_count}</Tag></div>
+                        </div>
+                        <Button type="link" size="small" onClick={() => { setQueryDate(dayjs(item.reconcile_date).format('YYYY-MM-DD')); setQueryChannel(item.channel); loadResult(); setActiveTab('execute') }} style={{ padding: 0, marginTop: 8 }}>
+                          查看详情
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  // 桌面端：表格
+                  <Table columns={historyColumns} dataSource={history} rowKey="id" loading={historyLoading}
+                    pagination={{ current: historyPage, pageSize: historyPageSize, total: historyTotal, showSizeChanger: true, showTotal: (total) => `共 ${total} 条`, onChange: (page, size) => { setHistoryPage(page); setHistoryPageSize(size) }, }} />
+                )}
               </Card>
             ),
           },
@@ -577,8 +629,8 @@ export default function AdminReconciliation() {
             label: <Space><ClockCircleOutlined />定时对账</Space>,
             children: (
               <Card>
-                <Row gutter={24}>
-                  <Col span={12}>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} sm={12}>
                     <Card title="调度器状态" size="small">
                       {schedulerLoading ? <Spin tip="加载中..." /> : schedulerStatus ? (
                         <Space direction="vertical" style={{ width: '100%' }}>
@@ -593,7 +645,7 @@ export default function AdminReconciliation() {
                       ) : <Text type="secondary">加载失败</Text>}
                     </Card>
                   </Col>
-                  <Col span={12}>
+                  <Col xs={24} sm={12}>
                     <Card title="定时规则" size="small">
                       <Descriptions column={1} size="small">
                         <Descriptions.Item label="执行时间">每天 04:00 (T+1)</Descriptions.Item>
@@ -638,14 +690,34 @@ export default function AdminReconciliation() {
                 ) : reportData ? (
                   <>
                     <Card size="small" style={{ marginBottom: 16 }}>
-                      <Row gutter={16}>
-                        <Col span={6}><Statistic title="对账天数" value={reportData.summary.total_count} suffix="天" /></Col>
-                        <Col span={6}><Statistic title="总平台金额" value={reportData.summary.total_platform_amount} precision={2} prefix="¥" /></Col>
-                        <Col span={6}><Statistic title="总匹配数" value={reportData.summary.total_match_count} suffix="笔" valueStyle={{ color: '#52c41a' }} /></Col>
-                        <Col span={6}><Statistic title="待处理差异" value={reportData.summary.total_pending} suffix="笔" valueStyle={{ color: reportData.summary.total_pending > 0 ? '#faad14' : '#52c41a' }} /></Col>
+                      <Row gutter={[8, 8]}>
+                        <Col xs={12} sm={6}><Statistic title="对账天数" value={reportData.summary.total_count} suffix="天" /></Col>
+                        <Col xs={12} sm={6}><Statistic title="总平台金额" value={reportData.summary.total_platform_amount} precision={2} prefix="¥" /></Col>
+                        <Col xs={12} sm={6}><Statistic title="总匹配数" value={reportData.summary.total_match_count} suffix="笔" valueStyle={{ color: '#52c41a' }} /></Col>
+                        <Col xs={12} sm={6}><Statistic title="待处理差异" value={reportData.summary.total_pending} suffix="笔" valueStyle={{ color: reportData.summary.total_pending > 0 ? '#faad14' : '#52c41a' }} /></Col>
                       </Row>
                     </Card>
+                    {isMobile ? (
+                    // 移动端：卡片列表
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {reportData.items.map((item) => (
+                        <Card key={`${item.reconcile_date}-${item.channel}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                            <Text strong>{item.reconcile_date}</Text>
+                            <Tag style={{ marginInlineEnd: 0 }}>{item.channel_name}</Tag>
+                          </div>
+                          <div style={{ fontSize: 12, color: '#666' }}>
+                            <div>平台交易：{item.platform_trade_count}笔 ¥{item.platform_trade_amount.toFixed(2)}</div>
+                            <div>匹配率：<Progress percent={item.match_rate} size="small" format={(p) => `${p}%`} /></div>
+                            <div>待处理：{item.pending_dispute_count > 0 ? <Badge count={item.pending_dispute_count} style={{ backgroundColor: '#faad14' }} /> : '-'}</div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    // 桌面端：表格
                     <Table columns={reportColumns} dataSource={reportData.items} rowKey={(record) => `${record.reconcile_date}-${record.channel}`} pagination={false} size="small" />
+                  )}
                   </>
                 ) : (
                   <Alert message='请选择日期范围并点击"生成报表"按钮' description="报表将显示选定日期范围内的对账汇总数据" type="info" showIcon />

@@ -180,32 +180,32 @@ export default function AdminPlatformAccounts() {
 
       {/* 汇总卡片 */}
       <Card className={styles.summaryCard}>
-        <Row gutter={24}>
-          <Col span={8}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={8}>
             <Statistic
               title="总账户余额"
               value={totalBalance}
               precision={2}
               prefix="¥"
-              valueStyle={{ color: '#1890ff', fontSize: 28 }}
+              valueStyle={{ color: '#1890ff', fontSize: 24 }}
             />
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={8}>
             <Statistic
               title="可用余额"
               value={totalAvailable}
               precision={2}
               prefix="¥"
-              valueStyle={{ color: '#52c41a', fontSize: 28 }}
+              valueStyle={{ color: '#52c41a', fontSize: 24 }}
             />
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={8}>
             <Statistic
               title="冻结金额"
               value={totalFrozen}
               precision={2}
               prefix="¥"
-              valueStyle={{ color: totalFrozen > 0 ? '#faad14' : '#999', fontSize: 28 }}
+              valueStyle={{ color: totalFrozen > 0 ? '#faad14' : '#999', fontSize: 24 }}
             />
           </Col>
         </Row>

@@ -1,0 +1,349 @@
+# GitHub Actions - CI/CD 流水线
+# 自动测试、构建、部署 API Platform
+
+name: API Platform CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# 环境变量
+env:
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+
+jobs:
+  # ==================== 测试阶段 ====================
+  test-backend:
+    name: 后端测试
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_<SECRET_REDACTED>
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: 安装依赖
+        run: |
+          cd api-platform
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      
+      - name: 代码格式检查 (Black)
+        run: |
+          cd api-platform
+          black --check src/
+      
+      - name: 代码质量检查 (Flake8)
+        run: |
+          cd api-platform
+          flake8 src/ --max-line-length=100 --ignore=E203,W503
+      
+      - name: 类型检查 (MyPy)
+        run: |
+          cd api-platform
+          mypy src/ --ignore-missing-imports || true
+      
+      - name: 运行测试
+        run: |
+          cd api-platform
+          pytest tests/ -v --tb=short
+        env:
+          DATABASE_URL: postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key
+          DEBUG: true
+      
+      - name: 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: api-platform/htmlcov/
+          retention-days: 30
+
+  test-frontend:
+    name: 前端测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: api-platform/web/package-lock.json
+      
+      - name: 安装依赖
+        run: |
+          cd api-platform/web
+          npm ci
+      
+      - name: 代码格式检查 (ESLint)
+        run: |
+          cd api-platform/web
+          npm run lint
+      
+      - name: 类型检查 (TypeScript)
+        run: |
+          cd api-platform/web
+          npx tsc --noEmit
+      
+      - name: 构建测试
+        run: |
+          cd api-platform/web
+          npm run build
+      
+      - name: E2E 测试 (Playwright)
+        run: |
+          cd api-platform/web
+          npx playwright install --with-deps
+          npm run test:e2e || true
+      
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: api-platform/web/dist/
+          retention-days: 7
+
+  # ==================== 构建阶段 ====================
+  build:
+    name: 构建镜像
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    outputs:
+      backend-image: ${{ steps.meta-backend.outputs.tags }}
+      frontend-image: ${{ steps.meta-frontend.outputs.tags }}
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: 登录容器仓库
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          <SECRET_REDACTED>
+      
+      - name: 提取元数据 (后端)
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: 构建并推送后端镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api-platform
+          file: ./api-platform/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: 提取元数据 (前端)
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: 构建并推送前端镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api-platform/web
+          file: ./api-platform/docker/frontend.Dockerfile
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          build-args: |
+            VITE_API_URL=/api
+            VITE_APP_TITLE=API Platform
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==================== 部署阶段 ====================
+  deploy-staging:
+    name: 部署到测试环境
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 部署到测试服务器
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/api-platform
+            git pull origin develop
+            docker-compose pull
+            docker-compose up -d
+            docker-compose ps
+            docker system prune -f
+      
+      - name: 健康检查
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.STAGING_HOST }}:80/health || exit 1
+      
+      - name: 通知部署成功
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: '测试环境部署成功 🎉'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  deploy-production:
+    name: 部署到生产环境
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 部署到生产服务器
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /opt/api-platform
+            git pull origin main
+            docker-compose pull
+            docker-compose up -d --no-deps
+            docker-compose ps
+            docker system prune -f
+      
+      - name: 健康检查
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.PRODUCTION_HOST }}:80/health || exit 1
+      
+      - name: 通知部署成功
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: '生产环境部署成功 🚀'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: 创建 GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            CHANGELOG.md
+          body: |
+            ## 🚀 API Platform ${{ github.ref_name }}
+            
+            ### 📦 Docker 镜像
+            - Backend: `ghcr.io/${{ github.repository }}/backend:${{ github.ref_name }}`
+            - Frontend: `ghcr.io/${{ github.repository }}/frontend:${{ github.ref_name }}`
+            
+            ### 📝 更新日志
+            请查看 CHANGELOG.md
+          draft: false
+          prerelease: false
+
+  # ==================== 回滚阶段 ====================
+  rollback:
+    name: 回滚部署
+    runs-on: ubuntu-latest
+    if: failure() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: [deploy-staging, deploy-production]
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.before }}
+      
+      - name: 回滚到上一个版本
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ github.ref == 'refs/heads/main' && secrets.PRODUCTION_HOST || secrets.STAGING_HOST }}
+          username: ${{ github.ref == 'refs/heads/main' && secrets.PRODUCTION_USER || secrets.STAGING_USER }}
+          key: ${{ github.ref == 'refs/heads/main' && secrets.PRODUCTION_SSH_KEY || secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/api-platform
+            git checkout ${{ github.event.before }}
+            docker-compose pull
+            docker-compose up -d
+            docker-compose ps
+      
+      - name: 通知回滚
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: '⚠️ 部署失败，已自动回滚'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

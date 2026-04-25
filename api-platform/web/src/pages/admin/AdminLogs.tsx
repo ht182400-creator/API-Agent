@@ -64,11 +64,13 @@ import {
   LOG_LEVELS,
   getLevelColor,
 } from '../../api/adminLogs'
+import { useDevice } from '../../hooks/useDevice'
 
 const { Title, Text } = Typography
 const { Option } = Select
 
 export default function AdminLogs() {
+  const { isMobile } = useDevice()
   // 日志文件列表
   const [files, setFiles] = useState<LogFileInfo[]>([])
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
@@ -458,40 +460,44 @@ export default function AdminLogs() {
       
       {/* 统计卡片 */}
       {stats && (
-        <Row gutter={16} className={styles.statsRow}>
-          <Col span={6}>
-            <Card size="small">
+        <Row gutter={[8, 8]} className={styles.statsRow}>
+          <Col xs={24} sm={12} md={6}>
+            <Card size="small" bodyStyle={{ padding: 12 }}>
               <Statistic
                 title="日志文件"
                 value={stats.total_files}
-                prefix={<FileTextOutlined />}
+                prefix={<FileTextOutlined style={{ color: '#1890ff' }} />}
+                valueStyle={{ fontSize: 20 }}
               />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card size="small">
+          <Col xs={24} sm={12} md={6}>
+            <Card size="small" bodyStyle={{ padding: 12 }}>
               <Statistic
                 title="日志总大小"
                 value={stats.total_size_formatted}
-                prefix={<FolderOutlined />}
+                prefix={<FolderOutlined style={{ color: '#fa8c16' }} />}
+                valueStyle={{ fontSize: 18 }}
               />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card size="small">
+          <Col xs={24} sm={12} md={6}>
+            <Card size="small" bodyStyle={{ padding: 12 }}>
               <Statistic
                 title="备份文件"
                 value={stats.backup_count}
-                prefix={<CloudUploadOutlined />}
+                prefix={<CloudUploadOutlined style={{ color: '#52c41a' }} />}
+                valueStyle={{ fontSize: 20 }}
               />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card size="small">
+          <Col xs={24} sm={12} md={6}>
+            <Card size="small" bodyStyle={{ padding: 12 }}>
               <Statistic
                 title="备份总大小"
                 value={stats.backup_size_formatted}
-                prefix={<FolderOutlined />}
+                prefix={<FolderOutlined style={{ color: '#722ed1' }} />}
+                valueStyle={{ fontSize: 18 }}
               />
             </Card>
           </Col>
@@ -538,14 +544,39 @@ export default function AdminLogs() {
                  text={stats?.config.enabled ? '自动备份已启用' : '自动备份已禁用'} />
         }
       >
-        <Table
-          columns={fileColumns}
-          dataSource={files}
-          rowKey="name"
-          loading={loading}
-          pagination={false}
-          size="small"
-        />
+        {isMobile ? (
+          // 移动端：卡片列表
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {files.map((file) => (
+              <Card key={file.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <FileTextOutlined style={{ fontSize: 18, color: '#1890ff' }} />
+                  <Text strong style={{ fontSize: 14 }}>{file.name}</Text>
+                </div>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  <div>模块：<Tag color="blue" style={{ marginInlineEnd: 0 }}>{file.module}</Tag></div>
+                  <div>大小：{file.size_formatted}</div>
+                  <div>修改：{file.modified_at}</div>
+                </div>
+                <Space size="small" wrap>
+                  <Button type="link" size="small" icon={<DownloadOutlined />} href={exportLog(file.name)} target="_blank" style={{ padding: 0 }}>导出</Button>
+                  <Button type="link" size="small" onClick={() => handleViewLog(file)} style={{ padding: 0 }}>查看</Button>
+                  <Button type="link" size="small" icon={<CloudUploadOutlined />} onClick={() => handleManualBackup(file.module)} style={{ padding: 0 }}>备份</Button>
+                </Space>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          // 桌面端：表格
+          <Table
+            columns={fileColumns}
+            dataSource={files}
+            rowKey="name"
+            loading={loading}
+            pagination={false}
+            size="small"
+          />
+        )}
       </Card>
       
       {/* 备份文件列表 */}
@@ -553,13 +584,36 @@ export default function AdminLogs() {
         title="备份文件"
         className={styles.card}
       >
-        <Table
-          columns={backupColumns}
-          dataSource={backups}
-          rowKey="name"
-          pagination={{ pageSize: 10 }}
-          size="small"
-        />
+        {isMobile ? (
+          // 移动端：卡片列表
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {backups.map((backup) => (
+              <Card key={backup.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                <Text copyable={{ text: backup.name }} style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>{backup.name}</Text>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  <div>大小：{backup.size_formatted}</div>
+                  <div>创建：{backup.created_at}</div>
+                </div>
+                <Space size="small" wrap>
+                  <Button type="link" size="small" icon={<FileTextOutlined />} onClick={() => handleViewBackup(backup.name)} style={{ padding: 0 }}>查看</Button>
+                  <Button type="link" size="small" icon={<DownloadOutlined />} href={downloadBackup(backup.name)} target="_blank" style={{ padding: 0 }}>下载</Button>
+                  <Popconfirm title="确认删除此备份?" onConfirm={() => handleDeleteBackup(backup.name)} okText="确认" cancelText="取消">
+                    <Button type="link" size="small" danger icon={<DeleteOutlined />} style={{ padding: 0 }}>删除</Button>
+                  </Popconfirm>
+                </Space>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          // 桌面端：表格
+          <Table
+            columns={backupColumns}
+            dataSource={backups}
+            rowKey="name"
+            pagination={{ pageSize: 10 }}
+            size="small"
+          />
+        )}
       </Card>
       
       {/* 日志查看弹窗 */}
@@ -572,16 +626,17 @@ export default function AdminLogs() {
             关闭
           </Button>,
         ]}
-        width={1000}
-        style={{ top: 20 }}
+        width="95%"
+        style={{ top: 20, maxWidth: 1000 }}
       >
         {/* 过滤工具栏 */}
-        <div className={styles.filterBar}>
-          <Space wrap>
+        <div className={styles.filterBar} style={{ flexWrap: 'wrap', gap: 8 }}>
+          <Space wrap size="small">
             <Select
               placeholder="日志级别"
               allowClear
-              style={{ width: 120 }}
+              style={{ width: 100 }}
+              size="small"
               value={levelFilter}
               onChange={(value) => {
                 setLevelFilter(value)
@@ -600,22 +655,23 @@ export default function AdminLogs() {
               placeholder="搜索关键词"
               prefix={<SearchOutlined />}
               value={keyword}
+              size="small"
               onChange={(e) => setKeyword(e.target.value)}
               onPressEnter={handleSearch}
-              style={{ width: 200 }}
+              style={{ width: 150 }}
               allowClear
             />
-            <Button type="primary" onClick={handleSearch}>
+            <Button type="primary" size="small" onClick={handleSearch}>
               搜索
             </Button>
           </Space>
-          <Text type="secondary">
-            共 {totalLines} 行，当前显示 {logLines.length} 行
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            共 {totalLines} 行，当前 {logLines.length} 行
           </Text>
         </div>
-        
+
         {/* 日志内容 */}
-        <div className={styles.logContent}>
+        <div className={styles.logContent} style={{ maxHeight: '60vh', overflow: 'auto' }}>
           {contentLoading ? (
             <div className={styles.loading}>加载中...</div>
           ) : logLines.length === 0 ? (
@@ -630,11 +686,11 @@ export default function AdminLogs() {
                 >
                   <span className={styles.lineNumber}>{line.line_number}</span>
                   <span className={styles.timestamp}>{line.timestamp}</span>
-                  <Tag color={line.level === 'DEBUG' ? 'blue' : line.level === 'INFO' ? 'green' : line.level === 'WARNING' ? 'orange' : 'red'}>
+                  <Tag className={styles.levelTag} color={line.level === 'DEBUG' ? 'blue' : line.level === 'INFO' ? 'green' : line.level === 'WARNING' ? 'orange' : 'red'}>
                     {line.level}
                   </Tag>
                   <span className={styles.module}>{line.module}</span>
-                  <span className={styles.message}>{line.message}</span>
+                  <span className={styles.message} style={{ whiteSpace: 'pre-wrap' }}>{line.message}</span>
                 </div>
               ))}
               {totalLines > (currentPage + 1) * pageSize && (
@@ -756,16 +812,17 @@ export default function AdminLogs() {
             关闭
           </Button>,
         ]}
-        width={1000}
-        style={{ top: 20 }}
+        width="95%"
+        style={{ top: 20, maxWidth: 1000 }}
       >
         {/* 过滤工具栏 */}
-        <div className={styles.filterBar}>
-          <Space wrap>
+        <div className={styles.filterBar} style={{ flexWrap: 'wrap', gap: 8 }}>
+          <Space wrap size="small">
             <Select
               placeholder="日志级别"
               allowClear
-              style={{ width: 120 }}
+              style={{ width: 100 }}
+              size="small"
               value={backupLevelFilter}
               onChange={(value) => {
                 setBackupLevelFilter(value)
@@ -788,21 +845,22 @@ export default function AdminLogs() {
               placeholder="搜索关键词"
               prefix={<SearchOutlined />}
               value={backupKeyword}
+              size="small"
               onChange={(e) => setBackupKeyword(e.target.value)}
               onPressEnter={handleBackupSearch}
-              style={{ width: 200 }}
+              style={{ width: 150 }}
               allowClear
             />
-            <Button type="primary" onClick={handleBackupSearch}>
+            <Button type="primary" size="small" onClick={handleBackupSearch}>
               搜索
             </Button>
           </Space>
-          <Text type="secondary">
-            共 {backupTotal} 行，当前显示 {backupContent.length} 行
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            共 {backupTotal} 行，当前 {backupContent.length} 行
           </Text>
         </div>
 
-        <div className={styles.logContent}>
+        <div className={styles.logContent} style={{ maxHeight: '60vh', overflow: 'auto' }}>
           {backupLoading ? (
             <div className={styles.loading}>加载中...</div>
           ) : backupContent.length === 0 ? (
@@ -820,11 +878,11 @@ export default function AdminLogs() {
                     <span className={styles.timestamp}>{line.timestamp}</span>
                   )}
                   {line.level && (
-                    <Tag color={line.level === 'DEBUG' ? 'blue' : line.level === 'INFO' ? 'green' : line.level === 'WARNING' ? 'orange' : 'red'}>
+                    <Tag className={styles.levelTag} color={line.level === 'DEBUG' ? 'blue' : line.level === 'INFO' ? 'green' : line.level === 'WARNING' ? 'orange' : 'red'}>
                       {line.level}
                     </Tag>
                   )}
-                  <span className={styles.message}>{line.content}</span>
+                  <span className={styles.message} style={{ whiteSpace: 'pre-wrap' }}>{line.content}</span>
                 </div>
               ))}
               {backupTotal > backupContent.length && (

@@ -11,8 +11,14 @@
   overflow: hidden;
 }
 
-/* 翠竹装饰 - 右上角光晕 */
-.container::before {
+/* 移动端容器优化 - 保持垂直居中 */
+.containerMobile {
+  padding: 16px;
+  align-items: center; /* 保持垂直居中 */
+}
+
+/* 装饰元素 - 右上角光晕 */
+.decorationTop {
   content: '';
   position: absolute;
   top: -100px;
@@ -21,10 +27,11 @@
   height: 400px;
   background: radial-gradient(circle, rgba(5, 150, 105, 0.2) 0%, transparent 70%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* 翠竹装饰 - 左下角光晕 */
-.container::after {
+/* 装饰元素 - 左下角光晕 */
+.decorationBottom {
   content: '';
   position: absolute;
   bottom: -100px;
@@ -33,11 +40,20 @@
   height: 350px;
   background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
   pointer-events: none;
+  z-index: 0;
 }
 
 .content {
   width: 100%;
   max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 紧凑模式 - 移动端和平板竖屏 */
+.contentCompact {
+  max-width: 100%;
+  padding: 0 4px;
 }
 
 .card {
@@ -47,15 +63,45 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(5, 150, 105, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* 移动端卡片样式 */
+.cardMobile {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.1);
+  /* 移动端减少模糊效果以提升性能 */
+  backdrop-filter: blur(5px);
 }
 
 .card :global(.ant-card-body) {
   padding: 40px 32px;
 }
 
+/* 移动端卡片内边距优化 */
+.cardMobile :global(.ant-card-body) {
+  padding: 24px 20px;
+}
+
+/* 平板竖屏适配 */
+@media (max-width: 768px) and (min-width: 577px) {
+  .contentCompact {
+    max-width: 420px;
+  }
+  
+  .cardMobile :global(.ant-card-body) {
+    padding: 32px 28px;
+  }
+}
+
 .header {
   text-align: center;
   margin-bottom: 32px;
+}
+
+/* 紧凑模式头部 */
+.headerCompact {
+  margin-bottom: 20px;
 }
 
 .title {
@@ -65,22 +111,46 @@
   color: #059669;
   margin: 0 0 8px;
   text-shadow: 0 2px 4px rgba(5, 150, 105, 0.1);
+  transition: font-size 0.3s ease;
+}
+
+/* 移动端标题优化 */
+.headerCompact .title {
+  font-size: 24px;
 }
 
 .subtitle {
   color: #64748b;
   margin: 0;
+  font-size: 14px;
+}
+
+/* 移动端副标题优化 */
+.headerCompact .subtitle {
+  font-size: 13px;
 }
 
 .formFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 移动端表单底部优化 */
+@media (max-width: 576px) {
+  .formFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
 
 .register {
   text-align: center;
   color: #666;
+  font-size: 14px;
 }
 
 .register a {
@@ -98,4 +168,49 @@
   margin-top: 24px;
   color: #64748b;
   font-size: 12px;
+}
+
+/* 移动端footer优化 */
+@media (max-width: 576px) {
+  .footer {
+    margin-top: 16px;
+    font-size: 11px;
+  }
+  
+  .register {
+    font-size: 13px;
+  }
+}
+
+/* 触摸设备优化 - 增大点击区域 */
+@media (hover: none) and (pointer: coarse) {
+  .formFooter a {
+    padding: 8px 0;
+    display: inline-block;
+  }
+  
+  .register a {
+    padding: 4px 8px;
+  }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .containerMobile {
+    align-items: center; /* 横屏也保持垂直居中 */
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  
+  .headerCompact {
+    margin-bottom: 12px;
+  }
+  
+  .headerCompact .title {
+    font-size: 20px;
+  }
+  
+  .headerCompact .subtitle {
+    font-size: 12px;
+  }
 }

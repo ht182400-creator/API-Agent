@@ -22,6 +22,7 @@ import {
 } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
+import { useDevice } from '../../hooks/useDevice'
 import { RepoLogo } from '../../components/RepoLogo'
 import styles from './RepoDetail.module.css'
 
@@ -220,6 +221,7 @@ const { Title, Text, Paragraph } = Typography
 
 export default function RepoDetail() {
   const { slug } = useParams<{ slug: string }>()
+  const { isMobile } = useDevice()
   const [repo, setRepo] = useState<Repository | null>(null)
   const [loading, setLoading] = useState(true)
   const { showError } = useError()
@@ -371,59 +373,60 @@ export default function RepoDetail() {
       </Card>
 
       {/* 统计信息 */}
-      <Row gutter={16} className={styles.statsRow}>
-        <Col span={6}>
-          <Card>
+      <Row gutter={[8, 8]} className={styles.statsRow}>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" bodyStyle={{ padding: 12 }}>
             <Statistic
               title="API端点"
               value={repo.endpoints?.length || 0}
-              prefix={<ApiOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              prefix={<ApiOutlined style={{ color: '#1890ff' }} />}
+              valueStyle={{ color: '#1890ff', fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" bodyStyle={{ padding: 12 }}>
             <Statistic
               title="每分钟限制"
               value={repo.limits?.rpm || 1000}
               suffix="次"
-              prefix={<ThunderboltOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              prefix={<ThunderboltOutlined style={{ color: '#fa8c16' }} />}
+              valueStyle={{ color: '#fa8c16', fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" bodyStyle={{ padding: 12 }}>
             <Statistic
               title="每小时限制"
               value={repo.limits?.rph || 10000}
               suffix="次"
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              prefix={<ClockCircleOutlined style={{ color: '#52c41a' }} />}
+              valueStyle={{ color: '#52c41a', fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" bodyStyle={{ padding: 12 }}>
             <Statistic
               title="每日限制"
               value={repo.limits?.daily || 100000}
               suffix="次"
-              prefix={<GlobalOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              prefix={<GlobalOutlined style={{ color: '#722ed1' }} />}
+              valueStyle={{ color: '#722ed1', fontSize: 20 }}
             />
           </Card>
         </Col>
       </Row>
 
       {/* 详细信息 */}
-      <Row gutter={16}>
+      <Row gutter={[8, 8]}>
         {/* API端点列表 */}
-        <Col span={16}>
-          <Card 
+        <Col xs={24} md={16}>
+          <Card
+            size="small"
             title={
-              <Space>
+              <Space size="small">
                 <ApiOutlined />
                 <span>API端点列表</span>
                 <Tag>{repo.endpoints?.length || 0} 个</Tag>
@@ -432,13 +435,32 @@ export default function RepoDetail() {
             className={styles.endpointsCard}
           >
             {repo.endpoints && repo.endpoints.length > 0 ? (
-              <Table
-                dataSource={repo.endpoints}
-                columns={endpointColumns}
-                rowKey={(record) => `${record.method}-${record.path}`}
-                pagination={false}
-                size="middle"
-              />
+              isMobile ? (
+                // 移动端：卡片列表
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {repo.endpoints.map((endpoint) => (
+                    <Card key={`${endpoint.method}-${endpoint.path}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <Tag color={getMethodColor(endpoint.method)} style={{ marginInlineEnd: 0 }}>{endpoint.method}</Tag>
+                        <Text code style={{ fontSize: 12 }}>{endpoint.path}</Text>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666' }}>
+                        <div>描述：{endpoint.description || '-'}</div>
+                        <div>分类：{endpoint.category ? <Tag style={{ marginInlineEnd: 0 }}>{endpoint.category}</Tag> : '-'}</div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                // 桌面端：表格
+                <Table
+                  dataSource={repo.endpoints}
+                  columns={endpointColumns}
+                  rowKey={(record) => `${record.method}-${record.path}`}
+                  pagination={false}
+                  size="middle"
+                />
+              )
             ) : (
               <Alert message="暂无API端点信息" type="info" showIcon />
             )}
@@ -446,10 +468,11 @@ export default function RepoDetail() {
         </Col>
 
         {/* 限流配置 */}
-        <Col span={8}>
-          <Card 
+        <Col xs={24} md={8}>
+          <Card
+            size="small"
             title={
-              <Space>
+              <Space size="small">
                 <SafetyCertificateOutlined />
                 <span>限流配置</span>
               </Space>

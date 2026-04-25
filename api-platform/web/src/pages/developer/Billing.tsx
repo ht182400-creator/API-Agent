@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom'
 import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
+import { useDevice } from '../../hooks/useDevice'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Billing.module.css'
@@ -34,6 +35,7 @@ const COLORS = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1']
 export default function DeveloperBilling() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const [bills, setBills] = useState<Bill[]>([])
@@ -398,24 +400,46 @@ export default function DeveloperBilling() {
           </Space>
         }
       >
-        <Table
-          dataSource={bills}
-          columns={columns}
-          rowKey="id"
-          loading={loading}
-          locale={{ emptyText: <Empty description="暂无账单记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
-            onChange: (p, ps) => {
-              setPage(p)
-              setPageSize(ps)
-            },
-          }}
-        />
+        {isMobile ? (
+          // 移动端：卡片列表
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {bills.map((bill) => (
+              <Card key={bill.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  {getBillTypeTag(bill.bill_type)}
+                  <Text type={bill.amount >= 0 ? 'success' : 'danger'} strong style={{ marginLeft: 'auto' }}>
+                    {bill.amount >= 0 ? '+' : ''}¥{bill.amount.toFixed(2)}
+                  </Text>
+                </div>
+                <div style={{ fontSize: 12, color: '#666' }}>
+                  <div>时间：{dayjs(bill.created_at).format('YYYY-MM-DD HH:mm')}</div>
+                  <div>余额：¥{bill.balance_after.toFixed(2)}</div>
+                  <div>描述：{bill.description || '-'}</div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          // 桌面端：表格
+          <Table
+            dataSource={bills}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            locale={{ emptyText: <Empty description="暂无账单记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              showSizeChanger: true,
+              showTotal: (total) => `共 ${total} 条`,
+              onChange: (p, ps) => {
+                setPage(p)
+                setPageSize(ps)
+              },
+            }}
+          />
+        )}
       </Card>
     </div>
   )

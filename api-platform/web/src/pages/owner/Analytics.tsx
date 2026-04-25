@@ -162,10 +162,10 @@ export default function OwnerAnalytics() {
       {/* 内容区域 */}
       <div className={styles.content}>
         {/* 头部 */}
-        <div className={`${styles.header} ${styles.animateSlideUp}`}>
+        <div className={`${styles.header} ${styles.animateSlideUp}`} style={{ flexWrap: 'wrap', gap: 12 }}>
           <div className={styles.headerLeft}>
-            <h1>{getGreeting()}，数据分析师</h1>
-            <p>以下是您的 API 调用数据概览 · 更新于 {new Date().toLocaleTimeString()}</p>
+            <h1 style={{ fontSize: 20, marginBottom: 4 }}>{getGreeting()}，数据分析师</h1>
+            <p style={{ fontSize: 12 }}>以下是您的 API 调用数据概览</p>
           </div>
           <div className={styles.headerRight}>
             <button className={styles.refreshButton} onClick={handleRefresh} disabled={refreshing}>

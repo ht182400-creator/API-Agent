@@ -1,11 +1,16 @@
 /**
  * 主布局组件
  * 根据用户类型显示不同的菜单和界面
+ * 
+ * 【移动端适配 V1.0】
+ * - 移动端使用抽屉式菜单
+ * - 桌面端使用固定侧边栏
+ * - 自动检测设备类型
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout as AntLayout, Menu, Avatar, Dropdown, Badge, Space, Typography, Tag } from 'antd'
+import { Layout as AntLayout, Menu, Avatar, Dropdown, Badge, Space, Typography, Tag, Drawer, Button } from 'antd'
 import {
   DashboardOutlined,
   KeyOutlined,
@@ -31,12 +36,14 @@ import {
   CheckCircleOutlined,
   PlusCircleOutlined,
   LineChartOutlined,
+  MenuOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useAuthStore } from '../stores/auth'
 import { authApi } from '../api/auth'
 import { notificationApi, Notification } from '../api/notification'
 import { api } from '../api/client'
+import { useDevice } from '../hooks/useDevice'  // 【移动端适配】引入设备检测Hook
 import styles from './Layout.module.css'
 
 const { Header, Sider, Content } = AntLayout
@@ -212,6 +219,18 @@ export default function Layout() {
   const [notificationOpen, setNotificationOpen] = useState(false)
   // 【V4.2新增】用户是否有仓库的状态
   const [hasRepos, setHasRepos] = useState(false)
+  
+  // 【移动端适配】设备检测
+  const { isMobile, isTablet, isDesktop, deviceType } = useDevice()
+  // 【移动端适配】抽屉菜单显示状态
+  const [drawerVisible, setDrawerVisible] = useState(false)
+  
+  // 【移动端适配】在移动端自动收起侧边栏
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true)
+    }
+  }, [isMobile])
 
 
   // 获取未读通知数量
@@ -404,57 +423,116 @@ export default function Layout() {
 
   return (
     <AntLayout className={styles.layout}>
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        width={220}
-        className={styles.sider}
-      >
-        <div className={styles.logo}>
-          {collapsed ? (
-            <span className={styles.logoIcon}>API</span>
-          ) : (
-            <>
-              <span className={styles.logoIcon}>API</span>
-              <span className={styles.logoText}>Platform</span>
-            </>
-          )}
-        </div>
-        
-        {/* 用户类型标签 */}
-        {!collapsed && (
-          <div className={styles.userTypeTag}>
-            <Tag color={userTypeInfo.color} icon={userTypeInfo.icon}>
-              {userTypeInfo.label}
-            </Tag>
-          </div>
-        )}
-        
-        <Menu
-          theme="light"
-          mode="inline"
-          selectedKeys={[selectedKeys]}
-          defaultOpenKeys={[firstLevelPath]}
-          items={getMenuItems(user?.user_type || 'user', hasRepos)}
-          onClick={({ key }) => navigate(key)}
-          className={styles.menu}
-        />
-      </Sider>
-      
-      <AntLayout>
-        <Header className={styles.header}>
-          <div className={styles.headerLeft}>
+      {/* 【移动端适配】桌面端：固定侧边栏；移动端：抽屉菜单 */}
+      {/* 修复：移动端完全不渲染Sider，避免CSS隐藏失效问题 */}
+      {!isMobile && (isDesktop || isTablet) && (
+        /* 桌面端/平板端：固定侧边栏 */
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          width={220}
+          className={styles.sider}
+          style={{ width: collapsed ? 80 : 220 }}
+        >
+          <div className={styles.logo}>
             {collapsed ? (
-              <MenuUnfoldOutlined
+              <span className={styles.logoIcon}>API</span>
+            ) : (
+              <>
+                <span className={styles.logoIcon}>API</span>
+                <span className={styles.logoText}>Platform</span>
+              </>
+            )}
+          </div>
+          
+          {/* 用户类型标签 */}
+          {!collapsed && (
+            <div className={styles.userTypeTag}>
+              <Tag color={userTypeInfo.color} icon={userTypeInfo.icon}>
+                {userTypeInfo.label}
+              </Tag>
+            </div>
+          )}
+          
+          <Menu
+            theme="light"
+            mode="inline"
+            selectedKeys={[selectedKeys]}
+            defaultOpenKeys={[firstLevelPath]}
+            items={getMenuItems(user?.user_type || 'user', hasRepos)}
+            onClick={({ key }) => navigate(key)}
+            className={styles.menu}
+          />
+        </Sider>
+      )}
+      
+      {/* 移动端：抽屉菜单 */}
+      {isMobile && (
+        <>
+          <Drawer
+            title={
+              <div className={styles.drawerLogo}>
+                <span className={styles.logoIcon}>API</span>
+                <span className={styles.logoText}>Platform</span>
+              </div>
+            }
+            placement="left"
+            closable={true}
+            onClose={() => setDrawerVisible(false)}
+            open={drawerVisible}
+            width={250}
+            className={styles.drawer}
+            bodyStyle={{ padding: 0 }}
+          >
+            {/* 用户类型标签 */}
+            <div className={styles.userTypeTag}>
+              <Tag color={userTypeInfo.color} icon={userTypeInfo.icon}>
+                {userTypeInfo.label}
+              </Tag>
+            </div>
+            
+            <Menu
+              theme="light"
+              mode="inline"
+              selectedKeys={[selectedKeys]}
+              defaultOpenKeys={[firstLevelPath]}
+              items={getMenuItems(user?.user_type || 'user', hasRepos)}
+              onClick={({ key }) => {
+                navigate(key)
+                setDrawerVisible(false) // 点击后关闭抽屉
+              }}
+              className={styles.menu}
+            />
+          </Drawer>
+        </>
+      )}
+      
+      <AntLayout className={`${styles.mainLayout} ${collapsed ? styles.collapsed : ''}`}>
+        {/* 【移动端适配】移动端显示顶部导航栏 */}
+        <Header className={`${styles.header} ${collapsed ? styles.headerCollapsed : ''}`}>
+          <div className={styles.headerLeft}>
+            {/* 移动端：显示菜单按钮 */}
+            {!isDesktop && !isTablet ? (
+              <MenuOutlined
                 className={styles.trigger}
-                onClick={() => setCollapsed(false)}
+                onClick={() => setDrawerVisible(true)}
               />
             ) : (
-              <MenuFoldOutlined
-                className={styles.trigger}
-                onClick={() => setCollapsed(true)}
-              />
+              /* 桌面端：显示折叠按钮 */
+              <>
+                {collapsed ? (
+                  <MenuUnfoldOutlined
+                    className={styles.trigger}
+                    onClick={() => setCollapsed(false)}
+                  />
+                ) : (
+                  <MenuFoldOutlined
+                    className={styles.trigger}
+                    onClick={() => setCollapsed(true)}
+                  />
+                )}
+              </>
             )}
           </div>
           
@@ -553,12 +631,17 @@ export default function Layout() {
                   icon={<UserOutlined />}
                   src={user?.avatar_url}
                 />
-                <Text className={styles.username}>
-                  {user?.username || user?.email?.split('@')[0] || 'User'}
-                </Text>
-                <Tag color={userTypeInfo.color} style={{ marginLeft: 8 }}>
-                  {userTypeInfo.label}
-                </Tag>
+                {/* 移动端不显示用户名和标签，节省空间 */}
+                {isDesktop && (
+                  <>
+                    <Text className={styles.username}>
+                      {user?.username || user?.email?.split('@')[0] || 'User'}
+                    </Text>
+                    <Tag color={userTypeInfo.color} style={{ marginLeft: 8 }}>
+                      {userTypeInfo.label}
+                    </Tag>
+                  </>
+                )}
               </Space>
             </Dropdown>
           </div>

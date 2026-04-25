@@ -30,6 +30,14 @@ export const adminApi = {
 export const adminUserApi = {
   ...adminApi,
   list: adminApi.listUsers,
+  
+  // 更新用户状态（禁用/启用）
+  update: (userId: string, data: { user_status?: string; user_type?: string }) => 
+    api.put(`/admin/users/${userId}`, data),
+  
+  // 删除用户
+  delete: (userId: string) => 
+    api.delete(`/admin/users/${userId}`),
 }
 
 // 用户类型映射

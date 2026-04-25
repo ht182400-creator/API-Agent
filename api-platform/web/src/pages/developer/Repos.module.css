@@ -135,13 +135,31 @@
   .container {
     padding: 12px;
   }
-  
+
   .header {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .statsRow {
     text-align: left;
+    width: 100%;
+  }
+
+  .filterCard {
+    margin-bottom: 16px;
+  }
+
+  .repoCard {
+    height: auto;
+  }
+
+  .repoCard:hover {
+    transform: none;
+  }
+
+  .cardFooter {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }

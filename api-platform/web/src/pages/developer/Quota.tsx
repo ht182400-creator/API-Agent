@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, QuotaInfo } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
+import { useDevice } from '../../hooks/useDevice'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Quota.module.css'
@@ -31,6 +32,7 @@ const { Title, Text } = Typography
 export default function DeveloperQuota() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [selectedKey, setSelectedKey] = useState<string>('')
@@ -373,54 +375,79 @@ export default function DeveloperQuota() {
             }
             className={styles.tableCard}
           >
-            <Table
-              dataSource={topRepos}
-              rowKey="repo_id"
-              pagination={false}
-              locale={{ emptyText: <Empty description="暂无仓库调用记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
-              columns={[
-                { 
-                  title: '排名', 
-                  key: 'rank',
-                  width: 80,
-                  render: (_: any, __: any, index: number) => (
-                    <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#1677ff' : '#d9d9d9' }} />
+            {isMobile ? (
+              // 移动端：卡片列表
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {topRepos.map((repo, index) => {
+                  const total = topRepos.reduce((acc, r) => acc + r.call_count, 0)
+                  const percent = total > 0 ? Math.round((repo.call_count / total) * 100) : 0
+                  return (
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                        <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#1677ff' : '#d9d9d9' }} />
+                        <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name || '未知仓库'}</Tag>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                        <div>调用次数：<Text strong>{repo.call_count?.toLocaleString()}</Text> 次</div>
+                        <div style={{ marginTop: 8 }}>
+                          <Progress percent={percent} size="small" format={() => `${percent}%`} strokeColor={percent > 50 ? '#1677ff' : '#52c41a'} />
+                        </div>
+                      </div>
+                    </Card>
                   )
-                },
-                { 
-                  title: '仓库名称', 
-                  dataIndex: 'repo_name', 
-                  key: 'repo_name',
-                  render: (name: string) => <Tag color="blue">{name || '未知仓库'}</Tag>
-                },
-                { 
-                  title: '调用次数', 
-                  dataIndex: 'call_count', 
-                  key: 'call_count',
-                  sorter: (a: any, b: any) => a.call_count - b.call_count,
-                  render: (count: number) => count?.toLocaleString()
-                },
-                {
-                  title: '用量占比',
-                  key: 'percent',
-                  width: 200,
-                  render: (_: any, record: any) => {
-                    const total = topRepos.reduce((acc, r) => acc + r.call_count, 0)
-                    const percent = total > 0 ? Math.round((record.call_count / total) * 100) : 0
-                    return (
-                      <Tooltip title={`${record.call_count} / ${total} 次`}>
-                        <Progress
-                          percent={percent}
-                          size="small"
-                          format={(p) => `${p}%`}
-                          strokeColor={percent > 50 ? '#1677ff' : '#52c41a'}
-                        />
-                      </Tooltip>
+                })}
+              </div>
+            ) : (
+              // 桌面端：表格
+              <Table
+                dataSource={topRepos}
+                rowKey="repo_id"
+                pagination={false}
+                locale={{ emptyText: <Empty description="暂无仓库调用记录" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+                columns={[
+                  { 
+                    title: '排名', 
+                    key: 'rank',
+                    width: 80,
+                    render: (_: any, __: any, index: number) => (
+                      <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#1677ff' : '#d9d9d9' }} />
                     )
-                  }
-                },
-              ]}
-            />
+                  },
+                  { 
+                    title: '仓库名称', 
+                    dataIndex: 'repo_name', 
+                    key: 'repo_name',
+                    render: (name: string) => <Tag color="blue">{name || '未知仓库'}</Tag>
+                  },
+                  { 
+                    title: '调用次数', 
+                    dataIndex: 'call_count', 
+                    key: 'call_count',
+                    sorter: (a: any, b: any) => a.call_count - b.call_count,
+                    render: (count: number) => count?.toLocaleString()
+                  },
+                  {
+                    title: '用量占比',
+                    key: 'percent',
+                    width: 200,
+                    render: (_: any, record: any) => {
+                      const total = topRepos.reduce((acc, r) => acc + r.call_count, 0)
+                      const percent = total > 0 ? Math.round((record.call_count / total) * 100) : 0
+                      return (
+                        <Tooltip title={`${record.call_count} / ${total} 次`}>
+                          <Progress
+                            percent={percent}
+                            size="small"
+                            format={(p) => `${p}%`}
+                            strokeColor={percent > 50 ? '#1677ff' : '#52c41a'}
+                          />
+                        </Tooltip>
+                      )
+                    }
+                  },
+                ]}
+              />
+            )}
           </Card>
         </>
       )}

@@ -162,6 +162,8 @@ export default function SuperAdminRoles() {
           dataSource={roles} 
           rowKey="id" 
           pagination={false}
+          scroll={{ x: 800 }}
+          size="small"
         />
       </Card>
 

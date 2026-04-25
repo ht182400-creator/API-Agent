@@ -3,6 +3,18 @@
   min-height: 100vh;
 }
 
+/* 主布局容器 - 根据侧边栏宽度动态偏移 */
+.mainLayout {
+  min-height: 100vh;
+  transition: margin-left 0.2s;
+  margin-left: 220px; /* 默认：侧边栏展开时的宽度 */
+}
+
+/* 侧边栏折叠时，减少偏移量 */
+.mainLayout.collapsed {
+  margin-left: 80px; /* 折叠后侧边栏宽度为 80px */
+}
+
 .sider {
   /* 翠竹主题 - 浅色背景 */
   background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%) !important;
@@ -95,10 +107,9 @@
   position: sticky;
   top: 0;
   z-index: 99;
-  margin-left: 220px;
-  transition: margin-left 0.2s;
   /* 添加底部翠竹色边框 */
   border-bottom: 1px solid rgba(5, 150, 105, 0.15);
+  /* 不需要 margin-left，因为 .mainLayout 已经偏移了 */
 }
 
 .headerLeft {
@@ -154,29 +165,116 @@
 }
 
 .content {
-  margin-left: 220px;
   padding: 24px;
   min-height: calc(100vh - 64px);
   /* 翠竹主题背景 */
   background: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 30%, #f0fdfa 70%, #f8fafc 100%);
-  transition: margin-left 0.2s;
+  /* 不需要 margin-left，因为 .mainLayout 已经偏移了 */
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .sider {
-    position: fixed;
-    transform: translateX(-100%);
-    transition: transform 0.2s;
-  }
+/* ==================== 响应式样式 ==================== */
 
-  .sider.visible {
-    transform: translateX(0);
+/* 平板端适配 */
+@media (max-width: 991px) and (min-width: 576px) {
+  .header {
+    margin-left: 0;
   }
-
-  .header,
+  
   .content {
     margin-left: 0;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 575px) {
+  /* 关键修复：移动端主布局不需要偏移，侧边栏改为Drawer */
+  .mainLayout {
+    margin-left: 0 !important;
+  }
+  
+  /* 移动端隐藏固定侧边栏，使用Drawer抽屉 */
+  /* 使用更具体的选择器确保覆盖Ant Design默认样式 */
+  :global(.ant-layout-sider) {
+    display: none !important;
+  }
+  .sider {
+    display: none !important;
+  }
+  
+  .header {
+    margin-left: 0 !important;
+    padding: 0 12px !important;
+  }
+  
+  .content {
+    margin-left: 0 !important;
+    padding: 12px !important;
+  }
+  
+  .headerRight {
+    gap: 12px !important;
+  }
+  
+  .username {
+    display: none !important;
+  }
+}
+
+/* ==================== 抽屉菜单样式 ==================== */
+.drawerLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #059669;
+}
+
+.drawer :global(.ant-drawer-header) {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-bottom: 1px solid rgba(5, 150, 105, 0.15);
+}
+
+.drawer :global(.ant-drawer-body) {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%);
+  padding: 0;
+}
+
+.drawer :global(.ant-menu) {
+  background: transparent !important;
+}
+
+/* ==================== 移动端顶部导航 ==================== */
+@media (max-width: 575px) {
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+  
+  /* 移动端优化：通知面板宽度 */
+  .notificationPanel {
+    width: 300px !important;
+  }
+}
+
+/* ==================== 平板端优化 ==================== */
+@media (min-width: 576px) and (max-width: 991px) {
+  .notificationPanel {
+    width: 320px !important;
+  }
+}
+
+/* ==================== 大屏幕优化 ==================== */
+@media (min-width: 1200px) {
+  .content {
+    /* 移除 max-width 限制，让内容占满剩余宽度 */
+    max-width: none;
+  }
+  
+  .header {
+    /* 保持与侧边栏对齐 */
+    max-width: none;
   }
 }
 

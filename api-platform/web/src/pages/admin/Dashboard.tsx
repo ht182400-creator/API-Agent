@@ -98,24 +98,29 @@ export default function AdminDashboard() {
     loadData()
   }, [])
 
+  // 响应式列宽配置
   const columns = [
     { 
       title: '用户', 
-      key: 'user',
-      render: (_: any, record: any) => (
-        <Space>
+      dataIndex: 'username',
+      key: 'username',
+      width: 150,
+      ellipsis: true,
+      render: (username: string, record: any) => (
+        <Space size={8}>
           <Avatar 
-            size={32} 
+            size={28} 
             style={{ 
               background: 'var(--gradient-cyber)',
-              fontSize: 14
+              fontSize: 12,
+              flexShrink: 0
             }}
           >
-            {record.username?.charAt(0).toUpperCase() || 'U'}
+            {username?.charAt(0).toUpperCase() || 'U'}
           </Avatar>
-          <div>
-            <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{record.username}</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{record.email}</div>
+          <div style={{ minWidth: 0, overflow: 'hidden' }}>
+            <div style={{ fontWeight: 500, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{username}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{record.email}</div>
           </div>
         </Space>
       )
@@ -124,17 +129,17 @@ export default function AdminDashboard() {
       title: '类型', 
       dataIndex: 'user_type', 
       key: 'user_type', 
+      width: 80,
       render: (t: string) => {
-        // 不同用户类型对应不同颜色（加深20%）
         const colorMap: Record<string, string> = {
-          super_admin: '#c41d7f',  // 深红色
-          admin: '#d46b08',        // 深橙色
-          owner: '#0958d9',        // 深蓝色
-          developer: '#237804',    // 深绿色
-          user: '#595959'          // 深灰色
+          super_admin: '#c41d7f',
+          admin: '#d46b08',
+          owner: '#0958d9',
+          developer: '#237804',
+          user: '#595959'
         }
         return (
-          <Tag color={colorMap[t] || '#595959'}>
+          <Tag color={colorMap[t] || '#595959'} style={{ fontSize: 11, marginInlineEnd: 0 }}>
             {userTypeLabels[t] || t}
           </Tag>
         )
@@ -144,9 +149,10 @@ export default function AdminDashboard() {
       title: '注册时间', 
       dataIndex: 'created_at', 
       key: 'created_at', 
+      width: 120,
       render: (d: string) => (
-        <Text style={{ color: 'var(--text-secondary)' }}>
-          {d ? dayjs(d).format('YYYY-MM-DD HH:mm') : '-'}
+        <Text style={{ color: 'var(--text-secondary)', fontSize: 12, whiteSpace: 'nowrap' }}>
+          {d ? dayjs(d).format('YYYY-MM-DD') : '-'}
         </Text>
       )
     },
@@ -274,6 +280,8 @@ export default function AdminDashboard() {
               loading={loading}
               locale={{ emptyText: '暂无数据' }}
               className="cyber-table"
+              scroll={{ x: 350 }}
+              size="small"
             />
           </Card>
         </Col>
