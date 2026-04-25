@@ -7,12 +7,13 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch, Upload } from 'antd'
+import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch, Upload, Pagination } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest, Endpoint, CreateEndpointRequest, UpdateEndpointRequest, UpdateLimitsRequest } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
 import { useAuthStore } from '../../stores/auth'
 import { RepoLogo } from '../../components/RepoLogo'
+import { useDevice } from '../../hooks/useDevice'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 
@@ -23,6 +24,7 @@ const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 export default function OwnerRepos() {
   const { user } = useAuthStore()
+  const { isMobile } = useDevice()
   const isAdmin = user?.user_type === 'admin' || user?.role === 'admin'
   const [loading, setLoading] = useState(false)
   const [repos, setRepos] = useState<Repository[]>([])
@@ -469,7 +471,45 @@ export default function OwnerRepos() {
       
       {endpoints.length === 0 ? (
         <Alert message="暂无API端点配置" description="点击上方按钮添加您的第一个API端点" type="info" showIcon />
+      ) : isMobile ? (
+        // 移动端：卡片布局
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {endpoints.map((endpoint) => (
+            <Card
+              key={endpoint.id || endpoint.path}
+              size="small"
+              style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+              bodyStyle={{ padding: 12 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                <Tag color={getMethodColor(endpoint.method)}>{endpoint.method}</Tag>
+                <Text code style={{ flex: 1, fontSize: 12, wordBreak: 'break-all' }}>{endpoint.path}</Text>
+              </div>
+              {endpoint.description && (
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  描述：{endpoint.description}
+                </div>
+              )}
+              <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                <Space size={16}>
+                  <span>RPM限制：{endpoint.rpm_limit || '-'}</span>
+                  <span>RPH限制：{endpoint.rph_limit || '-'}</span>
+                </Space>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
+                <Tag color={endpoint.enabled !== false ? 'green' : 'default'}>
+                  {endpoint.enabled !== false ? '启用' : '禁用'}
+                </Tag>
+                <Space size="small">
+                  <Button size="small" onClick={() => handleEditEndpoint(endpoint)}>编辑</Button>
+                  <Button size="small" danger onClick={() => handleDeleteEndpoint(endpoint)}>删除</Button>
+                </Space>
+              </div>
+            </Card>
+          ))}
+        </div>
       ) : (
+        // 桌面端：表格布局
         <Table
           dataSource={endpoints}
           rowKey={(record) => record.id || record.path}
@@ -676,13 +716,13 @@ export default function OwnerRepos() {
       </div>
 
       {/* 统计信息 */}
-      <Row gutter={16} className={styles.statsRow}>
-        <Col span={6}>
+      <Row gutter={[12, 12]} className={styles.statsRow}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic title="我的仓库" value={total} prefix={<ApiOutlined />} />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic 
               title="API端点总数" 
@@ -691,7 +731,7 @@ export default function OwnerRepos() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic 
               title="已上线仓库" 
@@ -700,7 +740,7 @@ export default function OwnerRepos() {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic 
               title="未上线仓库" 
@@ -722,20 +762,80 @@ export default function OwnerRepos() {
         />
       )}
 
-      <Table
-        dataSource={repos}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total,
-          showSizeChanger: true,
-          showTotal: (total) => `共 ${total} 条`,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps) },
-        }}
-      />
+      {isMobile ? (
+        // 移动端：卡片列表
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {repos.map((repo) => (
+              <Card
+                key={repo.id}
+                size="small"
+                style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                bodyStyle={{ padding: 12 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Text strong style={{ display: 'block', fontSize: 15 }}>{repo.display_name || repo.name}</Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>{repo.name}</Text>
+                  </div>
+                  <Tag color={
+                    repo.status === 'online' ? 'green' :
+                    repo.status === 'pending' ? 'orange' :
+                    repo.status === 'rejected' ? 'red' : 'blue'
+                  } style={{ marginInlineEnd: 0 }}>
+                    {repo.status === 'online' ? '已上线' :
+                     repo.status === 'pending' ? '待审核' :
+                     repo.status === 'rejected' ? '已拒绝' : '已审核'}
+                  </Tag>
+                </div>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  <div>描述：{repo.description || '-'}</div>
+                  <div>分类：<Tag style={{ marginInlineEnd: 0 }}>{repo.type}</Tag></div>
+                  <div>端点：<Tag icon={<ApiOutlined />} style={{ marginInlineEnd: 0 }}>{repo.endpoints?.length || 0} 个</Tag></div>
+                  <div>限流：{repo.limits?.rpm || 1000}/分</div>
+                  <div>创建：{dayjs(repo.created_at).format('YYYY-MM-DD')}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
+                  <Button size="small" icon={<EyeOutlined />} onClick={() => handleViewDetail(repo)}>详情</Button>
+                  <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(repo)}>编辑</Button>
+                  <Popconfirm title="确认删除？" description="删除后无法恢复" onConfirm={() => handleDelete(repo.id)} okText="确认" cancelText="取消" okButtonProps={{ danger: true }}>
+                    <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                  </Popconfirm>
+                </div>
+              </Card>
+            ))}
+          </div>
+          {repos.length > 0 && (
+            <div style={{ marginTop: 16, textAlign: 'center' }}>
+              <Pagination
+                current={page}
+                pageSize={pageSize}
+                total={total}
+                showSizeChanger={false}
+                onChange={(p, ps) => { setPage(p); setPageSize(ps) }}
+                size="small"
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        // 桌面端：表格
+        <Table
+          dataSource={repos}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total,
+            showSizeChanger: true,
+            showTotal: (total) => `共 ${total} 条`,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps) },
+          }}
+        />
+      )}
 
       {/* 创建/编辑仓库弹窗 */}
       <Modal

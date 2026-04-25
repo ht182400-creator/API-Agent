@@ -21,6 +21,7 @@ import dayjs from 'dayjs'
 import { billingApi, AdminMonthlyBill, PaginatedAdminMonthlyBills } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
 import { adminApi } from '../../api/superadmin'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './AdminBilling.module.css'
 
 const { Title, Text } = Typography
@@ -44,6 +45,7 @@ const STATUS_TEXT: Record<string, string> = {
 }
 
 export default function AdminMonthlyBills() {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [bills, setBills] = useState<AdminMonthlyBill[]>([])
   const [pagination, setPagination] = useState({ page: 1, page_size: 20, total: 0, total_pages: 0 })
@@ -238,6 +240,76 @@ export default function AdminMonthlyBills() {
     },
   ]
 
+  // 移动端卡片列表渲染
+  const renderBillCards = () => (
+    <div className={styles.cardList}>
+      {bills.map((bill) => (
+        <Card key={bill.id} className={styles.billCard} size="small">
+          <div className={styles.cardHeader}>
+            <Tag color={STATUS_COLORS[bill.status] || 'default'}>
+              {STATUS_TEXT[bill.status] || bill.status}
+            </Tag>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {bill.year}年{bill.month}月
+            </Text>
+          </div>
+
+          <div className={styles.cardBody}>
+            <div className={styles.cardRow}>
+              <Text type="secondary">用户名：</Text>
+              <Text>{bill.username}</Text>
+            </div>
+            <div className={styles.cardRow}>
+              <Text type="secondary">邮箱：</Text>
+              <Text style={{ fontSize: 12 }}>{bill.email}</Text>
+            </div>
+            <div className={styles.cardRow}>
+              <Text type="secondary">充值：</Text>
+              <Text type="success">+¥{bill.total_recharge.toFixed(2)}</Text>
+            </div>
+            <div className={styles.cardRow}>
+              <Text type="secondary">消费：</Text>
+              <Text type="danger">-¥{bill.total_consumption.toFixed(2)}</Text>
+            </div>
+            <div className={styles.cardRow}>
+              <Text type="secondary">净变化：</Text>
+              <Text type={bill.net_change >= 0 ? 'success' : 'danger'}>
+                {bill.net_change >= 0 ? '+' : ''}¥{bill.net_change.toFixed(2)}
+              </Text>
+            </div>
+            <div className={styles.cardRow}>
+              <Text type="secondary">调用次数：</Text>
+              <Text>{bill.total_calls} 次</Text>
+            </div>
+          </div>
+
+          <div className={styles.cardActions}>
+            <Space wrap size="small">
+              <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => handleViewDetail(bill)}>
+                详情
+              </Button>
+              {(bill.status === 'generated' || bill.status === 'pending') && (
+                <Button type="link" size="small" icon={<CheckOutlined />} onClick={() => handleReview(bill, 'approve')}>
+                  审核
+                </Button>
+              )}
+              {bill.status === 'reviewed' && (
+                <Button type="link" size="small" icon={<UploadOutlined />} onClick={() => handlePublish(bill.id)}>
+                  发布
+                </Button>
+              )}
+            </Space>
+          </div>
+        </Card>
+      ))}
+      {bills.length === 0 && (
+        <Card className={styles.billCard} size="small">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>暂无月度账单</div>
+        </Card>
+      )}
+    </div>
+  )
+
   // 生成月份选项
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
@@ -250,15 +322,15 @@ export default function AdminMonthlyBills() {
       <ErrorModalComponent />
 
       <div className={styles.header}>
-        <div>
-          <Title level={4}>月度账单管理</Title>
+        <div style={{ marginBottom: 12 }}>
+          <Title level={4} style={{ marginBottom: 4 }}>月度账单管理</Title>
           <Text type="secondary">生成、审核和发布用户月度账单</Text>
         </div>
-        <Space>
+        <Space wrap size="small">
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
-            style={{ width: 100 }}
+            style={{ width: 90 }}
             options={Array.from({ length: 5 }, (_, i) => ({
               value: dayjs().year() - i,
               label: `${dayjs().year() - i}年`,
@@ -267,13 +339,13 @@ export default function AdminMonthlyBills() {
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{ width: 80 }}
+            style={{ width: 70 }}
             options={monthOptions}
           />
           <Select
             value={selectedStatus}
             onChange={setSelectedStatus}
-            style={{ width: 120 }}
+            style={{ width: 110 }}
             allowClear
             placeholder="选择状态"
             options={Object.entries(STATUS_TEXT).map(([value, label]) => ({
@@ -286,7 +358,7 @@ export default function AdminMonthlyBills() {
             onClick={handleGenerate}
             loading={generating}
           >
-            生成{selectedYear}年{selectedMonth}月账单
+            生成账单
           </Button>
           <Button icon={<ReloadOutlined />} onClick={fetchBills}>
             刷新
@@ -295,21 +367,37 @@ export default function AdminMonthlyBills() {
       </div>
 
       <Card className={styles.tableCard}>
-        <Table
-          dataSource={bills}
-          columns={columns}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            current: pagination.page,
-            pageSize: pagination.page_size,
-            total: pagination.total,
-            showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
-            onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
-          }}
-          locale={{ emptyText: <Empty description="暂无月度账单" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
-        />
+        {isMobile ? (
+          <>
+            {renderBillCards()}
+            {pagination.total > pagination.page_size && (
+              <div style={{ textAlign: 'center', marginTop: 16 }}>
+                <Button
+                  onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+                  loading={loading}
+                >
+                  加载更多
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <Table
+            dataSource={bills}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              current: pagination.page,
+              pageSize: pagination.page_size,
+              total: pagination.total,
+              showSizeChanger: true,
+              showTotal: (total) => `共 ${total} 条`,
+              onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
+            }}
+            locale={{ emptyText: <Empty description="暂无月度账单" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+          />
+        )}
       </Card>
 
       {/* 详情抽屉 */}
@@ -317,10 +405,11 @@ export default function AdminMonthlyBills() {
         title={`${currentBill?.year}年${currentBill?.month}月账单详情`}
         open={detailVisible}
         onClose={() => setDetailVisible(false)}
-        width={600}
+        width="90%"
+        style={{ maxWidth: 600 }}
       >
         {currentBill && (
-          <Descriptions column={2} bordered size="small">
+          <Descriptions column={1} bordered size="small">
             <Descriptions.Item label="用户">{currentBill.username}</Descriptions.Item>
             <Descriptions.Item label="邮箱">{currentBill.email}</Descriptions.Item>
             <Descriptions.Item label="期初余额">

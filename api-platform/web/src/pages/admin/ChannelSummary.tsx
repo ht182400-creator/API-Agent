@@ -5,11 +5,11 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Card, DatePicker, Row, Col, Statistic, Tag, Space, Typography, Spin, Progress } from 'antd'
-import { 
-  AlipayOutlined, 
-  WechatOutlined, 
-  CreditCardOutlined, 
+import { Card, DatePicker, Row, Col, Statistic, Tag, Space, Typography, Spin, Progress, Button } from 'antd'
+import {
+  AlipayOutlined,
+  WechatOutlined,
+  CreditCardOutlined,
   ReloadOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons'
 import { adminReconciliationApi, ChannelSummary as ChannelSummaryType, TotalSummary } from '../../api/adminReconciliation'
 import { useErrorModal } from '../../components/ErrorModal'
+import dayjs from 'dayjs'
 import styles from './ChannelSummary.module.css'
 
 const { Title, Text } = Typography
@@ -137,52 +138,46 @@ export default function AdminChannelSummary() {
     <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
 
-      <div className={styles.header}>
-        <Title level={4}>渠道收款汇总</Title>
-        <Space>
-          <DatePicker 
-            value={dateStr ? undefined : undefined}
+      <div className={styles.header} style={{ flexWrap: 'wrap', gap: 8 }}>
+        <Title level={4} style={{ marginBottom: 0 }}>渠道收款汇总</Title>
+        <Space wrap size="small">
+          <DatePicker
+            value={dateStr ? dayjs(dateStr) : undefined}
             onChange={(date, dateString) => {
               if (dateString) {
                 setDateStr(dateString as string)
               }
             }}
             placeholder="选择日期"
-            defaultValue={dateStr ? undefined : undefined}
           />
-          <span onClick={() => setDateStr(new Date().toISOString().split('T')[0])}>
-            <Text type="secondary" style={{ cursor: 'pointer' }}>
-              今天
-            </Text>
-          </span>
-          <Text type="secondary">|</Text>
-          <span onClick={() => {
+          <Button type="link" size="small" onClick={() => setDateStr(new Date().toISOString().split('T')[0])}>
+            今天
+          </Button>
+          <Button type="link" size="small" onClick={() => {
             const yesterday = new Date()
             yesterday.setDate(yesterday.getDate() - 1)
             setDateStr(yesterday.toISOString().split('T')[0])
           }}>
-            <Text type="secondary" style={{ cursor: 'pointer' }}>
-              昨天
-            </Text>
-          </span>
-          <span onClick={fetchSummary}>
-            <ReloadOutlined style={{ cursor: 'pointer' }} />
-          </span>
+            昨天
+          </Button>
+          <Button type="link" size="small" icon={<ReloadOutlined />} onClick={fetchSummary}>
+            刷新
+          </Button>
         </Space>
       </div>
 
       {/* 总览卡片 */}
       {total && (
         <Card className={styles.totalCard}>
-          <Row gutter={24}>
-            <Col span={6}>
+          <Row gutter={[12, 12]}>
+            <Col xs={12} sm={6}>
               <Statistic
                 title="总交易笔数"
                 value={total.trade_count}
                 suffix="笔"
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Statistic
                 title="总收款金额"
                 value={total.trade_amount}
@@ -191,14 +186,14 @@ export default function AdminChannelSummary() {
                 valueStyle={{ color: '#1890ff' }}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Statistic
                 title="已完成笔数"
                 value={total.success_count}
                 valueStyle={{ color: '#52c41a' }}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Statistic
                 title="待处理笔数"
                 value={total.pending_count}

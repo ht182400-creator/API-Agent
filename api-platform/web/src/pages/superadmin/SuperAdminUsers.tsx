@@ -5,12 +5,16 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Tag, Button, Space, Modal, Form, Select, Input, message, Popconfirm } from 'antd'
+import { Table, Tag, Button, Space, Modal, Form, Select, Input, message, Popconfirm, Card, Avatar, Typography, Pagination } from 'antd'
 import { UserOutlined, EditOutlined, DeleteOutlined, SafetyOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { userApi, userTypeLabels, userTypeColors, roleLabels, UserListItem } from '../../api/superadmin'
+import { useDevice } from '../../hooks/useDevice'
+
+const { Text } = Typography
 
 export default function SuperAdminUsers() {
+  const { isMobile } = useDevice()
   const [users, setUsers] = useState<UserListItem[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -97,19 +101,21 @@ export default function SuperAdminUsers() {
       ellipsis: true,
       render: (id: string) => <code style={{ fontSize: 11 }}>{id.slice(0, 8)}...</code>
     },
-    { title: '用户名', dataIndex: 'username', key: 'username' },
-    { title: '邮箱', dataIndex: 'email', key: 'email', ellipsis: true },
-    { title: '手机', dataIndex: 'phone', key: 'phone' },
+    { title: '用户名', dataIndex: 'username', key: 'username', width: 100, ellipsis: true },
+    { title: '邮箱', dataIndex: 'email', key: 'email', width: 160, ellipsis: true },
+    { title: '手机', dataIndex: 'phone', key: 'phone', width: 120, ellipsis: true },
     { 
       title: '用户类型', 
       dataIndex: 'user_type', 
       key: 'user_type',
+      width: 100,
       render: (type: string) => <Tag color={userTypeColors[type]}>{userTypeLabels[type] || type}</Tag>
     },
     { 
       title: '角色', 
       dataIndex: 'role', 
       key: 'role',
+      width: 100,
       render: (role: string) => <Tag>{roleLabels[role] || role}</Tag>
     },
     { 
@@ -132,6 +138,7 @@ export default function SuperAdminUsers() {
       title: '创建时间', 
       dataIndex: 'created_at', 
       key: 'created_at',
+      width: 120,
       render: (time: string) => new Date(time).toLocaleDateString('zh-CN')
     },
     {
@@ -179,24 +186,71 @@ export default function SuperAdminUsers() {
         </Space>
       </div>
 
-      <Table 
-        columns={columns} 
-        dataSource={users} 
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize: pageSize,
-          total: total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (t) => `共 ${t} 条`,
-          onChange: (p, ps) => {
-            setPage(p)
-            setPageSize(ps)
-          },
-        }}
-      />
+      {isMobile ? (
+        // 移动端：卡片列表
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {users.map((user) => (
+              <Card
+                key={user.id}
+                size="small"
+                style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                bodyStyle={{ padding: 12 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <Avatar size={40} style={{ background: 'var(--gradient-cyber)' }} icon={<UserOutlined />} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Text strong style={{ display: 'block', fontSize: 15 }}>{user.username}</Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>{user.email}</Text>
+                  </div>
+                  <Tag color={userTypeColors[user.user_type]} style={{ marginInlineEnd: 0 }}>{userTypeLabels[user.user_type]}</Tag>
+                </div>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  <div>手机：{user.phone || '-'}</div>
+                  <div>角色：<Tag style={{ marginInlineEnd: 0 }}>{roleLabels[user.role] || user.role}</Tag></div>
+                  <div>状态：<Tag color={user.user_status === 'active' ? 'green' : user.user_status === 'disabled' ? 'orange' : 'red'} style={{ marginInlineEnd: 0 }}>{user.user_status === 'active' ? '正常' : user.user_status === 'disabled' ? '禁用' : '已删除'}</Tag></div>
+                  <div>VIP：{user.vip_level > 0 ? <Tag color="gold" style={{ marginInlineEnd: 0 }}>VIP {user.vip_level}</Tag> : '-'}</div>
+                  <div>ID：<code style={{ fontSize: 10 }}>{user.id.slice(0, 12)}...</code></div>
+                  <div>创建：{new Date(user.created_at).toLocaleDateString('zh-CN')}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
+                  <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(user)}>编辑</Button>
+                  {user.user_type !== 'super_admin' && (
+                    <Popconfirm title="确认删除此用户？" description="删除后用户将无法登录" onConfirm={() => handleDelete(user.id)} okText="确认" cancelText="取消" okButtonProps={{ danger: true }}>
+                      <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                    </Popconfirm>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, textAlign: 'center' }}>
+            <Pagination current={page} pageSize={pageSize} total={total} showSizeChanger={false} onChange={(p, ps) => { setPage(p); setPageSize(ps) }} size="small" />
+          </div>
+        </>
+      ) : (
+        // 桌面端：表格
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 1000 }}
+          size="small"
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            total: total,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (t) => `共 ${t} 条`,
+            onChange: (p, ps) => {
+              setPage(p)
+              setPageSize(ps)
+            },
+          }}
+        />
+      )}
 
       <Modal
         title={`编辑用户: ${editingUser?.username}`}

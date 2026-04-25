@@ -4,12 +4,13 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography, Alert } from 'antd'
+import { Table, Button, Modal, Form, Input, Select, message, Tag, Popconfirm, Space, Typography, Alert, Card, Pagination } from 'antd'
 import { PlusOutlined, KeyOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined, EyeOutlined, RocketOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { quotaApi, APIKey, CreateKeyRequest } from '../../api/quota'
 import { useErrorModal, extractErrorMessage, parseErrorType } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
+import { useDevice } from '../../hooks/useDevice'
 import dayjs from 'dayjs'
 import styles from './Keys.module.css'
 
@@ -18,6 +19,7 @@ const { Title, Text } = Typography
 export default function DeveloperKeys() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [keys, setKeys] = useState<APIKey[]>([])
   const [total, setTotal] = useState(0)
@@ -258,23 +260,82 @@ export default function DeveloperKeys() {
         )}
       </div>
 
-      <Table
-        dataSource={keys}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total,
-          showSizeChanger: true,
-          showTotal: (total) => `共 ${total} 条`,
-          onChange: (p, ps) => {
-            setPage(p)
-            setPageSize(ps)
-          },
-        }}
-      />
+      {isMobile ? (
+        // 移动端：卡片列表
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {keys.map((key) => (
+              <Card
+                key={key.id}
+                size="small"
+                style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                bodyStyle={{ padding: 12 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <KeyOutlined style={{ fontSize: 20, color: '#1890ff' }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Text strong style={{ display: 'block', fontSize: 15 }}>{key.key_name}</Text>
+                    <Tag color="blue" style={{ marginInlineEnd: 0, fontSize: 11 }}>{key.key_prefix}...****</Tag>
+                  </div>
+                  <Tag color={key.status === 'active' ? 'success' : key.status === 'disabled' ? 'error' : 'warning'} style={{ marginInlineEnd: 0 }}>
+                    {key.status === 'active' ? '正常' : key.status === 'disabled' ? '禁用' : '已过期'}
+                  </Tag>
+                </div>
+                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                  <div>认证方式：{key.auth_type === 'api_key' ? 'API Key' : key.auth_type === 'hmac' ? 'HMAC' : 'JWT'}</div>
+                  <div>RPM限制：{key.rate_limit_rpm}次/分钟</div>
+                  <div>RPH限制：{key.rate_limit_rph}次/小时</div>
+                  <div>日配额：{key.daily_quota ? `${key.daily_quota}次` : '无限制'}</div>
+                  <div>月配额：{key.monthly_quota ? `${key.monthly_quota}次` : '无限制'}</div>
+                  <div>创建时间：{dayjs(key.created_at).format('YYYY-MM-DD HH:mm')}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
+                  <Button size="small" icon={<EyeOutlined />} onClick={() => handleReveal(key.id)}>查看</Button>
+                  {key.status === 'active' ? (
+                    <Button size="small" danger icon={<StopOutlined />} onClick={() => handleDisable(key.id)}>禁用</Button>
+                  ) : (
+                    <Button size="small" icon={<CheckCircleOutlined />} onClick={() => handleEnable(key.id)}>启用</Button>
+                  )}
+                  <Popconfirm title="确认删除？" description="删除后无法恢复" onConfirm={() => handleDelete(key.id)} okText="确认" cancelText="取消" okButtonProps={{ danger: true }}>
+                    <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                  </Popconfirm>
+                </div>
+              </Card>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, textAlign: 'center' }}>
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={total}
+              showSizeChanger={false}
+              onChange={(p, ps) => { setPage(p); setPageSize(ps) }}
+              size="small"
+            />
+          </div>
+        </>
+      ) : (
+        // 桌面端：表格
+        <Table
+          dataSource={keys}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 900 }}
+          size="small"
+          pagination={{
+            current: page,
+            pageSize,
+            total,
+            showSizeChanger: true,
+            showTotal: (total) => `共 ${total} 条`,
+            onChange: (p, ps) => {
+              setPage(p)
+              setPageSize(ps)
+            },
+          }}
+        />
+      )}
 
       {/* 创建Key弹窗 */}
       <Modal

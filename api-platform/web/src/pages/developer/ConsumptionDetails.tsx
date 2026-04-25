@@ -38,6 +38,7 @@ import {
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { billingApi, ConsumptionDetail, UserUsage } from '../../api/billing'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './ConsumptionDetails.module.css'
 
 const { RangePicker } = DatePicker
@@ -82,6 +83,7 @@ interface DailySummary {
 }
 
 const ConsumptionDetails: React.FC = () => {
+  const { isMobile } = useDevice()
   const [activeTab, setActiveTab] = useState<string>('repo')
   const [loading, setLoading] = useState(false)
   const [details, setDetails] = useState<ConsumptionDetail[]>([])
@@ -532,13 +534,47 @@ const ConsumptionDetails: React.FC = () => {
           </Row>
           {/* 仓库列表 */}
           {repoSummary.length > 0 ? (
-            <Table
-              columns={repoColumns}
-              dataSource={repoSummary}
-              rowKey="repo_id"
-              pagination={false}
-              size="small"
-            />
+            isMobile ? (
+              // 移动端：卡片列表
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {repoSummary.map((repo) => {
+                  const percent = repoTotal.call_count > 0
+                    ? (repo.call_count / repoTotal.call_count) * 100
+                    : 0
+                  return (
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                        <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name}</Tag>
+                        <Tag icon={BILLING_MODEL_CONFIG[repo.billing_model].icon}
+                          color={repo.billing_model === 'per_call' ? 'blue' :
+                                 repo.billing_model === 'per_token' ? 'purple' : 'gold'}>
+                          {BILLING_MODEL_CONFIG[repo.billing_model].label}
+                        </Tag>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                        <div>调用次数：<Text strong>{repo.call_count?.toLocaleString() || 0}</Text> 次</div>
+                        {billingModel === 'per_token' && (
+                          <div>Tokens：<Text>{(repo.total_tokens || 0).toLocaleString()}</Text></div>
+                        )}
+                        <div>费用：<Text type="danger" strong>¥{Math.abs(repo.total_cost || 0).toFixed(billingModel === 'per_token' ? 4 : 2)}</Text></div>
+                        <div style={{ marginTop: 8 }}>
+                          <Progress percent={percent} size="small" format={() => `${percent.toFixed(1)}%`} strokeColor={percent > 50 ? '#1677ff' : '#52c41a'} />
+                        </div>
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              // 桌面端：表格
+              <Table
+                columns={repoColumns}
+                dataSource={repoSummary}
+                rowKey="repo_id"
+                pagination={false}
+                size="small"
+              />
+            )
           ) : (
             <Empty description="暂无仓库使用数据" />
           )}
@@ -577,13 +613,35 @@ const ConsumptionDetails: React.FC = () => {
           </div>
           {/* 接口列表 */}
           {endpointSummary.length > 0 ? (
-            <Table
-              columns={endpointColumns}
-              dataSource={endpointSummary}
-              rowKey="endpoint"
-              pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 个接口` }}
-              size="small"
-            />
+            isMobile ? (
+              // 移动端：卡片列表
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {endpointSummary.map((endpoint) => (
+                  <Card key={endpoint.endpoint} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                    <div style={{ marginBottom: 8 }}>
+                      <Tag color="green" style={{ marginInlineEnd: 0 }}>{endpoint.repo_name}</Tag>
+                    </div>
+                    <Text code style={{ fontSize: 11, display: 'block', marginBottom: 8 }}>{endpoint.endpoint || '-'}</Text>
+                    <div style={{ fontSize: 12, color: '#666' }}>
+                      <div>调用次数：<Text strong>{endpoint.call_count?.toLocaleString() || 0}</Text> 次</div>
+                      {billingModel === 'per_token' && (
+                        <div>Tokens：<Text>{(endpoint.total_tokens || 0).toLocaleString()}</Text></div>
+                      )}
+                      <div>费用：<Text type="danger">¥{Math.abs(endpoint.total_cost || 0).toFixed(billingModel === 'per_token' ? 4 : 2)}</Text></div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              // 桌面端：表格
+              <Table
+                columns={endpointColumns}
+                dataSource={endpointSummary}
+                rowKey="endpoint"
+                pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 个接口` }}
+                size="small"
+              />
+            )
           ) : (
             <Empty description="暂无接口使用数据，请先点击查询" />
           )}
@@ -613,13 +671,34 @@ const ConsumptionDetails: React.FC = () => {
             </Space>
           </div>
           {/* 日期列表 */}
-          <Table
-            columns={dailyColumns}
-            dataSource={dailySummary}
-            rowKey="date"
-            pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 天` }}
-            size="small"
-          />
+          {isMobile ? (
+            // 移动端：卡片列表
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {dailySummary.map((day) => (
+                <Card key={day.date} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                    <Badge color="#1677ff" text={day.date} />
+                  </div>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    <div>调用次数：<Text strong>{day.call_count?.toLocaleString() || 0}</Text> 次</div>
+                    {billingModel === 'per_token' && (
+                      <div>Tokens：<Text>{(day.total_tokens || 0).toLocaleString()}</Text></div>
+                    )}
+                    <div>费用：<Text type="danger" strong>¥{Math.abs(day.total_cost || 0).toFixed(billingModel === 'per_token' ? 4 : 2)}</Text></div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            // 桌面端：表格
+            <Table
+              columns={dailyColumns}
+              dataSource={dailySummary}
+              rowKey="date"
+              pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 天` }}
+              size="small"
+            />
+          )}
         </>
       ),
     },
@@ -655,20 +734,43 @@ const ConsumptionDetails: React.FC = () => {
       {/* 实时调用明细 */}
       {activeTab === 'detail' && (
         <Card title="实时调用明细" style={{ marginTop: 16 }}>
-          <Table
-            columns={detailColumns}
-            dataSource={details}
-            rowKey="id"
-            loading={loading}
-            pagination={{
-              current: pagination.page,
-              pageSize: pagination.page_size,
-              total: pagination.total,
-              showSizeChanger: true,
-              showTotal: (total) => `共 ${total} 条`,
-              onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
-            }}
-          />
+          {isMobile ? (
+            // 移动端：卡片列表
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {details.map((detail) => (
+                <Card key={detail.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <Tag color="blue" style={{ marginInlineEnd: 0 }}>{detail.repo_name || '未知'}</Tag>
+                    <Text code style={{ fontSize: 10 }}>{detail.endpoint?.substring(0, 20)}...</Text>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    <div>时间：{detail.created_at ? new Date(detail.created_at).toLocaleString() : '-'}</div>
+                    <div>调用者：<Tag color="purple" style={{ marginInlineEnd: 0 }}>{detail.tester || '-'}</Tag></div>
+                    {billingModel === 'per_token' && (
+                      <div>Tokens：<Text style={{ color: '#722ed1' }}>{(detail.tokens_used || 0).toLocaleString()}</Text></div>
+                    )}
+                    <div>费用：<Text type="danger">¥{Math.abs(detail.cost || 0).toFixed(billingModel === 'per_token' ? 4 : 2)}</Text></div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            // 桌面端：表格
+            <Table
+              columns={detailColumns}
+              dataSource={details}
+              rowKey="id"
+              loading={loading}
+              pagination={{
+                current: pagination.page,
+                pageSize: pagination.page_size,
+                total: pagination.total,
+                showSizeChanger: true,
+                showTotal: (total) => `共 ${total} 条`,
+                onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
+              }}
+            />
+          )}
         </Card>
       )}
     </div>

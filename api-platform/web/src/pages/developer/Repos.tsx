@@ -108,15 +108,15 @@ export default function Repos() {
           <Title level={3} style={{ marginBottom: 4 }}>API仓库市场</Title>
           <Text type="secondary">浏览和发现可用的API服务</Text>
         </div>
-        <Row gutter={16} className={styles.statsRow}>
-          <Col>
+        <Row gutter={[12, 12]} className={styles.statsRow}>
+          <Col xs={12}>
             <Statistic title="可用仓库" value={repos.length} prefix={<ApiOutlined />} />
           </Col>
-          <Col>
-            <Statistic 
-              title="API端点" 
-              value={repos.reduce((acc, repo) => acc + (repo.endpoints?.length || 0), 0)} 
-              prefix={<ThunderboltOutlined />} 
+          <Col xs={12}>
+            <Statistic
+              title="API端点"
+              value={repos.reduce((acc, repo) => acc + (repo.endpoints?.length || 0), 0)}
+              prefix={<ThunderboltOutlined />}
             />
           </Col>
         </Row>
@@ -124,18 +124,18 @@ export default function Repos() {
 
       {/* 筛选器 */}
       <Card className={styles.filterCard}>
-        <Space size="large" wrap>
+        <Space size="small" wrap style={{ width: '100%' }}>
           <Input
-            placeholder="搜索仓库名称、描述..."
+            placeholder="搜索仓库..."
             prefix={<SearchOutlined />}
-            style={{ width: 280 }}
+            style={{ width: 'calc(100% - 16px)', minWidth: 150 }}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
           />
           <Select
-            placeholder="筛选类型"
-            style={{ width: 160 }}
+            placeholder="类型"
+            style={{ width: 100 }}
             allowClear
             value={typeFilter}
             onChange={setTypeFilter}

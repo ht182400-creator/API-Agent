@@ -245,11 +245,11 @@ export default function Notifications() {
               ))}
               {total > pageSize && (
                 <div className={styles.pagination}>
-                  <Button onClick={() => setPage(p => p - 1)} disabled={page === 1}>
+                  <Button size="small" onClick={() => setPage(p => p - 1)} disabled={page === 1}>
                     上一页
                   </Button>
                   <span className={styles.pageInfo}>第 {page} / {Math.ceil(total / pageSize)} 页</span>
-                  <Button onClick={() => setPage(p => p + 1)} disabled={page >= Math.ceil(total / pageSize)}>
+                  <Button size="small" onClick={() => setPage(p => p + 1)} disabled={page >= Math.ceil(total / pageSize)}>
                     下一页
                   </Button>
                 </div>

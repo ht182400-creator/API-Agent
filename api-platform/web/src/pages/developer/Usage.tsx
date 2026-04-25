@@ -31,6 +31,7 @@ import {
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { billingApi, UserUsage } from '../../api/billing'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './Usage.module.css'
 
 const { Text } = Typography
@@ -70,6 +71,7 @@ interface RepoUsage {
 }
 
 const Usage: React.FC = () => {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(true)
   const [usageData, setUsageData] = useState<UserUsage | null>(null)
   const [billingModel, setBillingModel] = useState<BillingModel>('per_call')
@@ -280,13 +282,45 @@ const Usage: React.FC = () => {
         <div className={styles.section}>
           <h4>按仓库使用量</h4>
           {byRepository.length > 0 ? (
-            <Table
-              columns={repoColumns}
-              dataSource={byRepository}
-              rowKey="repo_id"
-              pagination={false}
-              size="small"
-            />
+            isMobile ? (
+              // 移动端：卡片列表
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {byRepository.map((repo) => {
+                  const totalCalls = usageData?.call_count || 1
+                  const percent = (repo.call_count / totalCalls) * 100
+                  return (
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                        <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name || '未知'}</Tag>
+                        <Tag icon={BILLING_MODEL_CONFIG[repo.billing_model || 'per_call'].icon}
+                          color={repo.billing_model === 'per_token' ? 'purple' : 'gold'}>
+                          {BILLING_MODEL_CONFIG[repo.billing_model || 'per_call'].label}
+                        </Tag>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                        <div>API调用：<Text strong>{repo.call_count?.toLocaleString() || 0}</Text> 次</div>
+                        {billingModel === 'per_token' && (
+                          <div>Tokens：<Text style={{ color: '#722ed1' }}>{(repo.total_tokens || 0).toLocaleString()}</Text></div>
+                        )}
+                        <div>费用：<Text type="danger" strong>¥{(repo.total_cost || 0).toFixed(billingModel === 'per_token' ? 4 : 2)}</Text></div>
+                        <div style={{ marginTop: 8 }}>
+                          <Progress percent={percent} size="small" format={() => `${percent.toFixed(1)}%`} strokeColor={percent > 50 ? '#1677ff' : '#52c41a'} />
+                        </div>
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              // 桌面端：表格
+              <Table
+                columns={repoColumns}
+                dataSource={byRepository}
+                rowKey="repo_id"
+                pagination={false}
+                size="small"
+              />
+            )
           ) : (
             <div className={styles.empty}>
               <Empty description="暂无使用数据，开始调用API后将显示详细统计" image={Empty.PRESENTED_IMAGE_SIMPLE} />

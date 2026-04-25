@@ -160,14 +160,14 @@ export default function SuperAdminDashboard() {
         </Space>
       </div>
 
-      <Row gutter={16} className={styles.statsRow}>
+      <Row gutter={[12, 12]} className={styles.statsRow}>
         <Col xs={24} sm={12} lg={6}>
           <Card loading={loading}>
             <Statistic 
               title="总用户数" 
               value={stats.totalUsers} 
               prefix={<UserOutlined />} 
-              valueStyle={{ color: '#3f8600' }} 
+              valueStyle={{ color: '#3f8600', fontSize: 22 }} 
             />
           </Card>
         </Col>
@@ -177,7 +177,7 @@ export default function SuperAdminDashboard() {
               title="活跃用户" 
               value={stats.activeUsers} 
               prefix={<TeamOutlined />} 
-              suffix={<span style={{ fontSize: 14 }}>/ {stats.totalUsers}</span>} 
+              suffix={<span style={{ fontSize: 12 }}>/ {stats.totalUsers}</span>} 
             />
             <Progress 
               percent={stats.totalUsers > 0 ? Math.round((stats.activeUsers / stats.totalUsers) * 100) : 0} 
@@ -208,7 +208,7 @@ export default function SuperAdminDashboard() {
         </Col>
       </Row>
 
-      <Row gutter={16}>
+      <Row gutter={[12, 12]}>
         <Col xs={24} lg={8}>
           <Card title="用户角色分布" className={styles.card} loading={loading}>
             {stats.userTypeStats.map((item, index) => (
@@ -244,6 +244,7 @@ export default function SuperAdminDashboard() {
               rowKey="id" 
               pagination={false} 
               size="small"
+              scroll={{ x: 600 }}
             />
           </Card>
         </Col>

@@ -20,6 +20,7 @@ import {
   Popconfirm,
   Divider,
   Tag,
+  Typography,
 } from 'antd'
 import {
   PlusOutlined,
@@ -40,10 +41,13 @@ import {
   PRICING_TYPE_OPTIONS,
   STATUS_OPTIONS,
 } from '../../api/adminPricingConfig'
+import { useDevice } from '../../hooks/useDevice'
 
 const { TextArea } = Input
+const { Text } = Typography
 
 const PricingConfigPage: React.FC = () => {
+  const { isMobile } = useDevice()
   const [activeTab, setActiveTab] = useState('list')
   const [loading, setLoading] = useState(false)
   const [configList, setConfigList] = useState<PricingConfig[]>([])
@@ -219,6 +223,107 @@ const PricingConfigPage: React.FC = () => {
     },
   ]
 
+  // 移动端卡片列表渲染
+  const renderConfigCards = () => (
+    <div className={styles.cardList}>
+      {configList.map((config) => {
+        const typeMap: Record<string, { label: string; color: string }> = {
+          call: { label: '按调用', color: 'blue' },
+          token: { label: '按Token', color: 'green' },
+          package: { label: '套餐包', color: 'purple' },
+        }
+        const typeInfo = typeMap[config.pricing_type] || { label: config.pricing_type, color: 'default' }
+
+        let priceText = ''
+        if (config.pricing_type === 'call') {
+          priceText = `¥${(config.price_per_call || 0).toFixed(4)}/次`
+        } else if (config.pricing_type === 'token') {
+          priceText = `¥${(config.price_per_1k_input_tokens || 0).toFixed(4)}/1K输入, ¥${(config.price_per_1k_output_tokens || 0).toFixed(4)}/1K输出`
+        } else {
+          priceText = `${config.packages?.length || 0} 个套餐`
+        }
+
+        return (
+          <Card key={config.id} className={styles.configCard} size="small">
+            <div className={styles.cardHeader}>
+              <Space>
+                <Tag color={typeInfo.color}>{typeInfo.label}</Tag>
+                <Tag color={config.status === 'active' ? 'success' : 'default'}>
+                  {config.status === 'active' ? '启用' : '禁用'}
+                </Tag>
+              </Space>
+              <Text type="secondary" style={{ fontSize: 12 }}>{config.priority}级</Text>
+            </div>
+
+            <div className={styles.cardBody}>
+              <div className={styles.cardRow}>
+                <Text type="secondary">ID：</Text>
+                <Text code style={{ fontSize: 11 }}>{config.id.substring(0, 18)}...</Text>
+              </div>
+              <div className={styles.cardRow}>
+                <Text type="secondary">价格：</Text>
+                <Text>{priceText}</Text>
+              </div>
+              {config.free_calls || (config.free_input_tokens || config.free_output_tokens) ? (
+                <div className={styles.cardRow}>
+                  <Text type="secondary">免费额度：</Text>
+                  <Text>
+                    {config.pricing_type === 'call' && config.free_calls ? `${config.free_calls} 次` : ''}
+                    {config.pricing_type === 'token' && (
+                      `${config.free_input_tokens || 0}输入/${config.free_output_tokens || 0}输出`
+                    )}
+                  </Text>
+                </div>
+              ) : null}
+              {config.vip_discounts && Object.keys(config.vip_discounts).length > 0 && (
+                <div className={styles.cardRow}>
+                  <Text type="secondary">VIP折扣：</Text>
+                  <Text>
+                    {Object.entries(config.vip_discounts).map(([level, discount]) => (
+                      <span key={level} style={{ marginRight: 8 }}>VIP{level}: {((discount as number) * 100).toFixed(0)}%</span>
+                    ))}
+                  </Text>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.cardActions}>
+              <Space>
+                <Button type="link" size="small" icon={<EditOutlined />} onClick={() => handleEdit(config)}>
+                  编辑
+                </Button>
+                {config.status === 'active' ? (
+                  <Button type="link" size="small" danger icon={<StopOutlined />} onClick={() => handleToggleStatus(config.id, false)}>
+                    禁用
+                  </Button>
+                ) : (
+                  <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => handleToggleStatus(config.id, true)}>
+                    启用
+                  </Button>
+                )}
+                <Popconfirm
+                  title="确定删除此配置？"
+                  onConfirm={() => handleDelete(config.id)}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+                    删除
+                  </Button>
+                </Popconfirm>
+              </Space>
+            </div>
+          </Card>
+        )
+      })}
+      {configList.length === 0 && (
+        <Card className={styles.configCard} size="small">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>暂无配置</div>
+        </Card>
+      )}
+    </div>
+  )
+
   // Handlers
   const handleEdit = (config: PricingConfig) => {
     setEditingConfig(config)
@@ -386,43 +491,60 @@ const PricingConfigPage: React.FC = () => {
               label: '配置列表',
               children: (
                 <>
-                  <div className={styles.filters}>
-                    <Space>
+                  <div className={styles.filters} style={{ flexWrap: 'wrap', gap: 8 }}>
+                    <Space wrap size="small">
                       <Select
                         placeholder="计费类型"
                         options={PRICING_TYPE_OPTIONS}
                         value={filterType}
                         onChange={setFilterType}
                         allowClear
-                        style={{ width: 150 }}
+                        style={{ width: 140 }}
                       />
                       <Select
                         placeholder="状态"
                         options={STATUS_OPTIONS}
                         value={filterStatus}
                         onChange={setFilterStatus}
-                        style={{ width: 120 }}
+                        style={{ width: 110 }}
                       />
                     </Space>
-                    <Button icon={<CalculatorOutlined />} onClick={() => setPreviewVisible(true)}>
+                    <Button icon={<CalculatorOutlined />} onClick={() => setPreviewVisible(true)} style={{ marginTop: 8 }}>
                       费用预览
                     </Button>
                   </div>
 
-                  <Table
-                    columns={columns}
-                    dataSource={configList}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{
-                      current: pagination.page,
-                      pageSize: pagination.page_size,
-                      total: pagination.total,
-                      showSizeChanger: true,
-                      showTotal: (total) => `共 ${total} 条`,
-                      onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
-                    }}
-                  />
+                  {isMobile ? (
+                    <>
+                      {renderConfigCards()}
+                      {pagination.total > pagination.page_size && (
+                        <div style={{ textAlign: 'center', marginTop: 16 }}>
+                          <Button
+                            onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+                            loading={loading}
+                          >
+                            加载更多
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Table
+                      columns={columns}
+                      dataSource={configList}
+                      rowKey="id"
+                      loading={loading}
+                      scroll={{ x: 900 }}
+                      pagination={{
+                        current: pagination.page,
+                        pageSize: pagination.page_size,
+                        total: pagination.total,
+                        showSizeChanger: true,
+                        showTotal: (total) => `共 ${total} 条`,
+                        onChange: (page, pageSize) => setPagination({ ...pagination, page, page_size: pageSize }),
+                      }}
+                    />
+                  )}
                 </>
               ),
             },
@@ -439,17 +561,18 @@ const PricingConfigPage: React.FC = () => {
           form.resetFields()
         }}
         onOk={() => form.submit()}
-        width={700}
+        width="90%"
+        style={{ maxWidth: 700 }}
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Row gutter={16}>
-            <Col span={12}>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} md={12}>
               <Form.Item name="repo_id" label="仓库ID（留空=全局）">
                 <Input placeholder="留空为全局配置" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item name="priority" label="优先级">
                 <InputNumber min={0} max={1000} defaultValue={100} style={{ width: '100%' }} />
               </Form.Item>

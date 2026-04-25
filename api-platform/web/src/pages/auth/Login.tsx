@@ -1,5 +1,6 @@
 /**
  * 登录页面
+ * 支持响应式布局，适配桌面端和移动端
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -11,7 +12,18 @@ import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import { useError } from '../../contexts/ErrorContext'
 import { logger } from '../../utils/logger'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './Login.module.css'
+
+/**
+ * 获取响应式卡片样式
+ * 根据设备类型返回不同的卡片类名
+ * @param isMobile - 是否为移动设备
+ * @returns 卡片类名字符串
+ */
+const getCardClassName = (isMobile: boolean): string => {
+  return isMobile ? `${styles.card} ${styles.cardMobile}` : styles.card
+}
 
 // 存储上次登录的用户名/邮箱，用于退出后清空
 let lastLoginIdentifier = ''
@@ -51,6 +63,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
   const { showError } = useError()
+  // 设备检测 - 用于响应式布局调整
+  const { isMobile, isTablet } = useDevice()
+  // 是否使用紧凑模式（移动端或平板竖屏）
+  const isCompact = isMobile || isTablet
 
   // 清除输入框中的浏览器自动填充数据
   const clearAutofillData = useCallback(() => {
@@ -175,10 +191,21 @@ export default function Login() {
   }
 
   return (
-    <div className={`${styles.container} bamboo-bg-pattern`}>
-      <div className={styles.content}>
-        <Card className={styles.card}>
-          <div className={styles.header}>
+    <div className={`${styles.container} ${isMobile ? styles.containerMobile : ''} bamboo-bg-pattern`}>
+      {/* 移动端隐藏装饰性光晕以提升性能 */}
+      {!isMobile && (
+        <>
+          <div className={styles.decorationTop} />
+          <div className={styles.decorationBottom} />
+        </>
+      )}
+      
+      <div className={`${styles.content} ${isCompact ? styles.contentCompact : ''}`}>
+        <Card 
+          className={getCardClassName(isMobile)}
+          bordered={isMobile}
+        >
+          <div className={`${styles.header} ${isCompact ? styles.headerCompact : ''}`}>
             <h1 className={styles.title}>API Platform</h1>
             <p className={styles.subtitle}>通用API服务平台</p>
           </div>
@@ -188,7 +215,7 @@ export default function Login() {
             name="login"
             onFinish={onFinish}
             autoComplete="off"
-            size="large"
+            size={isMobile ? 'middle' : 'large'}
           >
             <Form.Item
               name="identifier"

@@ -9,6 +9,7 @@ import { Card, Table, DatePicker, Select, Tag, Space, Typography, Row, Col, Stat
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import { adminReconciliationApi, RechargeRecordItem, RechargeSummary } from '../../api/adminReconciliation'
 import { useErrorModal } from '../../components/ErrorModal'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './RechargeRecords.module.css'
 
 const { Title, Text } = Typography
@@ -31,6 +32,7 @@ const STATUS_CONFIG: Record<string, { color: string; text: string }> = {
 }
 
 export default function AdminRechargeRecords() {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [records, setRecords] = useState<RechargeRecordItem[]>([])
   const [summary, setSummary] = useState<RechargeSummary | null>(null)
@@ -194,6 +196,73 @@ export default function AdminRechargeRecords() {
     },
   ]
 
+  // 移动端卡片列表渲染
+  const renderCardList = () => (
+    <div className={styles.cardList}>
+      {filteredRecords.map((record) => {
+        const statusConfig = STATUS_CONFIG[record.status] || { color: 'default', text: record.status }
+        return (
+          <Card key={record.id} className={styles.recordCard} size="small">
+            <div className={styles.cardHeader}>
+              <Space>
+                <Tag color={PAYMENT_METHOD_COLORS[record.payment_method] || 'default'}>
+                  {record.payment_method_name}
+                </Tag>
+                <Tag color={statusConfig.color}>{statusConfig.text}</Tag>
+                <Tag color={record.environment === 'simulation' ? 'orange' : 'green'}>
+                  {record.environment === 'simulation' ? '模拟' : '真实'}
+                </Tag>
+              </Space>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {new Date(record.created_at).toLocaleString('zh-CN')}
+              </Text>
+            </div>
+            <div className={styles.cardBody}>
+              <div className={styles.cardRow}>
+                <Text type="secondary">订单号：</Text>
+                <Text code style={{ fontSize: 12 }}>{record.payment_no}</Text>
+              </div>
+              <div className={styles.cardRow}>
+                <Text type="secondary">用户：</Text>
+                <Text>{record.user_phone || record.user_email}</Text>
+              </div>
+              <div className={styles.cardRow}>
+                <Text type="secondary">充值金额：</Text>
+                <Text strong style={{ color: '#52c41a' }}>¥{record.amount.toFixed(2)}</Text>
+                {record.bonus_amount > 0 && (
+                  <Text type="warning" style={{ fontSize: 12 }}> +赠送¥{record.bonus_amount.toFixed(2)}</Text>
+                )}
+              </div>
+              <div className={styles.cardRow}>
+                <Text type="secondary">到账金额：</Text>
+                <Text type="success">¥{record.total_amount.toFixed(2)}</Text>
+              </div>
+              {record.transaction_id && (
+                <div className={styles.cardRow}>
+                  <Text type="secondary">流水号：</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>{record.transaction_id}</Text>
+                </div>
+              )}
+              {record.balance_after > 0 && (
+                <div className={styles.cardRow}>
+                  <Text type="secondary">余额：</Text>
+                  <Text>¥{record.balance_after.toFixed(2)}</Text>
+                </div>
+              )}
+            </div>
+          </Card>
+        )
+      })}
+      {filteredRecords.length === 0 && (
+        <Card className={styles.recordCard} size="small">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+            暂无充值记录
+          </div>
+        </Card>
+      )}
+    </div>
+  )
+
   return (
     <div className={`${styles.container} bamboo-bg-pattern`}>
       <ErrorModalComponent />
@@ -210,39 +279,43 @@ export default function AdminRechargeRecords() {
       {/* 汇总统计 */}
       {summary && (
         <Card className={styles.summaryCard}>
-          <Row gutter={16}>
-            <Col span={6}>
+          <Row gutter={[12, 12]}>
+            <Col xs={24} sm={12} md={6}>
               <Statistic 
                 title="总交易笔数" 
                 value={summary.total_count}
-                suffix={`笔 | 成功 ${summary.success_count} 笔 | 待支付 ${summary.pending_count} 笔`}
+                suffix="笔"
+                valueStyle={{ fontSize: 20 }}
               />
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                成功 {summary.success_count} | 待支付 {summary.pending_count}
+              </Text>
             </Col>
-            <Col span={6}>
+            <Col xs={24} sm={12} md={6}>
               <Statistic 
                 title="总充值金额" 
                 value={summary.total_amount}
                 precision={2}
                 prefix="¥"
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: '#1890ff', fontSize: 20 }}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={24} sm={12} md={6}>
               <Statistic 
                 title="赠送金额" 
                 value={summary.total_bonus}
                 precision={2}
                 prefix="¥"
-                valueStyle={{ color: '#faad14' }}
+                valueStyle={{ color: '#faad14', fontSize: 20 }}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={24} sm={12} md={6}>
               <Statistic 
                 title="实际到账" 
                 value={summary.total_receivable}
                 precision={2}
                 prefix="¥"
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: '#52c41a', fontSize: 20 }}
               />
             </Col>
           </Row>
@@ -251,8 +324,8 @@ export default function AdminRechargeRecords() {
 
       {/* 筛选条件 */}
       <Card className={styles.filterCard}>
-        <Space wrap size="large">
-          <Space>
+        <Space wrap size="middle">
+          <Space size="small">
             <Text>日期：</Text>
             <DatePicker 
               onChange={(date, dateString) => {
@@ -262,12 +335,12 @@ export default function AdminRechargeRecords() {
               placeholder="选择日期"
             />
           </Space>
-          <Space>
+          <Space size="small">
             <Text>渠道：</Text>
             <Select
               allowClear
               placeholder="全部渠道"
-              style={{ width: 120 }}
+              style={{ width: 110 }}
               value={channel}
               onChange={(value) => {
                 setChannel(value)
@@ -281,12 +354,12 @@ export default function AdminRechargeRecords() {
               ]}
             />
           </Space>
-          <Space>
+          <Space size="small">
             <Text>状态：</Text>
             <Select
               allowClear
               placeholder="全部状态"
-              style={{ width: 120 }}
+              style={{ width: 110 }}
               value={status}
               onChange={(value) => {
                 setStatus(value)
@@ -300,39 +373,50 @@ export default function AdminRechargeRecords() {
               ]}
             />
           </Space>
-          <Space>
-            <Input
-              placeholder="搜索订单号/手机/邮箱"
-              prefix={<SearchOutlined />}
-              style={{ width: 200 }}
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              allowClear
-            />
-          </Space>
+          <Input
+            placeholder="搜索订单号/手机/邮箱"
+            prefix={<SearchOutlined />}
+            style={{ width: 180 }}
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            allowClear
+          />
         </Space>
       </Card>
 
-      {/* 数据表格 */}
-      <Card>
-        <Table
-          columns={columns}
-          dataSource={filteredRecords}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            current: pagination.page,
-            pageSize: pagination.page_size,
-            total: pagination.total,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
-          }}
-          onChange={handleTableChange}
-          scroll={{ x: 1400 }}
-          size="small"
-        />
-      </Card>
+      {/* 数据展示：移动端卡片列表，桌面端表格 */}
+      {isMobile ? (
+        <>
+          {renderCardList()}
+          {pagination.total > pagination.page_size && (
+            <div style={{ textAlign: 'center', marginTop: 16 }}>
+              <Button onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))} loading={loading}>
+                加载更多
+              </Button>
+            </div>
+          )}
+        </>
+      ) : (
+        <Card>
+          <Table
+            columns={columns}
+            dataSource={filteredRecords}
+            rowKey="id"
+            loading={loading}
+            size="small"
+            pagination={{
+              current: pagination.page,
+              pageSize: pagination.page_size,
+              total: pagination.total,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total) => `共 ${total} 条记录`,
+            }}
+            onChange={handleTableChange}
+            scroll={{ x: 1400 }}
+          />
+        </Card>
+      )}
     </div>
   )
 }

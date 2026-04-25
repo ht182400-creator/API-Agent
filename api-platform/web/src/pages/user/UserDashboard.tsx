@@ -257,11 +257,11 @@ export default function UserDashboard() {
           <Row gutter={[24, 24]} align="middle">
             <Col xs={24} md={16}>
               <div className={styles.trialInfo}>
-                <div className={styles.trialBadge}>
+                <div className={styles.trialBadge} style={{ color: 'white' }}>
                   <GiftOutlined /> 新用户专享
                 </div>
-                <Title level={3}>领取 {trialAmount} 元试用金额</Title>
-                <Paragraph type="secondary">
+                <Title level={3} style={{ color: 'white', margin: '8px 0' }}>领取 {trialAmount} 元试用金额</Title>
+                <Paragraph style={{ color: 'rgba(255,255,255,0.85)', margin: 0 }}>
                   立即体验平台全部功能，无需充值
                 </Paragraph>
               </div>
@@ -349,6 +349,7 @@ export default function UserDashboard() {
               onClick={handleUpgrade}
               loading={upgrading}
               disabled={!upgradeInfo?.can_upgrade}
+              className={!upgradeInfo?.can_upgrade ? styles.insufficientBtn : ''}
             >
               <SafetyCertificateOutlined /> {upgradeInfo?.can_upgrade ? `付费升级 ¥${upgradeInfo.upgrade_fee || 1.00}` : '余额不足'}
             </Button>

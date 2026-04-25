@@ -1,0 +1,44 @@
+# 开发环境 Docker Compose 配置
+# 使用此文件覆盖生产环境的某些配置
+
+version: '3.8'
+
+services:
+  # 后端开发模式 - 支持热重载
+  backend:
+    build:
+      args:
+        - BUILD_ENV=development
+    volumes:
+      - ../src:/app/src
+      - ../config:/app/config
+      - ./logs:/app/logs
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # 前端开发模式 - 支持热重载
+  frontend:
+    build:
+      args:
+        - BUILD_ENV=development
+        - VITE_API_URL=/api
+    volumes:
+      - ../web/src:/app/src
+      - ../web/public:/app/public
+      - ../web/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "${FRONTEND_PORT:-3000}:5173"
+
+  # 启用调试工具
+  prometheus:
+    profiles:
+      - debug
+
+  grafana:
+    profiles:
+      - debug

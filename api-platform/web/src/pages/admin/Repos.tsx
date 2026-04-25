@@ -5,7 +5,7 @@
  * V5.0 - 显示仓库自定义图标
  */
 
-import { Table, Tag, Button, Space, Modal, Input, message, Statistic, Card, Row, Col, Tabs, Popconfirm, Spin } from 'antd'
+import { Table, Tag, Button, Space, Modal, Input, message, Statistic, Card, Row, Col, Tabs, Popconfirm, Spin, Typography } from 'antd'
 import { CheckCircleOutlined, CloseCircleOutlined, ArrowUpOutlined, ArrowDownOutlined, ExclamationCircleOutlined, PlusOutlined, DeleteOutlined, ApiOutlined, ThunderboltOutlined, EyeOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -13,10 +13,12 @@ import '../../styles/cyber-theme.css'
 import { repoApi, Repository } from '../../api/repo'
 import { useAuthStore } from '../../stores/auth'
 import { RepoLogo } from '../../components/RepoLogo'
+import { useDevice } from '../../hooks/useDevice'
 import styles from './Repos.module.css'
 
 const { TextArea } = Input
 const { TabPane } = Tabs
+const { Text } = Typography
 
 // 仓库统计信息接口
 interface RepoStats {
@@ -30,6 +32,7 @@ interface RepoStats {
 export default function AdminRepos() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [repos, setRepos] = useState<Repository[]>([])
   const [myRepos, setMyRepos] = useState<Repository[]>([])
@@ -670,24 +673,62 @@ export default function AdminRepos() {
                   </div>
                 </div>
 
-                <Table
-                  dataSource={repos}
-                  columns={columns}
-                  rowKey="id"
-                  loading={loading}
-                  pagination={{
-                    current: pagination.page,
-                    pageSize: pagination.page_size,
-                    total: pagination.total,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: (total) => `共 ${total} 条`,
-                    onChange: (page, pageSize) => {
-                      setPagination({ ...pagination, page, page_size: pageSize })
-                    },
-                  }}
-                  scroll={{ x: 1100 }}
-                />
+                {isMobile ? (
+                  // 移动端：卡片列表
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {repos.map((repo) => (
+                      <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                          <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <Text strong style={{ display: 'block', fontSize: 15 }}>{repo.display_name || repo.name}</Text>
+                            <Text type="secondary" style={{ fontSize: 12 }}>{repo.name}</Text>
+                          </div>
+                          {getStatusTag(repo.status)}
+                        </div>
+                        <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                          <div>所有者：{repo.owner?.name || '-'}</div>
+                          <div>分类：<Tag style={{ marginInlineEnd: 0 }}>{repo.type}</Tag></div>
+                          <div>创建：{repo.created_at ? new Date(repo.created_at).toLocaleString('zh-CN') : '-'}</div>
+                        </div>
+                        <Space size="small" wrap>
+                          {repo.status === 'pending' && (
+                            <>
+                              <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => { setSelectedRepo(repo); setApproveModalVisible(true) }}>通过</Button>
+                              <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => { setSelectedRepo(repo); setRejectModalVisible(true) }}>拒绝</Button>
+                            </>
+                          )}
+                          {repo.status === 'approved' && <Button size="small" icon={<ArrowUpOutlined />} onClick={() => handleOnline(repo)}>上线</Button>}
+                          {repo.status === 'online' && <Button size="small" danger icon={<ArrowDownOutlined />} onClick={() => handleOffline(repo)}>下线</Button>}
+                          <Button size="small" icon={<EyeOutlined />} onClick={() => handleViewDetail(repo)}>详情</Button>
+                          <Popconfirm title="确认删除？" description="删除后无法恢复" onConfirm={() => handleDelete(repo.id)} okText="确认删除" cancelText="取消" okButtonProps={{ danger: true }}>
+                            <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                          </Popconfirm>
+                        </Space>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  // 桌面端：表格
+                  <Table
+                    dataSource={repos}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                      current: pagination.page,
+                      pageSize: pagination.page_size,
+                      total: pagination.total,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total) => `共 ${total} 条`,
+                      onChange: (page, pageSize) => {
+                        setPagination({ ...pagination, page, page_size: pageSize })
+                      },
+                    }}
+                    scroll={{ x: 1100 }}
+                  />
+                )}
               </>
             ),
           },
@@ -702,41 +743,42 @@ export default function AdminRepos() {
             children: (
               <>
                 {/* 我的仓库统计卡片 */}
-                <Row gutter={16} style={{ marginBottom: 16 }}>
-                  <Col span={6}>
-                    <Card size="small">
-                      <Statistic 
-                        title="我的仓库总数" 
-                        value={myStats.total} 
-                        prefix={<ApiOutlined />} 
+                <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
+                  <Col xs={24} sm={12} md={6}>
+                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                      <Statistic
+                        title="我的仓库总数"
+                        value={myStats.total}
+                        prefix={<ApiOutlined style={{ color: '#1890ff' }} />}
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
-                    <Card size="small">
-                      <Statistic 
-                        title="已上线仓库" 
-                        value={myStats.online} 
+                  <Col xs={24} sm={12} md={6}>
+                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                      <Statistic
+                        title="已上线仓库"
+                        value={myStats.online}
                         valueStyle={{ color: '#52c41a' }}
-                        prefix={<ArrowUpOutlined />} 
+                        prefix={<ArrowUpOutlined />}
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
-                    <Card size="small">
-                      <Statistic 
-                        title="总调用次数" 
-                        value={myStats.totalCalls} 
+                  <Col xs={24} sm={12} md={6}>
+                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                      <Statistic
+                        title="总调用次数"
+                        value={myStats.totalCalls}
                         valueStyle={{ color: '#1890ff' }}
+                        prefix={<ThunderboltOutlined />}
                         suffix="次"
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
-                    <Card size="small">
-                      <Statistic 
-                        title="总收入" 
-                        value={myStats.totalCost} 
+                  <Col xs={24} sm={12} md={6}>
+                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                      <Statistic
+                        title="总收入"
+                        value={myStats.totalCost}
                         valueStyle={{ color: '#faad14' }}
                         prefix="¥"
                         precision={2}
@@ -757,24 +799,59 @@ export default function AdminRepos() {
                 </div>
 
                 <Spin spinning={statsLoading}>
-                  <Table
-                    dataSource={myRepos}
-                    columns={myRepoColumns}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{
-                      current: myPagination.page,
-                      pageSize: myPagination.page_size,
-                      total: myPagination.total,
-                      showSizeChanger: true,
-                      showQuickJumper: true,
-                      showTotal: (total) => `共 ${total} 条`,
-                      onChange: (page, pageSize) => {
-                        setMyPagination({ ...myPagination, page, page_size: pageSize })
-                      },
-                    }}
-                    scroll={{ x: 1000 }}
-                  />
+                  {isMobile ? (
+                    // 移动端：卡片列表
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {myRepos.map((repo) => {
+                        const stats = myRepoStats[repo.id]
+                        return (
+                          <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                              <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <Text strong style={{ display: 'block', fontSize: 15 }}>{repo.display_name || repo.name}</Text>
+                                <Text type="secondary" style={{ fontSize: 12 }}>{repo.name}</Text>
+                              </div>
+                              {getStatusTag(repo.status)}
+                            </div>
+                            <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                              <div>总调用：<Text style={{ color: stats?.total_calls > 0 ? '#1890ff' : '#999' }}>{(stats?.total_calls || 0).toLocaleString()} 次</Text></div>
+                              <div>成功：<Text style={{ color: '#52c41a' }}>{(stats?.successful_calls || 0).toLocaleString()} 次</Text></div>
+                              <div>失败：<Text style={{ color: stats?.failed_calls > 0 ? '#ff4d4f' : '#999' }}>{(stats?.failed_calls || 0).toLocaleString()} 次</Text></div>
+                              <div>收入：<Text style={{ color: '#faad14', fontWeight: 500 }}>¥{(stats?.total_cost || 0).toFixed(2)}</Text></div>
+                            </div>
+                            <Space size="small" wrap>
+                              <Button size="small" type="primary" icon={<ApiOutlined />} onClick={() => navigate('/owner/repos')}>编辑端点</Button>
+                              <Button size="small" icon={<EyeOutlined />} onClick={() => handleViewMyRepoDetail(repo)}>详情</Button>
+                              <Popconfirm title="确认删除？" description="删除后无法恢复" onConfirm={() => handleDelete(repo.id)} okText="确认删除" cancelText="取消" okButtonProps={{ danger: true }}>
+                                <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                              </Popconfirm>
+                            </Space>
+                          </Card>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    // 桌面端：表格
+                    <Table
+                      dataSource={myRepos}
+                      columns={myRepoColumns}
+                      rowKey="id"
+                      loading={loading}
+                      pagination={{
+                        current: myPagination.page,
+                        pageSize: myPagination.page_size,
+                        total: myPagination.total,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total) => `共 ${total} 条`,
+                        onChange: (page, pageSize) => {
+                          setMyPagination({ ...myPagination, page, page_size: pageSize })
+                        },
+                      }}
+                      scroll={{ x: 1000 }}
+                    />
+                  )}
                 </Spin>
               </>
             ),

@@ -5,10 +5,11 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Card, Select, DatePicker, Button, Typography, Tag, Space, Empty, Tooltip, Badge } from 'antd'
-import { ReloadOutlined, FilterOutlined, ClockCircleOutlined } from '@ant-design/icons'
+import { Table, Card, Select, DatePicker, Button, Typography, Tag, Space, Empty, Tooltip, Badge, Pagination } from 'antd'
+import { ReloadOutlined, FilterOutlined, ClockCircleOutlined, ApiOutlined } from '@ant-design/icons'
 import { quotaApi, APICallLog, APIKey } from '../../api/quota'
 import { useErrorModal } from '../../components/ErrorModal'
+import { useDevice } from '../../hooks/useDevice'
 import dayjs from 'dayjs'
 import styles from './Logs.module.css'
 
@@ -16,6 +17,7 @@ const { Title, Text } = Typography
 const { RangePicker } = DatePicker
 
 export default function DeveloperLogs() {
+  const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
   const [logs, setLogs] = useState<APICallLog[]>([])
   const [total, setTotal] = useState(0)
@@ -269,42 +271,105 @@ export default function DeveloperLogs() {
             <Text type="secondary">条记录</Text>
           </Space>
         </div>
-        
-        <Table
-          dataSource={logs}
-          columns={columns}
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: 1100 }}
-          locale={{ 
-            emptyText: (
-              <Empty 
-                description={
-                  <Space direction="vertical">
-                    <Text>暂无调用日志</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      开始使用API后将自动记录调用日志
-                    </Text>
-                  </Space>
-                } 
-                image={Empty.PRESENTED_IMAGE_SIMPLE} 
-              />
-            )
-          }}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条`,
-            pageSizeOptions: ['10', '20', '50', '100'],
-            onChange: (p, ps) => {
-              setPage(p)
-              setPageSize(ps)
-            },
-          }}
-        />
+
+        {isMobile ? (
+          // 移动端：卡片列表
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {logs.length === 0 ? (
+                <Empty
+                  description={
+                    <Space direction="vertical">
+                      <Text>暂无调用日志</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        开始使用API后将自动记录调用日志
+                      </Text>
+                    </Space>
+                  }
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              ) : (
+                logs.map((log) => (
+                  <Card
+                    key={log.id}
+                    size="small"
+                    style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                    bodyStyle={{ padding: 12 }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <ApiOutlined style={{ fontSize: 18, color: '#1890ff' }} />
+                      <Tag color="blue" style={{ marginInlineEnd: 0 }}>{log.repo_name || '未知'}</Tag>
+                      <Tag color={log.method === 'GET' ? 'blue' : log.method === 'POST' ? 'green' : log.method === 'PUT' ? 'orange' : 'red'} style={{ marginInlineEnd: 0 }}>
+                        {log.method}
+                      </Tag>
+                      <Badge status={getStatusColor(log.response_status) as any} text={getStatusText(log.response_status)} />
+                    </div>
+                    <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+                      <div style={{ wordBreak: 'break-all', marginBottom: 4 }}>
+                        <Text code style={{ fontSize: 11 }}>{log.endpoint?.substring(0, 50)}{log.endpoint?.length > 50 ? '...' : ''}</Text>
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                        <Text type="secondary">响应时间：<Badge status={getResponseTimeColor(log.response_time) as any} text={log.response_time ? `${log.response_time}ms` : '-'} /></Text>
+                        <Text type="secondary">IP：{log.ip_address || '-'}</Text>
+                      </div>
+                      <Text type="secondary" style={{ fontSize: 11 }}>{dayjs(log.created_at).format('YYYY-MM-DD HH:mm:ss')}</Text>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+            {logs.length > 0 && (
+              <div style={{ marginTop: 16, textAlign: 'center' }}>
+                <Pagination
+                  current={page}
+                  pageSize={pageSize}
+                  total={total}
+                  showSizeChanger={false}
+                  onChange={(p, ps) => { setPage(p); setPageSize(ps) }}
+                  size="small"
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          // 桌面端：表格
+          <Table
+            dataSource={logs}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            scroll={{ x: 1100 }}
+            size="small"
+            locale={{
+              emptyText: (
+                <Empty
+                  description={
+                    <Space direction="vertical">
+                      <Text>暂无调用日志</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        开始使用API后将自动记录调用日志
+                      </Text>
+                    </Space>
+                  }
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              )
+            }}
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total) => `共 ${total} 条`,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              onChange: (p, ps) => {
+                setPage(p)
+                setPageSize(ps)
+              },
+            }}
+          />
+        )}
       </Card>
     </div>
   )

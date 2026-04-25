@@ -428,7 +428,7 @@ export default function SuperAdminSystem() {
       </div>
 
       <Card>
-        <Tabs items={tabItems} tabPosition="left" style={{ minHeight: 500 }} />
+        <Tabs items={tabItems} tabPosition="top" style={{ minHeight: 500 }} />
       </Card>
     </div>
   )
