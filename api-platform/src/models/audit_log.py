@@ -1,7 +1,7 @@
 """Audit Log model - 审计日志模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional, List
 
 from sqlalchemy import Column, String, DateTime, Text, Integer, Index
@@ -41,7 +41,7 @@ class AuditLog(Base):
     error_message = Column(Text, nullable=True)
     
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=get_utc_now(), index=True)
 
     # 复合索引
     __table_args__ = (

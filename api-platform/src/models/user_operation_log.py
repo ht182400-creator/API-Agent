@@ -5,7 +5,7 @@ User Operation Log model - 用户操作日志模型
 """
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, DateTime, Text, Index, Boolean
@@ -69,7 +69,7 @@ class UserOperationLog(Base):
     error_message = Column(Text, nullable=True)  # 错误信息
     
     # 时间戳
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=get_utc_now(), index=True)
     duration_ms = Column(String(20), nullable=True)  # 操作耗时（毫秒）
 
     # 复合索引

@@ -37,3 +37,7 @@ structlog==24.1.0
 
 # Monitoring
 prometheus-client==0.19.0
+
+# Payment
+alipay-sdk-python==3.7.865
+qrcode==7.4.2

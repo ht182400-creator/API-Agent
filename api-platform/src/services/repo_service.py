@@ -7,7 +7,7 @@ import uuid
 import httpx
 import json
 from typing import Optional, List, Dict, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import selectinload
@@ -236,7 +236,7 @@ class RepoService:
             if field in kwargs:
                 setattr(repo, field, kwargs[field])
 
-        repo.updated_at = datetime.utcnow()
+        repo.updated_at = datetime.now(timezone.utc)
         await self.db.flush()
         await self.db.refresh(repo)
 
@@ -376,7 +376,7 @@ class RepoService:
             return True, {}
 
         # 获取当前使用量
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         window_start = now - timedelta(minutes=1)
 
         # 这里应该查询Redis获取实时计数
@@ -533,8 +533,8 @@ class RepoService:
         # 统计调用量
         from src.models.billing import APICallLog
 
-        today = datetime.utcnow().date()
-        week_ago = datetime.utcnow() - timedelta(days=7)
+        today = datetime.now(timezone.utc).date()
+        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
 
         # 今日调用量
         today_result = await self.db.execute(

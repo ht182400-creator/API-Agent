@@ -70,6 +70,40 @@ class Settings(BaseSettings):
     # Payment Configuration (支付配置)
     payment_mock_mode: bool = True  # 支付模拟模式开关，True=模拟支付，False=真实支付
 
+    # Alipay Configuration (支付宝配置)
+    alipay_sandbox: bool = True  # 是否使用沙箱环境
+    alipay_app_id: str = ""  # 支付宝应用ID
+    alipay_private_key: str = ""  # 应用私钥（RSA2 PKCS8格式）
+    alipay_public_key: str = ""  # 支付宝公钥
+    alipay_private_key_file: str = "keys/alipay_private_key_pkcs1.pem"  # 应用私钥文件路径（PKCS1格式）
+    alipay_public_key_file: str = "keys/alipay_public_key.pem"  # 支付宝公钥文件路径
+    alipay_notify_url: str = ""  # 异步通知地址
+    alipay_return_url: str = ""  # 同步跳转地址
+    alipay_sandbox_gateway: str = "https://openapi-sandbox.dl.alipaydev.com/gateway.do"  # 沙箱网关地址
+    alipay_production_gateway: str = "https://openapi.alipay.com/gateway.do"  # 生产网关地址
+    
+    def get_alipay_private_key(self) -> str:
+        """获取支付宝私钥，优先从文件读取"""
+        import os
+        if self.alipay_private_key:
+            return self.alipay_private_key
+        key_file = self.alipay_private_key_file
+        if key_file and os.path.exists(key_file):
+            with open(key_file, 'r') as f:
+                return f.read()
+        return ""
+    
+    def get_alipay_public_key(self) -> str:
+        """获取支付宝公钥，优先从文件读取"""
+        import os
+        if self.alipay_public_key:
+            return self.alipay_public_key
+        key_file = self.alipay_public_key_file
+        if key_file and os.path.exists(key_file):
+            with open(key_file, 'r') as f:
+                return f.read()
+        return ""
+
     # ==================== 计费配置 ====================
     # 默认计费规则（当仓库没有配置 RepoPricing 时使用）
     billing_default_enabled: bool = True  # 是否启用默认计费

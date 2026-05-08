@@ -43,18 +43,39 @@ import UserDashboard from './pages/user/UserDashboard'
 // 用户类型
 type UserType = 'super_admin' | 'admin' | 'owner' | 'developer' | 'user'
 
-// 路由守卫 - 只检查登录状态，不限制用户类型
-// 用户类型限制通过页面内的组件实现（升级引导等）
+// 【V6.0 重构】路由守卫 - 基于用户类型进行权限控制
+// 解决"两个界面"问题：确保用户只能访问其角色对应的页面
 const ProtectedRoute = ({ 
   children, 
+  allowedUserTypes,
 }: { 
   children: React.ReactNode
+  allowedUserTypes?: UserType[]
 }) => {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
   
-  // 只检查是否登录，不限制用户类型
+  // 只检查是否登录
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
+  }
+  
+  // 【V6.0 关键修复】如果提供了用户类型限制，检查用户是否有权限访问
+  if (allowedUserTypes && allowedUserTypes.length > 0) {
+    const userType = user?.user_type as UserType | undefined
+    
+    // 【V6.0 修复】如果 user_type 为 undefined，不进行重定向
+    // 允许访问并等待 Layout 组件的定时刷新获取用户信息
+    if (!userType) {
+      console.log('[ProtectedRoute] user_type 未知，允许访问，等待后续刷新')
+      return <>{children}</>
+    }
+    
+    if (!allowedUserTypes.includes(userType)) {
+      // 用户类型不匹配，根据用户实际类型重定向
+      const redirectPath = getDefaultPath(userType)
+      console.log(`[ProtectedRoute] 用户类型 ${userType} 无权访问，当前路径重定向到 ${redirectPath}`)
+      return <Navigate to={redirectPath} replace />
+    }
   }
   
   return <>{children}</>

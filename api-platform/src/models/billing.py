@@ -1,7 +1,7 @@
 """Billing model - 计费模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, DateTime, Text, BigInteger, ForeignKey
@@ -31,8 +31,8 @@ class Account(Base):
     total_consume = Column(String(20), default="0")  # Total consumption
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     user = relationship("User", back_populates="accounts")
@@ -78,8 +78,8 @@ class Bill(Base):
     transaction_id = Column(String(100), nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
-    completed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="bills")
@@ -109,11 +109,11 @@ class Quota(Base):
 
     # Reset cycle: never, hourly, daily, monthly
     reset_type = Column(String(20), nullable=False)
-    reset_at = Column(DateTime, nullable=True)
+    reset_at = Column(DateTime(timezone=True), nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<Quota {self.quota_type}:{self.quota_used}/{self.quota_limit}>"
@@ -171,7 +171,7 @@ class APICallLog(Base):
     error_message = Column(Text, nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
 
     def __repr__(self):
         return f"<APICallLog {self.id}:{self.endpoint}>"
@@ -213,19 +213,19 @@ class MonthlyBill(Base):
 
     # 审核信息
     reviewed_by = Column(UUID(as_uuid=True), nullable=True)  # 审核人
-    reviewed_at = Column(DateTime, nullable=True)  # 审核时间
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)  # 审核时间
     review_comment = Column(Text, nullable=True)  # 审核备注
 
     # 生成信息
     generated_by = Column(UUID(as_uuid=True), nullable=True)  # 生成人
-    generated_at = Column(DateTime, nullable=True)  # 生成时间
+    generated_at = Column(DateTime(timezone=True), nullable=True)  # 生成时间
 
     # 发布信息
-    published_at = Column(DateTime, nullable=True)  # 发布时间
+    published_at = Column(DateTime(timezone=True), nullable=True)  # 发布时间
 
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     user = relationship("User", back_populates="monthly_bills")

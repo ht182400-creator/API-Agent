@@ -1,7 +1,8 @@
 """API Key model - API Key模型"""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+from src.utils.helpers import get_utc_now
 from typing import Optional, List
 
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, BigInteger, ARRAY, Text, ForeignKey
@@ -43,16 +44,16 @@ class APIKey(Base):
     status = Column(String(20), default="active")  # active, disabled, expired
 
     # Expiration
-    expires_at = Column(DateTime, nullable=True)  # NULL = never expires
+    expires_at = Column(DateTime(timezone=True), nullable=True)  # NULL = never expires
 
     # Statistics
     total_calls = Column(BigInteger, default=0)
-    last_call_at = Column(DateTime, nullable=True)
+    last_call_at = Column(DateTime(timezone=True), nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    disabled_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
+    disabled_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="api_keys")
@@ -65,7 +66,7 @@ class APIKey(Base):
         """Check if key is active and not expired"""
         if self.status != "active":
             return False
-        if self.expires_at and self.expires_at < datetime.utcnow():
+        if self.expires_at and self.expires_at < datetime.now(timezone.utc):
             return False
         return True
 
@@ -96,7 +97,7 @@ class KeyUsageLog(Base):
     user_agent = Column(Text, nullable=True)
 
     # Time
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
 
     # Relationships
     api_key = relationship("APIKey", back_populates="usage_logs")

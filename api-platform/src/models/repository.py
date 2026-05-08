@@ -1,7 +1,7 @@
 """Repository model - 仓库模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, BigInteger, ForeignKey
@@ -57,17 +57,17 @@ class Repository(Base):
     success_rate = Column(String(10), nullable=True)
 
     # Review information
-    approved_at = Column(DateTime, nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
     approved_by = Column(UUID(as_uuid=True), nullable=True)
     reviewed_by = Column(UUID(as_uuid=True), nullable=True)
 
     # Online information
-    online_at = Column(DateTime, nullable=True)
-    offline_at = Column(DateTime, nullable=True)
+    online_at = Column(DateTime(timezone=True), nullable=True)
+    offline_at = Column(DateTime(timezone=True), nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     owner = relationship("User", back_populates="repositories")
@@ -102,8 +102,8 @@ class RepoConfig(Base):
     enabled = Column(Boolean, default=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     repository = relationship("Repository", back_populates="configs")
@@ -142,8 +142,8 @@ class RepoPricing(Base):
     status = Column(String(20), default="active")
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     repository = relationship("Repository", back_populates="pricing")
@@ -184,8 +184,8 @@ class RepoEndpoint(Base):
     display_order = Column(Integer, default=0)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     repository = relationship("Repository", back_populates="endpoints")
@@ -223,8 +223,8 @@ class RepoLimits(Base):
     enabled = Column(Boolean, default=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     # Relationships
     repository = relationship("Repository", back_populates="limits")
@@ -242,7 +242,7 @@ class RepoStats(Base):
     repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False)
 
     # Time dimension
-    stat_hour = Column(DateTime, nullable=False)
+    stat_hour = Column(DateTime(timezone=True), nullable=False)
 
     # Call statistics
     total_calls = Column(BigInteger, default=0)

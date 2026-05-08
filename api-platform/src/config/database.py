@@ -1,10 +1,19 @@
 """Database configuration - 数据库配置"""
 
+import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from .settings import settings
+
+# 禁用 SQLAlchemy 的日志处理器，避免 Windows multiprocessing 子进程中写入已关闭的 stdout
+# 使用 NullHandler 是 Python 日志的最佳实践，抑制所有日志输出
+for _logger_name in ["sqlalchemy.engine", "sqlalchemy.engine.Engine", "sqlalchemy.pool"]:
+    _logger = logging.getLogger(_logger_name)
+    _logger.handlers.clear()  # 清除可能继承的 handlers
+    _logger.addHandler(logging.NullHandler())
+    _logger.propagate = False  # 禁止传播到父 logger
 
 # Async database URL (for asyncpg)
 DATABASE_URL_ASYNC = settings.database_url.replace(

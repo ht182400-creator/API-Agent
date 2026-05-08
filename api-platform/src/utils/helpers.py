@@ -88,8 +88,28 @@ def parse_user_agent(user_agent: Optional[str]) -> Dict[str, str]:
 
 
 def utc_now() -> datetime:
-    """Get current UTC datetime"""
+    """
+    获取当前 UTC 时间（aware datetime，带时区信息）
+    用于代码中获取当前时间
+
+    Returns:
+        datetime: 当前 UTC 时间（带 timezone.utc 时区信息）
+    """
     return datetime.now(timezone.utc)
+
+
+def get_utc_now() -> callable:
+    """
+    返回一个用于 SQLAlchemy default 参数的可调用对象
+    SQLAlchemy 要求 default 必须是可调用对象，不能是具体值
+
+    Usage:
+        created_at = Column(DateTime, default=get_utc_now())
+
+    Returns:
+        callable: 返回当前 UTC 时间的可调用对象
+    """
+    return lambda: datetime.now(timezone.utc)
 
 
 def format_datetime(dt: Optional[datetime]) -> Optional[str]:

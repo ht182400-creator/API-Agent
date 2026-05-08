@@ -1,7 +1,7 @@
 """Admin API - 管理员专用接口"""
 
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from functools import lru_cache
 
@@ -27,7 +27,7 @@ _CACHE_TTL = 300  # 缓存5分钟
 
 def _get_cached_stats():
     """获取缓存的统计数据"""
-    now = datetime.utcnow().timestamp()
+    now = datetime.now(timezone.utc).timestamp()
     if _stats_cache["data"] and (now - _stats_cache["timestamp"]) < _CACHE_TTL:
         return _stats_cache["data"]
     return None
@@ -36,7 +36,7 @@ def _get_cached_stats():
 def _set_cached_stats(data):
     """设置统计数据缓存"""
     _stats_cache["data"] = data
-    _stats_cache["timestamp"] = datetime.utcnow().timestamp()
+    _stats_cache["timestamp"] = datetime.now(timezone.utc).timestamp()
 
 
 # ==================== 统计接口 ====================
@@ -77,7 +77,7 @@ async def get_admin_dashboard_stats(
     total_users = total_users_result.scalar() or 0
     
     # 统计活跃用户（30天内有登录，排除超级管理员）
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
     active_users_result = await db.execute(
         select(func.count(User.id)).where(
             and_(
@@ -89,7 +89,7 @@ async def get_admin_dashboard_stats(
     active_users = active_users_result.scalar() or 0
     
     # 统计今日新增用户（排除超级管理员）
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     today_new_result = await db.execute(
         select(func.count(User.id)).where(
             and_(
@@ -118,7 +118,7 @@ async def get_admin_dashboard_stats(
     from src.models.billing import APICallLog
     today_calls_result = await db.execute(
         select(func.count(APICallLog.id)).where(
-            func.date(APICallLog.created_at) == datetime.utcnow().date()
+            func.date(APICallLog.created_at) == datetime.now(timezone.utc).date()
         )
     )
     today_calls = today_calls_result.scalar() or 0

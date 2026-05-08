@@ -4,23 +4,41 @@ Main application entry point - 通用API服务平台
 This is the main entry point for the FastAPI application.
 """
 
+import logging
 from contextlib import asynccontextmanager
+
+# 禁用 uvicorn 和 starlette 的日志，避免 Windows multiprocessing 子进程 stdout 关闭问题
+for logger_name in [
+    "uvicorn",
+    "uvicorn.error",
+    "uvicorn.access",
+    "uvicorn.asgi",
+    "starlette",
+    "starlette.access",
+    "uvicorn.protocols.http",
+    "uvicorn.protocols",
+    "uvicorn.main",
+    "uvicorn.lifespan",
+]:
+    logging.getLogger(logger_name).disabled = True
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from src.config import settings
 from src.config.database import init_db, close_db
-from src.config.logging_config import setup_logger, get_logger
+from src.config.logging_config import setup_logger, get_logger, error_logger
 from src.core.middleware import setup_middleware
 from src.core.exceptions import APIError
 from src.api import api_router
 
 # 初始化日志系统
+# 注意: 禁用控制台日志以避免 Windows multiprocessing 子进程的 stdout 关闭问题
+# 错误日志会记录到 logs/errors.log
 setup_logger(
     name="api_platform",
     level=settings.log_level.upper(),
-    enable_console=True,
+    enable_console=False,  # 禁用控制台输出
     enable_file=True
 )
 logger = get_logger("main")
@@ -73,13 +91,13 @@ async def api_error_handler(request: Request, exc: APIError):
 @app.exception_handler(Exception)
 async def general_error_handler(request: Request, exc: Exception):
     """Handle unexpected errors"""
-    # 记录错误日志
-    logger.error(
-        "Unhandled exception: %s - %s",
+    # 使用专用错误日志记录器
+    error_logger.error(
+        "Unhandled exception on %s: %s",
         request.url.path,
-        str(exc)
+        str(exc),
+        exc_info=True
     )
-    logger.debug("Exception details: %s", exc)
     
     if settings.debug:
         import traceback
@@ -131,11 +149,17 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import logging
+    
+    # 完全禁用 uvicorn 的日志，避免 Windows multiprocessing 子进程刷屏
+    for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "uvicorn.asgi"]:
+        logging.getLogger(logger_name).disabled = True
     
     uvicorn.run(
         "src.main:app",
         host="0.0.0.0",
         port=8000,
         reload=settings.debug,
-        log_level=settings.log_level.lower(),
+        log_level="warning",  # 只显示 warning 及以上的日志
+        access_log=False,
     )

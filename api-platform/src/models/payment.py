@@ -1,7 +1,7 @@
 """Payment model - 支付模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, DateTime, Text, BigInteger, ForeignKey
@@ -46,7 +46,7 @@ class Payment(Base):
     # Payment result
     transaction_id = Column(String(100), nullable=True)  # 第三方交易号
     payer_info = Column(Text, nullable=True)  # 支付人信息（JSON）
-    pay_time = Column(DateTime, nullable=True)  # 支付完成时间
+    pay_time = Column(DateTime(timezone=True), nullable=True)  # 支付完成时间
     
     # Callback info
     callback_url = Column(String(500), nullable=True)  # 回调通知地址
@@ -59,8 +59,8 @@ class Payment(Base):
     remark = Column(Text, nullable=True)
     
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
     
     # Relationships
     user = relationship("User", back_populates="payments")
@@ -109,9 +109,9 @@ class RechargePackage(Base):
     is_custom = Column(String(10), default="false")  # 是否自定义金额套餐
     
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
+
     def __repr__(self):
         return f"<RechargePackage {self.name}>"
 
@@ -142,14 +142,14 @@ class PaymentCallback(Base):
     # Retry info
     retry_count = Column(BigInteger, default=0)  # 重试次数
     max_retries = Column(BigInteger, default=3)  # 最大重试次数
-    next_retry_at = Column(DateTime, nullable=True)  # 下次重试时间
+    next_retry_at = Column(DateTime(timezone=True), nullable=True)  # 下次重试时间
     
     # Status
     status = Column(String(20), default="pending")  # pending, success, failed
     
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
-    processed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
+    processed_at = Column(DateTime(timezone=True), nullable=True)
     
     def __repr__(self):
         return f"<PaymentCallback {self.callback_no}>"

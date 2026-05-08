@@ -43,7 +43,11 @@ export interface Payment {
   status: 'pending' | 'paid' | 'cancelled' | 'failed' | 'refunded'
   transaction_id?: string
   pay_time?: string
+  pay_url?: string  // 支付链接（跳转支付时返回）
+  qr_code?: string  // 二维码图片（扫码支付时返回，base64）
+  payment_type?: 'page' | 'qrcode'  // 支付类型
   created_at: string
+  expires_in?: number  // 剩余有效期（秒），后端计算
   package_info?: RechargePackage
 }
 
@@ -51,6 +55,14 @@ export interface Payment {
 export interface CreatePaymentRequest {
   package_id: string
   payment_method?: 'wechat' | 'alipay' | 'bankcard'
+  payment_type?: 'page' | 'qrcode'  // page=跳转支付, qrcode=扫码支付
+}
+
+// 自定义充值请求
+export interface CustomRechargeRequest {
+  amount: number
+  payment_method?: 'alipay' | 'wechat' | 'bankcard'
+  payment_type?: 'page' | 'qrcode'  // page=跳转支付, qrcode=扫码支付
 }
 
 // 支付状态响应
@@ -60,6 +72,8 @@ export interface PaymentStatus {
   amount: number
   pay_url?: string
   qr_code?: string
+  created_at?: string  // 订单创建时间（ISO格式）
+  expires_in?: number  // 剩余有效期（秒），后端计算
 }
 
 // 支付记录筛选
@@ -98,11 +112,8 @@ export const paymentApi = {
   },
 
   // 自定义金额充值
-  createCustomRecharge: (amount: number, paymentMethod: string = 'alipay') => {
-    return api.post<Payment>('/payments/custom', {
-      amount,
-      payment_method: paymentMethod,
-    })
+  createCustomRecharge: (data: CustomRechargeRequest) => {
+    return api.post<Payment>('/payments/custom', data)
   },
 
   // 查询支付状态
@@ -113,6 +124,11 @@ export const paymentApi = {
   // 取消订单
   cancelPayment: (payment_no: string) => {
     return api.post(`/payments/cancel/${payment_no}`)
+  },
+
+  // 刷新二维码
+  refreshQrCode: (payment_no: string) => {
+    return api.post<{ payment_no: string; qr_code: string }>(`/payments/refresh-qrcode/${payment_no}`)
   },
 
   // 获取支付记录
@@ -142,6 +158,15 @@ export const paymentApi = {
       transaction_id: `MOCK_${Date.now()}`,
       status: 'success',
       payer_info: { mock: true },
+    })
+  },
+
+  // 客户端日志（发送到后端记录到文件）
+  clientLog: (message: string, level: 'info' | 'warning' | 'error' = 'info', data?: any) => {
+    return api.post('/payments/client-log', {
+      message,
+      level,
+      data
     })
   },
 }

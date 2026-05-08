@@ -9,7 +9,7 @@
 
 import uuid
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel, Field
@@ -639,7 +639,7 @@ async def update_pricing_config(
         elif value is not None:
             setattr(config, field, value)
 
-    config.updated_at = datetime.utcnow()
+    config.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(config)
@@ -712,7 +712,7 @@ async def disable_pricing_config(
         raise HTTPException(status_code=404, detail="计费配置不存在")
 
     config.status = "inactive"
-    config.updated_at = datetime.utcnow()
+    config.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(config)
@@ -760,7 +760,7 @@ async def enable_pricing_config(
         )
 
     config.status = "active"
-    config.updated_at = datetime.utcnow()
+    config.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(config)

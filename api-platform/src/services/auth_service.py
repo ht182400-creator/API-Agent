@@ -172,7 +172,7 @@ class AuthService:
             raise APIKeyDisabledError()
 
         # Check expiration
-        if key.expires_at and key.expires_at < datetime.utcnow():
+        if key.expires_at and key.expires_at < datetime.now(timezone.utc):
             logger.warning("API key expired: %s, expired at: %s", key.key_prefix, key.expires_at)
             raise APIKeyExpiredError()
 
@@ -211,10 +211,10 @@ class AuthService:
         from src.models.billing import APICallLog, Quota
         from src.core.exceptions import QuotaExceededError
         from sqlalchemy import func, and_
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
         import uuid
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         
         # 1. 检查每分钟请求数（RPM）- 使用Redis或数据库
@@ -420,7 +420,7 @@ class AuthService:
             raise InvalidAPIKeyError()
         
         key.status = "disabled"
-        key.disabled_at = datetime.utcnow()
+        key.disabled_at = datetime.now(timezone.utc)
         
         await self.db.flush()
         return True

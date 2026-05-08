@@ -1,7 +1,8 @@
 """Pricing config model - 计费配置表"""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+from src.utils.helpers import get_utc_now
 from typing import Optional, List
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, Numeric, JSON, ForeignKey
@@ -144,8 +145,8 @@ class PricingConfig(Base):
     )
 
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
+    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
     created_by = Column(UUID(as_uuid=True), nullable=True, comment="创建人")
 
     # Relationships
@@ -156,7 +157,7 @@ class PricingConfig(Base):
 
     def is_valid(self) -> bool:
         """检查配置是否在有效期内"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if self.status != "active":
             return False
         if self.valid_from and now < self.valid_from:

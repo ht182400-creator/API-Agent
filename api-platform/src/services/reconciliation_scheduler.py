@@ -9,7 +9,7 @@
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy import select, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -67,7 +67,7 @@ class ReconciliationScheduler:
         
         # 计算对账日期（默认 T+1）
         if date is None:
-            target_date = datetime.utcnow() - timedelta(days=1)
+            target_date = datetime.now(timezone.utc) - timedelta(days=1)
         else:
             try:
                 target_date = datetime.strptime(date, "%Y-%m-%d")
@@ -89,7 +89,7 @@ class ReconciliationScheduler:
                 "amount_diff_count": 0,
             },
             "status": "completed",
-            "executed_at": datetime.utcnow().isoformat(),
+            "executed_at": datetime.now(timezone.utc).isoformat(),
         }
         
         try:
@@ -107,7 +107,7 @@ class ReconciliationScheduler:
                                 results["total"][key] += channel_result[key]
             
             results["status"] = "completed"
-            self._last_run_time = datetime.utcnow()
+            self._last_run_time = datetime.now(timezone.utc)
             
             # 记录任务
             self._tasks.insert(0, {
@@ -228,7 +228,7 @@ class ReconciliationScheduler:
         record.short_amount = Decimal(str(short_amount))
         record.amount_diff_count = str(amount_diff_count)
         record.amount_diff_total = Decimal(str(amount_diff_total))
-        record.completed_at = datetime.utcnow()
+        record.completed_at = datetime.now(timezone.utc)
         
         # 生成差异记录
         if long_count > 0:

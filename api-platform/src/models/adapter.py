@@ -1,7 +1,7 @@
 """Adapter model - 适配器模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, Integer, DateTime, Text
@@ -40,8 +40,8 @@ class Adapter(Base):
     total_repos = Column(Integer, default=0)  # Number of repositories using this adapter
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
+    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<Adapter {self.name}:{self.version}>"
@@ -73,8 +73,8 @@ class AdapterInstance(Base):
     avg_latency_ms = Column(Integer, nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
+    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<AdapterInstance {self.repo_id}:{self.adapter_id}>"

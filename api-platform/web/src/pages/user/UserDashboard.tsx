@@ -6,9 +6,10 @@
  * - 升级为开发者
  * - 引导用户开始使用平台
  * 
- * V4.0 更新：
- * - 修复升级后页面不刷新的问题
- * - 确保 localStorage 持久化完成后再刷新
+ * V6.0 更新：
+ * - 使用 forceRefreshUser 确保用户类型更新后 localStorage 同步
+ * - 统一使用 window.location.href 进行完整页面刷新
+ * - 解决"两个界面"和"用户类型未变"问题
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -17,7 +18,6 @@ import { useNavigate } from 'react-router-dom'
 import { Card, Row, Col, Statistic, Button, Typography, Space, message, Spin, Alert, Modal, Divider } from 'antd'
 import { GiftOutlined, RocketOutlined, DollarOutlined, CheckCircleOutlined, RightOutlined, SafetyCertificateOutlined } from '@ant-design/icons'
 import { userApi, UserStatus, UpgradeInfo } from '../../api/user'
-import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/auth'
 import styles from './UserDashboard.module.css'
 
@@ -25,7 +25,7 @@ const { Title, Text, Paragraph } = Typography
 
 export default function UserDashboard() {
   const navigate = useNavigate()
-  const { setAuth, accessToken, refreshToken } = useAuthStore()
+  const { forceRefreshUser } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(false)
   const [upgrading, setUpgrading] = useState(false)
@@ -84,39 +84,31 @@ export default function UserDashboard() {
   }
 
   /**
-   * 刷新认证状态并等待持久化完成
-   * 确保 localStorage 更新后再刷新页面
+   * 【V6.0 重构】刷新认证状态并等待持久化完成
+   * 使用 forceRefreshUser 确保 localStorage 同步更新
    */
   const refreshAuthAndReload = useCallback(async () => {
     try {
-      // 1. 获取最新的用户信息
-      const user = await authApi.me()
+      // 【V6.0 关键修复】使用 forceRefreshUser 确保 localStorage 同步更新
+      const user = await forceRefreshUser()
       console.log('[UserDashboard] 刷新后的用户信息:', user)
       console.log('[UserDashboard] user_type:', user.user_type)
       
-      // 2. 验证用户数据
+      // 验证用户数据
       if (!user || !user.user_type) {
         console.error('[UserDashboard] 用户数据不完整:', user)
         throw new Error('用户数据不完整')
       }
       
-      // 3. 更新 auth store（persist 中间件会自动写入 localStorage）
-      setAuth(user, accessToken || '', refreshToken || '')
-      
-      // 4. 等待 localStorage 写入完成
-      // zustand persist 默认使用 requestIdleCallback 或 setTimeout，延迟约 50-100ms
-      // 增加等待时间到 500ms 确保写入完成
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // 5. 验证 localStorage 是否已更新
+      // 再次检查 localStorage 是否更新
       const storedData = localStorage.getItem('auth-storage')
       if (storedData) {
         const parsed = JSON.parse(storedData)
         const storedUserType = parsed.state?.user?.user_type
         console.log('[UserDashboard] localStorage 中的 user_type:', storedUserType)
         
-        // 如果 localStorage 中的 user_type 不是 developer，再等待一段时间
-        if (storedUserType !== 'developer') {
+        // 如果 localStorage 中的 user_type 与服务器不一致，再等待一段时间
+        if (storedUserType !== user.user_type) {
           console.warn('[UserDashboard] localStorage 还未更新，再等待 500ms...')
           await new Promise(resolve => setTimeout(resolve, 500))
           
@@ -129,16 +121,23 @@ export default function UserDashboard() {
         }
       }
       
-      // 6. 刷新页面
+      // 【关键】使用 window.location.href 进行完整页面刷新
+      // 而不是 window.location.reload()，因为需要确保 URL 正确
       console.log('[UserDashboard] 刷新页面...')
-      window.location.reload()
+      if (user.user_type === 'developer' || user.user_type === 'owner') {
+        window.location.href = '/'
+      } else {
+        window.location.href = '/user'
+      }
     } catch (error) {
       console.error('[UserDashboard] 刷新认证状态失败:', error)
-      // 即使出错也尝试刷新页面
+      // 即使出错也尝试刷新页面，让后端状态生效
       message.warning('刷新页面以更新状态...')
-      window.location.reload()
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     }
-  }, [accessToken, refreshToken, setAuth])
+  }, [forceRefreshUser])
 
   // 领取试用金额
   const handleClaimTrial = async () => {

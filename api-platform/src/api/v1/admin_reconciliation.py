@@ -5,7 +5,7 @@ Admin Reconciliation API - 管理员对账专用接口
 """
 
 from typing import Optional, List
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from decimal import Decimal
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel
@@ -21,6 +21,21 @@ from src.schemas.response import BaseResponse
 from src.services.auth_service import get_current_admin_user
 
 router = APIRouter(prefix="/admin", tags=["管理员-对账"])
+
+
+def _to_utc_iso_string(dt: datetime) -> Optional[str]:
+    """
+    将 datetime 转换为 UTC ISO 格式字符串
+    确保返回的时间总是 UTC 时区，前端可以正确解析为本地时间
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        # naive datetime，假定为本地时间（UTC+8），先转换为 UTC
+        local_tz = timezone(timedelta(hours=8))
+        dt = dt.replace(tzinfo=local_tz)
+    # 转换为 UTC
+    return dt.astimezone(timezone.utc).isoformat()
 
 
 # ==================== Pydantic Models ====================
@@ -278,7 +293,7 @@ async def get_recharge_records(
         except ValueError:
             raise HTTPException(status_code=400, detail="日期格式错误，请使用 YYYY-MM-DD")
     else:
-        query_date = datetime.utcnow()
+        query_date = datetime.now(timezone.utc)
     
     # 日期范围
     day_start = query_date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -378,8 +393,8 @@ async def get_recharge_records(
             transaction_id=bill.transaction_id,
             environment=bill.environment,
             balance_after=float(bill.balance_after) if bill.balance_after else None,
-            created_at=bill.created_at.isoformat() if bill.created_at else "",
-            pay_time=bill.completed_at.isoformat() if bill.completed_at else None,
+            created_at=_to_utc_iso_string(bill.created_at),
+            pay_time=_to_utc_iso_string(bill.completed_at),
         ))
     
     summary = RechargeSummary(
@@ -422,7 +437,7 @@ async def get_recharge_summary(
         except ValueError:
             raise HTTPException(status_code=400, detail="日期格式错误，请使用 YYYY-MM-DD")
     else:
-        query_date = datetime.utcnow()
+        query_date = datetime.now(timezone.utc)
     
     # 日期范围
     day_start = query_date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -757,7 +772,7 @@ async def execute_reconciliation(
         record.short_amount = Decimal(str(short_amount))
         record.amount_diff_count = str(amount_diff_count)
         record.amount_diff_total = Decimal(str(amount_diff_total))
-        record.completed_at = datetime.utcnow()
+        record.completed_at = datetime.now(timezone.utc)
         
         # 生成差异记录
         if long_count > 0:
@@ -803,7 +818,7 @@ async def execute_reconciliation(
             short_amount=Decimal("0.00"),
             amount_diff_count="0",
             amount_diff_total=Decimal("0.00"),
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
         )
         db.add(record)
         await db.commit()
@@ -997,7 +1012,7 @@ async def handle_reconciliation_dispute(
     dispute.handle_remark = request.handle_remark
     dispute.reason = request.reason or dispute.reason
     dispute.handler_id = current_user.get("id")
-    dispute.handled_at = datetime.utcnow()
+    dispute.handled_at = datetime.now(timezone.utc)
     
     await db.commit()
     await db.refresh(dispute)
@@ -1252,7 +1267,7 @@ async def generate_reconciliation_report(
     return BaseResponse(data=ReconciliationReportResponse(
         items=items,
         summary=summary,
-        generated_at=datetime.utcnow().isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
         date_range={
             "start_date": request.start_date,
             "end_date": request.end_date,

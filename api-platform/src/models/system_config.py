@@ -1,7 +1,7 @@
 """System Config model - 系统配置模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text
@@ -37,8 +37,8 @@ class SystemConfig(Base):
     is_editable = Column(Boolean, default=True)  # 是否可编辑
     
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
+    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
     updated_by = Column(String(100), nullable=True)
 
     # 复合唯一索引

@@ -278,7 +278,12 @@ class ColoredFormatter(logging.Formatter):
     }
 
     def format(self, record):
-        if not hasattr(sys.stdout, 'isatty') or not sys.stdout.isatty():
+        # 修复 Windows multiprocessing 子进程中 stdout 已关闭导致的 ValueError
+        try:
+            is_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+        except (ValueError, OSError, AttributeError):
+            is_tty = False
+        if not is_tty:
             return super().format(record)
 
         levelname = record.levelname
@@ -318,7 +323,7 @@ class AutoBackupRotatingFileHandler(RotatingFileHandler):
 
 def setup_module_loggers(
     root_level: str = "INFO",
-    enable_console: bool = True,
+    enable_console: bool = False,  # 默认禁用控制台输出
     enable_file: bool = True,
     modules: list = None
 ):
@@ -341,6 +346,7 @@ def setup_module_loggers(
         "middleware",
         "database",
         "security",
+        "payment",  # 支付模块
     ]
 
     modules = modules or default_modules
@@ -379,10 +385,11 @@ def setup_module_loggers(
             except Exception:
                 pass
 
-        # 模块文件处理器
+        # 模块文件处理器 - 文件名加上日期后缀
         if enable_file:
+            module_date_str = datetime.now().strftime("%Y%m%d")
             module_handler = AutoBackupRotatingFileHandler(
-                filename=str(MODULE_LOG_DIR / f"{module}.log"),
+                filename=str(MODULE_LOG_DIR / f"{module}_{module_date_str}.log"),
                 maxBytes=LogBackupManager().get_max_size_bytes(),
                 backupCount=LogConfig.BACKUP_COUNT,
                 encoding="utf-8"
@@ -566,13 +573,16 @@ def get_log_files() -> List[Dict[str, Any]]:
                 "modified_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
             })
     
-    # 模块日志文件
+    # 模块日志文件 (格式: module_yyyymmdd.log)
     for f in MODULE_LOG_DIR.glob("*.log"):
         stat = f.stat()
+        # 从文件名提取模块名 (去掉日期后缀)
+        name_parts = f.stem.rsplit('_', 1)
+        module_name = name_parts[0] if len(name_parts) > 1 else f.stem
         files.append({
             "name": f.name,
             "path": str(f),
-            "module": f.stem,
+            "module": module_name,
             "size": stat.st_size,
             "size_formatted": _format_size(stat.st_size),
             "modified_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
@@ -725,8 +735,29 @@ def get_log_stats() -> Dict[str, Any]:
     }
 
 
-# ==================== 快捷日志函数 ====================
+def setup_error_logger():
+    """专用错误日志记录器 - 只记录 ERROR 及以上"""
+    error_logger = logging.getLogger("api_platform.errors")
+    error_logger.setLevel(logging.ERROR)
+    error_logger.propagate = False
 
+    # 错误日志文件名加上日期后缀
+    error_date_str = datetime.now().strftime("%Y%m%d")
+    error_handler = RotatingFileHandler(
+        filename=str(LOG_DIR / f"errors_{error_date_str}.log"),
+        maxBytes=5 * 1024 * 1024,  # 5MB
+        backupCount=10,
+        encoding="utf-8"
+    )
+    error_handler.setFormatter(logging.Formatter(
+        '%(asctime)s | %(levelname)s | %(name)s:%(lineno)d | %(message)s'
+    ))
+    error_logger.addHandler(error_handler)
+
+    return error_logger
+
+
+# 快捷日志函数
 def log_debug(message: str, **kwargs):
     """记录调试信息"""
     logger.debug(message, **kwargs)
@@ -755,3 +786,7 @@ def log_critical(message: str, **kwargs):
 def log_exception(message: str, **kwargs):
     """记录异常信息 (包含堆栈)"""
     logger.exception(message, **kwargs)
+
+
+# 初始化错误日志记录器
+error_logger = setup_error_logger()

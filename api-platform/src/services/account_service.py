@@ -4,7 +4,7 @@ import uuid
 import json
 import time
 from typing import Optional, List, Tuple
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 
@@ -189,7 +189,7 @@ class AccountService:
             source_id=source_id,
             description=description,
             status="completed",
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
             environment=environment,
         )
         self.db.add(bill)
@@ -258,7 +258,7 @@ class AccountService:
             source_id=source_id,
             description=description,
             status="completed",
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
         )
         self.db.add(bill)
         

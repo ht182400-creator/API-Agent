@@ -1,7 +1,7 @@
 """Logs API - 日志接口"""
 
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Query, Header
 
@@ -47,7 +47,7 @@ async def get_logs(
             "tokens_used": 100,
             "cost": 0.01,
             "ip": "1.2.3.4",
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
         for i in range(page_size)
     ]

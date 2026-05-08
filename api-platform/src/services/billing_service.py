@@ -5,7 +5,7 @@ Billing Service - 计费服务
 
 import uuid
 from typing import Optional, List, Dict, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
@@ -29,7 +29,7 @@ def generate_bill_no() -> str:
     import random
     import string
     prefix = "BILL"
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     random_str = ''.join(random.choices(string.digits, k=6))
     return f"{prefix}{timestamp}{random_str}"
 
@@ -442,7 +442,7 @@ class BillingService:
         """
         account = await self.get_account(user_id=user_id)
         
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         # 按日期分组统计
         query = select(
@@ -494,9 +494,9 @@ class BillingService:
             月度汇总信息
         """
         if not year:
-            year = datetime.utcnow().year
+            year = datetime.now(timezone.utc).year
         if not month:
-            month = datetime.utcnow().month
+            month = datetime.now(timezone.utc).month
 
         account = await self.get_account(user_id=user_id)
 

@@ -1,7 +1,7 @@
 """Notification service - 通知服务（异步版本）"""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Dict, Any
 
 from sqlalchemy import and_, select, func, update, desc
@@ -115,7 +115,7 @@ class NotificationService:
         
         if notification and notification.status == "unread":
             notification.status = "read"
-            notification.read_at = datetime.utcnow()
+            notification.read_at = datetime.now(timezone.utc)
             await db.commit()
             await db.refresh(notification)
         
@@ -124,7 +124,7 @@ class NotificationService:
     @staticmethod
     async def mark_all_as_read(db: AsyncSession, user_id: uuid.UUID) -> int:
         """标记所有通知为已读，返回已读数量"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         query = (
             update(Notification)
             .where(

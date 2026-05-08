@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, and_, or_
 from sqlalchemy.orm import selectinload
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from src.config.database import get_db
@@ -682,7 +682,7 @@ async def generate_monthly_bill(
                     environment=environment,
                     status="generated",
                     generated_by=current_user.id,
-                    generated_at=datetime.utcnow(),
+                    generated_at=datetime.now(timezone.utc),
                 )
                 db.add(bill)
                 await db.flush()
@@ -787,7 +787,7 @@ async def generate_monthly_bill(
             bill.total_tokens = total_tokens
             bill.details = json.dumps({
                 "by_repository": by_repository,
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
                 "period": f"{year}-{month:02d}",
             })
 
@@ -837,7 +837,7 @@ async def review_monthly_bill(
     if action == "approve":
         bill.status = "reviewed"
         bill.reviewed_by = current_user.id
-        bill.reviewed_at = datetime.utcnow()
+        bill.reviewed_at = datetime.now(timezone.utc)
         bill.review_comment = comment
         await db.flush()
         await db.commit()
@@ -856,7 +856,7 @@ async def review_monthly_bill(
     elif action == "reject":
         # 拒绝不需要改变状态，只记录审核信息
         bill.reviewed_by = current_user.id
-        bill.reviewed_at = datetime.utcnow()
+        bill.reviewed_at = datetime.now(timezone.utc)
         bill.review_comment = comment
         await db.flush()
         await db.commit()
@@ -901,7 +901,7 @@ async def publish_monthly_bill(
         raise HTTPException(status_code=400, detail=f"Cannot publish bill with status: {bill.status}. Bill must be reviewed first.")
 
     bill.status = "published"
-    bill.published_at = datetime.utcnow()
+    bill.published_at = datetime.now(timezone.utc)
     await db.flush()
     await db.commit()
 

@@ -5,7 +5,7 @@ User API - 用户相关接口
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -358,7 +358,7 @@ async def upgrade_to_developer(
     current_user.role = "developer"
     current_user.user_type = "developer"
     current_user.permissions = _get_developer_permissions()
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     
     # 记录操作日志
     try:
@@ -522,7 +522,7 @@ async def upgrade_with_payment(
     current_user.role = "developer"
     current_user.user_type = "developer"
     current_user.permissions = _get_developer_permissions()
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     
     # 7. 记录操作日志
     try:
@@ -675,7 +675,7 @@ async def claim_trial_amount(
         
         current_user.trial_claimed = True
         current_user.trial_amount_claimed = str(settings.trial_amount)
-        current_user.updated_at = datetime.utcnow()
+        current_user.updated_at = datetime.now(timezone.utc)
         
         # 记录账单
         bill = Bill(
@@ -745,7 +745,7 @@ async def claim_trial_amount(
     current_user.permissions = _get_developer_permissions()
     current_user.trial_claimed = True
     current_user.trial_amount_claimed = str(settings.trial_amount)
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     
     # 记录账单
     bill = Bill(

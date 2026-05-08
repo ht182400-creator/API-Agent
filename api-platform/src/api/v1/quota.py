@@ -395,10 +395,10 @@ async def get_quota_info(
     """
     获取指定Key的配额信息
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     from src.models.billing import APICallLog
     
-    # 首先验证 API Key 属于当前用户
+    # 使用 UTC 时间，与数据库时区保持一致
     key_result = await db.execute(
         select(APIKey).where(
             APIKey.id == key_id,
@@ -411,8 +411,7 @@ async def get_quota_info(
         from src.core.exceptions import NotFoundError
         raise NotFoundError("API Key不存在或无权访问")
     
-    # 统一使用北京时间，与日志记录时间保持一致
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     month_start = today.replace(day=1)
     one_minute_ago = now - timedelta(minutes=1)
@@ -498,7 +497,7 @@ async def get_quota_overview(
     """
     获取所有API Key的配额概览
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     from src.models.billing import APICallLog
     
     # 获取用户的所有 keys
@@ -507,8 +506,7 @@ async def get_quota_overview(
     )
     keys = keys_result.scalars().all()
     
-    # 统一使用北京时间，与日志记录时间保持一致
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     month_start = today.replace(day=1)
     one_minute_ago = now - timedelta(minutes=1)
@@ -594,7 +592,7 @@ async def get_logs(
     """
     from src.models.billing import APICallLog
     from src.models.repository import Repository
-    from datetime import datetime
+    from datetime import datetime, timezone
     
     # 构建查询 - 查询 APICallLog 表（实际记录 API 调用的表）
     # 优先使用 api_key_id 过滤，与配额 API 统计口径保持一致
@@ -686,10 +684,9 @@ async def get_usage_history(
     """
     获取配额使用历史 - 从 APICallLog 表统计
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     
-    # 使用北京时间
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
     
     # 从 APICallLog 表按日期聚合查询
@@ -741,11 +738,10 @@ async def get_consumption_trend(
     """
     获取每日消费趋势 - 从 Bill 表统计消费金额
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     from src.models.billing import Bill
 
-    # 使用北京时间
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     # 查询消费账单并按日期聚合
@@ -787,7 +783,7 @@ async def get_top_repos(
     """
     获取使用量最高的仓库 - 从 APICallLog 表统计
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     from src.models.repository import Repository
 
     # 验证 key_id 属于当前用户
@@ -799,8 +795,7 @@ async def get_top_repos(
         from src.core.exceptions import NotFoundError
         raise NotFoundError("API Key不存在或无权访问")
 
-    # 统一使用北京时间，与日志记录时间保持一致
-    start_date = datetime.now() - timedelta(days=days)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     # 按 repo_id 聚合查询 - 使用 APICallLog 表，关联 Repository 获取仓库名称
     result = await db.execute(

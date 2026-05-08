@@ -5,7 +5,7 @@ Quota Service - 配额服务
 
 import uuid
 from typing import Optional, List, Dict, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 
@@ -46,7 +46,7 @@ class QuotaService:
             raise NotFoundError(f"API Key不存在: {api_key_id}")
 
         # 计算当前使用量
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
@@ -120,7 +120,7 @@ class QuotaService:
         Returns:
             配额使用记录
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # 检查并更新配额记录
         result = await self.db.execute(
@@ -218,7 +218,7 @@ class QuotaService:
         )
 
         if period_type == "daily":
-            today_start = datetime.utcnow().replace(
+            today_start = datetime.now(timezone.utc).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
             query = query.where(
@@ -228,7 +228,7 @@ class QuotaService:
                 )
             )
         elif period_type == "monthly":
-            month_start = datetime.utcnow().replace(
+            month_start = datetime.now(timezone.utc).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
             )
             query = query.where(
@@ -243,7 +243,7 @@ class QuotaService:
 
         for quota in quotas:
             quota.quota_used = 0
-            quota.updated_at = datetime.utcnow()
+            quota.updated_at = datetime.now(timezone.utc)
 
         await self.db.flush()
         return True
@@ -265,7 +265,7 @@ class QuotaService:
         Returns:
             使用历史列表
         """
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         query = select(
             Quota.reset_at,
@@ -312,7 +312,7 @@ class QuotaService:
         Returns:
             仓库使用列表
         """
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         query = select(
             Quota.repo_id,

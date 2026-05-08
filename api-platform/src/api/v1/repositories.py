@@ -461,7 +461,7 @@ async def get_repository_stats(
         Repository statistics
     """
     from src.models.user import User
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     
     # 查找仓库
     try:
@@ -500,8 +500,8 @@ async def _check_repo_update_permission(repo: "Repository", current_user: "User"
     # 从数据库查询真实统计数据
     from src.models.billing import APICallLog
     
-    # 统一使用北京时间，与日志记录时间保持一致
-    now = datetime.now()
+    # 使用 UTC 时间，与数据库时区保持一致
+    now = datetime.now(timezone.utc)
     today = now.date()
     week_ago = now - timedelta(days=7)
     
@@ -802,7 +802,7 @@ async def chat(
     # 5. 记录API调用日志并计费
     from src.models.billing import APICallLog
     from src.models.billing import Quota
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     from decimal import Decimal
     import json
     
@@ -819,7 +819,6 @@ async def chat(
             tokens_used=tokens_used,
         )
         
-        # 使用北京时间记录，保存 request_id 用于追踪
         log_entry = APICallLog(
             repo_id=repo.id,
             api_key_id=api_key.id,
@@ -832,12 +831,13 @@ async def chat(
             status_code=status_code,
             response_time=str(response_time),
             cost=str(call_cost),
-            created_at=datetime.now(),  # 使用北京时间
+            created_at=datetime.now(timezone.utc),
         )
         db.add(log_entry)
         
         # 更新每日配额使用量
-        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        now = datetime.now(timezone.utc)
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         quota_result = await db.execute(
             select(Quota).where(
                 and_(
@@ -1085,8 +1085,8 @@ async def update_repository(
     if repo_data.status is not None:
         repo.status = repo_data.status
         if repo_data.status == "online" and not repo.online_at:
-            from datetime import datetime
-            repo.online_at = datetime.utcnow()
+            from datetime import datetime, timezone
+            repo.online_at = datetime.now(timezone.utc)
     # V5.0 自定义图标
     if repo_data.logo_url is not None:
         repo.logo_url = repo_data.logo_url
@@ -1264,7 +1264,7 @@ async def approve_repository(
         更新后的仓库信息
     """
     from src.models.user import User
-    from datetime import datetime
+    from datetime import datetime, timezone
     
     # 检查管理员权限
     check_admin_permission(current_user)
@@ -1295,7 +1295,7 @@ async def approve_repository(
     
     # 更新仓库状态
     repo.status = "approved"
-    repo.approved_at = datetime.utcnow()
+    repo.approved_at = datetime.now(timezone.utc)
     repo.approved_by = current_user.id
     repo.reviewed_by = current_user.id
     
@@ -1341,7 +1341,7 @@ async def reject_repository(
         更新后的仓库信息
     """
     from src.models.user import User
-    from datetime import datetime
+    from datetime import datetime, timezone
     
     # 检查管理员权限
     check_admin_permission(current_user)
@@ -1416,7 +1416,7 @@ async def online_repository(
         更新后的仓库信息
     """
     from src.models.user import User
-    from datetime import datetime
+    from datetime import datetime, timezone
     
     # 检查管理员权限
     check_admin_permission(current_user)
@@ -1447,7 +1447,7 @@ async def online_repository(
     
     # 更新仓库状态
     repo.status = "online"
-    repo.online_at = datetime.utcnow()
+    repo.online_at = datetime.now(timezone.utc)
     
     await db.commit()
     await db.refresh(repo)
@@ -1490,7 +1490,7 @@ async def offline_repository(
         更新后的仓库信息
     """
     from src.models.user import User
-    from datetime import datetime
+    from datetime import datetime, timezone
     
     # 检查管理员权限
     check_admin_permission(current_user)
@@ -1521,7 +1521,7 @@ async def offline_repository(
     
     # 更新仓库状态
     repo.status = "offline"
-    repo.offline_at = datetime.utcnow()
+    repo.offline_at = datetime.now(timezone.utc)
     
     await db.commit()
     await db.refresh(repo)
@@ -1989,7 +1989,7 @@ async def update_repository_config(
         更新后的仓库信息
     """
     from src.models.user import User
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     repo = await _get_repo_by_id(db, repo_id)
     if not repo:
@@ -2084,7 +2084,7 @@ async def update_repository_config(
         if config_data.free_quota_days is not None:
             pricing.free_quota_days = config_data.free_quota_days
 
-    repo.updated_at = datetime.utcnow()
+    repo.updated_at = datetime.now(timezone.utc)
     await db.commit()
     await db.refresh(repo)
 
@@ -2315,12 +2315,13 @@ async def proxy_repository_endpoint(
                 status_code=status_code,
                 response_time=str(response_time),
                 cost=str(call_cost),
-                created_at=datetime.now(),  # 使用北京时间
+                created_at=datetime.now(timezone.utc),
             )
             db.add(log_entry)
             
             # 更新每日配额使用量
-            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            now = datetime.now(timezone.utc)
+            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
             quota_result = await db.execute(
                 select(Quota).where(
                     and_(

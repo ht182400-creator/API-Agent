@@ -36,7 +36,7 @@ export default defineConfig(async () => {
         '/api': {
           target: 'http://localhost:8000',
           changeOrigin: true,
-          logLevel: 'info',
+          logLevel: 'silent',
         },
       },
     },

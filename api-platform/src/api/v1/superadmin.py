@@ -1,7 +1,7 @@
 """Super Admin API - 超级管理员专用接口"""
 
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Body, Query
@@ -63,7 +63,7 @@ async def get_dashboard_stats(
     total_users = total_users_result.scalar() or 0
     
     # 统计活跃用户（30天内有登录）
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
     active_users_result = await db.execute(
         select(func.count(User.id)).where(
             User.last_login_at >= thirty_days_ago
@@ -605,7 +605,7 @@ async def update_config(
     
     # 更新配置
     config.value = update_data.value
-    config.updated_at = datetime.utcnow()
+    config.updated_at = datetime.now(timezone.utc)
     config.updated_by = current_user["username"]
     
     # 记录审计日志

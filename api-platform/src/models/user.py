@@ -1,7 +1,7 @@
 """User model - 用户模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional, List
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text
@@ -46,16 +46,16 @@ class User(Base):
 
     # VIP information
     vip_level = Column(Integer, default=0)
-    vip_expire_at = Column(DateTime, nullable=True)
+    vip_expire_at = Column(DateTime(timezone=True), nullable=True)
 
     # Trial information (试用信息)
     trial_claimed = Column(Boolean, default=False)  # 是否已领取试用金额
     trial_amount_claimed = Column(String(20), default="0")  # 已领取的试用金额
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    last_login_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
     last_login_ip = Column(String(50), nullable=True)
 
     # Extension fields
@@ -101,8 +101,8 @@ class UserProfile(Base):
     login_notify = Column(Boolean, default=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<UserProfile {self.nickname or self.user_id}>"

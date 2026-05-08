@@ -1,7 +1,7 @@
 """Notification model - 通知模型"""
 
 import uuid
-from datetime import datetime
+from src.utils.helpers import get_utc_now
 from typing import Optional, List
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, ForeignKey
@@ -46,7 +46,7 @@ class Notification(Base):
     expire_at = Column(DateTime, nullable=True)
     
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
     read_at = Column(DateTime, nullable=True)  # 阅读时间
 
     def __repr__(self):
@@ -79,8 +79,8 @@ class NotificationPreference(Base):
     })
 
     # 审计字段
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_utc_now())
+    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<NotificationPreference user_id={self.user_id}>"

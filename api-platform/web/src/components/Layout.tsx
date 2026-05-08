@@ -264,17 +264,18 @@ export default function Layout() {
     }
   }, [])
 
-  // 获取用户信息（始终从后端刷新，避免本地缓存过期）
+  // 【V6.0 重构】获取用户信息，使用 forceRefreshUser 确保 localStorage 同步
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await authApi.me()
+        // 【V6.0 关键修复】使用 forceRefreshUser 确保 localStorage 同步更新
+        const userData = await useAuthStore.getState().forceRefreshUser()
         const currentUser = useAuthStore.getState().user
+        
         // 如果用户类型发生变化，打印日志
         if (currentUser && userData.user_type !== currentUser.user_type) {
           console.log(`[Layout] 用户类型变化: ${currentUser.user_type} -> ${userData.user_type}`)
         }
-        useAuthStore.getState().setUser(userData)
       } catch (error) {
         console.error('获取用户信息失败:', error)
       } finally {
@@ -286,7 +287,8 @@ export default function Layout() {
     fetchUser()
     
     // 【V4.0 新增】每30秒定期刷新用户信息，确保角色变化后能及时更新
-    const intervalId = setInterval(fetchUser, 30000)
+    // 【V6.0 优化】使用更短的时间间隔，在用户类型变化后能更快响应
+    const intervalId = setInterval(fetchUser, 10000)  // 改为10秒
     return () => clearInterval(intervalId)
   }, [])
 

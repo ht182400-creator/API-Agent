@@ -1,7 +1,7 @@
 """Billing API - 计费接口"""
 
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, Numeric, DECIMAL
@@ -17,6 +17,21 @@ from src.models.user import User
 from src.models.billing import Account, Bill, APICallLog, MonthlyBill
 from src.models.repository import Repository
 from src.core.exceptions import APIError
+
+
+def _to_utc_iso_string(dt: datetime) -> Optional[str]:
+    """
+    将 datetime 转换为 UTC ISO 格式字符串
+    确保返回的时间总是 UTC 时区，前端可以正确解析为本地时间
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        # naive datetime，假定为本地时间（UTC+8），先转换为 UTC
+        local_tz = timezone(timedelta(hours=8))
+        dt = dt.replace(tzinfo=local_tz)
+    # 转换为 UTC
+    return dt.astimezone(timezone.utc).isoformat()
 
 router = APIRouter()
 
@@ -159,7 +174,7 @@ async def recharge(
             remark=recharge_data.remark,
             payment_method=recharge_data.payment_method,
             status="completed",
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
             environment=environment,
         )
         db.add(bill)
@@ -247,7 +262,7 @@ async def get_bills(
                     "payment_id": bill.transaction_id,
                     "description": bill.description,
                     "environment": bill.environment,
-                    "created_at": bill.created_at.isoformat() if bill.created_at else None,
+                    "created_at": _to_utc_iso_string(bill.created_at),
                 }
                 for bill in bills
             ],
