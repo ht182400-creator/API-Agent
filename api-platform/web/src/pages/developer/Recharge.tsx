@@ -239,18 +239,18 @@ export default function DeveloperRecharge() {
       // 刷新余额
       await fetchBalance()
       
-      // 显示成功界面（不关闭弹窗）
-      setPaySuccess(true)
-      clearPaymentFromSession()
-      setIsProcessingCallback(false)
-      
-      // 5秒后自动关闭并刷新（用户也可以手动关闭）
-      setTimeout(() => {
-        if (paySuccess) {
-          window.location.reload()
-        }
-      }, 5000)
-    }
+    // 显示成功界面（不关闭弹窗）
+    setPaySuccess(true)
+    clearPaymentFromSession()
+    setIsProcessingCallback(false)
+    
+    // 5秒后自动刷新（使用 ref 确保正确检测状态）
+    setTimeout(() => {
+      if (paymentStateRef.current.paySuccess) {
+        window.location.reload()
+      }
+    }, 5000)
+  }
     
     // 显示支付超时对话框
     const showTimeoutDialog = () => {
@@ -738,9 +738,9 @@ export default function DeveloperRecharge() {
     setPaySuccess(true)
     clearPaymentFromSession()
     
-    // 5秒后自动关闭并刷新（用户也可以手动关闭）
+    // 5秒后自动刷新（使用 ref 确保正确检测状态）
     setTimeout(() => {
-      if (paySuccess) { // 只在还是成功状态时刷新
+      if (paymentStateRef.current.paySuccess) {
         window.location.reload()
       }
     }, 5000)
@@ -1707,75 +1707,129 @@ export default function DeveloperRecharge() {
 
       {/* 支付弹窗 */}
       <Modal
-        title={isProcessingCallback ? "支付确认中" : "订单支付"}
+        title={isProcessingCallback ? "支付确认中" : (paySuccess ? (isNormalUser ? "升级成功" : "充值成功") : "订单支付")}
         open={payModalVisible}
         onCancel={handlePayModalClose}
         footer={null}
-        width={500}
-        maskClosable={!isProcessingCallback}
-        closable={!isProcessingCallback}
+        width={paySuccess ? 480 : 500}
+        maskClosable={!isProcessingCallback && !paySuccess}
+        closable={!isProcessingCallback && !paySuccess}
       >
         {isProcessingCallback ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
             <Spin size="large" tip="正在确认支付结果，请稍候..." />
           </div>
         ) : paySuccess ? (
-          <div>
-            <Result
-              status="success"
-              title={isNormalUser ? "升级成功！" : "充值成功！"}
-              subTitle={
-                isNormalUser 
-                  ? "恭喜！您已成为开发者"
-                  : `充值金额已到账`
-              }
-            />
+          // 【V8.0 优化】大尺寸成功界面，像支付宝跳转页面一样醒目
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            {/* 成功图标 */}
+            <div style={{ 
+              width: 80, 
+              height: 80, 
+              borderRadius: '50%', 
+              background: '#f6ffed',
+              border: '3px solid #52c41a',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px'
+            }}>
+              <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a' }} />
+            </div>
             
-            {/* 充值详情卡片 */}
-            <Card size="small" style={{ marginBottom: 16 }}>
-              <Descriptions column={1} size="small" colon={false}>
-                <Descriptions.Item label="订单号">
-                  <Text copyable={{ text: currentPayment?.payment_no }}>
+            {/* 成功标题 */}
+            <Title level={3} style={{ color: '#52c41a', marginBottom: 8 }}>
+              {isNormalUser ? '升级成功！' : '充值成功！'}
+            </Title>
+            
+            {/* 副标题 */}
+            <Text type="secondary" style={{ fontSize: 14 }}>
+              {isNormalUser 
+                ? '恭喜！您已成为开发者，可以开始使用 API 服务了'
+                : `充值金额 ¥${currentPayment?.amount?.toFixed(2)} 已到账`
+              }
+            </Text>
+            
+            <Divider style={{ margin: '24px 0' }} />
+            
+            {/* 详细信息卡片 */}
+            <Card 
+              size="small" 
+              style={{ 
+                marginBottom: 20,
+                background: '#fafafa',
+                borderRadius: 8
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* 订单号 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text type="secondary">订单号</Text>
+                  <Text copyable={{ text: currentPayment?.payment_no }} style={{ fontFamily: 'monospace' }}>
                     {currentPayment?.payment_no}
                   </Text>
-                </Descriptions.Item>
-                <Descriptions.Item label="充值金额">
-                  <Text strong style={{ fontSize: 16, color: '#52c41a' }}>
+                </div>
+                
+                {/* 充值金额 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text type="secondary">充值金额</Text>
+                  <Text strong style={{ fontSize: 18, color: '#52c41a' }}>
                     ¥{currentPayment?.amount?.toFixed(2) || '0.00'}
                   </Text>
-                </Descriptions.Item>
+                </div>
+                
+                {/* 账户余额 */}
                 {currentBalance !== null && !isNormalUser && (
-                  <Descriptions.Item label="账户余额">
-                    <Text strong style={{ fontSize: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text type="secondary">账户余额</Text>
+                    <Text strong style={{ fontSize: 18 }}>
                       ¥{currentBalance.toFixed(2)}
                     </Text>
-                  </Descriptions.Item>
+                  </div>
                 )}
-                <Descriptions.Item label="支付状态">
-                  <Text type="success">已支付</Text>
-                </Descriptions.Item>
-              </Descriptions>
+                
+                {/* 支付状态 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text type="secondary">支付状态</Text>
+                  <Tag color="success" style={{ margin: 0 }}>已支付</Tag>
+                </div>
+                
+                {/* 支付时间 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text type="secondary">支付时间</Text>
+                  <Text>{new Date().toLocaleString('zh-CN')}</Text>
+                </div>
+              </div>
             </Card>
             
+            {/* 倒计时提示 */}
             <Alert 
               type="success" 
-              message={isNormalUser 
-                ? "恭喜！您已成为开发者" 
-                : `页面将在 5 秒后自动刷新，您也可以手动关闭`
-              } 
-              style={{ marginBottom: 16, textAlign: 'center' }}
+              message={
+                <span>
+                  页面将在 <Text strong style={{ color: '#52c41a' }}>5</Text> 秒后自动刷新
+                </span>
+              }
+              style={{ marginBottom: 20 }}
               showIcon
             />
             
-            <Space style={{ width: '100%', justifyContent: 'center' }}>
+            {/* 操作按钮 */}
+            <Space style={{ width: '100%' }} direction="vertical">
               <Button 
                 type="primary" 
+                size="large" 
+                block 
                 onClick={() => isNormalUser ? navigate('/user') : window.location.reload()}
               >
-                {isNormalUser ? '查看用户状态' : '立即刷新'}
+                {isNormalUser ? '开始使用 API 服务' : '立即刷新'}
               </Button>
-              <Button onClick={handlePayModalClose}>
-                关闭
+              <Button 
+                size="large" 
+                block 
+                onClick={handlePayModalClose}
+              >
+                继续充值
               </Button>
             </Space>
           </div>

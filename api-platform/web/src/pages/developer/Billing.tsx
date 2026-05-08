@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App, Alert } from 'antd'
+import { Row, Col, Card, Table, Button, Typography, Statistic, Space, Tag, Empty, App, Alert, DatePicker, Select } from 'antd'
 import { 
   WalletOutlined, 
   RiseOutlined, 
@@ -45,6 +45,11 @@ export default function DeveloperBilling() {
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [balanceHistory, setBalanceHistory] = useState<any[]>([])
   const [mockMode, setMockMode] = useState<boolean>(true)
+  
+  // 日期筛选
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
+  
+  const { RangePicker } = DatePicker
 
   const { showError, closeError, ErrorModal: ErrorModalComponent } = useErrorModal()
   
@@ -76,15 +81,38 @@ export default function DeveloperBilling() {
     }
   }
 
-  const fetchBills = async (params?: any) => {
+  const fetchBills = async (params?: { page?: number; page_size?: number }) => {
     try {
-      const data = await billingApi.getBills({ page, page_size: pageSize, ...params })
+      const pageToUse = params?.page ?? page
+      const pageSizeToUse = params?.page_size ?? pageSize
+      
+      // 构建查询参数
+      const queryParams: any = { page: pageToUse, page_size: pageSizeToUse }
+      
+      // 添加日期筛选
+      if (dateRange) {
+        queryParams.start_date = dateRange[0].format('YYYY-MM-DD')
+        queryParams.end_date = dateRange[1].format('YYYY-MM-DD')
+      }
+      
+      const data = await billingApi.getBills(queryParams)
       setBills(data.items)
       setTotal(data.pagination.total)
     } catch (error: any) {
       showError(error, () => fetchBills(params))
     }
   }
+  
+  // 日期筛选变化时重置分页并重新查询
+  const handleDateRangeChange = (dates: [dayjs.Dayjs, dayjs.Dayjs] | null) => {
+    setDateRange(dates)
+    setPage(1)  // 重置到第一页
+  }
+
+  // 监听分页变化，重新获取数据
+  useEffect(() => {
+    fetchBills()
+  }, [page, pageSize, dateRange])
 
   const getBillTypeTag = (type: string) => {
     const map: Record<string, { color: string; text: string }> = {
@@ -383,13 +411,24 @@ export default function DeveloperBilling() {
         } 
         className={styles.tableCard}
         extra={
-          <Space>
+          <Space wrap>
+            <RangePicker 
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              format="YYYY-MM-DD"
+              placeholder={['开始日期', '结束日期']}
+              allowClear
+              onClear={() => setDateRange(null)}
+            />
             <Text type="secondary">共 {total} 条记录</Text>
             <Button 
               icon={<DownloadOutlined />} 
               onClick={() => {
                 try {
-                  billingApi.exportBills()
+                  billingApi.exportBills({
+                    start_date: dateRange ? dateRange[0].format('YYYY-MM-DD') : undefined,
+                    end_date: dateRange ? dateRange[1].format('YYYY-MM-DD') : undefined,
+                  })
                 } catch (error: any) {
                   showError(error, () => billingApi.exportBills())
                 }

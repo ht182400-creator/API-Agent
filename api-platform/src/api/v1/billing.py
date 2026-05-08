@@ -22,15 +22,14 @@ from src.core.exceptions import APIError
 def _to_utc_iso_string(dt: datetime) -> Optional[str]:
     """
     将 datetime 转换为 UTC ISO 格式字符串
-    确保返回的时间总是 UTC 时区，前端可以正确解析为本地时间
+    数据库存储的是 UTC 时间，直接转换为 UTC ISO 格式
     """
     if dt is None:
         return None
     if dt.tzinfo is None:
-        # naive datetime，假定为本地时间（UTC+8），先转换为 UTC
-        local_tz = timezone(timedelta(hours=8))
-        dt = dt.replace(tzinfo=local_tz)
-    # 转换为 UTC
+        # naive datetime，假定为 UTC（数据库存储的就是 UTC 时间）
+        return dt.replace(tzinfo=timezone.utc).isoformat()
+    # aware datetime，直接转换为 UTC
     return dt.astimezone(timezone.utc).isoformat()
 
 router = APIRouter()
@@ -223,28 +222,48 @@ async def get_bills(
     if environment is None:
         environment = "simulation" if settings.payment_mock_mode else "production"
     
-    # 构建查询
-    query = select(Bill).where(
-        Bill.user_id == current_user.id,
-        Bill.environment == environment,  # 环境过滤
-    )
-    
-    if bill_type:
-        query = query.where(Bill.bill_type == bill_type)
-    
-    # 获取总数
-    count_query = select(func.count(Bill.id)).where(
+    # 构建查询和计数查询
+    base_conditions = [
         Bill.user_id == current_user.id,
         Bill.environment == environment,
-    )
+    ]
+    
     if bill_type:
-        count_query = count_query.where(Bill.bill_type == bill_type)
+        base_conditions.append(Bill.bill_type == bill_type)
+    
+    query = select(Bill).where(*base_conditions)
+    count_query = select(func.count(Bill.id)).where(*base_conditions)
+    
+    # 日期范围过滤（start_date 和 end_date 是北京时间，需要转换为 UTC）
+    if start_date:
+        try:
+            # 解析北京时间 YYYY-MM-DD，转换为 UTC 00:00:00 +8小时
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            # 北京时间 00:00:00 = UTC 前一天 16:00:00
+            start_utc = start_dt - timedelta(hours=8)
+            query = query.where(Bill.created_at >= start_utc)
+            count_query = count_query.where(Bill.created_at >= start_utc)
+        except ValueError:
+            pass
+    
+    if end_date:
+        try:
+            # 解析北京时间 YYYY-MM-DD，转换为 UTC 23:59:59 +8小时
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+            # 北京时间 23:59:59 = UTC 当天 15:59:59
+            end_utc = end_dt - timedelta(hours=8)
+            query = query.where(Bill.created_at <= end_utc)
+            count_query = count_query.where(Bill.created_at <= end_utc)
+        except ValueError:
+            pass
+    
+    # 获取总数
     total_result = await db.execute(count_query)
     total = total_result.scalar() or 0
     
-    # 分页查询
+    # 分页查询（按id倒序，id越大创建越晚，最可靠）
     offset = (page - 1) * page_size
-    query = query.order_by(desc(Bill.created_at)).offset(offset).limit(page_size)
+    query = query.order_by(desc(Bill.id)).offset(offset).limit(page_size)
     
     result = await db.execute(query)
     bills = result.scalars().all()

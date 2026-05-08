@@ -769,15 +769,68 @@ class PaymentService:
         
         return True
     
+    async def update_user_balance_after_payment(self, payment_no: str) -> bool:
+        """
+        【V8.0 新增】在查询支付状态时更新用户余额
+        用于解决：模拟支付直接更新为 completed 状态时，不会触发回调，导致余额未增加的问题
+        
+        Args:
+            payment_no: 支付单号
+            
+        Returns:
+            是否成功更新余额
+        """
+        logger = get_logger("payment")
+        logger.info(f"[UpdateBalance] 开始更新余额 | payment_no={payment_no}")
+        
+        # 查询支付记录
+        payment = await self.query_payment(payment_no)
+        if not payment:
+            logger.warning(f"[UpdateBalance] 支付记录不存在 | payment_no={payment_no}")
+            return False
+        
+        # 只有 completed 状态才处理（避免重复处理）
+        if payment.status != "completed":
+            logger.info(f"[UpdateBalance] 支付状态不是 completed，跳过 | payment_no={payment_no}, status={payment.status}")
+            return False
+        
+        # 检查是否已经处理过（通过 transaction_id 判断）
+        if payment.transaction_id and "processed:" in (payment.transaction_id or ""):
+            logger.info(f"[UpdateBalance] 已经处理过，跳过 | payment_no={payment_no}")
+            return False
+        
+        # 调用 _process_successful_payment 处理余额增加和账单创建
+        try:
+            await self._process_successful_payment(payment)
+            logger.info(f"[UpdateBalance] 余额更新成功 | payment_no={payment_no}")
+            return True
+        except Exception as e:
+            logger.error(f"[UpdateBalance] 余额更新失败 | payment_no={payment_no}, error={str(e)}")
+            return False
+    
     async def _process_successful_payment(self, payment: Payment) -> None:
         """
         处理成功支付的逻辑：增加账户余额
         
         Args:
             payment: 支付记录
+            
+        Note:
+            此方法会检查是否已处理过，避免重复创建账单记录
         """
         from src.services.account_service import AccountService
         from src.config.settings import settings
+        
+        logger = get_logger("payment")
+        
+        # 【关键检查】检查是否已处理过（通过检查是否有对应的账单记录）
+        from src.models.billing import Bill
+        existing_bill = await self.db.execute(
+            select(Bill).where(Bill.source_id == str(payment.id))
+        )
+        if existing_bill.scalar_one_or_none():
+            logger.info(f"[_ProcessPayment] 支付已处理过，跳过 | payment_no={payment.payment_no}")
+            return
         
         # 支付方式映射
         payment_method_map = {
@@ -819,6 +872,9 @@ class PaymentService:
         else:
             description = f"{payment_method_name}充值：{package_name}，金额{principal:.2f}元"
         
+        # 生成唯一的事务ID（用于标记已处理）
+        processed_tx_id = f"processed:{payment.transaction_id or 'none'}"
+        
         # 更新账户余额（account_service.add_balance 内部已创建 Bill）
         account_service = AccountService(self.db)
         await account_service.add_balance(
@@ -827,7 +883,7 @@ class PaymentService:
             source_type="recharge",
             source_id=str(payment.id),
             description=description,
-            transaction_id=payment.transaction_id,
+            transaction_id=processed_tx_id,  # 使用带标记的事务ID
         )
         
         # 【V4.0 新增】充值成功后，自动升级普通用户为开发者
