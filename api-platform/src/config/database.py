@@ -58,6 +58,8 @@ async def get_db() -> AsyncSession:
     """Dependency for getting database session"""
     async with AsyncSessionLocal() as session:
         try:
+            # 设置会话时区为 UTC，确保时间一致性
+            await session.execute(text("SET TIME ZONE 'UTC'"))
             yield session
             await session.commit()
         except Exception:

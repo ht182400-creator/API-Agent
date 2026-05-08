@@ -128,6 +128,7 @@ class AccountService:
         source_id: str = None,
         description: str = None,
         environment: str = None,
+        transaction_id: str = None,
     ) -> Tuple[Account, Bill]:
         """
         增加账户余额
@@ -142,6 +143,7 @@ class AccountService:
             source_id: 来源ID
             description: 描述
             environment: 环境标志 (simulation/production)
+            transaction_id: 第三方交易号 (支付宝/微信等)
             
         Returns:
             (更新后的账户, 账单记录)
@@ -191,6 +193,7 @@ class AccountService:
             status="completed",
             completed_at=datetime.now(timezone.utc),
             environment=environment,
+            transaction_id=transaction_id,
         )
         self.db.add(bill)
         

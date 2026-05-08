@@ -344,8 +344,15 @@ async def export_bills(
     }
     
     for bill in bills:
+        # 使用 _to_utc_iso_string 确保时间格式一致
+        created_at_str = _to_utc_iso_string(bill.created_at)
+        if created_at_str:
+            # 从 ISO 字符串中提取日期时间部分
+            created_at_display = created_at_str.replace('+00:00', 'Z').replace('T', ' ').split('+')[0].replace('Z', '')
+        else:
+            created_at_display = ''
         writer.writerow([
-            bill.created_at.strftime('%Y-%m-%d %H:%M:%S') if bill.created_at else '',
+            created_at_display,
             bill_type_map.get(bill.bill_type, bill.bill_type),
             f"{float(bill.amount):.2f}",
             f"{float(bill.balance_after):.2f}",

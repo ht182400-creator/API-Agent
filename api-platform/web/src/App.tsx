@@ -39,6 +39,7 @@ import SuperAdminRoles from './pages/superadmin/SuperAdminRoles'
 import SuperAdminSystem from './pages/superadmin/SuperAdminSystem'
 import Notifications from './pages/notifications/Notifications'
 import UserDashboard from './pages/user/UserDashboard'
+import PaymentSuccess from './pages/PaymentSuccess'
 
 // 用户类型
 type UserType = 'super_admin' | 'admin' | 'owner' | 'developer' | 'user'
@@ -110,6 +111,7 @@ function App() {
       {/* 公共路由 */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
       
       {/* 超级管理员路由 */}
       <Route path="/superadmin" element={

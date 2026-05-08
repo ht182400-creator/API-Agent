@@ -82,6 +82,12 @@ class Settings(BaseSettings):
     alipay_sandbox_gateway: str = "https://openapi-sandbox.dl.alipaydev.com/gateway.do"  # 沙箱网关地址
     alipay_production_gateway: str = "https://openapi.alipay.com/gateway.do"  # 生产网关地址
     
+    # 前端配置 - 用于支付宝 return_url 跳转回前端页面
+    # 使用 ngrok 等内网穿透时，前端无法直接被外网访问，需要配置此地址
+    # 例如：https://abc123.ngrok.io（ngrok 映射的地址）
+    #       或 http://your-domain.com（你的网站域名）
+    frontend_base_url: str = "http://localhost:3000"  # 默认本地开发地址
+    
     def get_alipay_private_key(self) -> str:
         """获取支付宝私钥，优先从文件读取"""
         import os

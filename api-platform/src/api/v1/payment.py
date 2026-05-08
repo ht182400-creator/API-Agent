@@ -376,8 +376,11 @@ async def query_payment_status(
     【核心优化】当本地状态不是成功时，主动从支付宝查询真实状态。
     解决异步回调延迟或丢失导致的状态不一致问题。
     
+    【修复 V7.4】同时支持 payment_no（系统支付单号）和 order_no（支付宝商户订单号/out_trade_no）查询。
+    支付宝 return_url 返回的是 out_trade_no（对应 order_no），需要兼容处理。
+    
     Args:
-        payment_no: 支付单号
+        payment_no: 支付单号或订单号（order_no/out_trade_no）
     """
     from src.config.settings import settings
     from src.config.logging_config import get_logger
@@ -387,18 +390,34 @@ async def query_payment_status(
     
     service = PaymentService(db)
     
-    # 【关键优化】先尝试从支付宝同步状态
-    if settings.alipay_app_id and settings.get_alipay_public_key():
-        logger.info(f"[QueryStatus] 尝试从支付宝同步状态 | payment_no={payment_no}")
-        payment = await service.sync_payment_status_from_alipay(payment_no)
-        logger.info(f"[QueryStatus] 支付宝同步结果 | payment_no={payment_no}, status={payment.status if payment else 'None'}")
-    else:
-        logger.info(f"[QueryStatus] 无支付宝配置，只查本地 | payment_no={payment_no}")
-        payment = await service.query_payment(payment_no)
+    # 【V7.4 修复】先尝试用 payment_no 查询，如果找不到再尝试 order_no
+    # 这样可以兼容支付宝 return_url 返回的 out_trade_no
+    payment = await service.query_payment(payment_no)
+    
+    if not payment:
+        # 尝试用 order_no 查询（支付宝 out_trade_no）
+        logger.info(f"[QueryStatus] payment_no 未找到，尝试 order_no 查询 | payment_no={payment_no}")
+        payment = await service.query_payment_by_order(payment_no)
     
     if not payment:
         from src.core.exceptions import NotFoundError
         raise NotFoundError("支付记录不存在")
+    
+    # 【关键优化】如果本地状态不是成功，主动从支付宝同步状态
+    if payment.status not in ("paid", "completed"):
+        if settings.alipay_app_id and settings.get_alipay_public_key():
+            logger.info(f"[QueryStatus] 尝试从支付宝同步状态 | payment_no={payment_no}")
+            synced_payment = await service.sync_payment_status_from_alipay(payment.payment_no)
+            if synced_payment:
+                payment = synced_payment
+                logger.info(f"[QueryStatus] 支付宝同步结果 | payment_no={payment_no}, status={payment.status}")
+    
+    # 如果支付成功，也更新本地 balance
+    if payment.status in ("paid", "completed"):
+        try:
+            await service.update_user_balance_after_payment(payment.payment_no)
+        except Exception as e:
+            logger.warning(f"[QueryStatus] 更新余额失败 | payment_no={payment_no}, error={str(e)}")
     
     return BaseResponse(
         data=PaymentStatusResponse(
@@ -603,12 +622,26 @@ async def alipay_return(request: Request):
     # 提取关键参数
     out_trade_no = query_params.get("out_trade_no")
     
-    # 构建前端地址（开发环境用 localhost:3000，生产环境用实际域名）
-    # 这里简单处理，实际应该从配置读取前端地址
-    frontend_base = "http://localhost:3000"
+    # 【修复】优先使用配置的前端基础地址
+    # 如果配置了 frontend_base_url（用于 ngrok/内网穿透），使用配置值
+    # 否则尝试从请求推断
+    from src.config.settings import settings
     
-    # 重定向到前端充值页面，带上所有参数
-    redirect_url = f"{frontend_base}/developer/recharge"
+    if settings.frontend_base_url and settings.frontend_base_url != "http://localhost:3000":
+        # 使用配置的前端地址（支持 ngrok、内网穿透、域名等场景）
+        frontend_base = settings.frontend_base_url.rstrip('/')
+        logger.info(f"[AlipayReturn] Using configured frontend_base_url: {frontend_base}")
+    else:
+        # 开发模式：从请求头获取原始 Host，构建前端地址
+        host = request.headers.get("host", "localhost:3000")
+        scheme = "https" if request.headers.get("x-forwarded-proto") == "https" else "http"
+        frontend_base = f"{scheme}://{host}"
+        logger.info(f"[AlipayReturn] Using request-based frontend_base: {frontend_base}")
+    
+    # 【V7.3 修改】重定向到专用支付成功页面，而不是充值页面
+    # 支付成功页面会：1. 显示支付结果 2. 通知原始窗口 3. 提示用户关闭
+    frontend_path = "/payment-success"
+    redirect_url = f"{frontend_base}{frontend_path}"
     
     # 如果有 out_trade_no，附加到 URL
     if out_trade_no:

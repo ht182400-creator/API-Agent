@@ -827,6 +827,7 @@ class PaymentService:
             source_type="recharge",
             source_id=str(payment.id),
             description=description,
+            transaction_id=payment.transaction_id,
         )
         
         # 【V4.0 新增】充值成功后，自动升级普通用户为开发者

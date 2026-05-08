@@ -822,6 +822,266 @@ def _to_utc_iso_string(dt: datetime) -> Optional[str]:
 
 2026-05-08
 
+---
+
+## 问题二十二：支付宝 return_url 跳转页面空白（前端地址配置问题）
+
+### 问题描述
+
+使用 ngrok 等内网穿透时，支付宝支付成功后跳转回商户页面显示空白。
+
+**原因分析：**
+
+1. 后端 `alipay_return` 接口硬编码了 `frontend_base = "http://localhost:3000"`
+2. 支付宝从外网访问时，`localhost:3000` 无法访问
+3. 导致 return_url 重定向到不存在的地址
+
+### 解决方案
+
+#### 1. 添加前端基础地址配置
+
+**`src/config/settings.py` 新增配置：**
+
+```python
+# 前端配置 - 用于支付宝 return_url 跳转回前端页面
+# 使用 ngrok 等内网穿透时，前端无法直接被外网访问，需要配置此地址
+frontend_base_url: str = "http://localhost:3000"
+```
+
+#### 2. 修改 return_url 处理逻辑
+
+**`src/api/v1/payment.py` 中的 `alipay_return` 函数：**
+
+```python
+from src.config.settings import settings
+
+if settings.frontend_base_url and settings.frontend_base_url != "http://localhost:3000":
+    # 使用配置的前端地址（支持 ngrok、内网穿透、域名等场景）
+    frontend_base = settings.frontend_base_url.rstrip('/')
+else:
+    # 开发模式：从请求头获取原始 Host
+    host = request.headers.get("host", "localhost:3000")
+    scheme = "https" if request.headers.get("x-forwarded-proto") == "https" else "http"
+    frontend_base = f"{scheme}://{host}"
+
+# 重定向到前端充值页面
+redirect_url = f"{frontend_base}/developer/recharge"
+```
+
+### 内网穿透方案对比
+
+| 方案 | 多端口支持 | 免费 | 固定域名 | 推荐度 |
+|------|-----------|------|----------|--------|
+| ngrok 免费版 | ❌ 只支持一个端口 | ✅ | ❌ | ⭐ |
+| ngrok 付费版 | ✅ | ❌ | ✅ | ⭐⭐⭐ |
+| **Cloudflare Tunnel** | ✅ | ✅ | ❌ | ⭐⭐⭐⭐ |
+| Cloudflare Tunnel + 账号 | ✅ | ✅ | ✅ | ⭐⭐⭐⭐⭐ |
+
+### Cloudflare Tunnel 配置步骤
+
+#### 1. 下载 cloudflared
+
+```powershell
+# Windows PowerShell
+irm https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -o cloudflared.exe
+
+# 或使用 winget
+winget install Cloudflare.cloudflared
+```
+
+安装位置：`C:\Program Files (x86)\cloudflared\cloudflared.exe`
+
+#### 2. 同时暴露后端和前端
+
+打开**两个**终端窗口：
+
+```powershell
+# 终端1：暴露后端 API (端口 8000)
+& "C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --url http://localhost:8000
+
+# 终端2：暴露前端页面 (端口 3000)
+& "C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --url http://localhost:3000
+```
+
+每个命令会返回一个 `.trycloudflare.com` 临时地址。
+
+#### 3. 配置 .env 文件
+
+```env
+# 后端 API 的 Cloudflare 地址
+ALIPAY_NOTIFY_URL=https://后端地址.trycloudflare.com/api/v1/payments/alipay/callback
+ALIPAY_RETURN_URL=https://后端地址.trycloudflare.com/api/v1/payments/alipay/return
+
+# 前端页面的 Cloudflare 地址
+FRONTEND_BASE_URL=https://前端地址.trycloudflare.com
+```
+
+#### 4. 重启后端服务
+
+让 `.env` 配置生效。
+
+### 涉及文件
+
+- `src/config/settings.py` - 新增 `frontend_base_url` 配置项
+- `src/api/v1/payment.py` - 修改 `alipay_return` 函数
+- `.env` - 新增 `FRONTEND_BASE_URL` 配置项
+
+### 修复日期
+
+2026-05-08
+
+---
+
+## 问题二十三：支付宝支付成功后无法自动关闭支付宝窗口
+
+### 问题描述
+
+支付成功后，商户希望关闭支付宝的支付页面，但由于浏览器安全策略限制：
+
+- `window.close()` **只能关闭由 JavaScript `window.open()` 创建的窗口**
+- 支付宝的支付页面是由 `alipay.com` 域名打开的，属于外部页面
+- 浏览器的安全策略**禁止**外部脚本关闭其他域名的窗口
+
+### 技术限制
+
+```javascript
+// ❌ 这样无法关闭支付宝页面
+window.close(); // 只能关闭同源窗口
+
+// ✅ 支付宝页面无法被商户代码关闭
+// 这是浏览器安全机制，无法绕过
+```
+
+### 解决方案：postMessage + 专用成功页面
+
+#### 核心原理
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                              支付流程时序图                           │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  商户页面A    │    │  支付宝页面B   │    │  专用成功页C  │    │    用户       │
+│ (window.open)│    │  (支付宝域)   │    │  (商户域)     │    │              │
+└──────┬───────┘    └──────┬───────┘    └──────┬───────┘    └──────┬───────┘
+       │                    │                    │                    │
+       │  window.open()      │                    │                    │
+       │───────────────────>│                    │                    │
+       │                    │                    │                    │
+       │<──── 轮询状态 ──────│                    │                    │
+       │                    │                    │                    │
+       │                    │  用户支付成功        │                    │
+       │                    │───────────────────>│                    │
+       │                    │   跳转 return_url   │                    │
+       │                    │                    │                    │
+       │  postMessage       │                    │                    │
+       │<────────────────────────────────────────│                    │
+       │  {type: 'PAYMENT_SUCCESS', ...}        │                    │
+       │                    │                    │                    │
+       │  window.close()   │                    │                    │
+       │───────────────────>│  关闭B窗口          │                    │
+       │                    │                    │                    │
+       │  location.reload  │                    │                    │
+       │  刷新回到初始界面   │                    │                    │
+       │                    │                    │                    │
+       │                    │                    │  提示关闭此页面      │
+       │                    │                    │<───────────────────│
+       │                    │                    │                    │
+       │                    │                    │  手动关闭页面C      │
+       │                    │                    │───────────────────>│
+       │                    │                    │                    │
+       ▼                    ▼                    ▼                    ▼
+```
+
+#### 方案对比
+
+| 方案 | 能否关闭支付宝窗口 | 实现复杂度 | 用户体验 |
+|------|------------------|-----------|----------|
+| 直接 `window.close()` | ❌ 不能 | 简单 | ❌ 支付宝页面残留 |
+| **postMessage + 提示关闭** | ✅ 提示用户关闭 | 中等 | ✅ 流程完整 |
+
+#### 实现要点
+
+1. **商户原始页面 (A)**：
+   - 使用 `window.open()` 打开支付宝页面
+   - 添加 `message` 事件监听，接收支付成功通知
+   - 收到通知后调用 `window.close()` 关闭支付宝窗口
+   - 刷新页面回到初始状态
+
+2. **支付宝页面 (B)**：
+   - 支付成功后跳转 `return_url` 到商户专用页面
+
+3. **专用成功页面 (C)**：
+   - 接收 `out_trade_no` 参数
+   - 显示支付成功信息（订单号、金额、余额）
+   - 调用 `window.opener.postMessage()` 通知原始窗口
+   - 显示提示信息，引导用户关闭此页面
+
+### 关键代码实现
+
+#### 1. 原始页面添加事件监听
+
+```tsx
+// 在 Recharge.tsx 中添加
+useEffect(() => {
+  // 监听来自成功页面的消息
+  const handleMessage = (event: MessageEvent) => {
+    if (event.data?.type === 'PAYMENT_SUCCESS') {
+      // 关闭支付宝窗口
+      closePayWindow()
+      // 刷新页面回到初始状态
+      window.location.reload()
+    }
+  }
+  
+  window.addEventListener('message', handleMessage)
+  return () => window.removeEventListener('message', handleMessage)
+}, [])
+```
+
+#### 2. 专用成功页面
+
+```tsx
+// src/pages/PaymentSuccess.tsx
+const PaymentSuccess = () => {
+  const [searchParams] = useSearchParams()
+  const outTradeNo = searchParams.get('out_trade_no')
+  
+  useEffect(() => {
+    // 通知 opener 窗口支付成功
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'PAYMENT_SUCCESS',
+        paymentNo: outTradeNo
+      }, '*')
+    }
+  }, [outTradeNo])
+  
+  return (
+    <div>
+      <h1>支付成功</h1>
+      <p>订单号：{outTradeNo}</p>
+      <p>请关闭此页面</p>
+    </div>
+  )
+}
+```
+
+### 涉及文件
+
+- `web/src/pages/developer/Recharge.tsx` - 添加 `message` 事件监听
+- `web/src/pages/PaymentSuccess.tsx` - 新增专用成功页面
+- `web/src/router/index.tsx` - 添加路由配置
+- `src/api/v1/payment.py` - 修改 `return_url` 跳转逻辑
+
+### 修复日期
+
+2026-05-08
+
+
+
+
 
 
 

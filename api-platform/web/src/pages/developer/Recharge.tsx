@@ -108,6 +108,72 @@ export default function DeveloperRecharge() {
 
   // 轮询支付窗口关闭的 interval ID
   const payWindowIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // 【新增】用于跟踪最新的支付状态，避免闭包问题
+  const paymentStateRef = useRef<{
+    currentPayment: Payment | null
+    payModalVisible: boolean
+    paySuccess: boolean
+  }>({ currentPayment: null, payModalVisible: false, paySuccess: false })
+  
+  // 同步 state 到 ref
+  useEffect(() => {
+    paymentStateRef.current = {
+      currentPayment,
+      payModalVisible,
+      paySuccess
+    }
+  }, [currentPayment, payModalVisible, paySuccess])
+  
+  // 【新增】轮询定时器 ref，用于检测支付结果
+  const paymentPollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // 【新增】启动支付结果轮询
+  const startPaymentPoll = () => {
+    // 如果已经有轮询在运行，不再启动
+    if (paymentPollIntervalRef.current) {
+      console.log('[Recharge] 支付结果轮询已在运行，跳过启动')
+      return
+    }
+    
+    console.log('[Recharge] 启动支付结果轮询（每3秒一次）')
+    paymentPollIntervalRef.current = setInterval(() => {
+      const state = paymentStateRef.current
+      
+      // 【关键修复】只要弹窗打开且未成功，就继续轮询
+      // handleRefreshStatus 内部会处理 currentPayment 为空的情况
+      // 它会检查 URL 中的 out_trade_no 参数
+      if (state.payModalVisible && !state.paySuccess) {
+        // 【修复】只有终态才跳过轮询：paid, completed, failed, expired
+        // cancelled 可能是因为超时，但用户可能已经支付，所以继续查询
+        const terminalStatuses = ['paid', 'completed', 'failed', 'expired']
+        if (state.currentPayment && terminalStatuses.includes(state.currentPayment.status)) {
+          console.log('[Recharge] 跳过轮询：订单状态已是终态', state.currentPayment.status)
+          return
+        }
+        
+        console.log('[Recharge] 轮询查询支付状态...（当前状态:', state.currentPayment?.status || '无订单')
+        // 【优化】自动轮询时不显示错误提示，避免干扰用户
+        handleRefreshStatus(false)
+      } else {
+        // 条件不满足，停止轮询
+        console.log('[Recharge] 停止支付结果轮询：条件不满足', {
+          payModalVisible: state.payModalVisible,
+          paySuccess: state.paySuccess
+        })
+        stopPaymentPoll()
+      }
+    }, 3000) // 每 3 秒查询一次
+  }
+  
+  // 【新增】停止支付结果轮询
+  const stopPaymentPoll = () => {
+    if (paymentPollIntervalRef.current) {
+      console.log('[Recharge] 停止支付结果轮询')
+      clearInterval(paymentPollIntervalRef.current)
+      paymentPollIntervalRef.current = null
+    }
+  }
 
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
   
@@ -249,10 +315,15 @@ export default function DeveloperRecharge() {
       }
     } catch (error: any) {
       console.error('支付宝回调处理失败', error)
+      // 【V7.4 修复】不要使用 outTradeNo 作为 payment_no，因为它们是不同的字段
+      // outTradeNo 是 order_no（支付宝商户订单号），不是 payment_no（系统支付单号）
+      // 保存 order_no，让 handleRefreshStatus 可以使用它
       setCurrentPayment({
-        payment_no: outTradeNo,
+        payment_no: '',  // 暂时为空，等刷新时再查询
+        order_no: outTradeNo,  // 保存 order_no
         status: 'pending'
       } as Payment)
+      setPayModalVisible(true)
       message.warning({ content: '查询失败，请点击"刷新状态"按钮确认', key: 'alipayCallback' })
     } finally {
       setIsProcessingCallback(false)
@@ -338,6 +409,231 @@ export default function DeveloperRecharge() {
       return () => clearTimeout(timer)
     }
   }, [countdown, currentPayment])
+
+  // 【V7.4 修复】监听来自支付成功页面的通知
+  useEffect(() => {
+    // 处理 localStorage 变化（跨窗口通信，解决 postMessage 无法触达的问题）
+    const handleStorageChange = (event: StorageEvent) => {
+      console.log('[Recharge] storage 事件触发:', { key: event.key, newValue: event.newValue, url: window.location.href })
+      
+      if (event.key === 'payment_success_result' && event.newValue) {
+        try {
+          const result = JSON.parse(event.newValue)
+          console.log('[Recharge] 解析 payment_success_result 成功:', result)
+          
+          paymentLogger.info('收到支付成功页面关闭通知', {
+            outTradeNo: result.outTradeNo,
+            status: result.status,
+            source: 'localStorage'
+          })
+          
+          // 关闭支付宝支付窗口
+          console.log('[Recharge] 调用 closePayWindow()')
+          closePayWindow()
+          
+          // 设置支付成功状态
+          if (result.status === 'paid' || result.status === 'completed') {
+            console.log('[Recharge] 设置支付成功状态')
+            setCurrentPayment({
+              payment_no: result.outTradeNo,
+              status: 'paid',
+              amount: result.amount,
+            } as Payment)
+            setPaySuccess(true)
+            clearPaymentFromSession()
+            fetchBalance()
+            console.log('[Recharge] 调用 setPayModalVisible(false)')
+            setPayModalVisible(false)
+            console.log('[Recharge] 显示成功消息')
+            message.success('充值成功！')
+          } else {
+            console.log('[Recharge] 支付状态不是成功:', result.status)
+          }
+          
+          // 清除 localStorage 中的记录
+          console.log('[Recharge] 清除 localStorage')
+          localStorage.removeItem('payment_success_result')
+        } catch (error) {
+          console.error('[Recharge] 解析 payment_success_result 失败:', error)
+        }
+      }
+    }
+    
+    // 【新增】检查支付结果的函数（仅处理跳转支付的回调）
+    // 注意：二维码支付使用轮询机制，不需要也不应该处理 localStorage 中的跳转支付结果
+    const checkPaymentResult = () => {
+      // 【关键修复】只有在跳转支付模式下（没有二维码）才处理 localStorage 结果
+      // 二维码支付有独立的轮询机制（startQrcodePolling），不受此影响
+      if (currentPayment?.qr_code) {
+        console.log('[Recharge] checkPaymentResult 跳过：二维码支付模式，无需处理 localStorage')
+        return
+      }
+      
+      try {
+        const resultStr = localStorage.getItem('payment_success_result')
+        if (resultStr) {
+          const result = JSON.parse(resultStr)
+          console.log('[Recharge] checkPaymentResult 检测到支付成功:', result)
+          
+          paymentLogger.info('checkPaymentResult 检测到支付成功', {
+            outTradeNo: result.outTradeNo,
+            status: result.status
+          })
+          
+          // 关闭支付宝支付窗口
+          closePayWindow()
+          
+          // 设置支付成功状态
+          if (result.status === 'paid' || result.status === 'completed') {
+            setCurrentPayment({
+              payment_no: result.outTradeNo,
+              status: 'paid',
+              amount: result.amount,
+            } as Payment)
+            setPaySuccess(true)
+            clearPaymentFromSession()
+            fetchBalance()
+            setPayModalVisible(false)
+            message.success('充值成功！')
+          }
+          
+          // 清除 localStorage
+          localStorage.removeItem('payment_success_result')
+        }
+      } catch (error) {
+        console.error('[Recharge] checkPaymentResult 失败:', error)
+      }
+    }
+    
+    // 【新增】监听窗口获得焦点事件（支付页面关闭后，当前页面会获得焦点）
+    const handleWindowFocus = () => {
+      const state = paymentStateRef.current
+      console.log('[Recharge] 窗口获得焦点，直接查询支付状态')
+      console.log('[Recharge] 当前状态:', { 
+        hasPayment: !!state.currentPayment, 
+        status: state.currentPayment?.status,
+        modalVisible: state.payModalVisible,
+        paySuccess: state.paySuccess
+      })
+      
+      // 【关键修复】使用 ref 获取最新状态，避免闭包问题
+      // 只在弹窗打开、支付未成功、有支付信息时才查询
+      if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
+        if (state.currentPayment.status !== 'paid' && state.currentPayment.status !== 'completed') {
+          console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
+          // 【优化】自动刷新时不显示错误提示
+          handleRefreshStatus(false)
+        } else {
+          console.log('[Recharge] 跳过查询：payment 状态已是', state.currentPayment.status)
+        }
+      } else {
+        console.log('[Recharge] 跳过查询：条件不满足', { 
+          payModalVisible: state.payModalVisible, 
+          paySuccess: state.paySuccess,
+          hasPayment: !!state.currentPayment
+        })
+      }
+    }
+    
+    // 【新增】页面可见性变化时检查（从其他标签页返回时）
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const state = paymentStateRef.current
+        console.log('[Recharge] 页面可见性变为可见，直接查询支付状态')
+        
+        // 【关键修复】使用 ref 获取最新状态
+        if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
+          if (state.currentPayment.status !== 'paid' && state.currentPayment.status !== 'completed') {
+            console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
+            // 【优化】自动刷新时不显示错误提示
+            handleRefreshStatus(false)
+          }
+        }
+      }
+    }
+    
+    // 处理 postMessage（兼容同一窗口的情况）
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data
+      if (!data || typeof data !== 'object') return
+      
+      console.log('[Recharge] 收到 postMessage:', data)
+      
+      // 处理支付成功页面关闭通知
+      if (data.type === 'PAYMENT_SUCCESS_PAGE_CLOSED') {
+        paymentLogger.info('收到支付成功页面关闭通知', {
+          paymentNo: data.paymentNo,
+          isSuccess: data.isSuccess,
+          source: 'postMessage'
+        })
+        
+        closePayWindow()
+        
+        if (data.isSuccess && data.paymentStatus) {
+          setCurrentPayment({
+            payment_no: data.paymentNo,
+            status: 'paid',
+            amount: data.paymentStatus.amount,
+          } as Payment)
+          setPaySuccess(true)
+          clearPaymentFromSession()
+          fetchBalance()
+          setPayModalVisible(false)
+          message.success('充值成功！')
+        } else {
+          setTimeout(() => {
+            window.location.reload()
+          }, 300)
+        }
+        return
+      }
+      
+      // 处理支付成功通知（兼容旧版本）
+      if (data.type === 'PAYMENT_SUCCESS') {
+        paymentLogger.info('收到支付成功通知（兼容模式）', {
+          paymentNo: data.paymentNo,
+          source: 'postMessage'
+        })
+        
+        closePayWindow()
+        setCurrentPayment({
+          payment_no: data.paymentNo,
+          status: 'paid',
+          amount: data.amount,
+        } as Payment)
+        setPaySuccess(true)
+        clearPaymentFromSession()
+        fetchBalance()
+        setPayModalVisible(false)
+        message.success('充值成功！')
+        return
+      }
+      
+      // 处理返回充值页面（兼容旧版本）
+      if (data.type === 'RETURN_TO_RECHARGE') {
+        paymentLogger.info('收到返回充值页面通知', { paymentNo: data.paymentNo })
+        closePayWindow()
+        setTimeout(() => {
+          window.location.reload()
+        }, 300)
+      }
+    }
+    
+    // 监听 localStorage 变化
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('message', handleMessage)
+    // 【新增】监听窗口获得焦点
+    window.addEventListener('focus', handleWindowFocus)
+    // 【新增】监听页面可见性变化
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('message', handleMessage)
+      window.removeEventListener('focus', handleWindowFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [])
 
   const fetchPackages = async () => {
     setLoading(true)
@@ -488,6 +784,9 @@ export default function DeveloperRecharge() {
         // 如果是扫码支付，自动开始轮询
         if (paymentType === 'qrcode' && payment.qr_code) {
           startQrcodePolling(payment.payment_no)
+        } else {
+          // 【新增】跳转支付模式：启动支付结果轮询作为后备
+          startPaymentPoll()
         }
       } catch (error: any) {
         // 如果是支付相关错误，使用友好的错误提示
@@ -546,6 +845,9 @@ export default function DeveloperRecharge() {
         if (paymentType === 'qrcode' && payment.qr_code) {
           console.log('[DEBUG] 调用 startQrcodePolling:', payment.payment_no)
           startQrcodePolling(payment.payment_no)
+        } else {
+          // 【新增】跳转支付模式：启动支付结果轮询作为后备
+          startPaymentPoll()
         }
       } catch (error: any) {
         // 如果是支付相关错误，使用友好的错误提示
@@ -566,57 +868,35 @@ export default function DeveloperRecharge() {
   // 关闭支付宝支付窗口
   const closePayWindow = () => {
     // 【增强】详细记录调用时的窗口句柄状态
-    paymentLogger.info('closePayWindow 被调用', {
-      payWindowRef_exists: !!payWindowRef.current,
-      payWindowRef_closed: payWindowRef.current?.closed,
-      payWindowIntervalRef_exists: !!payWindowIntervalRef.current,
-      payWindowIntervalRef_id: payWindowIntervalRef.current ? 'exists' : null
-    })
+    paymentLogger.info('closePayWindow 被调用')
     
     // 停止轮询
     if (payWindowIntervalRef.current) {
-      paymentLogger.info('closePayWindow 停止轮询', {
-        clearing_interval: true
-      })
       clearInterval(payWindowIntervalRef.current)
       payWindowIntervalRef.current = null
     }
     
     // 关闭窗口
     if (payWindowRef.current) {
-      const windowRef = payWindowRef.current  // 保存引用用于日志
-      paymentLogger.info('closePayWindow 准备关闭支付窗口', {
-        windowRef_exists: !!windowRef,
-        windowRef_closed_before: windowRef.closed,
-        windowRef_location: windowRef.location?.href?.substring(0, 50)
-      })
+      const windowRef = payWindowRef.current
+      paymentLogger.info('closePayWindow 准备关闭支付窗口')
       
       if (!windowRef.closed) {
         try {
           windowRef.close()
-          paymentLogger.info('closePayWindow 窗口已关闭', {
-            windowRef_closed_after: windowRef.closed,
-            windowRef_nullified: payWindowRef.current === null
-          })
         } catch (e) {
-          paymentLogger.error('closePayWindow 关闭窗口失败', e)
+          // 跨域时可能失败，忽略
         }
-      } else {
-        paymentLogger.info('closePayWindow 窗口已被用户关闭（无需重复关闭）')
       }
       payWindowRef.current = null
-      paymentLogger.info('closePayWindow payWindowRef 已置为 null')
     } else {
       paymentLogger.info('closePayWindow 没有支付窗口引用（可能是return_url跳转模式）')
       
-      // 【关键修复】对于 return_url 跳转模式，尝试关闭当前窗口（支付宝付款页面）
-      // 当用户从支付宝 return_url 跳转回来时，当前窗口就是支付宝的付款窗口
+      // 对于 return_url 跳转模式，尝试关闭当前窗口
       try {
-        paymentLogger.info('closePayWindow 尝试关闭当前窗口（return_url跳转模式）')
         window.close()
-        paymentLogger.info('closePayWindow 当前窗口已关闭')
       } catch (e) {
-        paymentLogger.error('closePayWindow 关闭当前窗口失败', e)
+        // 忽略
       }
     }
   }
@@ -847,8 +1127,8 @@ export default function DeveloperRecharge() {
                     clearInterval(payWindowIntervalRef.current)
                     payWindowIntervalRef.current = null
                   }
-                  // 用户关闭了支付窗口，自动刷新支付状态
-                  handleRefreshStatus()
+                  // 用户关闭了支付窗口，自动刷新支付状态（不显示错误提示）
+                  handleRefreshStatus(false)
                 }
               }, 1000)
             } else {
@@ -936,7 +1216,8 @@ export default function DeveloperRecharge() {
                         clearInterval(payWindowIntervalRef.current)
                         payWindowIntervalRef.current = null
                       }
-                      handleRefreshStatus()
+                      // 窗口关闭时自动刷新（不显示错误提示）
+                      handleRefreshStatus(false)
                     }
                   }, 1000)
                 } else {
@@ -964,6 +1245,14 @@ export default function DeveloperRecharge() {
   }
 
   const handlePayModalClose = () => {
+    // 【修复】关闭弹窗时停止所有轮询
+    stopPaymentPoll() // 停止支付结果轮询
+    if (payWindowIntervalRef.current) {
+      clearInterval(payWindowIntervalRef.current)
+      payWindowIntervalRef.current = null
+    }
+    stopQrcodePolling() // 停止扫码轮询
+    
     setPayModalVisible(false)
     setPayError(null)
     clearUrlParams()
@@ -1010,36 +1299,82 @@ export default function DeveloperRecharge() {
     }
   }, [paySuccess])
 
-  const handleRefreshStatus = async () => {
+  // 【V7.4 修复】handleRefreshStatus 支持使用 order_no 查询
+  // 【优化】添加 showError 参数，自动轮询时不显示错误提示，避免干扰用户
+  const handleRefreshStatus = async (showError: boolean = true) => {
     if (!currentPayment) {
-      paymentLogger.warn('handleRefreshStatus 被调用但没有 currentPayment')
+      // 【V7.4 修复】如果 currentPayment 为空，检查 URL 中是否有 out_trade_no
+      const urlOutTradeNo = searchParams.get('out_trade_no')
+      if (urlOutTradeNo) {
+        console.log('[handleRefreshStatus] currentPayment 为空，使用 URL 中的 out_trade_no:', urlOutTradeNo)
+        setCurrentPayment({
+          payment_no: '',
+          order_no: urlOutTradeNo,
+          status: 'pending'
+        } as Payment)
+      } else {
+        paymentLogger.warn('handleRefreshStatus 被调用但没有 currentPayment')
+        // 【优化】只有明确需要显示错误时才提示
+        if (showError) {
+          message.error('没有支付信息')
+        }
+        return
+      }
+    }
+    
+    // 【V7.4 修复】优先使用 payment_no，如果为空则使用 order_no
+    const queryKey = currentPayment.payment_no || currentPayment.order_no
+    if (!queryKey) {
+      paymentLogger.warn('handleRefreshStatus 既没有 payment_no 也没有 order_no')
+      message.error('缺少查询参数')
       return
     }
+    
     paymentLogger.info('handleRefreshStatus 开始', { 
       payment_no: currentPayment.payment_no,
-      current_status: currentPayment.status
+      order_no: currentPayment.order_no,
+      current_status: currentPayment.status,
+      queryKey: queryKey,
+      showError: showError
     })
     try {
-      const status = await paymentApi.getPaymentStatus(currentPayment.payment_no)
+      const status = await paymentApi.getPaymentStatus(queryKey)
       paymentLogger.info('handleRefreshStatus 查询结果', { 
-        payment_no: currentPayment.payment_no,
+        queryKey: queryKey,
         status: status.status
       })
-      setCurrentPayment({ ...currentPayment, status: status.status as any })
+      
+      // 【调试】自动轮询时打印更多状态信息
+      if (!showError) {
+        console.log('[handleRefreshStatus] 自动轮询结果:', {
+          queryKey: queryKey,
+          status: status.status,
+          isPending: status.status === 'pending',
+          isSuccess: status.status === 'paid' || status.status === 'completed'
+        })
+      }
+      // 【V7.4 修复】更新 payment_no（如果之前为空）
+      const updatedPayment = {
+        ...currentPayment,
+        payment_no: status.payment_no || currentPayment.payment_no,
+        status: status.status as any
+      }
+      setCurrentPayment(updatedPayment)
       // 同时检查 'paid' 和 'completed' 状态
       if (status.status === 'paid' || status.status === 'completed') {
-        paymentLogger.info('handleRefreshStatus 检测到支付成功', { 
-          payment_no: currentPayment.payment_no,
+        paymentLogger.info('handleRefreshStatus 检测到支付成功', {
+          payment_no: updatedPayment.payment_no,
           status: status.status
         })
         closePayWindow()  // 关闭支付宝支付窗口
+        stopPaymentPoll()  // 【新增】停止支付结果轮询
         setPayModalVisible(false)  // 【关键修复】关闭商户平台支付弹窗
         paymentLogger.info('handleRefreshStatus 已关闭弹窗')
         clearPaymentFromSession()
         setPaySuccess(true)
         fetchBalance()  // 获取最新余额
         message.success('支付成功！正在刷新页面...')
-        
+
         // 【关键修复】支付成功后立即刷新整个页面，确保所有状态同步
         setTimeout(() => {
           paymentLogger.info('handleRefreshStatus 触发页面刷新')
@@ -1048,7 +1383,17 @@ export default function DeveloperRecharge() {
       }
       // 不重置倒计时，让订单有效期自然倒数
     } catch (error: any) {
-      message.error('查询失败')
+      // 【调试】记录自动轮询的错误详情
+      console.error('[handleRefreshStatus] 查询失败:', {
+        queryKey: queryKey,
+        showError: showError,
+        error: error?.message || error
+      })
+      paymentLogger.error('handleRefreshStatus 查询失败', { queryKey: queryKey, error })
+      // 【优化】只有明确需要显示错误时才提示
+      if (showError) {
+        message.error('查询失败')
+      }
     }
   }
 

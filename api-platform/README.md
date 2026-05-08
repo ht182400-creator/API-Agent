@@ -221,6 +221,109 @@ api-platform/
 | `/v1/admin/logs/backups` | GET | 获取备份文件列表 |
 | `/v1/admin/logs/config` | GET/PUT | 日志备份配置 |
 
+## 外网穿透配置
+
+本地开发时，需要将服务暴露到公网以便测试 Webhook、支付回调等功能。
+
+### 推荐方案：ngrok（后端）+ Cloudflare Tunnel（前端）
+
+本项目采用双隧道方案：
+- **ngrok**：暴露后端 API（端口 8000），提供稳定的固定 URL
+- **Cloudflare Tunnel**：暴露前端（端口 3000），使用 http2 协议保持稳定性
+
+### 1. ngrok 配置（后端 8000）
+
+#### 安装配置
+
+1. 下载安装：https://ngrok.com/download
+2. 注册账号获取 authtoken：https://dashboard.ngrok.com
+3. 创建配置文件 `ngrok.yml`：
+
+```yaml
+version: "3"
+authtoken: YOUR_AUTHTOKEN
+
+tunnels:
+  backend:
+    addr: 8000
+    proto: http
+```
+
+#### 启动后端隧道
+
+```bash
+ngrok start --config=ngrok.yml backend
+```
+
+ngrok 会提供固定的后端 URL，例如：
+```
+https://xxxxxxxx.ngrok-free.dev -> http://localhost:8000
+```
+
+### 2. Cloudflare Tunnel 配置（前端 3000）
+
+#### 安装 cloudflared
+
+参考：https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/
+
+#### 启动前端隧道
+
+```bash
+cloudflared tunnel --url http://localhost:3000 --protocol http2
+```
+
+⚠️ **重要**：Cloudflare Tunnel 每次重启都会生成新的随机 URL！
+
+启动后显示的 URL：
+```
+https://xxxxxxxx.trycloudflare.com
+```
+
+### 3. 环境变量配置
+
+> ⚠️ **注意**：Cloudflare Tunnel URL 每次启动都会变化，每次启动后需要手动更新 `.env` 文件中的前端 URL！
+
+启动 Cloudflare Tunnel 后，复制新的 URL 并更新 `.env`：
+
+```env
+# ============================================
+# 前端配置 (用于支付宝 return_url 跳转)
+# ============================================
+# Cloudflare Tunnel 前端地址（每次启动 cloudflared 后需要更新）
+FRONTEND_BASE_URL=https://xxxxxxxx.trycloudflare.com
+
+# 支付宝回调地址（使用 ngrok 提供的后端固定地址）
+ALIPAY_NOTIFY_URL=https://xxxxxxxx.ngrok-free.dev/api/v1/payments/alipay/callback
+ALIPAY_RETURN_URL=https://xxxxxxxx.ngrok-free.dev/api/v1/payments/alipay/return
+```
+
+### 4. 启动流程
+
+```bash
+# 1. 启动后端服务
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+
+# 2. 启动前端服务
+cd web && npm run dev
+
+# 3. 启动 ngrok（后端，固定 URL）
+ngrok start --config=ngrok.yml backend
+
+# 4. 启动 Cloudflare Tunnel（前端，每次 URL 不同）
+cloudflared tunnel --url http://localhost:3000 --protocol http2
+
+# 5. 更新 .env 中的 FRONTEND_BASE_URL 为新的 Cloudflare URL
+
+# 6. 重启后端服务以加载新的环境变量
+```
+
+### 注意事项
+
+- 临时 URL 在关闭终端后会失效
+- 免费版 ngrok 同一子域名只能映射一个端口
+- 如需固定 URL，需配置正式账号的命名隧道
+- 修改 `.env` 后需要重启后端服务
+
 ## 开发指南
 
 ### 代码规范

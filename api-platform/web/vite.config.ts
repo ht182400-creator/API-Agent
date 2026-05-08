@@ -31,6 +31,10 @@ export default defineConfig(async () => {
       port,
       host: '0.0.0.0',
       onPortWarn: () => {},  // 禁用默认端口警告
+      // 允许外部访问的域名（Cloudflare Tunnel 等内网穿透）
+      allowedHosts: true,  // 允许所有主机
+      // 禁用 HMR（Cloudflare Tunnel 下 WebSocket 有问题）
+      hmr: false,
       // API 代理配置
       proxy: {
         '/api': {
