@@ -433,19 +433,30 @@ export default function DeveloperRecharge() {
           
           // 设置支付成功状态
           if (result.status === 'paid' || result.status === 'completed') {
-            console.log('[Recharge] 设置支付成功状态')
-            setCurrentPayment({
-              payment_no: result.outTradeNo,
-              status: 'paid',
-              amount: result.amount,
-            } as Payment)
-            setPaySuccess(true)
-            clearPaymentFromSession()
-            fetchBalance()
-            console.log('[Recharge] 调用 setPayModalVisible(false)')
-            setPayModalVisible(false)
-            console.log('[Recharge] 显示成功消息')
-            message.success('充值成功！')
+            // 二维码支付模式：显示小消息并关闭弹窗
+            if (currentPayment?.qr_code) {
+              console.log('[Recharge] 二维码支付成功，显示小消息')
+              setCurrentPayment({
+                payment_no: result.outTradeNo,
+                status: 'paid',
+                amount: result.amount,
+              } as Payment)
+              clearPaymentFromSession()
+              fetchBalance()
+              setPayModalVisible(false)
+              message.success('充值成功！')
+            } else {
+              // 跳转支付模式：显示大界面（不关闭弹窗）
+              console.log('[Recharge] 跳转支付成功，显示大界面')
+              setCurrentPayment({
+                payment_no: result.outTradeNo,
+                status: 'paid',
+                amount: result.amount,
+              } as Payment)
+              setPaySuccess(true)  // 显示大界面
+              clearPaymentFromSession()
+              fetchBalance()
+            }
           } else {
             console.log('[Recharge] 支付状态不是成功:', result.status)
           }
@@ -570,16 +581,31 @@ export default function DeveloperRecharge() {
         closePayWindow()
         
         if (data.isSuccess && data.paymentStatus) {
-          setCurrentPayment({
-            payment_no: data.paymentNo,
-            status: 'paid',
-            amount: data.paymentStatus.amount,
-          } as Payment)
-          setPaySuccess(true)
-          clearPaymentFromSession()
-          fetchBalance()
-          setPayModalVisible(false)
-          message.success('充值成功！')
+          const state = paymentStateRef.current
+          // 二维码支付模式：显示小消息并关闭弹窗
+          if (state.currentPayment?.qr_code) {
+            console.log('[Recharge] postMessage 二维码支付成功，显示小消息')
+            setCurrentPayment({
+              payment_no: data.paymentNo,
+              status: 'paid',
+              amount: data.paymentStatus.amount,
+            } as Payment)
+            clearPaymentFromSession()
+            fetchBalance()
+            setPayModalVisible(false)
+            message.success('充值成功！')
+          } else {
+            // 跳转支付模式：显示大界面（不关闭弹窗）
+            console.log('[Recharge] postMessage 跳转支付成功，显示大界面')
+            setCurrentPayment({
+              payment_no: data.paymentNo,
+              status: 'paid',
+              amount: data.paymentStatus.amount,
+            } as Payment)
+            setPaySuccess(true)
+            clearPaymentFromSession()
+            fetchBalance()
+          }
         } else {
           setTimeout(() => {
             window.location.reload()
@@ -596,16 +622,31 @@ export default function DeveloperRecharge() {
         })
         
         closePayWindow()
-        setCurrentPayment({
-          payment_no: data.paymentNo,
-          status: 'paid',
-          amount: data.amount,
-        } as Payment)
-        setPaySuccess(true)
-        clearPaymentFromSession()
-        fetchBalance()
-        setPayModalVisible(false)
-        message.success('充值成功！')
+        const state = paymentStateRef.current
+        // 二维码支付模式：显示小消息并关闭弹窗
+        if (state.currentPayment?.qr_code) {
+          console.log('[Recharge] postMessage PAYMENT_SUCCESS 二维码支付成功，显示小消息')
+          setCurrentPayment({
+            payment_no: data.paymentNo,
+            status: 'paid',
+            amount: data.amount,
+          } as Payment)
+          clearPaymentFromSession()
+          fetchBalance()
+          setPayModalVisible(false)
+          message.success('充值成功！')
+        } else {
+          // 跳转支付模式：显示大界面（不关闭弹窗）
+          console.log('[Recharge] postMessage PAYMENT_SUCCESS 跳转支付成功，显示大界面')
+          setCurrentPayment({
+            payment_no: data.paymentNo,
+            status: 'paid',
+            amount: data.amount,
+          } as Payment)
+          setPaySuccess(true)
+          clearPaymentFromSession()
+          fetchBalance()
+        }
         return
       }
       
@@ -1364,22 +1405,36 @@ export default function DeveloperRecharge() {
       if (status.status === 'paid' || status.status === 'completed') {
         paymentLogger.info('handleRefreshStatus 检测到支付成功', {
           payment_no: updatedPayment.payment_no,
-          status: status.status
+          status: status.status,
+          isQrcode: !!currentPayment?.qr_code
         })
         closePayWindow()  // 关闭支付宝支付窗口
-        stopPaymentPoll()  // 【新增】停止支付结果轮询
-        setPayModalVisible(false)  // 【关键修复】关闭商户平台支付弹窗
-        paymentLogger.info('handleRefreshStatus 已关闭弹窗')
+        stopPaymentPoll()  // 停止支付结果轮询
         clearPaymentFromSession()
-        setPaySuccess(true)
         fetchBalance()  // 获取最新余额
-        message.success('支付成功！正在刷新页面...')
-
-        // 【关键修复】支付成功后立即刷新整个页面，确保所有状态同步
-        setTimeout(() => {
-          paymentLogger.info('handleRefreshStatus 触发页面刷新')
-          window.location.reload()
-        }, 800)
+        
+        // 【跳转支付专用逻辑】显示大界面，不关闭弹窗
+        if (!currentPayment?.qr_code) {
+          console.log('[handleRefreshStatus] 跳转支付成功，显示大界面')
+          setPaySuccess(true)  // 显示大界面
+          message.success('支付成功！正在刷新页面...')
+          // 5秒后自动刷新
+          setTimeout(() => {
+            if (paymentStateRef.current.paySuccess) {
+              window.location.reload()
+            }
+          }, 5000)
+        } else {
+          // 二维码支付走独立逻辑，这里不应该被调用
+          // 但以防万一，还是关闭弹窗刷新
+          console.log('[handleRefreshStatus] 二维码支付被意外调用，关闭弹窗')
+          setPayModalVisible(false)
+          setPaySuccess(true)
+          message.success('支付成功！正在刷新页面...')
+          setTimeout(() => {
+            window.location.reload()
+          }, 800)
+        }
       }
       // 不重置倒计时，让订单有效期自然倒数
     } catch (error: any) {
@@ -1851,7 +1906,7 @@ export default function DeveloperRecharge() {
             <Divider />
 
             {/* 扫码支付：显示二维码 */}
-            {currentPayment?.qr_code ? (
+            {currentPayment?.qr_code && currentPayment.qr_code.length > 0 ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <Alert 
                   type="info" 
@@ -1930,7 +1985,7 @@ export default function DeveloperRecharge() {
             </div>
 
             <Text type="secondary" className={styles.hint}>
-              {currentPayment?.qr_code 
+              {currentPayment?.qr_code && currentPayment.qr_code.length > 0
                 ? '提示：支付完成后请耐心等待，系统将自动确认'
                 : '提示：支付完成后请点击"刷新状态"确认支付结果'}
             </Text>
