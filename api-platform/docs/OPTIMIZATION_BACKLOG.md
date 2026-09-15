@@ -941,7 +941,43 @@ OwnerServer/users.db                            ← 用户数据库
 - **唯一止损手段是轮换支付宝密钥**（在支付宝开放平台重新生成密钥对并更新部署配置）——清理历史无法收回已克隆者手里的私钥。
 - 彻底清理需重写历史（`git filter-repo` 移除 `keys/` 与 `node_modules`）：会变更**所有 commit hash**、
   需 `push --force`、协作者要重新 clone → **破坏性操作，待用户批准后执行**。
-- `.git` 体积 37.7MB，主因是历史中 **9 个 `node_modules` 提交**，同样只能靠重写历史缩小。
+- `.git` 体积重写前实测 **70.8MB**，主因是历史中 **9 个 `node_modules` 提交**（此前记录的 37.7MB 只统计了部分目录）。
+
+**5. 历史重写已执行（2026-09-15，用户授权）**
+
+工具：`git-filter-repo 2.47.0`（`pip install git-filter-repo`；本机 `git filter-repo` **不在 PATH**，改用 `python -m git_filter_repo` 调用）。
+
+```bash
+# 前置①：工作树必须干净 → 先提交基线快照
+# 前置②：备份（写入已被忽略的目录）→ git clone --mirror . .codebuddy/git-mirror-backup.git
+python -m git_filter_repo --force --invert-paths \
+    --path-glob '*node_modules*' \
+    --path 'api-platform/keys' \
+    --path 'OwnerServer/users.db'
+# filter-repo 出于安全会移除 remote → 需恢复
+git remote add origin https://github.com/ht182400-creator/API-Agent.git
+```
+
+**结果**：
+
+| 指标 | 重写前 | 重写后 |
+|------|--------|--------|
+| `.git` 体积 | **70.8 MB** | **4.4 MB**（-94%） |
+| 提交数 | 23 | 23（历史完整保留，hash 全变） |
+| 历史中 `node_modules` 提交 | 9 | **0** |
+| 历史中密钥 / `users.db` | 有（`.pem`×3、`users.db`） | **0** |
+| 工作区磁盘文件 | — | 全部保留（`keys/`、`users.db` 未被删） |
+
+**验证**：`git fsck` 无报错；后端 **269 passed**；前端单测 **35 passed** + `tsc --noEmit` 通过；
+回滚依据保留在 `.git/filter-repo/`（`commit-map` 记录旧→新 hash 映射）。
+
+**⚠️ 未执行的收尾（需人工决策）**：
+1. **远端未同步** —— GitHub 上仍是旧历史（含 node_modules 与密钥），需 `git push --force`。
+   本机 HTTPS 不通，实际命令：
+   `git push git@github.com:ht182400-creator/API-Agent.git main --force`
+   —— **破坏性操作（覆盖远端历史），未擅自执行**。
+2. **即便 force push，旧对象在 GitHub 侧仍可能短期可访问** → **支付宝密钥轮换仍是唯一的止损手段**（待人工）。
+3. 本地备份 `.codebuddy/git-mirror-backup.git`（约 70MB）确认无误后可自行删除。
 
 ## 3. 待办项详细计划
 
