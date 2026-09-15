@@ -96,3 +96,36 @@ logs/
 
 # Local configuration
 config/.env
+
+# ============================================================
+# 密钥 / 证书 / 敏感文件（严禁提交到版本库）
+# ------------------------------------------------------------
+# 背景：支付宝私钥等曾以 keys/*.pem 形式被误提交，
+#       已被 git rm --cached 移出索引（本地文件保留）。
+#       请在克隆/部署后自行放置密钥文件。
+# ============================================================
+keys/
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# 环境变量文件（保留模板 .env.example）
+.env
+.env.*
+!.env.example
+!*.env.example
+
+# 本地数据库文件（SQLite 等）
+*.db
+*.sqlite
+*.sqlite3
+
+# 测试 / 调试产物
+pytest_run.txt
+diag*.txt
+final_test.txt
+test_run_output.txt
