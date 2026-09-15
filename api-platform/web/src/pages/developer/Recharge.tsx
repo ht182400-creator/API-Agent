@@ -1397,7 +1397,10 @@ export default function DeveloperRecharge() {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" tip="加载套餐列表..." />
+        {/* ⚠️ antd 的 `tip` 只在嵌套/全屏模式生效，单独使用 <Spin tip /> 时文字不会显示
+            （antd 会告警且用户看不到任何说明）→ 改为自行渲染文字 */}
+        <Spin size="large" />
+        <div style={{ marginTop: 12, color: '#666' }}>加载套餐列表...</div>
       </div>
     )
   }
@@ -1618,7 +1621,9 @@ export default function DeveloperRecharge() {
       >
         {isProcessingCallback ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <Spin size="large" tip="正在确认支付结果，请稍候..." />
+            {/* ⚠️ 同上：Spin 的 tip 单独使用不显示 → 自行渲染 */}
+            <Spin size="large" />
+            <div style={{ marginTop: 12, color: '#666' }}>正在确认支付结果，请稍候...</div>
           </div>
         ) : paySuccess ? (
           // 成功界面已抽为展示组件 ./recharge/components/PaySuccessView

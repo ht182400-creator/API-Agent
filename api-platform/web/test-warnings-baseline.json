@@ -8,15 +8,19 @@
     "已消除的种类（不应再出现，出现即拦截）：",
     "  - antd: Modal.destroyOnClose deprecated（原 108 条）",
     "  - antd: Card.bordered deprecated（原 28 条）",
+    "  - react-router: future flag（原 16 条）",
+    "  - antd: Spin.tip misuse（原 16 条）",
     "  - antd: Card.bodyStyle deprecated（原 8 条）",
     "  - react: duplicate keys（原 4 条）",
-    "累计已消除：148 条"
+    "  - rc-collapse: children deprecated（原 2 条）",
+    "累计已消除：182 条（458 → 276）",
+    "",
+    "剩余两类中：",
+    "  - jsdom getComputedStyle 属环境限制（jsdom 未实现伪元素），无法根治，只能接受；",
+    "  - act 警告属测试质量问题，是下一阶段重点（消除它可能暴露被掩盖的真实问题）。"
   ],
   "counts": {
-    "act: update not wrapped in act": 221,
-    "jsdom: getComputedStyle pseudo-elements": 61,
-    "react-router: future flag": 16,
-    "antd: Spin.tip misuse": 16,
-    "rc-collapse: children deprecated": 2
+    "act: update not wrapped in act": 223,
+    "jsdom: getComputedStyle pseudo-elements": 61
   }
 }

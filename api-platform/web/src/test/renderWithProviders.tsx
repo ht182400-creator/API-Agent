@@ -43,7 +43,12 @@ export function renderWithProviders(
   )
 
   return render(
-    <MemoryRouter initialEntries={[route]}>
+    // ⚠️ 与 main.tsx 的 BrowserRouter 保持一致的 future flags：
+    //    否则每次渲染都会刷两条 React Router Future Flag 警告（实测 16 条）。
+    <MemoryRouter
+      initialEntries={[route]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
       <ErrorProvider>{wrapped}</ErrorProvider>
     </MemoryRouter>,
     options

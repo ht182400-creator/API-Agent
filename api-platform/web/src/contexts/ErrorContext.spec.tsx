@@ -184,7 +184,7 @@ describe('ErrorProvider 组件级行为', () => {
     }
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ErrorProvider>
           <Probe />
         </ErrorProvider>
@@ -208,7 +208,7 @@ describe('ErrorProvider 组件级行为', () => {
     }
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ErrorProvider>
           <Probe />
         </ErrorProvider>

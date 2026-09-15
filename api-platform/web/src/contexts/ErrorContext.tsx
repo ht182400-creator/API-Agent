@@ -18,7 +18,7 @@ import { useAuthStore } from '../stores/auth'
 import { logger, LogLevel } from '../utils/logger'
 
 const { Text, Paragraph } = Typography
-const { Panel } = Collapse
+// 注：原先的 `const { Panel } = Collapse` 已移除 —— Collapse 改用 items 后不再需要
 
 // 错误类型枚举
 export enum ErrorType {
@@ -356,33 +356,43 @@ export function ErrorProvider({ children }: ErrorProviderProps) {
 
               {/* 详细信息（可折叠） */}
               {import.meta.env.DEV && errorModal.details && (
-                <Collapse ghost size="small">
-                  <Panel header="详细信息（开发模式）" key="details">
-                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        时间: {errorModal.details.timestamp}
-                      </Text>
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        URL: {errorModal.details.method?.toUpperCase()} {errorModal.details.url}
-                      </Text>
-                      {errorModal.details.status && (
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          状态码: {errorModal.details.status}
-                        </Text>
-                      )}
-                      {errorModal.details.code && (
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          错误码: {errorModal.details.code}
-                        </Text>
-                      )}
-                      {errorModal.details.requestId && (
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          请求ID: {errorModal.details.requestId}
-                        </Text>
-                      )}
-                    </Space>
-                  </Panel>
-                </Collapse>
+                // ⚠️ Collapse 的 children（<Panel>）写法已在 antd v5 废弃 → 改用 items
+                <Collapse
+                  ghost
+                  size="small"
+                  items={[
+                    {
+                      key: 'details',
+                      // ⚠️ Collapse 的 items 用 `label`（不是 `header`，那是 Panel 时代的属性）
+                      label: '详细信息（开发模式）',
+                      children: (
+                        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            时间: {errorModal.details.timestamp}
+                          </Text>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            URL: {errorModal.details.method?.toUpperCase()} {errorModal.details.url}
+                          </Text>
+                          {errorModal.details.status && (
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              状态码: {errorModal.details.status}
+                            </Text>
+                          )}
+                          {errorModal.details.code && (
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              错误码: {errorModal.details.code}
+                            </Text>
+                          )}
+                          {errorModal.details.requestId && (
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              请求ID: {errorModal.details.requestId}
+                            </Text>
+                          )}
+                        </Space>
+                      ),
+                    },
+                  ]}
+                />
               )}
 
               {/* 操作按钮 */}

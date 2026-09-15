@@ -9,7 +9,7 @@
  *
  * 手法：
  *   - mock `src/api/adminAnalytics`（本组件唯一数据源），不启动后端；
- *   - 用 `<MemoryRouter>` 包裹（组件内调用 `useNavigate`），不 mock react-router；
+ *   - 用 `<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>` 包裹（组件内调用 `useNavigate`），不 mock react-router；
  *   - recharts 在 jsdom 下容器宽高为 0（不实际绘制图表）属预期，只断言容器与文案。
  *
  * 用例编号：TC-FE-ANA-001 ~ TC-FE-ANA-004
@@ -71,7 +71,7 @@ const repoDetails = {
 
 function renderPage() {
   return render(
-    <MemoryRouter>
+    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Analytics />
     </MemoryRouter>
   )
