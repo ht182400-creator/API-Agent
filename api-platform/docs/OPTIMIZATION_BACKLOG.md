@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 ✅；前端 3/4 ✅ | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1744、`owner/Repos.tsx` 1059→813；剩 `admin/Repos.tsx`(924) 见 §3.1 |
+| P1-4 | 巨型文件 | P1 | ✅ 后端 4/4 + 前端 4/4 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端全部完成（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1744、`owner/Repos.tsx` 1059→813、`admin/Repos.tsx` 924→589 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1106,7 +1106,7 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 | `developer/Recharge.tsx` | 2001 → **1744** | 7 个 / 566 行 |
 | `admin/Analytics.tsx` | 964 → **477**（**减半**） | 5 个（含复用）/ 652 行 |
 | `owner/Repos.tsx` | 1059 → **813** | 3 个 / 394 行 |
-| `admin/Repos.tsx` | 924（未开始） | — |
+| `admin/Repos.tsx` | 924 → **589** | 1 个 / 402 行（`repos/repoColumns.tsx`：双表格列定义工厂 + `getStatusTag`） |
 
 **已抽出模块**：
 
