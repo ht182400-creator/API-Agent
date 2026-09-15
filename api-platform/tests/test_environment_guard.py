@@ -432,6 +432,83 @@ class TestBillingEnvironmentDefaultAndGuard:
         assert body["is_production"] == global_settings.is_production
 
 
+# ==================== 6.1 对账环境隔离（数据库记录级） ====================
+
+
+class TestReconciliationEnvironmentIsolation:
+    """
+    验证对账模块的「本地交易查询」只统计当前环境的账单。
+
+    对应改造：admin_reconciliation / reconciliation_scheduler 的 Bill 查询
+    统一追加 ``env_match(Bill.environment, current_environment())`` ——
+    生产对账不混入 simulation 账单（反之亦然），避免历史混合数据污染对账口径。
+    """
+
+    @pytest.mark.asyncio
+    async def test_reconciliation_conditions_filter_other_environment(
+        self, db_session, test_user
+    ):
+        """TC-ENV-027: 同窗口同渠道两笔账单（当前环境 + 另一环境），对账条件只命中当前环境"""
+        import uuid as _uuid
+        from datetime import timedelta
+
+        from sqlalchemy import and_, select
+
+        from src.models.billing import Bill
+        from src.utils.time_range import cst_day_range_utc_from_date, cst_now
+
+        today = cst_now().date()
+        day_start, day_end = cst_day_range_utc_from_date(today)
+
+        current = current_environment()
+        other = "production" if current == "simulation" else "simulation"
+
+        # 模拟对账场景的"本地充值"：同渠道、同状态、同窗口，仅 environment 不同
+        for env in (current, other):
+            db_session.add(
+                Bill(
+                    user_id=test_user.id,
+                    bill_no=f"TEST_RECON_{env}_{_uuid.uuid4().hex[:8]}",
+                    bill_type="recharge",
+                    amount="100.0",
+                    balance_before="0",
+                    balance_after="100.0",
+                    payment_method="alipay",
+                    status="completed",
+                    environment=env,
+                    created_at=day_start + timedelta(hours=5),
+                )
+            )
+        await db_session.commit()
+
+        # 与 admin_reconciliation / reconciliation_scheduler 相同的对账查询条件
+        conditions = [
+            Bill.created_at >= day_start,
+            Bill.created_at < day_end,
+            Bill.bill_type == "recharge",
+            Bill.payment_method == "alipay",
+            Bill.status == "completed",
+            env_match(Bill.environment, current),
+        ]
+        rows = (
+            await db_session.execute(select(Bill).where(and_(*conditions)))
+        ).scalars().all()
+
+        assert len(rows) == 1
+        assert rows[0].environment == current
+
+    def test_generate_bill_no_format(self):
+        """TC-ENV-028: generate_bill_no 存活回归（死代码清理后唯一保留的 billing_service 出口）"""
+        from src.services.billing_service import generate_bill_no
+
+        bill_no = generate_bill_no()
+
+        assert bill_no.startswith("BILL")
+        assert len(bill_no) == 4 + 14 + 6  # 前缀 + UTC 时间戳 + 6 位随机
+        assert bill_no[4:18].isdigit()     # 时间戳段全数字
+        assert bill_no[18:].isdigit()      # 随机段全数字
+
+
 # ==================== 7. 分库护栏（环境 ↔ 数据库 一致性） ====================
 
 class TestDatabaseSeparationGuard:

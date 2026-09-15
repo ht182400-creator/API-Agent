@@ -64,7 +64,7 @@ if not _ALLOW_NON_TEST_DATABASE and "test" not in _TEST_DB_NAME.lower():
 
 # 让被测应用使用测试库（src/config/database.py 读取 settings.database_url）
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
-os.environ["REDIS_URL"] = "redis://localhost:6379/0"
+os.environ["REDIS_URL"] = "redis://:redis123@127.0.0.1:6379/1"
 
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -84,7 +84,13 @@ async def test_engine():
     """Create test database engine"""
     from sqlalchemy.ext.asyncio import create_async_engine
     from src.config.database import Base
-    
+
+    # ⚠️ 必须在 create_all 之前**显式**注册全部模型：
+    #    Base.metadata 只包含"已被 import"的模型。此前依赖测试模块的 import 副作用
+    #    （收集阶段碰巧 import 了 src.main / models），单跑某个新测试文件时
+    #    可能只建出部分表 → 用例报"关系不存在"（2026-09-15 发现）。
+    import src.models  # noqa: F401
+
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     
     async with engine.begin() as conn:

@@ -4,7 +4,7 @@ import uuid
 from src.utils.helpers import get_utc_now
 from typing import Optional
 
-from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, BigInteger, ForeignKey
+from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, BigInteger, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 
@@ -237,6 +237,10 @@ class RepoStats(Base):
     """Repository stats model - 仓库统计表（按小时聚合）"""
 
     __tablename__ = "repo_stats"
+    # 【P1-6】幂等聚合的唯一维度：同一仓库同一小时至多一行（重复执行聚合覆盖而非新增）
+    __table_args__ = (
+        UniqueConstraint("repo_id", "stat_hour", name="uq_repo_stats_repo_hour"),
+    )
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     repo_id = Column(UUID(as_uuid=True), ForeignKey("repositories.id", ondelete="CASCADE"), nullable=False)
@@ -272,3 +276,31 @@ class RepoStats(Base):
 
     def __repr__(self):
         return f"<RepoStats {self.repo_id}:{self.stat_hour}>"
+
+
+class StatsAggregationState(Base):
+    """
+    统计聚合水位表（P1-6 阶段 2）—— 单行，记录 ``repo_stats`` **连续聚合**到的排他上界（UTC 整点）。
+
+    为什么必须有水位：
+        ``repo_stats`` 只对「该小时确实有调用」的 (repo, hour) 写入行，
+        无调用的小时**不会**产生行。因此表内 ``max(stat_hour)`` 无法证明"中间小时都聚合过"：
+        服务停机数日后重新聚合，新行会让 ``max(stat_hour)`` 直接跳到最新，
+        中间的聚合空洞在读侧完全不可见 → 直接求和会**静默漏算**。
+        读侧"预聚合优先"必须依赖一个显式水位，才能保证数值与实时查询完全一致。
+
+    语义：
+        ``aggregated_until`` 表示 **[日志起点, aggregated_until) 已全部聚合完毕**。
+        读侧据此把查询窗口拆成「预聚合段」+「实时兜底段」。
+    """
+
+    __tablename__ = "stats_aggregation_state"
+
+    # 固定单行（恒为 1），避免多行状态不一致
+    id = Column(Integer, primary_key=True)
+    # 已连续聚合到的排他上界（UTC 整点）
+    aggregated_until = Column(DateTime(timezone=True), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
+
+    def __repr__(self):
+        return f"<StatsAggregationState until={self.aggregated_until}>"

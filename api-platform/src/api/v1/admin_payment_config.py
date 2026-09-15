@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from src.config.database import get_db
+from src.config.settings import settings
 from src.models.system_config import SystemConfig
 from src.schemas.response import BaseResponse
 from src.services.auth_service import get_current_admin_user
@@ -150,18 +151,11 @@ async def get_payment_config_status(
     
     返回各支付渠道的启用状态和配置状态
     """
-    # 获取支付模式
-    mock_mode_result = await db.execute(
-        select(SystemConfig).where(
-            SystemConfig.category == "payment",
-            SystemConfig.key == "mock_mode"
-        )
-    )
-    mock_mode = True
-    if mock_mode_result:
-        mock_config = mock_mode_result.scalar_one_or_none()
-        if mock_config:
-            mock_mode = parse_bool_config(mock_config.value)
+    # 【双源收敛】支付模式唯一权威源 = settings.payment_mock_mode（.env 的 PAYMENT_MOCK_MODE）
+    # 原实现读 system_configs("payment","mock_mode") —— 与实际支付行为（payment.py 读 settings）
+    # 脱节：管理后台改了不生效；且本接口与 GET /detail 读取的 key 还不一致
+    #（"mock_mode" vs "payment.mock_mode"），同库两行可能给出不同答案。
+    mock_mode = settings.payment_mock_mode
     
     channels = []
     
@@ -219,8 +213,8 @@ async def get_payment_config_detail(
     
     注意：私钥等敏感信息会被脱敏显示
     """
-    # 获取支付模式
-    mock_mode = parse_bool_config(await get_config_value(db, "payment.mock_mode"))
+    # 【双源收敛】显示实际生效值（settings），而非 DB 镜像 —— 与 GET /status 口径一致
+    mock_mode = settings.payment_mock_mode
     
     # 支付宝配置
     alipay = AlipayConfig(
@@ -275,9 +269,19 @@ async def update_payment_config(
     """
     username = current_user.get("username", "admin")
     
-    # 更新支付模式
-    if config.mock_mode is not None:
-        await set_config_value(db, "payment", "mock_mode", str(config.mock_mode).lower(), updated_by=username)
+    # 【双源收敛】mock_mode 为部署级配置：启动 fail-fast 校验、main 启动横幅、
+    # 通用回调门控（payment.py）均读 settings.payment_mock_mode。
+    # 原实现只写 system_configs → 实际支付行为**不会改变**（改了不生效的假开关）。
+    # 因此这里明确拒绝并指引正确做法，而不是静默写一个不生效的 DB 值。
+    if config.mock_mode is not None and config.mock_mode != settings.payment_mock_mode:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "支付模式为部署级配置，不支持运行时修改。"
+                "请修改 .env 中的 PAYMENT_MOCK_MODE 并重启服务。"
+                f"（当前生效值: {'模拟支付' if settings.payment_mock_mode else '真实支付'}）"
+            ),
+        )
     
     # 更新支付宝配置
     if config.alipay:

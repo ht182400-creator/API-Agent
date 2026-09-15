@@ -18,6 +18,7 @@ from src.config.database import AsyncSessionLocal
 from src.models.reconciliation import ReconciliationRecord, ReconciliationDispute
 from src.models.billing import Bill
 from src.core.exceptions import APIError
+from src.utils.environment import current_environment, env_match
 from decimal import Decimal
 import random
 
@@ -67,7 +68,10 @@ class ReconciliationScheduler:
         
         # 计算对账日期（默认 T+1）
         if date is None:
-            target_date = datetime.now(timezone.utc) - timedelta(days=1)
+            # 【时区收敛】"昨天"按北京时间自然日（原 UTC now - 1 天的日期会早 8 小时切换）
+            from src.utils.time_range import cst_now
+
+            target_date = cst_now() - timedelta(days=1)
         else:
             try:
                 target_date = datetime.strptime(date, "%Y-%m-%d")
@@ -142,16 +146,22 @@ class ReconciliationScheduler:
         channel: str
     ) -> Dict[str, Any]:
         """对账单个渠道"""
-        day_start = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        day_end = date.replace(hour=23, minute=59, second=59, microsecond=999999)
+        # 【时区收敛】对账日按**北京日界**（半开区间）。原 naive 值被会话时区（UTC）
+        # 解释为 UTC 0 点 → 交易窗口错位 8 小时；day_start 同时是 reconcile_date
+        # 的写入锚点，必须与查询同源（cst_day_range_utc_from_date）。
+        from src.utils.time_range import cst_day_range_utc_from_date
+
+        day_start, day_end = cst_day_range_utc_from_date(date.date())
         
         # 查询本地成功充值记录
         local_conditions = [
             Bill.created_at >= day_start,
-            Bill.created_at <= day_end,
+            Bill.created_at < day_end,
             Bill.bill_type == "recharge",
             Bill.payment_method == channel,
             Bill.status == "completed",
+            # 【环境隔离】定时对账只匹配当前环境的充值账单（production 对账不混入 simulation 数据）
+            env_match(Bill.environment, current_environment()),
         ]
         
         # 本地交易统计
@@ -187,9 +197,11 @@ class ReconciliationScheduler:
         amount_diff_total = 0.0
         
         # 创建或更新对账记录
+        # 【时区收敛】与 day_start/day_end 同源的半开区间匹配（原 func.date 按 UTC 日界错位）
         existing_query = select(ReconciliationRecord).where(
             and_(
-                func.date(ReconciliationRecord.reconcile_date) == date.date(),
+                ReconciliationRecord.reconcile_date >= day_start,
+                ReconciliationRecord.reconcile_date < day_end,
                 ReconciliationRecord.channel == channel,
             )
         )

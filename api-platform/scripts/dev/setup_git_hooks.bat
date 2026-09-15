@@ -1,34 +1,39 @@
 @echo off
+chcp 936 >nul
 REM ============================================================================
-REM  å¯ç”¨ Git hooks â€”â€” æäº¤å‰ç±»åž‹æ£€æŸ¥é˜²çº¿
+REM  ÆôÓÃ Git hooks ¡ª¡ª Ìá½»Ç°ÀàÐÍ¼ì²é·ÀÏß
+REM
+REM ¡¾ÖØÒª¡¿±àÂëÔ¼¶¨£º±¾ÎÄ¼þ±ØÐë±£´æÎª ANSI / GBK(CP936) + CRLF »»ÐÐ¡£
+REM   ÈôÁí´æÎª UTF-8£¬cmd »á°´ GBK ½âÂëÖÐÎÄ×Ö½Ú -> ×¢ÊÍÂÒÂë£¬
+REM   ÇÒ REM ÐÐ¿ÉÄÜ±»µ±³ÉÃüÁîÖ´ÐÐ£¨ÏÖÏó£º"xxx ²»ÊÇÄÚ²¿»òÍâ²¿ÃüÁî"£©¡£
 REM ----------------------------------------------------------------------------
-REM  ä½œç”¨ï¼šæŠŠä»“åº“å†…çš„ .githooks/ æŒ‚è½½ä¸º Git hooks ç›®å½•ã€‚
-REM        å¯ç”¨åŽï¼Œæ¯æ¬¡æäº¤è‹¥æ¶‰åŠ api-platform/web/src ä¸‹çš„ .ts/.tsx å˜æ›´ï¼Œ
-REM        ä¼šè‡ªåŠ¨æ‰§è¡Œ `tsc --noEmit`ï¼Œä¸é€šè¿‡åˆ™æ‹’ç»æäº¤ã€‚
+REM  ×÷ÓÃ£º°Ñ²Ö¿âÄÚµÄ .githooks/ ¹ÒÔØÎª Git hooks Ä¿Â¼¡£
+REM        ÆôÓÃºó£¬Ã¿´ÎÌá½»ÈôÉæ¼° api-platform/web/src ÏÂµÄ .ts/.tsx ±ä¸ü£¬
+REM        »á×Ô¶¯Ö´ÐÐ `tsc --noEmit`£¬²»Í¨¹ýÔò¾Ü¾øÌá½»¡£
 REM
-REM  èƒŒæ™¯ï¼š2026-09-15 å‘çŽ° permissionHooks.ts ä¸­å†™äº† JSXï¼ˆåº”ä¸º .tsxï¼‰ï¼Œ
-REM        è¿™ä¸€ä¸ªè¯­æ³•é”™è¯¯è®© TypeScript è·³è¿‡å…¨éƒ¨è¯­ä¹‰æ£€æŸ¥ï¼Œ
-REM        å¯¼è‡´ 48 ä¸ªç±»åž‹é”™è¯¯é•¿æœŸéšèº«ã€‚CI æ—©å·²é…ç½® tsc æ£€æŸ¥ï¼Œ
-REM        ä½†é¡¹ç›®ä¸ºæœ¬åœ°å¼€å‘ã€æœªè§¦å‘è¿‡ Actionsï¼Œå› æ­¤éœ€è¦æœ¬åœ°é˜²çº¿ã€‚
+REM  ±³¾°£º2026-09-15 ·¢ÏÖ permissionHooks.ts ÖÐÐ´ÁË JSX£¨Ó¦Îª .tsx£©£¬
+REM        ÕâÒ»¸öÓï·¨´íÎóÈÃ TypeScript Ìø¹ýÈ«²¿ÓïÒå¼ì²é£¬
+REM        µ¼ÖÂ 48 ¸öÀàÐÍ´íÎó³¤ÆÚÒþÉí¡£CI ÔçÒÑÅäÖÃ tsc ¼ì²é£¬
+REM        µ«ÏîÄ¿Îª±¾µØ¿ª·¢¡¢Î´´¥·¢¹ý Actions£¬Òò´ËÐèÒª±¾µØ·ÀÏß¡£
 REM
-REM  ç”¨æ³•ï¼ˆæ¯æ¬¡ clone åŽæ‰§è¡Œä¸€æ¬¡å³å¯ï¼‰ï¼š
-REM      åŒå‡»æœ¬æ–‡ä»¶ï¼Œæˆ–åœ¨å‘½ä»¤è¡Œè¿è¡Œï¼š
+REM  ÓÃ·¨£¨Ã¿´Î clone ºóÖ´ÐÐÒ»´Î¼´¿É£©£º
+REM      Ë«»÷±¾ÎÄ¼þ£¬»òÔÚÃüÁîÐÐÔËÐÐ£º
 REM      api-platform\scripts\dev\setup_git_hooks.bat
 REM
-REM  ä¸´æ—¶è·³è¿‡æ£€æŸ¥ï¼ˆä¸æŽ¨èï¼‰ï¼šgit commit --no-verify
+REM  ÁÙÊ±Ìø¹ý¼ì²é£¨²»ÍÆ¼ö£©£ºgit commit --no-verify
 REM ============================================================================
 
 cd /d "%~dp0..\..\.."
-echo [setup] ä»“åº“æ ¹ç›®å½•: %CD%
+echo [setup] ²Ö¿â¸ùÄ¿Â¼: %CD%
 
 git config core.hooksPath .githooks
 if errorlevel 1 (
-    echo [ERROR] è®¾ç½® core.hooksPath å¤±è´¥ï¼Œè¯·æ£€æŸ¥æ˜¯å¦åœ¨ Git ä»“åº“å†…
+    echo [ERROR] ÉèÖÃ core.hooksPath Ê§°Ü£¬Çë¼ì²éÊÇ·ñÔÚ Git ²Ö¿âÄÚ
     exit /b 1
 )
 
-echo [OK] å·²å¯ç”¨ Git hooksï¼ˆcore.hooksPath = .githooksï¼‰
-echo      æäº¤æ¶‰åŠå‰ç«¯ TS/TSX æ—¶å°†è‡ªåŠ¨æ‰§è¡Œ tsc --noEmit
+echo [OK] ÒÑÆôÓÃ Git hooks£¨core.hooksPath = .githooks£©
+echo      Ìá½»Éæ¼°Ç°¶Ë TS/TSX Ê±½«×Ô¶¯Ö´ÐÐ tsc --noEmit
 echo.
-echo éªŒè¯æ–¹å¼ï¼šgit config --get core.hooksPath
+echo ÑéÖ¤·½Ê½£ºgit config --get core.hooksPath
 exit /b 0

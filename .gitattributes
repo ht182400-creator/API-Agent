@@ -1,3 +1,41 @@
 
+# ==============================================================================
+# 行尾与二进制声明
+# ------------------------------------------------------------------------------
+# 背景：本仓库同时包含 Windows 批处理（**必须 CRLF**）与 shell hooks（**必须 LF**），
+#       并携带多种二进制文档；若被当作文本做行尾转换会直接损坏。
+#
+# 重要：**本文件规则优先于各机器的 core.autocrlf 设置** ——
+#       因此即使协作者机器的 autocrlf 配置不同，clone 后的关键文件行尾也一致。
+#       典型事故：LF-only 的 `.bat` 在部分 cmd 版本下解析异常；
+#                 中文 `.bat` 还必须是 ANSI/GBK 编码（见 api-platform/scripts/dev/start_redis.bat 顶部说明）。
+# ==============================================================================
+
 # Git hooks 必须使用 LF（Windows 下 CRLF 会导致 bad interpreter: /bin/sh^M）
 .githooks/* text eol=lf
+
+# Windows 批处理：必须 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PowerShell 脚本（Windows 专用）：保持 CRLF
+*.ps1 text eol=crlf
+
+# Shell 脚本：必须 LF
+*.sh text eol=lf
+
+# 二进制文件：禁止任何行尾/编码转换（docx/xlsx/png 被当文本处理会损坏）
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.docx binary
+*.xlsx binary
+*.pptx binary
+*.zip binary
+*.7z binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary

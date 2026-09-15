@@ -21,6 +21,7 @@ from src.utils.environment import (
     env_match,
     ENVIRONMENT_ALL,
 )
+from src.utils.time_range import cst_now, cst_month_range_utc
 
 router = APIRouter()
 
@@ -218,18 +219,16 @@ async def get_all_monthly_bills(
     # 解析环境过滤（默认当前环境，支持 all 通配）
     environment = resolve_environment(environment)
     
-    # 默认年月
+    # 默认年月（按北京时间）
     if year is None:
-        year = datetime.now().year
+        year = cst_now().year
     if month is None:
-        month = datetime.now().month
-    
-    # 计算月份范围
-    start_date = datetime(year, month, 1)
-    if month == 12:
-        end_date = datetime(year + 1, 1, 1)
-    else:
-        end_date = datetime(year, month + 1, 1)
+        month = cst_now().month
+
+    # 计算月份范围（北京时间自然月 → UTC 半开区间）
+    # 说明：原实现用 naive 的 datetime(year, month, 1)，会被会话时区（UTC）解释，
+    #       导致月度统计边界相对北京时间偏移 8 小时。
+    start_date, end_date = cst_month_range_utc(year, month)
     
     # 构建查询 - 按用户聚合账单
     query = (

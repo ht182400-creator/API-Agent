@@ -115,10 +115,17 @@ async def get_admin_dashboard_stats(
     total_revenue = revenue_result.scalar() or Decimal("0")
     
     # 今日调用次数（从 api_call_logs 表统计）
+    # 【时区收敛】"今日"按**北京时间自然日**的半开区间：
+    #   原 func.date(created_at) == utc.date() 按会话时区（UTC）取日期，
+    #   每天边界比中国用户的自然日早 8 小时，且 func.date 使索引失效。
     from src.models.billing import APICallLog
+    from src.utils.time_range import cst_day_range_utc
+
+    _day_start, _day_end = cst_day_range_utc()
     today_calls_result = await db.execute(
         select(func.count(APICallLog.id)).where(
-            func.date(APICallLog.created_at) == datetime.now(timezone.utc).date()
+            APICallLog.created_at >= _day_start,
+            APICallLog.created_at < _day_end,
         )
     )
     today_calls = today_calls_result.scalar() or 0

@@ -19,6 +19,7 @@ from src.models.payment import Payment
 from src.models.reconciliation import PlatformAccount, ReconciliationRecord, ReconciliationDispute
 from src.schemas.response import BaseResponse
 from src.services.auth_service import get_current_admin_user
+from src.utils.environment import current_environment, env_match
 
 router = APIRouter(prefix="/admin", tags=["管理员-对账"])
 
@@ -293,17 +294,26 @@ async def get_recharge_records(
         except ValueError:
             raise HTTPException(status_code=400, detail="日期格式错误，请使用 YYYY-MM-DD")
     else:
-        query_date = datetime.now(timezone.utc)
+        # 【时区收敛】"今天"按北京时间口径（原 UTC now 的日期会早 8 小时切换）
+        from src.utils.time_range import cst_now
+
+        query_date = cst_now()
     
     # 日期范围
-    day_start = query_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    day_end = query_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # 【时区收敛】对账日按**北京日界**（半开区间）。原 naive 值被会话时区（UTC）
+    # 解释为 UTC 0 点 → "某天的交易"实际落在北京时间 08:00~次日 08:00，错位 8 小时；
+    # 且 <= 23:59:59 的闭区间会丢失最后一秒内的亚秒数据。
+    from src.utils.time_range import cst_day_range_utc_from_date
+
+    day_start, day_end = cst_day_range_utc_from_date(query_date.date())
     
     # 构建查询条件
     conditions = [
         Bill.created_at >= day_start,
-        Bill.created_at <= day_end,
+        Bill.created_at < day_end,
         Bill.bill_type == "recharge",  # 只查充值账单
+        # 【环境隔离】对账只统计当前环境的账单（防历史 simulation/production 混合数据污染对账口径）
+        env_match(Bill.environment, current_environment()),
     ]
     
     if channel:
@@ -332,7 +342,7 @@ async def get_recharge_records(
     # 统计汇总
     summary_conditions = [
         Bill.created_at >= day_start,
-        Bill.created_at <= day_end,
+        Bill.created_at < day_end,
         Bill.bill_type == "recharge",
     ]
     if channel:
@@ -437,11 +447,18 @@ async def get_recharge_summary(
         except ValueError:
             raise HTTPException(status_code=400, detail="日期格式错误，请使用 YYYY-MM-DD")
     else:
-        query_date = datetime.now(timezone.utc)
+        # 【时区收敛】"今天"按北京时间口径（原 UTC now 的日期会早 8 小时切换）
+        from src.utils.time_range import cst_now
+
+        query_date = cst_now()
     
     # 日期范围
-    day_start = query_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    day_end = query_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # 【时区收敛】对账日按**北京日界**（半开区间）。原 naive 值被会话时区（UTC）
+    # 解释为 UTC 0 点 → "某天的交易"实际落在北京时间 08:00~次日 08:00，错位 8 小时；
+    # 且 <= 23:59:59 的闭区间会丢失最后一秒内的亚秒数据。
+    from src.utils.time_range import cst_day_range_utc_from_date
+
+    day_start, day_end = cst_day_range_utc_from_date(query_date.date())
     
     # 渠道列表
     channels = ["alipay", "wechat", "bankcard"]
@@ -456,9 +473,11 @@ async def get_recharge_summary(
     for channel in channels:
         conditions = [
             Bill.created_at >= day_start,
-            Bill.created_at <= day_end,
+            Bill.created_at < day_end,
             Bill.bill_type == "recharge",
             Bill.payment_method == channel,
+            # 【环境隔离】同上：只统计当前环境的账单
+            env_match(Bill.environment, current_environment()),
         ]
         
         # 交易总数和金额
@@ -680,16 +699,22 @@ async def execute_reconciliation(
         raise HTTPException(status_code=400, detail=f"无效的渠道，支持: {', '.join(valid_channels)}")
     
     # 日期范围
-    day_start = query_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    day_end = query_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # 【时区收敛】对账日按**北京日界**（半开区间）。原 naive 值被会话时区（UTC）
+    # 解释为 UTC 0 点 → "某天的交易"实际落在北京时间 08:00~次日 08:00，错位 8 小时；
+    # 且 <= 23:59:59 的闭区间会丢失最后一秒内的亚秒数据。
+    from src.utils.time_range import cst_day_range_utc_from_date
+
+    day_start, day_end = cst_day_range_utc_from_date(query_date.date())
     
     # 查询本地成功充值记录
     local_conditions = [
         Bill.created_at >= day_start,
-        Bill.created_at <= day_end,
+        Bill.created_at < day_end,
         Bill.bill_type == "recharge",
         Bill.payment_method == request.channel,
         Bill.status == "completed",
+        # 【环境隔离】对账只匹配当前环境的充值账单（另一环境的同名交易不参与对账）
+        env_match(Bill.environment, current_environment()),
     ]
     
     # 本地交易统计
@@ -737,9 +762,12 @@ async def execute_reconciliation(
     # 如果是模拟环境，生成一些差异记录
     if platform_trade_count > 0:
         # 查询是否有已存在的对账记录
+        # 【时区收敛】reconcile_date 锚点 = 北京 0 点（UTC aware，与本函数 day_start 同源），
+        # 因此按半开区间匹配；原 func.date(...) 按会话时区（UTC）取日期，口径错位。
         existing_query = select(ReconciliationRecord).where(
             and_(
-                func.date(ReconciliationRecord.reconcile_date) == query_date.date(),
+                ReconciliationRecord.reconcile_date >= day_start,
+                ReconciliationRecord.reconcile_date < day_end,
                 ReconciliationRecord.channel == request.channel,
             )
         )
@@ -867,9 +895,15 @@ async def get_reconciliation_result(
         raise HTTPException(status_code=400, detail="日期格式错误，请使用 YYYY-MM-DD")
     
     # 查询对账记录
+    # 【时区收敛】半开区间按北京日匹配（reconcile_date 锚点 = 北京 0 点 UTC aware，
+    # 与写入侧 cst_day_range_utc_from_date 同源）
+    from src.utils.time_range import cst_day_range_utc_from_date
+
+    _day_start, _day_end = cst_day_range_utc_from_date(query_date.date())
     query = select(ReconciliationRecord).where(
         and_(
-            func.date(ReconciliationRecord.reconcile_date) == query_date.date(),
+            ReconciliationRecord.reconcile_date >= _day_start,
+            ReconciliationRecord.reconcile_date < _day_end,
             ReconciliationRecord.channel == channel,
         )
     )

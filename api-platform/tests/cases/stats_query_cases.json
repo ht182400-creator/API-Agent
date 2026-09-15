@@ -1,0 +1,219 @@
+{
+  "suite": "stats_query_service",
+  "title": "统计查询服务用例库（P1-6 阶段 2/3：预聚合优先 + 实时兜底 + 结果缓存）",
+  "updated_at": "2026-09-15",
+  "implementation": [
+    "src/services/stats_query_service.py",
+    "src/services/stats_aggregation_service.py",
+    "src/models/repository.py (StatsAggregationState)",
+    "src/api/v1/analytics.py"
+  ],
+  "test_file": "tests/test_stats_query_service.py",
+  "doc": "docs/Test_ALL_PLAN.md §8.2",
+  "time_notation": {
+    "H": "距当前 UTC 整点 3 小时的那个整点（_hour_base()），远离当前小时边界",
+    "H+n": "H 之后第 n 个整点小时"
+  },
+  "core_acceptance": "任何读取路径（全实时 / 全预聚合 / 混合）结果必须与直接实时查询 api_call_logs 逐值一致（零回归）",
+  "cases": [
+    {
+      "id": "TC-STATQ-001",
+      "name": "无水位（从未聚合）→ 整段实时查询",
+      "test_function": "test_no_watermark_falls_back_to_live",
+      "input": {
+        "watermark": null,
+        "repo_stats": "空",
+        "logs": [
+          {"hour": "H", "status_code": 200, "cost": "0.10"},
+          {"hour": "H", "status_code": 500, "cost": "0.20"},
+          {"hour": "H+1", "status_code": 200, "cost": "0.30"}
+        ],
+        "query_window": "[H, H+2)"
+      },
+      "expected": {
+        "split_window": {"agg_end": null, "live_start": "H"},
+        "total_calls": 3,
+        "success_calls": 2,
+        "total_cost": 0.6,
+        "equals_live_baseline": true
+      }
+    },
+    {
+      "id": "TC-STATQ-002",
+      "name": "水位覆盖整个窗口 → 全走预聚合",
+      "test_function": "test_window_fully_covered_by_preaggregation",
+      "input": {
+        "watermark": "H+1",
+        "repo_stats": "aggregate_range(H, H+1) 生成 1 行",
+        "logs": [
+          {"hour": "H", "status_code": 200, "cost": "0.10"},
+          {"hour": "H", "status_code": 500, "cost": "0.20"}
+        ],
+        "query_window": "[H, H+1)"
+      },
+      "expected": {
+        "split_window": {"agg_end": "H+1", "live_start": "H+1"},
+        "total_calls": 2,
+        "success_calls": 1,
+        "total_cost": 0.3,
+        "equals_live_baseline": true
+      }
+    },
+    {
+      "id": "TC-STATQ-003",
+      "name": "混合窗口（预聚合段 + 实时尾部）",
+      "test_function": "test_mixed_window_preaggregated_plus_live_tail",
+      "input": {
+        "watermark": "H+2",
+        "repo_stats": "aggregate_range(H, H+2) 生成 2 行",
+        "logs": [
+          {"hour": "H", "cost": "0.10"},
+          {"hour": "H+1", "cost": "0.20"},
+          {"hour": "H+2", "cost": "0.30"},
+          {"hour": "H+3", "cost": "0.40"}
+        ],
+        "query_window": "[H, H+4)"
+      },
+      "expected": {
+        "split_window": {"agg_end": "H+2", "live_start": "H+2"},
+        "total_calls": 4,
+        "total_cost": 1.0,
+        "equals_live_baseline": true
+      }
+    },
+    {
+      "id": "TC-STATQ-004",
+      "name": "repo_ids 过滤 / 空列表边界",
+      "test_function": "test_repo_ids_filter_and_empty_list",
+      "input": {
+        "watermark": "H+2",
+        "repos": ["A", "B"],
+        "logs": ["A@H", "A@H+1", "B@H"],
+        "queries": [
+          {"repo_ids": ["A"], "window": "[H, H+2)"},
+          {"repo_ids": [], "window": "[H, H+2)"}
+        ]
+      },
+      "expected": {
+        "repo_a": {"total_calls": 2, "equals_live_baseline": true},
+        "empty_list": {"total_calls": 0, "success_calls": 0, "total_cost": 0}
+      }
+    },
+    {
+      "id": "TC-STATQ-005",
+      "name": "独立用户数不可加（同一用户跨小时不得重复计数）",
+      "test_function": "test_distinct_users_must_be_live",
+      "input": {
+        "watermark": "H+2",
+        "repo_stats": "2 行，每行 unique_users=1（求和会得 2）",
+        "logs": ["user@H", "同一 user@H+1"]
+      },
+      "expected": {
+        "repo_stats_unique_users_sum": 2,
+        "count_distinct_users": 1,
+        "reason": "去重不可加 → 必须实时 COUNT(DISTINCT)"
+      }
+    },
+    {
+      "id": "TC-STATQ-006",
+      "name": "按天分组：预聚合段 + 实时段合并",
+      "test_function": "test_group_by_day_merges_segments",
+      "input": {
+        "watermark": "H+1",
+        "repo_stats": "aggregate_range(H-1, H+1)",
+        "logs": ["H-1 (0.10)", "H (0.20)", "H+24 (0.30)"],
+        "period": "day"
+      },
+      "expected": {"groups": 2, "total_calls": 3, "total_cost": 0.6}
+    },
+    {
+      "id": "TC-STATQ-006b",
+      "name": "按小时分组：分段合并后每小时值正确",
+      "test_function": "test_group_by_hour_merges_segments",
+      "input": {
+        "watermark": "H+1",
+        "repo_stats": "aggregate_range(H, H+1)",
+        "logs": ["H (0.10)", "H+1 (0.20)", "H+2 (0.30)"],
+        "period": "hour"
+      },
+      "expected": {"groups": 3, "calls_per_group": [1, 1, 1], "total_cost": 0.6}
+    },
+    {
+      "id": "TC-STATQ-007",
+      "name": "按仓库分组：分段合并 + 成功数",
+      "test_function": "test_group_by_repo_merges_segments",
+      "input": {
+        "watermark": "H+1",
+        "repo_stats": "aggregate_range(H, H+1)",
+        "logs": [
+          {"repo": "A", "hour": "H", "cost": "0.10"},
+          {"repo": "A", "hour": "H+2", "cost": "0.20"},
+          {"repo": "B", "hour": "H+2", "status_code": 500, "cost": "0.40"}
+        ]
+      },
+      "expected": {
+        "A": {"total_calls": 2, "success_calls": 2, "total_cost": 0.3},
+        "B": {"total_calls": 1, "success_calls": 0, "total_cost": 0.4}
+      }
+    },
+    {
+      "id": "TC-STATQ-008",
+      "name": "首次聚合：水位从最早日志整点初始化并推进到当前整点",
+      "test_function": "test_watermark_initialized_from_earliest_log",
+      "input": {"watermark": null, "logs": ["H"], "call": "aggregate_until_now()"},
+      "expected": {
+        "remaining_hours": 0,
+        "aggregated_until": "当前 UTC 整点",
+        "repo_stats_hours": ["H"]
+      }
+    },
+    {
+      "id": "TC-STATQ-009",
+      "name": "历史回填分批推进（可观测剩余量）",
+      "test_function": "test_catchup_is_batched",
+      "input": {
+        "logs": ["H", "H+1", "H+2", "H+3"],
+        "calls": ["aggregate_until_now(max_hours_per_run=2)", "aggregate_until_now(max_hours_per_run=100)"]
+      },
+      "expected": {
+        "first": {"hours": 2, "remaining_hours_gt": 0, "aggregated_until": "H+2"},
+        "second": {"remaining_hours": 0}
+      }
+    },
+    {
+      "id": "TC-STATQ-010",
+      "name": "水位只增不减（回退被忽略）",
+      "test_function": "test_watermark_never_moves_backwards",
+      "input": {"action": "聚合到当前整点后，调用 _advance_watermark(H) 强行回退"},
+      "expected": {"aggregated_until": "仍为推进后的值"}
+    },
+    {
+      "id": "TC-STATQ-011",
+      "name": "成功口径统一为 2xx",
+      "test_function": "test_success_definition_is_2xx",
+      "input": {"watermark": "H+1", "logs": [200, 302, 500]},
+      "expected": {
+        "repo_stats_success_calls": 1,
+        "repo_stats_failed_calls": 2,
+        "sum_metrics_success_calls": 1,
+        "equals_live_baseline": true
+      }
+    },
+    {
+      "id": "TC-STATQ-012",
+      "name": "空/倒置窗口与非法分组粒度",
+      "test_function": "test_empty_and_inverted_window",
+      "input": {
+        "windows": ["[H, H)", "[H+1, H]"],
+        "period": "minute"
+      },
+      "expected": {
+        "sum_metrics": {"total_calls": 0, "success_calls": 0, "total_cost": 0},
+        "count_distinct_users": 0,
+        "group_by_period": [],
+        "group_by_repo": {},
+        "invalid_period": "ValueError"
+      }
+    }
+  ]
+}

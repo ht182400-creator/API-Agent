@@ -118,6 +118,11 @@ keys/
 .env.*
 !.env.example
 !*.env.example
+# ⚠️ 例外：前端构建变量文件（**仅含公开的 VITE_* 值**，会被编译进浏览器产物，
+#    属必须随仓库分发的构建输入）——必须写在本文件（子目录 .gitignore 优先级高于根目录）。
+#    ⚠️ 后续严禁往这两个文件写入任何真正的密钥。
+!web/.env.development
+!web/.env.production
 
 # 本地数据库文件（SQLite 等）
 *.db

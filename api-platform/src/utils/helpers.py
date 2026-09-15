@@ -1,8 +1,55 @@
 """Helper utilities - 辅助函数"""
 
+import ipaddress
 import re
 from typing import Optional, Dict
 from datetime import datetime, timezone
+
+
+def is_ip_allowed(client_ip: Optional[str], allowlist: Optional[str]) -> bool:
+    """
+    判断直连 IP 是否在支付回调白名单内（用于 IP 级访问控制）。
+
+    Args:
+        client_ip: 待校验的直连 IP（如 ``request.client.host``）。
+                   缺失（None / "unknown"）时按 **fail-closed** 处理（仅当白名单
+                   关闭时才可能放行）。
+        allowlist: 逗号分隔的 IPv4/IPv6 地址或 CIDR 网段字符串；
+                   ``None`` 或空串 = **校验关闭**（一律放行，保持既有部署行为）。
+
+    Returns:
+        bool: 是否放行。
+
+    设计说明：
+        - 解析失败的 IP / 网段条目按 fail-closed 处理（不因脏数据放行）；
+        - **不要**用 ``X-Forwarded-For`` 作为 client_ip 传入安全决策
+          （该头可被任意伪造），反代部署请将代理出口 IP 加入名单。
+    """
+    if not allowlist or not allowlist.strip():
+        return True  # 校验关闭
+
+    if not client_ip or client_ip == "unknown":
+        return False  # fail-closed：白名单开启但来源未知
+
+    try:
+        addr = ipaddress.ip_address(client_ip.strip())
+    except ValueError:
+        return False  # 非法 IP → fail-closed
+
+    for entry in allowlist.split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        try:
+            if "/" in entry:
+                if addr in ipaddress.ip_network(entry, strict=False):
+                    return True
+            elif addr == ipaddress.ip_address(entry):
+                return True
+        except ValueError:
+            continue  # 非法配置条目 → 跳过（不因此放行）
+
+    return False
 
 
 def get_client_ip(request) -> str:

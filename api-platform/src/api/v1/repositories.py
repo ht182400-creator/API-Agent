@@ -21,6 +21,7 @@ from src.core.exceptions import RepositoryNotFoundError, RateLimitError, Authori
 from src.services.auth_service import get_current_user, check_admin_permission
 from src.utils.url_safety import ensure_outbound_url_allowed, OutboundURLBlocked
 from src.utils.sanitize import sanitize
+from src.utils.time_range import cst_now, cst_day_range_utc
 from src.models.repository import Repository, RepoEndpoint, RepoLimits, RepoPricing
 from src.schemas.request import (
     EndpointCreate,
@@ -537,17 +538,21 @@ async def _check_repo_update_permission(repo: "Repository", current_user: "User"
     # 从数据库查询真实统计数据
     from src.models.billing import APICallLog
     
-    # 使用 UTC 时间，与数据库时区保持一致
-    now = datetime.now(timezone.utc)
-    today = now.date()
+    # 【时区收敛】"今日"按北京时间自然日（半开区间），原 func.date(...) == utc.date()
+    # 按会话时区（UTC）取日期 → 日界早 8 小时；见 src/utils/time_range.py
+    from src.utils.time_range import cst_day_range_utc, cst_now
+
+    now = cst_now()
     week_ago = now - timedelta(days=7)
+    _day_start, _day_end = cst_day_range_utc()
     
     # 今日调用量
     today_result = await db.execute(
         select(func.count(APICallLog.id)).where(
             and_(
                 APICallLog.repo_id == repo.id,
-                func.date(APICallLog.created_at) == today,
+                APICallLog.created_at >= _day_start,
+                APICallLog.created_at < _day_end,
             )
         )
     )

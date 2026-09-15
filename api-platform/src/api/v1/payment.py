@@ -10,8 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.config.database import get_db
 from src.config.logging_config import get_logger
 from src.schemas.response import BaseResponse
-from src.services.payment_service import PaymentService
+from src.services.payment import PaymentService
 from src.services.auth_service import get_current_user, get_current_user_optional
+from src.utils.helpers import is_ip_allowed
 from src.models.user import User
 
 # 日志记录器
@@ -689,7 +690,16 @@ async def alipay_callback(
     
     logger = get_logger("payment")
     logger.info("[AlipayCallback] Received alipay callback")
-    
+
+    # 【IP 白名单】回调来源校验（在验签前的第一道门；验签依赖密钥配置，此层不依赖）
+    # 注意：只取**直连 IP**（request.client.host），不信任可伪造的 X-Forwarded-For。
+    direct_ip = request.client.host if request.client else None
+    if not is_ip_allowed(direct_ip, settings.payment_callback_ip_allowlist):
+        logger.warning(
+            "[AlipayCallback] 回调来源 IP 不在白名单，已拒绝：ip=%s", direct_ip
+        )
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     # 检查是否配置了支付宝
     if not settings.alipay_app_id or not settings.get_alipay_public_key():
         logger.error("[AlipayCallback] Alipay not configured")
@@ -815,6 +825,14 @@ async def payment_callback(
         raise HTTPException(status_code=404, detail="Not Found")
     
     # ==================== 非生产环境：模拟回调门控 ====================
+    # 【IP 白名单】回调来源校验（同 /alipay/callback；只取直连 IP，不信任 X-Forwarded-For）
+    direct_ip = raw_request.client.host if raw_request.client else None
+    if not is_ip_allowed(direct_ip, settings.payment_callback_ip_allowlist):
+        logger.warning(
+            "[PaymentCallback] 回调来源 IP 不在白名单，已拒绝：ip=%s", direct_ip
+        )
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     internal_token = raw_request.headers.get("X-Internal-Token")
     token_ok = bool(settings.internal_api_token) and internal_token == settings.internal_api_token
     

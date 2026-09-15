@@ -22,7 +22,12 @@ web/e2e/
 ├── components.spec.ts       # 组件 E2E 测试
 ├── navigation.spec.ts        # 导航 E2E 测试
 ├── adminLogs.spec.ts         # 日志管理 E2E 测试
-└── keys.spec.ts              # API Keys 管理 E2E 测试 [新增]
+├── keys.spec.ts              # API Keys 管理 E2E 测试
+└── api-contract.spec.ts      # 前后端联测（API 契约）[新增]
+
+web/src/**/*.spec.ts(x)       # 前端单元测试（Vitest）[新增]
+├── src/config/permissions.spec.ts   # 权限判定（越权防护第一道门）
+└── src/api/client.spec.ts           # 请求层（认证头/统一解包/错误文案/401 自动登出）
 ```
 
 ---
@@ -81,7 +86,7 @@ pytest tests/ -v --html=docs/test_report.html --self-contained-html
 
 ---
 
-## 二、前端 E2E 测试
+## 二、前端测试（E2E + 单元测试 + 前后端联测）
 
 ### 2.1 测试环境准备
 
@@ -141,6 +146,85 @@ start playwright-report/index.html
 | TC-014 | 页面响应式布局 | 调整不同视口 | 布局自适应 |
 
 ---
+
+### 2.3 前端单元测试（Vitest）[新增]
+
+```bash
+cd d:/Work_Area/AI/API-Agent/api-platform/web
+npm run test:unit          # 单次运行（CI 用）
+npm run test:unit:watch    # 监听模式（本地开发）
+```
+
+**基建**：`vitest.config.ts`（jsdom 环境 + `@vitejs/plugin-react` + `@testing-library/react`）+ `src/test/setup.ts`
+（注入 jest-dom 断言，并补齐 jsdom 缺失的 `matchMedia` / `ResizeObserver` / `IntersectionObserver`）。
+
+> ⚠️ 配置中**必须显式排除 `e2e/**`**：那里是 Playwright 用例，混入 vitest 会因缺少 Playwright 运行期而全部报错。
+
+**优先覆盖"越权防护 + 全站请求入口"两类纯逻辑**（影响面最大、最适合用单测锁死语义）。
+
+| 用例ID | 测试名称 | 输入/操作 | 预期结果 |
+|--------|----------|-----------|----------|
+| TC-FE-PERM-001 | 通配权限放行 | `hasPermission(['*'], SYSTEM_SETTINGS)`；且要求多权限 | 均 `true` |
+| TC-FE-PERM-002 | 持有权限命中 | `hasPermission([DEV_API_KEYS], DEV_API_KEYS)` | `true` |
+| TC-FE-PERM-003 | 未持有权限 | `hasPermission([DEV_QUOTA], DEV_API_KEYS)` | `false` |
+| TC-FE-PERM-004 | 多权限为"与" | 持有 `{DEV_API_KEYS, DEV_QUOTA}`，要求 `{DEV_API_KEYS, SYSTEM_LOGS}` | `false`（every 语义） |
+| TC-FE-PERM-005 | 空权限列表（边界） | `hasPermission([], DEV_QUOTA)` | `false` |
+| TC-FE-PERM-006 | 空要求列表（边界） | `hasPermission([], [])` | `true`（`[].every()` 语义，改动需同步用例） |
+| TC-FE-PERM-007 | 角色权限矩阵关键断言 | 读 `RolePermissions` | super_admin=`['*']`；admin 含 `USER_MANAGE`/`REPO_APPROVE` 且不含 `BILLING_RECHARGE`；developer 含 `OWNER_REPO` 不含 `REPO_APPROVE`；各角色列表非空 |
+| TC-FE-PERM-008 | 高等级满足低要求 | `hasRole('admin','developer')` | `true` |
+| TC-FE-PERM-009 | 低等级不满足 | `hasRole('user','developer')` | `false` |
+| TC-FE-PERM-010 | 同等级满足 | 4 个角色各自 `hasRole(r, r)` | 全 `true` |
+| TC-FE-PERM-011 | 数组要求任一满足 | `hasRole('developer', ['admin','developer'])` | `true`（some 语义） |
+| TC-FE-PERM-012 | 非法角色（异常输入） | `hasRole('ghost' as Role, 'user')` | `false`（等级按 0） |
+| TC-FE-PERM-013 | 配置一致性 | 校验 `UserTypeDefaultRole` / `RoutePermissions` | 映射合法（owner→developer）；路由 path 唯一；userTypes 非空合法；关键路由存在 |
+| TC-FE-API-001 | 已登录注入 Bearer | `store.accessToken='token-abc'` 后 GET | 请求头 `Authorization: Bearer token-abc` |
+| TC-FE-API-002 | 未登录不发送空 Bearer | 清空 token 后 GET | 无 `Authorization` 头 |
+| TC-FE-API-003 | 统一响应解包 | 响应 `{code:0,data:{id:7,name:'repo'}}` | `api.get` 直接返回 `{id:7,name:'repo'}` |
+| TC-FE-API-004 | 列表响应原样返回 | 响应 `{items[],pagination{}}`（无 code） | 原样返回 |
+| TC-FE-API-005 | 业务错误码非 0 | 响应 `{code:42901,message:'请求过于频繁',request_id:'req-1'}` | reject，且携带 `code/userMessage/request_id` |
+| TC-FE-API-006 | 401 自动登出 | 带 token GET 受保护接口返回 401 | `accessToken` 被清空、`isAuthenticated=false` |
+| TC-FE-API-007 | 401 不误登出 | POST `/auth/login` 返回 401 | token 保持（登录接口自身失败不触发登出） |
+| TC-FE-API-008 | 状态码文案映射（参数化 10 条） | 400/403/404/422/429/500/502/503/504/418（响应体无 message） | 分别得到约定的 `message` + `userMessage`（如 400→"请求参数错误"/"数据验证失败，请检查输入"；418→"请求失败 (418)"） |
+| TC-FE-API-009 | 后端 message 优先 | 400 且 `{message:'余额不足，请先充值'}` | `message` = `userMessage` = 后端文案（不被默认文案覆盖） |
+| TC-FE-API-010 | FastAPI `detail` 兼容 | 422 且 `{detail:'field required'}` | `message` = `'field required'` |
+| TC-FE-API-011 | 网络错误 | adapter 抛 `ERR_NETWORK`（无 response） | `message='网络连接失败'`、`userMessage='网络连接失败，请检查网络'` |
+| TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
+| TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
+
+**当前结果**：`npm run test:unit` → **35 passed**（permissions 13 + client 22，其中 TC-FE-API-008 参数化展开为 10 条）。
+**类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
+
+### 2.4 前后端联测（API 契约）[新增]
+
+**为什么单独做这一层**：前端单测用 mock adapter、后端测试只保证自身模型自洽 —— 一旦契约改名
+（如 `data`→`result`、分页结构变化、token 字段拼写变化），**两边测试都还是绿的，但页面会白屏**。
+本层直接打**真后端**，用前端代码中声明的类型去校验真实响应，专门堵这条缝。
+
+```bash
+# 前置：后端需在 8000 运行（前端 dev server 由 Playwright webServer 自动拉起/复用）
+cd d:/Work_Area/AI/API-Agent/api-platform/web
+npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
+```
+
+- **跳过策略**：`beforeAll` 探测 `${API_URL}/health`，后端未启动时**整组跳过**（不误报为失败）。
+- **账号**：使用 `scripts/init_db_with_data.py` 种子账号；可用 `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` / `API_URL` / `BASE_URL` 覆盖。
+
+| 用例ID | 测试名称 | 请求 | 预期结果 |
+|--------|----------|------|----------|
+| TC-E2E-API-001 | 存活探针契约 | `GET /health` | 200；含 `billing_environment`（∈`{simulation,production}`）与 `is_production`(bool) —— 前端环境徽标依赖 |
+| TC-E2E-API-002 | 就绪探针 | `GET /ready` | 200（DB 必需） |
+| TC-E2E-API-003 | 响应头环境标识 | `GET /health` | 含 `x-environment`、`x-billing-environment` |
+| TC-E2E-API-004 | 未认证拦截 | `GET /api/v1/auth/me`（无 token） | 401 |
+| TC-E2E-API-005 | 登录契约 ↔ 前端 `TokenResponse` | `POST /api/v1/auth/login`（种子账号） | 200；`code=0`；`data.access_token`(str，长度>10)、`refresh_token`(str)、`expires_in`(number) |
+| TC-E2E-API-006 | 登录失败可展示 | `POST login`（错误密码） | 非 2xx；响应含 `message` 或 `detail`（否则前端无文案可显示） |
+| TC-E2E-API-007 | 当前用户契约 ↔ 前端 `User` | `GET /auth/me`（带 token） | `data.{id:str, email:str, user_type, role, permissions:[]}` |
+| TC-E2E-API-008 | 分页契约 ↔ 前端 `PaginatedResponse` | `GET /api/v1/repositories?page=1&page_size=5` | `data.items[]`；`data.pagination.{page,page_size,total,total_pages}` 均为 number 且 `page=1/page_size=5` |
+| TC-E2E-API-009 | 参数校验 | `GET /repositories?page_size=1000` | 422（前端按"数据格式不正确"提示） |
+| TC-E2E-API-010 | 未知路由 | `GET /api/v1/__not_exists__` | 404/401 |
+| TC-E2E-API-011 | CORS 预检（联调必需） | `OPTIONS login` + `Origin=前端源` | 状态 <400 且回显 `access-control-allow-origin` |
+| TC-E2E-API-012 | 登出契约 ↔ 前端 `authApi.logout` | `POST /auth/logout`（带 token） | 200；`code=0` |
+
+**当前结果**：**12 passed**（对真实后端 development / simulation 环境实测）。
 
 ## 三、测试数据准备
 
@@ -342,6 +426,54 @@ pytest tests/test_environment_guard.py -v -k "not Callback"
 | TC-ENV-024 | 写入守卫：`environment` 为空时按当前环境补全 | 环境 | 单元 | 补为当前环境 |
 | TC-ENV-025 | 响应携带 `X-Environment` / `X-Billing-Environment` | 环境 | 集成 | 头值等于当前环境 |
 | TC-ENV-026 | `/health` 暴露环境标识（供前端徽标） | 环境 | 集成 | 含 `billing_environment` / `is_production` |
+| TC-TZ-001 | 北京某日半开区间 = 对应 UTC 区间（含亚秒不丢失） | 时区 | 单元 | `[00:00, 次日00:00)` 精确 1 天 |
+| TC-TZ-002 | `cst_day_range_utc` 与 `from_date` 两 API 同日结果一致 | 时区 | 单元 | 相等 |
+| TC-TZ-003 | `cst_day_start_utc(days_ago=N)` 与区间起点一致 | 时区 | 单元 | 相等 |
+| TC-TZ-004 | 北京自然月的 UTC 区间 | 时区 | 单元 | 月首/月末正确 |
+| TC-TZ-005 | 所有转换值均为 aware | 时区 | 单元 | `tzinfo is not None` |
+| TC-TZ-006 | `cst_date_expr` SQL 显式含 `Asia/Shanghai` | 时区 | 单元 | 编译 SQL 含时区字面量 |
+| TC-TZ-007 | **落库**：UTC 9-14 20:00（北京 9-15 04:00）按北京日界归入 9-15，UTC 日界查 9-15 丢失 | 时区 | 集成(DB) | 命中 1 / 0 |
+| TC-TZ-008 | **落库**：`cst_date_expr` 分组返回北京日期 9-15 | 时区 | 集成(DB) | `date(2026, 9, 15)` |
+| TC-ENV-027 | 对账条件只命中当前环境账单（另一环境同窗口同渠道不命中） | 环境 | 集成(DB) | 1 笔 / 环境=当前 |
+| TC-ENV-028 | `generate_bill_no` 存活回归（死代码清理后唯一出口） | 计费 | 单元 | `BILL` + 14 位时间戳 + 6 位随机 |
+| TC-PSRC-001 | `GET /payment-config/status` 显示 settings 实际生效值 | 配置 | 集成 | == `settings.payment_mock_mode` |
+| TC-PSRC-002 | settings 变化时 `/status` 跟随（同一权威源） | 配置 | 集成 | 跟随变化 |
+| TC-PSRC-003 | `GET /detail` 与 `/status` 口径一致 | 配置 | 集成 | 两接口 mock_mode 相等 |
+| TC-PSRC-004 | `PUT` 传不同 mock_mode → 400 拒绝 | 配置 | 集成 | 提示含 `PAYMENT_MOCK_MODE` |
+| TC-PSRC-005 | `PUT` 传相同值 → 幂等放行 | 配置 | 集成 | 200 |
+| TC-PSRC-006 | `DEFAULT_CONFIGS` 不再播种 `payment.mock_mode` | 配置 | 单元 | key 不存在 |
+| TC-IP-001 | 白名单未配置/空 = 校验关闭，一律放行 | 支付安全 | 单元 | True（含 unknown） |
+| TC-IP-002 | 精确 IP 命中 / 不命中 | 支付安全 | 单元 | True / False |
+| TC-IP-003 | CIDR 网段命中（IPv4 + IPv6） | 支付安全 | 单元 | 命中/不命中 |
+| TC-IP-004 | fail-closed：来源未知/非法、配置条目非法 | 支付安全 | 单元 | 一律不放行（合法条目不受影响） |
+| TC-IP-005 | 多条目 + 空白容错 | 支付安全 | 单元 | 正确判定 |
+| TC-IP-006 | `/alipay/callback` 白名单开启且来源不在名单 → 403 | 支付安全 | 集成 | 403 |
+| TC-IP-007 | `/alipay/callback` 白名单关闭 → 放行（非 403） | 支付安全 | 集成 | 与改造前一致 |
+| TC-IP-008 | `/callback` IP 校验先于鉴权门控 | 支付安全 | 集成 | 403（非 401/404） |
+| TC-IP-009 | `/callback` 白名单关闭 → 既有 401 门控（零回归） | 支付安全 | 集成 | 401 |
+| TC-STAT-001 | 单小时聚合：计数/成败/成本/时延/tokens 正确 | 统计 | 集成(DB) | 值精确匹配 |
+| TC-STAT-002 | 跨小时 + 多仓库按 (repo, hour) 分组 | 统计 | 集成(DB) | 行数与键正确 |
+| TC-STAT-003 | **幂等**：重复聚合行数与值不变 | 统计 | 集成(DB) | 1 行 / 值不被累加 |
+| TC-STAT-004 | 空区间聚合安全 | 统计 | 集成(DB) | upserted=0 |
+| TC-STAT-005 | 唯一约束存在（模型 + 数据库双侧） | 统计 | 集成(DB) | `uq_repo_stats_repo_hour` |
+| TC-STAT-006 | `aggregate_recent_hours` 窗口边界 | 统计 | 集成(DB) | 完整历史小时被聚合 |
+| TC-STATQ-001 | 无水位（从未聚合）→ 整段实时查询 | 统计查询 | 集成(DB) | `split_window` 返回 `(None, start)`；数值 = 实时基准 |
+| TC-STATQ-002 | 水位覆盖整个窗口 → 全走预聚合 | 统计查询 | 集成(DB) | `agg_end == 水位`；数值仍 = 实时基准 |
+| TC-STATQ-003 | **混合窗口**（预聚合段 + 实时尾部） | 统计查询 | 集成(DB) | 数值 = 实时全量（4 条 / 1.00 元）—— 阶段 2 最易错分支 |
+| TC-STATQ-004 | `repo_ids` 过滤 / 空列表边界 | 统计查询 | 集成(DB) | 只统计指定仓库；`[]` → 全 0（不越权） |
+| TC-STATQ-005 | **独立用户数不可加**：同一用户跨 2 小时 | 统计查询 | 集成(DB) | 返回 1（预聚合求和会得 2，属错误） |
+| TC-STATQ-006 | 按天分组：预聚合段 + 实时段合并 | 统计查询 | 集成(DB) | 总调用 3 / 成本 0.60；跨 2 个自然日 |
+| TC-STATQ-006b | 按小时分组：分段合并后每小时值 | 统计查询 | 集成(DB) | 3 个小时各 1 条，成本合计 0.60 |
+| TC-STATQ-007 | 按仓库分组：分段合并 + 成功数 | 统计查询 | 集成(DB) | A: 2 单 0.30 元；B: 1 单且 500 不算成功 |
+| TC-STATQ-008 | 首次聚合：水位从最早日志整点初始化并推进到当前整点 | 统计查询 | 集成(DB) | `aggregated_until == 当前整点`；repo_stats 覆盖该小时 |
+| TC-STATQ-009 | 历史回填分批推进 | 统计查询 | 集成(DB) | 单轮最多 `max_hours_per_run` 小时；`remaining_hours` 可观测 |
+| TC-STATQ-010 | 水位只增不减 | 统计查询 | 集成(DB) | 强制回退被忽略，水位不变 |
+| TC-STATQ-011 | **成功口径统一 2xx** | 统计查询 | 集成(DB) | 200/302/500 → success=1、failed=2；预聚合与实时一致 |
+| TC-STATQ-012 | 空/倒置窗口与非法分组粒度 | 统计查询 | 集成(DB) | 全 0 / 空列表；非法 period 抛 `ValueError` |
+
+> 对应实现：`src/services/stats_query_service.py`、`src/services/stats_aggregation_service.py`；
+> 对应用例库：`tests/cases/stats_query_cases.json`；对应测试：`tests/test_stats_query_service.py`。
+> **P1-6 阶段 2/3 核心验收：数值与"直接实时查询 api_call_logs"逐值一致（零回归）。**
 
 ### 8.3 手工回归清单
 

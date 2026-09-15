@@ -18,6 +18,7 @@ from src.models.billing import Account, Bill, APICallLog, MonthlyBill
 from src.models.repository import Repository
 from src.core.exceptions import APIError
 from src.utils.environment import resolve_environment, env_match, current_environment
+from src.utils.time_range import CST, cst_now, utc_now, cst_date_str
 
 
 def _to_utc_iso_string(dt: datetime) -> Optional[str]:
@@ -389,7 +390,7 @@ async def export_bills(
     
     # 生成文件名
     from datetime import datetime
-    filename = f"bills_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+    filename = f"bills_{current_user.id}_{utc_now().strftime('%Y%m%d%H%M%S')}.csv"
     
     # 返回文件流
     output.seek(0)
@@ -420,9 +421,9 @@ async def get_monthly_summary(
     environment = resolve_environment(environment)
     
     if year is None:
-        year = datetime.now().year
+        year = cst_now().year
     if month is None:
-        month = datetime.now().month
+        month = cst_now().month
     
     # 计算月份范围 (使用 datetime 对象而非字符串)
     start_date = datetime(year, month, 1)
@@ -534,7 +535,7 @@ async def get_balance_history(
     environment = resolve_environment(environment)
     
     # 获取最近 N 天的余额变化
-    start_date = datetime.now() - timedelta(days=days)
+    start_date = cst_now() - timedelta(days=days)
     
     result = await db.execute(
         select(Bill).where(
@@ -548,7 +549,8 @@ async def get_balance_history(
     # 按日期分组，取每天最后的余额
     daily_data = {}
     for bill in bills:
-        date_str = bill.created_at.strftime("%Y-%m-%d") if bill.created_at else "unknown"
+        # created_at 为 aware UTC，需转北京时间后再取日期
+        date_str = bill.created_at.astimezone(CST).strftime("%Y-%m-%d") if bill.created_at else "unknown"
         if date_str not in daily_data:
             daily_data[date_str] = {
                 "date": date_str,
@@ -577,7 +579,7 @@ async def get_consumption_trend(
     """
     from datetime import datetime, timedelta
     
-    start_date = datetime.now() - timedelta(days=days)
+    start_date = cst_now() - timedelta(days=days)
     
     # 查询消费账单并按日期聚合
     query = """
@@ -604,14 +606,15 @@ async def get_consumption_trend(
     # 按日期聚合
     daily_data = {}
     for bill in bills:
-        date_str = bill.created_at.strftime("%Y-%m-%d") if bill.created_at else "unknown"
+        # created_at 为 aware UTC，需转北京时间后再取日期
+        date_str = bill.created_at.astimezone(CST).strftime("%Y-%m-%d") if bill.created_at else "unknown"
         if date_str not in daily_data:
             daily_data[date_str] = {"date": date_str, "amount": 0}
         daily_data[date_str]["amount"] += abs(float(bill.amount))
     
     return BaseResponse(
         data=list(daily_data.values()) if daily_data else [
-            {"date": (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"), "amount": 0}
+            {"date": cst_date_str(i), "amount": 0}
             for i in range(days, 0, -1)
         ]
     )

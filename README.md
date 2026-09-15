@@ -813,7 +813,7 @@ npm run dist:linux # Linux
 
 ```bash
 cd api-platform
-pytest                                   # 全部测试（当前 230 passed）
+pytest                                   # 全部测试（当前 269 passed）
 pytest --cov=src --cov-report=html       # 覆盖率报告
 pytest tests/test_environment_guard.py -v  # 环境隔离与支付门控专项
 ```
@@ -851,16 +851,44 @@ npm run lint         # ESLint
 > 曾因 1 个 `.ts` 文件里误写 JSX，导致 **48 个类型错误长期隐身**
 > （详见 `api-platform/docs/OPTIMIZATION_BACKLOG.md` §2.10）。
 
-### 15.3 前端 E2E 测试（Playwright）
+### 15.3 前端单元测试（Vitest）
 
 ```bash
 cd api-platform/web
-npm run test:e2e           # 运行 E2E
-npm run test:e2e:ui        # UI 模式
-npm run test:e2e:report    # 查看报告
+npm run test:unit          # 单次运行（当前 35 passed）
+npm run test:unit:watch    # 监听模式
 ```
 
-### 15.4 测试文档
+覆盖重点（影响面最大的两类纯逻辑）：
+
+- `src/config/permissions.spec.ts` —— **权限判定**（越权防护的第一道门：通配 `*`、多权限 every 语义、
+  角色等级、路由表一致性），13 条；
+- `src/api/client.spec.ts` —— **请求层**（认证头注入、统一响应解包、错误文案映射、
+  401 自动登出且不误伤登录接口），22 条。
+
+配置见 `web/vitest.config.ts`（jsdom + `src/test/setup.ts`），**已显式排除 `e2e/**`** ——
+那里是 Playwright 用例，混入 vitest 会因缺少 Playwright 运行期而全部报错。
+
+### 15.4 前端 E2E 测试与前后端联测（Playwright）
+
+```bash
+cd api-platform/web
+npm run test:e2e                                   # 运行全部 E2E
+npm run test:e2e:ui                                # UI 模式
+npm run test:e2e:report                            # 查看报告
+
+# 前后端联测（API 契约，12 条）——需后端在 8000 运行（未运行则整组自动跳过）
+npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
+```
+
+**为什么单独有"联测"这一层**：前端单测用 mock adapter、后端测试只保证自身模型自洽 ——
+一旦契约改名（如 `data`→`result`、分页结构变化、token 字段拼写变化），**两边测试都还是绿的，页面却会白屏**。
+`e2e/api-contract.spec.ts` 直接打**真后端**，用前端代码里声明的类型校验真实响应（登录 `TokenResponse`、
+`/auth/me` 的 `User`、仓库列表 `PaginatedResponse`、`/health` 环境字段、CORS 预检等），专门堵这条缝。
+
+> 用例清单见 `api-platform/docs/Test_ALL_PLAN.md` §2.3 / §2.4。
+
+### 15.5 测试文档
 
 `api-platform/docs/`：`TEST_PLAN.md`、`TEST_REPORT.md`、`Test_ALL_PLAN.md`、`TEST_SETUP.md`、`WINDOWS_TEST_ENVIRONMENT.md` 等。
 

@@ -4,6 +4,7 @@ Main application entry point - 通用API服务平台
 This is the main entry point for the FastAPI application.
 """
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -42,6 +43,10 @@ setup_logger(
     enable_file=True
 )
 logger = get_logger("main")
+
+# 【P1-6】统计预聚合调度参数（禁止魔法数字散落在函数体里）
+STATS_AGGREGATION_INITIAL_DELAY_SECONDS = 60    # 启动后延迟，避开启动风暴
+STATS_AGGREGATION_INTERVAL_SECONDS = 3600       # 常态轮询间隔（1 小时）
 
 
 def _print_environment_banner() -> None:
@@ -113,14 +118,73 @@ async def lifespan(app: FastAPI):
 
     await init_db()
     logger.info("Database initialized")
+
+    # 【P1-6】统计预聚合后台任务：每小时聚合上一个整点小时（多补 1 小时防漏）
+    stats_stop = asyncio.Event()
+    stats_task = asyncio.create_task(_stats_aggregation_loop(stats_stop))
+    logger.info("Stats aggregation scheduler started (interval=1h)")
+
     yield
     # Shutdown
     logger.info("Shutting down API Platform...")
+    stats_stop.set()
+    stats_task.cancel()
+    try:
+        await stats_task
+    except asyncio.CancelledError:
+        pass
+
     await close_db()
     logger.info("Database connections closed")
 
     from src.core.redis_manager import close_redis
     await close_redis()
+
+
+async def _stats_aggregation_loop(stop: asyncio.Event) -> None:
+    """
+    统计预聚合后台循环（P1-6）。
+
+    - 启动后延迟 ``STATS_AGGREGATION_INITIAL_DELAY_SECONDS``（避开启动风暴）；
+    - 每轮调用 ``aggregate_until_now()``：从**聚合水位**连续聚合到当前整点。
+      "连续"是 analytics 读切换（阶段 2）能安全使用预聚合值的前提 —— 水位记录了
+      已聚合到哪、不会出现看不见的空洞；
+    - 水位尚未追上当前整点时（首次历史回填 / 长时间停机）改用
+      ``CATCHUP_INTERVAL_SECONDS`` 加快轮询，追平后恢复 1 小时；
+    - 聚合幂等（repo_stats 唯一约束 + upsert 覆盖），重复执行安全；
+    - 任何异常只记日志，不中断循环（下一轮自动重试）。
+    """
+    import asyncio as _asyncio
+
+    from src.config.database import AsyncSessionLocal
+    from src.services.stats_aggregation_service import (
+        CATCHUP_INTERVAL_SECONDS,
+        StatsAggregationService,
+    )
+
+    try:
+        await _asyncio.wait_for(stop.wait(), timeout=STATS_AGGREGATION_INITIAL_DELAY_SECONDS)
+        return  # 应用即将退出
+    except _asyncio.TimeoutError:
+        pass
+
+    while not stop.is_set():
+        interval = STATS_AGGREGATION_INTERVAL_SECONDS
+        try:
+            async with AsyncSessionLocal() as session:
+                service = StatsAggregationService(session)
+                result = await service.aggregate_until_now()
+                if result["remaining_hours"] > 0:
+                    # 追赶模式：仍有历史小时待回填，缩短间隔尽快追平
+                    interval = CATCHUP_INTERVAL_SECONDS
+        except Exception as exc:  # noqa: BLE001 调度循环不容错会中断统计
+            logger.error("[StatsAggregation] 聚合任务异常（下轮重试）: %s", exc)
+
+        try:
+            await _asyncio.wait_for(stop.wait(), timeout=interval)
+            return
+        except _asyncio.TimeoutError:
+            continue
 
 
 # Create FastAPI application

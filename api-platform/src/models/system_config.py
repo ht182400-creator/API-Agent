@@ -108,9 +108,11 @@ DEFAULT_CONFIGS = {
     "rate_limit.default_rph": {"value": "1000", "type": "number", "label": "默认RPH"},
 
     # 支付设置 - 模拟模式
-    "payment.mock_mode": {"value": "true", "type": "boolean", "label": "支付模式", 
-                         "description": "true=模拟模式(测试用), false=真实支付",
-                         "options": ["true", "false"]},
+    # ⚠️ 【双源收敛】"payment.mock_mode" 已废弃（2026-09-15）：
+    #    支付模式唯一权威源 = settings.payment_mock_mode（.env 的 PAYMENT_MOCK_MODE，部署级配置）。
+    #    原先 system_configs 侧的值与实际支付行为脱节（改了不生效），
+    #    且 admin_payment_config 的两个读取点 key 不一致（"mock_mode" vs "payment.mock_mode"）。
+    #    此处不再播种该项；存量库中的旧行无人读取，可在下次重建时清理。
     "payment.mock_pay_url": {"value": "/mock-payment", "type": "string", "label": "模拟支付页面地址"},
 
     # 支付设置 - 支付宝

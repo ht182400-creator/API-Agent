@@ -38,10 +38,26 @@ async def create_extensions():
 
 
 async def init_db():
-    """初始化数据库表"""
-    print("Initializing database...")
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """
+    初始化数据库表（P1-8：统一走 Alembic 迁移，替代 create_all）
+
+    为什么切换：
+        此前建表来源分裂 —— create_all（模型）+ migrations/ 散装手写脚本并存，
+        "改模型后旧库不会自动跟上"。现统一为 Alembic：
+            - 模型是唯一 schema 权威源；
+            - 空库 → upgrade head 全量建表；
+            - 存量库 → stamp head 后增量迁移。
+        见 docs/DATABASE_MIGRATIONS.md。
+    """
+    print("Initializing database (alembic upgrade head)...")
+    from alembic import command
+    from alembic.config import Config
+
+    base_dir = Path(__file__).resolve().parents[1]
+    cfg = Config(str(base_dir / "alembic.ini"))
+    cfg.set_main_option("script_location", str(base_dir / "alembic"))
+    # env.py 自行读取 settings.database_url（与本脚本同库），无需额外传 url
+    command.upgrade(cfg, "head")
     print("Database initialized successfully!")
 
 
@@ -50,6 +66,10 @@ async def drop_db():
     print("Dropping all tables...")
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+        # ⚠️ 必须同时删除 alembic 版本戳表：
+        #    否则 drop 后 alembic_version 残留（仍指向 head），
+        #    后续 upgrade head 会判定"已是最新"而**什么都不建** → 业务表缺失。
+        await conn.execute(text("DROP TABLE IF EXISTS alembic_version"))
     print("All tables dropped!")
 
 

@@ -44,7 +44,19 @@ class RedisManager:
         if cls._client is not None:
             return cls._client
 
+        # 【冷却期检查】必须在**加锁前**短路：
+        #    此前冷却只在 is_available() 生效，而 rate_limiter/cache 直接调用
+        #    本方法 → 冷却期内每个请求仍尝试连接、白等 socket_connect_timeout
+        #    （2 秒）→ 重复 WARNING 日志 + 接口延迟劣化（2026-09-15 修复）。
+        if time.monotonic() < cls._unavailable_until:
+            return None
+
         async with cls._lock:
+            # 双重检查：等锁期间可能已被其它协程恢复/标记
+            if time.monotonic() < cls._unavailable_until:
+                return None
+            if cls._client is not None:
+                return cls._client
             if cls._client is not None:
                 return cls._client
 

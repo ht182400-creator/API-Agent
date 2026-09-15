@@ -684,22 +684,31 @@ async def get_usage_history(
     """
     获取配额使用历史 - 从 APICallLog 表统计
     """
-    from datetime import datetime, timedelta, timezone
-    
-    now = datetime.now(timezone.utc)
-    start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
+    from datetime import timedelta
+
+    from src.utils.time_range import cst_date_expr, cst_day_start_utc, cst_now
+
+    # 【时区收敛】统计窗口按**北京时间 0 点**起算 —— 原实现为 UTC 0 点截断，
+    # "近 N 天"的窗口边界与中国用户的自然日错位 8 小时。
+    start_date = cst_day_start_utc(days_ago=days)
     
     # 从 APICallLog 表按日期聚合查询
+    # 【时区收敛】分组日期用 cst_date_expr（显式 Asia/Shanghai）——
+    # 原 func.date(...) 按会话时区（UTC）取日期，每天边界偏 8 小时。
+    # ⚠️ select/group_by/order_by 必须复用**同一表达式对象**：
+    #    cst_date_expr 每次调用会生成新的绑定参数（'Asia/Shanghai' 字面量），
+    #    多次调用会让 PostgreSQL 判定 SELECT 与 GROUP BY 表达式不一致 → GroupingError。
+    date_col = cst_date_expr(APICallLog.created_at).label("date")
     result = await db.execute(
         select(
-            func.date(APICallLog.created_at).label("date"),
+            date_col,
             func.count(APICallLog.id).label("call_count"),
             func.sum(func.cast(APICallLog.cost, Float)).label("total_amount")
         ).where(
             APICallLog.api_key_id == key_id,
             APICallLog.user_id == current_user.id,
             APICallLog.created_at >= start_date,
-        ).group_by(func.date(APICallLog.created_at)).order_by(func.date(APICallLog.created_at))
+        ).group_by(date_col).order_by(date_col)
     )
     rows = result.all()
     
@@ -717,10 +726,10 @@ async def get_usage_history(
             "total_amount": float(row.total_amount or 0)
         }
     
-    # 填充缺失的日期
+    # 填充缺失的日期（标签按**北京时间**生成，与分组的北京日期口径一致）
     data = []
     for i in range(days - 1, -1, -1):
-        date = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+        date = (cst_now() - timedelta(days=i)).strftime("%Y-%m-%d")
         if date in daily_data:
             data.append(daily_data[date])
         else:
@@ -738,11 +747,13 @@ async def get_consumption_trend(
     """
     获取每日消费趋势 - 从 Bill 表统计消费金额
     """
-    from datetime import datetime, timedelta, timezone
     from src.models.billing import Bill
+    from src.utils.time_range import CST, cst_day_start_utc, cst_now
 
-    now = datetime.now(timezone.utc)
-    start_date = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
+    # 【时区收敛】"近 N 天"窗口按**北京时间 0 点**起算 —— 原实现 UTC 0 点截断，
+    # 窗口边界与中国用户的自然日错位 8 小时。
+    now = cst_now()
+    start_date = cst_day_start_utc(days_ago=days)
 
     # 查询消费账单并按日期聚合
     result = await db.execute(
@@ -757,7 +768,13 @@ async def get_consumption_trend(
     # 按日期聚合消费金额
     daily_data = {}
     for bill in bills:
-        date_str = bill.created_at.strftime("%Y-%m-%d") if bill.created_at else "unknown"
+        # 【时区收敛】created_at 读出为 aware UTC，先转北京时区再取日期
+        # （原直接 strftime 取的是 UTC 日期 → 每天边界偏 8 小时）
+        date_str = (
+            bill.created_at.astimezone(CST).strftime("%Y-%m-%d")
+            if bill.created_at
+            else "unknown"
+        )
         if date_str not in daily_data:
             daily_data[date_str] = {"date": date_str, "amount": 0}
         # amount 存储为负数，取绝对值

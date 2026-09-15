@@ -28,16 +28,16 @@
 | P0-1 | 默认密钥硬编码 | P0 | ✅ 已完成 | 生产启动强校验 fail-fast |
 | P0-2 | 模拟支付默认可被利用 | P0 | ✅ 已完成 | 生产下线 + 回调门控 |
 | P0-3 | 限流未落地，依赖 DB 计数 | P0 | ✅ 已完成 | Redis 固定窗口 + 内存降级 |
-| P0-4 | 密钥/DB 文件进入版本库 | P0 | ✅ 已完成 | 移出索引 + gitignore；**密钥轮换待人工** |
+| P0-4 | 密钥/DB 文件进入版本库 | P0 | ⚠️ 部分完成 | 索引已清理（§2.22 复查确认为 0）；**但历史对象仍在 → 密钥轮换 + 历史重写待人工** |
 | P0-5 | 仓库转发 SSRF | P0 | ✅ 已完成 | 出站地址校验 + 策略开关 |
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 📋 待办 | 计划见 §3.1 |
+| P1-4 | 巨型文件 | P1 | 🔄 进行中（1/5） | `payment_service.py` 已拆为 `payment/` 包（§2.20）；其余见 §3.1 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
-| P1-6 | 统计实时聚合 | P1 | 📋 待办 | 计划见 §3.2 |
+| P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
-| P1-8 | 迁移来源不统一 | P1 | 📋 待办 | 计划见 §3.4 |
+| P1-8 | 迁移来源不统一 | P1 | ✅ 已完成 | Alembic 统一（基线 + 首个增量迁移已实践），见 §2.15/§2.17 |
 | P1-9 | 日志未脱敏 | P1 | ✅ 已完成 | 脱敏工具 + 关键落库点接入 |
 | P2-1 | 分页响应结构不一致 | P2 | ✅ 已完成 | superadmin 已扁平化，待全量对齐 |
 | P2-2 | 前端无独立 router | P2 | 📋 待办 | 计划见 §3.5 |
@@ -494,14 +494,463 @@ CI 中其实**一直有** `npx tsc --noEmit`（`cicd.yml` 第 124-127 行），
 
 ---
 
+### 2.11 查询侧时区口径收敛：`func.date` → `time_range` 半开区间（✅ 已完成）
+
+> 承接 §2.7（写入侧 UTC 统一）。完整论证见 `docs/TIMEZONE_DESIGN.md`。
+
+**问题**：查询侧残留 3 类口径缺陷（均为活代码）——
+
+1. `func.date(created_at)` 按**会话时区**（应用=UTC）取日期 → "今日/按天"边界比北京自然日早 8 小时；
+   且实证：psql 直连（服务器时区 Asia/Shanghai）与应用返回**不同日期**（隐式依赖）。
+2. `created_at <= 23:59:59` 闭区间 → 丢失最后一秒内的**亚秒数据**。
+3. Python 侧对读出的 aware UTC 直接 `strftime` 取日期（consumption-trend）→ 同样偏 8 小时。
+
+**收敛清单**：
+
+| 文件 | 收敛内容 |
+|------|----------|
+| `admin.py` | 今日调用：`cst_day_range_utc()` 半开区间 |
+| `repositories.py` | 今日调用：同上 |
+| `quota.py` usage-history | `cst_day_start_utc` 窗口 + `cst_date_expr` 分组（**复用对象**）+ `cst_now()` 补标签 |
+| `quota.py` consumption-trend | 窗口 `cst_day_start_utc` + `created_at.astimezone(CST)` 取日期 |
+| `admin_reconciliation.py` ×2 接口 | `cst_day_range_utc_from_date`；`day_start` 同时是 `reconcile_date` **写入锚点**（3 处），写入/查询同源 |
+| `reconciliation_scheduler.py` | 同上 + "昨天"改 `cst_now() - 1d` |
+| `analytics.py` | `_cst_date` 三次独立调用点改**复用同一对象**（GroupingError 防御） |
+
+**⚠️ 新踩坑（已写入 `time_range.py` docstring）**：`cst_date_expr` 每次调用生成**新的绑定参数**
+（`'Asia/Shanghai'` 字面量）→ `select/group_by/order_by` 各调一次会触发
+`GroupingError: 字段必须出现在 GROUP BY 子句中`。必须复用同一表达式对象。
+旧写法 `func.date(col)` 无绑定参数所以从不报错 —— 该坑此前不可见的原因。
+
+**验证**：新增 `tests/test_time_range.py` 8 条（TC-TZ-001~008，含 2 条**落库级**日界归属证明）；
+全量 **238 passed**。
+
+**合理保留**：`logging_config.py` 的 `datetime.now()`（日志文件按本地日期切割，与数据口径无关）。
+
+### 2.12 死代码清理 + 对账环境隔离（✅ 已完成）
+
+> 承接 §2.9.1（当时 `repo_service._deduct_balance` 只加标注不修补）与遗留待办
+> 「对账/结算任务显式限定 environment」。
+
+#### 2.12.1 死代码清理
+
+| 对象 | 处置 | 依据 |
+|------|------|------|
+| `src/services/repo_service.py`（261 行，`RepoService` 类） | **整文件删除** | 全项目 0 处实例化（仅 `__init__` 导出）；字段漂移；`_deduct_balance` 为必抛错的废实现。实际转发在 `api/v1/repositories.py` |
+| `BillingService` 类（billing_service.py 内约 600 行） | **删除** | 生产代码 0 处实例化（计费统一由 `AccountService` 负责）；6 处 `Bill(...)` 构造缺 NOT NULL 字段，误用必抛错 |
+| `tests/test_billing.py`（171 行 / 11 用例） | **删除** | 仅测试被删除的死代码类 |
+| `generate_bill_no()` | **保留** | 活代码：`api/v1/user.py` ×2 引用 |
+| `scripts/dev/remove_dead_repo_service_code.py` | **删除** | 一次性清理脚本，使命完成 |
+
+`services/__init__.py` 同步移除两个导出并留有清理说明。全项目 `RepoService` / `BillingService` 引用清零。
+
+#### 2.12.2 对账环境隔离（遗留待办落地）
+
+对账模块的「本地交易查询」原本**完全不过滤 environment** —— 同库内若混有两类环境的账单，
+对账统计会被另一环境的交易污染。已在 4 处查询条件统一追加：
+
+```python
+env_match(Bill.environment, current_environment())
+```
+
+| 文件 | 位置 |
+|------|------|
+| `api/v1/admin_reconciliation.py` | 充值明细查询 / 渠道收款汇总 / 对账执行（local_conditions） |
+| `services/reconciliation_scheduler.py` | 定时对账 local_conditions |
+
+**设计说明**：`ReconciliationRecord` 本身无 environment 列 —— 无需加列：
+分库后（dev/prod 各自独立库）每库只有本环境数据，对账记录天然隔离；
+仅需过滤 **Bill 来源数据**即可。
+
+#### 2.12.3 验证
+
+- 新增 TC-ENV-027（**落库级**：同窗口同渠道两笔账单，对账条件只命中当前环境）、
+  TC-ENV-028（`generate_bill_no` 存活回归）
+- 全量 **229 passed**（删 11 条死代码用例、增 2 条新用例）
+
+### 2.13 支付模式双数据源收敛（✅ 已完成）
+
+> 遗留待办落地：`system_configs("payment","mock_mode")` 与 `settings.payment_mock_mode` 双源。
+
+#### 2.13.1 问题（三个叠加）
+
+1. **假开关**：管理后台 `PUT /payment-config/update` 改 mock_mode 只写 DB，
+   而实际支付行为（`payment.py` 创建模拟支付）读 `settings.payment_mock_mode`
+   → **改了不生效**，管理员以为切到了真实支付。
+2. **同库两个 key**：`GET /status` 读 `"mock_mode"`、`GET /detail` 读 `"payment.mock_mode"`
+   → 两行数据可能不同，接口间口径漂移。
+3. **权威性归属**：启动 fail-fast 校验、启动横幅、回调门控全部依赖 settings
+   → 它才是事实上的权威源，DB 侧只是"看起来可配"。
+
+#### 2.13.2 收敛决策：settings 为唯一权威源
+
+理由：支付模式是**部署级配置**（换环境必须改 `.env` 并重启，与 `ENVIRONMENT` 同级），
+不是运行时业务参数；且生产 fail-fast 校验（`PAYMENT_MOCK_MODE 仍为 true → 拒绝启动`）
+只有在 settings 侧才可能实现。
+
+| 接口 | 原行为 | 收敛后 |
+|------|--------|--------|
+| `GET /status` | 读 DB `"mock_mode"`（缺省 true） | `mock_mode = settings.payment_mock_mode` |
+| `GET /detail` | 读 DB `"payment.mock_mode"` | 同上（两接口口径归一） |
+| `PUT /update` | 静默写 DB（假开关） | 传不同值 → **400** 并指引"修改 `.env` 的 `PAYMENT_MOCK_MODE` 并重启"；传相同值 → 幂等放行 |
+| `DEFAULT_CONFIGS` | 播种 `"payment.mock_mode": "true"` | **移除播种**（存量库旧行无人读取，重建时自然清理） |
+
+其余渠道配置（alipay/wechat/bankcard）仍走 system_configs 运行时管理，不在本收敛范围。
+
+#### 2.13.3 连带修复：测试基建隐患（重要）
+
+新测试单跑时暴露：`conftest.test_engine` 的 `Base.metadata.create_all`
+**依赖测试模块的 import 副作用**注册模型 —— 收集阶段碰巧 import 了 `src.main` 才建全表；
+单跑某新测试文件时只建部分表 → `关系 "system_configs" 不存在`。
+
+修复：`create_all` 前**显式** `import src.models`（`models/__init__` 已聚合全部模型）。
+该修复只可能"多建表"，对所有既有 DB 用例无回归（全量 235 passed 验证）。
+
+#### 2.13.4 测试与验证
+
+新增 `tests/test_payment_config_source.py`（TC-PSRC-001~006）：
+
+| 用例 | 验证 |
+|------|------|
+| TC-PSRC-001 | `GET /status` 显示 settings 实际生效值 |
+| TC-PSRC-002 | settings 变化时 `/status` 跟随（同一权威源） |
+| TC-PSRC-003 | `GET /detail` 与 `/status` 口径一致 |
+| TC-PSRC-004 | `PUT` 传不同 mock_mode → 400，提示含 `PAYMENT_MOCK_MODE` |
+| TC-PSRC-005 | `PUT` 传相同值 → 幂等放行（200） |
+| TC-PSRC-006 | `DEFAULT_CONFIGS` 不再播种 `payment.mock_mode` |
+
+全量 **235 passed**。
+
+### 2.14 支付回调来源 IP 白名单（✅ 已完成，遗留待办清零）
+
+> 遗留待办「支付回调渠道 IP 白名单」落地。
+
+**威胁模型**：支付回调接口（`/payments/alipay/callback` 真实验签、`/payments/callback` 模拟补账）
+公网可达，仅有验签/令牌门控。IP 白名单提供**验签之前的第一道门**——
+未持有渠道密钥的扫描器/攻击者连验签环节都进不来。
+
+**实现**：
+
+| 组件 | 内容 |
+|------|------|
+| 配置 | `PAYMENT_CALLBACK_IP_ALLOWLIST`（逗号分隔 IPv4/IPv6 地址或 CIDR；**留空 = 关闭校验**，零回归） |
+| 工具 | `helpers.is_ip_allowed(client_ip, allowlist)` —— `ipaddress` 模块，支持 CIDR/精确 IP/IPv6；来源缺失或非法一律 **fail-closed**；配置条目非法跳过（不因脏数据放行） |
+| 接入 | `payment.py` 两个回调入口：白名单拒绝 → `403`（在验签/鉴权门控之前） |
+
+**⚠️ 安全决策**：只基于**直连 IP**（`request.client.host`），**不使用 `X-Forwarded-For`**
+（可伪造）。反代/负载均衡部署时将代理出口 IP 加入名单。文档已写入 `.env.example` 与代码注释。
+
+**测试**（`tests/test_payment_callback_allowlist.py`，TC-IP-001~009）：
+- 单元：关闭放行 / 精确 IP / CIDR（含 IPv6）/ fail-closed / 多条目空白容错
+- 集成：白名单开启 → 两接口均 403（且 IP 层先于鉴权层）；白名单关闭 → 与改造前行为一致（401 既有门控），**零回归**
+
+**验证**：全量 **244 passed**。
+
+> ✅ 至此，遗留待办中的轻量项（双数据源收敛、对账环境隔离、回调 IP 白名单）**全部清零**。
+> 剩余均为大型工程项：P1-8 Alembic 迁移统一、P1-6 统计预聚合、P1-4 巨型文件拆分、P2-9 分区、CI/CD。
+
+### 2.15 P1-8 迁移来源统一（Alembic）（✅ 已完成）
+
+> 详细工作流见 `docs/DATABASE_MIGRATIONS.md`（含踩坑记录与验证数据）。
+
+**历史问题**：建表来源分裂（`create_all` + `migrations/` 手写散装脚本并存）；
+旧 `migrations/versions/` 是从未接入运行链的伪 alembic 文件（`down_revision=None`）。
+
+**改造**：
+
+| 项 | 内容 |
+|----|------|
+| 标准环境 | `alembic init alembic` + `alembic.ini`；`env.py` 读 `settings.database_url`（同步化）+ 全量模型元数据 + `-x url=` 覆盖 |
+| 基线迁移 | `fec917d3faaf`（对临时空库 autogenerate 全量 create），临时库升级后与 dev 库 **information_schema 对比：30 表 / 全部列零差异** |
+| 存量库接入 | `api_platform_dev` / `api_platform_prod` 均 `stamp head` → `fec917d3faaf` |
+| 脚本切换 | `init_db_with_data.py` 建表改为 **alembic upgrade head**（不再 create_all）；`--drop` 增加 `DROP TABLE IF EXISTS alembic_version`（否则残留版本戳 → upgrade no-op → 业务表缺失，踩坑已记录） |
+| 旧脚本归档 | `migrations/` 9 个散装文件 → `scripts/legacy_migrations/`（仅历史记录）；伪目录删除 |
+| 守护测试 | `tests/test_alembic_infra.py`（TC-MIG-001~003：ini 存在 / 基线含建表 / env.py 可编译） |
+
+**验证**：`--drop` 全流程重建（alembic 建表 + 种子 5 用户 / 2 账单）通过；全量 **247 passed**。
+
+> 测试库（conftest）继续 create_all（每用例 drop_all，迁移链无意义）。
+
+### 2.16 Redis 冷却期绕过修复（用户日志暴露的真实缺陷）
+
+> 用户日志：`连接失败，30 秒内不再重试` 每 5 秒重复出现 —— 冷却形同虚设。
+
+**根因**：冷却检查只在 `RedisManager.is_available()`（仅 `/ready` 探针使用），
+而 `rate_limiter.py:120`、`cache.py ×4` **直接调用 `get_client()` 绕过冷却**
+→ 冷却期内每个请求仍真实尝试连接、白等 `socket_connect_timeout=2` 秒
+→ **重复 WARNING 日志 + 接口延迟劣化**（不只是噪音）。
+
+**修复**：`get_client()` 加锁前短路检查 `_unavailable_until`（锁内双重检查）。
+一处修复，全部调用方受益。
+
+**为什么 247 个测试没发现**（回答用户质询）：
+1. Redis 限流 18 条用例用 `_FakeRedis` monkeypatch `get_client` —— 验证限流逻辑，不碰真 Redis；
+2. "Redis 缺席时降级"本身是被测行为 —— 降级正确 = 功能断言全绿；
+3. **测试盲区**：无耗时断言、单用例请求少 → 2 秒×N 的延迟劣化不可见。
+   本组新用例用连接计数器（attempts==0）堵住该盲区。
+
+**新增测试**（`tests/test_redis_cooldown.py`，TC-RED-001~003）：
+冷却期内 `get_client` 短路且零连接尝试 / 冷却结束恢复重试 / `is_available` 与
+`get_client` 行为一致。全量 **250 passed**。
+
+**用户环境说明（2026-09-15 已落地）**：Redis 已安装于 WSL (Ubuntu-20.04, v5.0.7)，
+`.env` 为 `redis://:redis123@127.0.0.1:6379/0`（localhost → 127.0.0.1：Python 解析 localhost
+可能走 IPv6，而 WSL2 转发只走 IPv4）。**两个关键坑**：
+1. WSL2 的 localhost 转发**不覆盖绑定 127.0.0.1 的服务** → redis.conf 改 `bind 0.0.0.0` + `requirepass`；
+2. WSL 发行版空闲自动关闭 → Redis 消失（wslrelay 监听还在但转发失败 → Timeout）。
+已建常驻保活（`wsl --exec sleep infinity`）+ 一键脚本 `scripts/dev/start_redis.bat`。
+验证：`/ready` redis **up**，日志 `[Redis] 连接成功`。
+
+### 2.17 P1-6 统计预聚合 —— 阶段 1「落库聚合」完成
+
+> 方案三步走（§3.2）：① 落库聚合 ✅ → ② 读切换 ✅ → ③ 结果缓存 ✅
+> （② ③ 见 §2.19；本节的 `aggregate_recent_hours` 仍保留，但调度已改用带水位的 `aggregate_until_now`）。
+
+**本次落地**：
+
+| 项 | 内容 |
+|----|------|
+| 唯一约束 | `repo_stats` 新增 `uq_repo_stats_repo_hour (repo_id, stat_hour)` —— 幂等聚合的前提。**用新 Alembic 工作流完成首次增量迁移**（autogenerate 精确检测 → 人工审查 → dev/prod `upgrade head`，链 `fec917d3faaf → 86af5456b080`） |
+| 聚合服务 | `src/services/stats_aggregation_service.py`：SQL 层按 (repo_id, UTC 整点) 聚合 count/成败/成本/时延/tokens/独立用户 → upsert `repo_stats`；`aggregate_range`（半开区间）+ `aggregate_recent_hours(N)`（补最近 N 个完整小时，默认 2，防调度间隙漏数据） |
+| 调度 | `main.py` lifespan 后台 asyncio 循环：启动 60s 后首跑，此后每小时一次；异常只记日志下轮重试；优雅停止（lifespan shutdown cancel） |
+| 幂等保证 | 唯一约束 + 先查后覆盖：**重复执行行数与值不变**（TC-STAT-003 落库级验证） |
+
+**⚠️ 又见 GroupingError 坑**：`func.date_trunc("hour", col)` 的 `"hour"` 字面量同样是绑定参数 ——
+select 与 group_by 各写一次即触发 `GroupingError`（与 `cst_date_expr` 同机制，见 §2.11 / TIMEZONE_DESIGN §7.2）。
+规则统一为：**带字面量参数的 SQL 函数表达式在同一条查询内必须复用同一对象**。
+
+**测试**（`tests/test_stats_aggregation.py`，TC-STAT-001~006，全部落库级）：
+单小时聚合值 / 跨小时多仓库分组 / 幂等重跑 / 空区间 / 约束存在（模型+数据库双侧）/ recent_hours 窗口。
+
+**验证**：全量 **256 passed**。
+
+**后续（阶段 2/3，待排期）**：analytics 趋势/排行优先读 `repo_stats`（缺失回落实时）；聚合结果 Redis 缓存 TTL 60s。
+
+### 2.18 Redis 启动脚本编码修复（桌面启动乱码）+ 取消开机自启
+
+**现象（用户反馈）**：把 `scripts/dev/start_redis.bat` 拷到桌面双击运行，cmd 中文乱码，且出现
+`'(buntu-20.04)' 不是内部或外部命令`、`'localhost' 不是内部或外部命令`，脚本"看起来没执行"。
+
+**根因**：bat 文件被保存为 **UTF-8（无 BOM）**，而 cmd 按系统 ANSI 代码页（CP936）解码 bat **字节流**
+→ 中文字节被错误配对（3 字节 UTF-8 被拆成 1.5 个 GBK 字符，行尾残留半字符会"吃掉"下一行行首的 ASCII 字节，
+如 `Ubuntu-20.04` → `(buntu-20.04)`）→ 不仅注释乱码，**行首 `REM` 被吞掉后注释文本被当成命令执行**，即上述报错。
+
+**修复**：
+1. `start_redis.bat` 转存为 **ANSI/GBK(CP936) + CRLF**，并在 `@echo off` 后加 `chcp 936 >nul` 显式固定代码页；
+2. 移除 GBK 无法表示的 emoji（`⚠️` → `【重要】`），`→` 统一写 `->`；文件头写明编码约定（防再次另存为 UTF-8）；
+3. 桌面副本同步为修复版；
+4. **取消开机自启**（用户明确要求"不用做成开机自启"）：删除
+   `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\start_redis.bat`
+   （该副本为此前助手擅自复制的文件，非用户要求；且"复制而非快捷方式"会导致改源文件后不自同步）。
+
+**验证**：用 `@echo on` 副本实机执行 —— 所有中文 `REM` 行均被正确识别、无任何"不是内部或外部命令"；
+`wsl -e redis-cli -a redis123 ping` → **PONG**。
+
+**遗留提示（未改，保持最小改动）**：脚本内 `timeout /t 2 /nobreak >nul` 在"被重定向/非交互式调用"时会报
+`不支持输入重新定向`，双击运行不受影响；若将来需要脚本化调用，可换成 `ping -n 3 127.0.0.1 >nul`。
+
+### 2.19 P1-6 阶段 2/3：读切换 + 结果缓存（✅ 已完成）
+
+> 承接 §2.17（阶段 1 落库聚合）。backlog §3.2 的「三步走」至此**全部落地**。
+
+**新增基座：聚合水位（连续性保证）**
+
+`repo_stats` 只对「该小时有调用」的 (repo, hour) 写行，无调用的小时**没有行** ——
+因此表内 `max(stat_hour)` 无法证明中间没有空洞（停机数日后重新聚合，max 会直接跳到最新，
+中间的洞在读侧完全不可见 → 直接求和会**静默漏算**）。
+
+- 新表 `stats_aggregation_state`（单行水位：`aggregated_until` = 已**连续**聚合到的排他上界）；
+  迁移 `9478c3e10b0f`（链 `86af5456b080 → 9478c3e10b0f`，dev 已 `upgrade head`）。
+- 聚合服务新增 `aggregate_until_now()`：从水位连续聚合到当前整点（单轮上限 30 天，
+  防首次历史回填把调度循环/数据库拖住）；`main.py` 调度循环在追赶期改用
+  `CATCHUP_INTERVAL_SECONDS=60` 加快轮询，追平后恢复 1 小时。
+- 水位**只增不减**（回退被忽略并告警）；初始化取「最早日志所在整点」。
+
+  ⚠️ **绝不能**把水位直接置为当前整点 —— 那是"谎报已聚合"，会让读侧把未聚合窗口当成有效数据 → 静默漏算。
+
+**新服务：`src/services/stats_query_service.py`（预聚合优先 + 实时兜底）**
+
+窗口切分：`[start, end)` → 预聚合段 `[start, agg_end)` + 实时段 `[agg_end, end)`，
+其中 `agg_end = min(watermark, end)`。切分点固定在整点水位上，因此**非整点窗口也严格等价**。
+
+三条铁律（零回归的关键）：
+1. 只用**可加量**：`total_calls` / `success_calls` / `total_cost` → 两段求和 == 直接实时求和；
+2. **独立用户数不可加**（`unique_users` 是每仓库每小时的去重数）→ 一律实时 `COUNT(DISTINCT)`，绝不求和；
+3. 水位诚实：水位之后的尾部必须回落实时；无水位则整段实时。
+
+**analytics 接入（`src/api/v1/analytics.py`）**
+
+| 接口 | 改造 | 效果 |
+|------|------|------|
+| `/overview` | 11 条全表 COUNT/SUM → 4 次窗口求和；活跃用户走实时 | 大表只承担尾部查询 |
+| `/trend` | 分组改 `group_by_period`（预聚合 + 实时自动合并，label 规则不变） | 长窗口趋势不再全表扫 |
+| `/repo-details` | **消除 N×3 查询**（20 个仓库 60 条 SQL → 最多 2 条，走 `group_by_repo`） | 主要瓶颈消除 |
+| `/repo-ranking` | `group_by_repo` + 内存排序 + 仓库信息批量查（消除 N+1） | SQL 条数恒定 |
+| `/user-ranking` | 维度不支持预聚合（表只有 repo/hour）→ 保持实时；**修掉用户信息 N+1** | 减少 N 次查询 |
+| `/repo/{id}/trend` | 保持实时（单仓库数据量小；`avg_latency` 平均值不可加），加缓存 | 命中即返回 |
+
+**结果缓存（阶段 3）**：上述接口统一 60 秒缓存（`ANALYTICS_CACHE_TTL_SECONDS`），
+key 含**数据可见范围**（`_cache_scope`：管理员 `admin`；开发者 `user:{id}:{仓库集合指纹}`）
+—— 指纹随仓库增删变化，杜绝"范围变了仍命中旧缓存"的越权/串号。
+
+**口径修正（重要）**：`repo_stats.success_calls` 由阶段 1 的 `< 400` 统一为 **2xx**
+（与 analytics 既有口径一致，否则预聚合值与实时值不一致 = 回归）。口径变更使历史行不可用，
+迁移中已 `DELETE FROM repo_stats` 强制重算（水位为空 → 读侧自动回落实时 → 期间数值仍 100% 正确）。
+
+**顺手修复**：
+1. `/trend` 越权隐患：开发者传**非法** `repo_id` 时原实现 `pass` → 过滤条件为空 → 返回**全部仓库**数据；
+   改为显式 400（`repo/{id}/trend` 早有此校验，两条路径现已一致）。
+2. 消除两处 naive `datetime(2000,1,1)`（ranking 的"全部时间"锚点）→ 统一 aware 锚点 `_ALL_TIME_START_UTC`。
+3. 删除本模块与 `utils/time_range.py` **重复**的 `_cst_date` / `_cst_hour` 私有实现（统一走公共函数）。
+
+**测试**：`tests/test_stats_query_service.py` 13 条（TC-STATQ-001~012，落库级），
+核心断言为"任意路径结果 == 直接实时查询基准"（基准刻意用 `FILTER` 写法，与实现解耦）；
+用例库 `tests/cases/stats_query_cases.json`；测试计划 §8.2 已登记。
+全量 **269 passed**（256 + 13）。
+另修复 `test_redis_cooldown::TC-RED-002` 的**环境耦合**（原断言依赖"本机 Redis 未运行"，Redis 一启动即失败）。
+
+**预期收益**：`/overview`、`/repo-details`（原 N×3）、排行类的 DB 负载不再随 `api_call_logs` 增长而线性恶化；
+缓存命中时响应为 Redis 往返量级。
+
+**遗留（后续可做）**：`analytics.py` 已 715 行（>500 行约定），后续可随 P1-4 一并按端点拆分。
+
+### 2.20 P1-4 巨型文件拆分（1/5）：payment_service.py → payment/ 包（✅ 已完成）
+
+> P1-4 共 5 个巨型文件，按「风险从低到高」逐个拆，本次完成第 1 个（总计划见 §3.1）。
+
+**为什么先拆它**：`src/services/payment_service.py` 1170 行 / 44.6KB，
+但**全项目只有一处引用**（`src/api/v1/payment.py`）→ 改动面最小。
+
+**拆分方式：Mixin 组合（纯搬移，行为零改变）**
+
+原文件只有一个类 `PaymentService`，方法之间大量互相调用（`self.xxx`）；
+若拆成多个独立类必须改造这些调用（高风险）。改用 Mixin 后**所有方法仍挂在同一个
+`PaymentService` 上**，`self.xxx` 与外部 `PaymentService(db)` 用法完全不变：
+
+    src/services/payment/
+    ├── __init__.py      # re-export（对外路径变为 src.services.payment）
+    ├── service.py       # 27 行：组合 5 个 Mixin + __init__ 注入 self.db
+    ├── _orders.py       # 272 行：单号/下单/支付链接/取消/退款/自定义充值
+    ├── _packages.py     # 191 行：套餐 CRUD/金额校验/默认套餐
+    ├── _alipay.py       # 414 行：当面付/二维码/交易查询/状态同步
+    ├── _callback.py     # 279 行：回调入账（幂等）/余额更新/用户升级
+    └── _query.py        # 92 行：支付查询/列表分页
+
+拆分后单文件最大 414 行（原 1170 行），全部满足「单文件 ≤500 行」。
+
+**怎么保证"没搬错"（三层验证）**：
+1. **AST 级等价校验**（`scripts/dev/verify_payment_split.py`）：用 `ast.unparse` 对**全部 26 个方法**
+   与拆分前备份做结构化比较（忽略格式差异，只在 AST 不同时报警），并校验
+   「组合类上每个方法都可访问」+「无方法被组合类自身覆盖」→ 结果 **26/26 完全一致**。
+2. 编译 + 导入测试：`py_compile` 全过；`import src.api.v1.payment` 正常（router prefix `/payments`）。
+3. 全量 **269 passed**（与拆分前完全一致）。
+
+> 生成由 `scripts/dev/split_payment_service.py` 完成（AST 定位方法边界 → 按分组精确截取源码 →
+> 按实际使用筛选 import），内置**覆盖性校验**：分组若漏掉/夹带任何方法立即报错退出，防止静默丢代码。
+
+**同步更新**：`src/api/v1/payment.py` 的 import 改为 `from src.services.payment import PaymentService`；
+旧文件已删除（不留兼容 shim，避免新旧代码混存）。
+
+**下一个目标**：`src/services/...` 或前端组件（见 §3.1 剩余 4 项）。
+
+### 2.21 前端单元测试 + 前后端联测基建补齐（✅ 已完成）
+
+> 动机：前端此前**只有 E2E、没有单测框架** —— 这会让 P1-4 剩余的前端组件拆分**拿不到零回归证据**；
+> 同时"前后端契约漂移"这条缝隙无人把关（前端单测用 mock adapter、后端测试只保证自身模型自洽，
+> 契约改名时两边都绿、页面白屏）。
+
+**1. 前端单元测试（Vitest，从 0 到 1）**
+
+- 依赖：`vitest@2` + `jsdom` + `@testing-library/react` + `@testing-library/jest-dom` + `user-event`。
+  ⚠️ npm 默认解析出 `vitest@5`，与项目 `vite@5` / `playwright@1.59` 存在 peer 冲突 → 明确锁定 **vitest 2.x**。
+- 配置：`web/vitest.config.ts`（jsdom + 别名 `@` 与 vite 一致）与 `web/src/test/setup.ts`
+  （jest-dom 断言 + 补齐 jsdom 缺失的 `matchMedia` / `ResizeObserver` / `IntersectionObserver`）。
+  **关键一条**：显式 `exclude: ['e2e/**']` —— 否则 Playwright 用例会被 vitest 收集并全量报错。
+- 用例：`src/config/permissions.spec.ts`（13 条）+ `src/api/client.spec.ts`（22 条）= **35 passed**。
+  选点理由：权限判定是**越权防护的第一道门**；请求层是全站出入口（认证头 / 统一解包 / 错误文案 / 401 自动登出）。
+  手法：**不引入额外 mock 库**，直接替换 axios `adapter`，覆盖「成功 / HTTP 错误 / 网络错误 / 配置错误」四条路径。
+- `package.json` 新增 `test:unit` / `test:unit:watch`；新增 spec 位于 `src/` → 已被 `tsc --noEmit` 覆盖（typecheck 通过）。
+
+**2. 前后端联测（API 契约，12 条）**
+
+- `web/e2e/api-contract.spec.ts`：用 Playwright `request` 直接打**真后端**，用前端代码中声明的类型校验真实响应。
+- 覆盖：`/health`（环境字段，前端徽标依赖）、`/ready`、响应头 `X-Environment`/`X-Billing-Environment`、
+  未认证 401、登录 `TokenResponse`、登录失败文案可解析、`/auth/me` 的 `User`、
+  分页 `{items, pagination}`、参数校验 422、未知路由 404、CORS 预检、登出。
+- **跳过策略**：`beforeAll` 探测 `/health`，后端未启动时整组跳过（不误报为失败）；
+  账号用 `scripts/init_db_with_data.py` 种子账号，可用 `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` / `API_URL` 覆盖。
+- **实测**：**12 passed**（对真实后端 development / simulation 环境）。
+
+**3. 顺带核对**：后端 `RepositoryListResponse` = `{items, pagination}` 与前端 `PaginatedResponse` **一致**
+（文档中"分页用扁平结构"是旧约定，目前仅 `/repositories/pending` 等个别接口仍是扁平形态）。
+
+**意义**：P1-4 剩余的前端组件拆分（Recharge.tsx / Repos.tsx / Analytics.tsx）至此**有了可复用的回归网**；
+下一步先做**后端**（`billing.py` / `analytics.py`，有 269 条 pytest 兜底），再做
+`repositories.py`（按同一思路先补契约用例），最后处理前端组件。
+
+### 2.22 git 仓库治理（.gitignore 例外修正 + 产物去跟踪 + .gitattributes）
+
+> 起因：提交前后反复出现"测试产物污染 `git status`"。系统性排查
+> `git ls-files -i -c --exclude-standard`（列出**既被跟踪又匹配忽略规则**的文件）后，命中 31 个、分 6 类。
+
+**1. 其中两类是 `.gitignore` 误伤（应保留而非删除）**
+
+| 文件 | 为什么是误伤 | 处理 |
+|------|--------------|------|
+| `electron/build/installer.nsh` | electron 的 `build/` 是**打包源目录**（NSIS 安装脚本 / 图标），被通用规则 `build/` 整目录忽略 | 根 `.gitignore` 加 `!electron/build/` + `!electron/build/**` |
+| `api-platform/web/.env.development`、`.env.production` | 只含公开的 `VITE_API_URL`（`VITE_` 变量本就会编译进浏览器产物），属**必须随仓库分发的构建输入** | 在 `api-platform/.gitignore` 加 `!web/.env.*` 例外 |
+
+**⚠️ 两个 `.gitignore` 机制坑（本次实测，务必记住）**
+1. **子目录 `.gitignore` 优先于根目录**：把前端 env 例外写在**根** `.gitignore` 会被
+   `api-platform/.gitignore` 的 `.env.*` 覆盖而**完全失效**（`git check-ignore -v` 会显示实际命中的是子目录规则）；
+   必须写在**该文件所在子目录**的 `.gitignore` 里。
+2. **父目录被整目录忽略时，`!某文件` 无效**：必须先 `!electron/build/` 重新包含目录，再 `!electron/build/**`。
+
+**2. 产物类移出索引**（`git rm --cached`，**只动索引、磁盘文件保留**）
+
+`OwnerServer/weather-api/logs/*.log`(12) + `api-platform/web/test-results/**`(5) +
+`OwnerServer/weather-api/src/**/__pycache__/*.pyc`(10) + `通用API服务平台文档/.vscode/settings.json`(1) = **28 个**。
+复查：`git ls-files -i -c --exclude-standard` → **0**。
+
+**3. 新增 `.gitattributes`（行尾保护，规则**优先于**各机器的 `core.autocrlf`）**
+
+```
+.githooks/*   → text eol=lf     # hooks 必须 LF（CRLF 会 bad interpreter: /bin/sh^M）
+*.bat *.cmd   → text eol=crlf   # Windows 批处理必须 CRLF（另见其 ANSI/GBK 编码约定）
+*.ps1         → text eol=crlf
+*.sh          → text eol=lf
+图片/文档/db  → binary           # 禁止行尾转换（docx/png 被当文本处理会损坏）
+```
+
+**为什么必需**：本仓库刚因 bat 的编码/行尾踩过坑（LF-only 的 `.bat` 在部分 cmd 版本下解析异常）；
+二进制文档若被当文本做行尾转换会直接损坏。验证：`git check-attr` 显示 `*.bat → eol:crlf`、`.githooks/* → eol:lf`，
+且 `git status` 变更条目未暴增（无"行尾重写风暴"）。
+
+**4. ⚠️ 安全排查发现高危遗留（需人工决策）**
+
+`git log --all --diff-filter=A` 查明历史中**曾被新增**（虽已在 `831d1776` 移出索引，但**历史对象仍在**，
+public 仓库下 `git log -p` 即可取回）：
+
+```
+api-platform/keys/alipay_private_key.pem        ← 支付宝私钥
+api-platform/keys/alipay_private_key_pkcs1.pem
+api-platform/keys/alipay_public_key.pem
+OwnerServer/users.db                            ← 用户数据库
+```
+
+- **唯一止损手段是轮换支付宝密钥**（在支付宝开放平台重新生成密钥对并更新部署配置）——清理历史无法收回已克隆者手里的私钥。
+- 彻底清理需重写历史（`git filter-repo` 移除 `keys/` 与 `node_modules`）：会变更**所有 commit hash**、
+  需 `push --force`、协作者要重新 clone → **破坏性操作，待用户批准后执行**。
+- `.git` 体积 37.7MB，主因是历史中 **9 个 `node_modules` 提交**，同样只能靠重写历史缩小。
+
 ## 3. 待办项详细计划
 
-### 3.1 P1-4 巨型文件拆分 📋
+### 3.1 P1-4 巨型文件拆分 🔄（1/5 已完成）
 
 | 文件 | 现状 | 拆分方案 | 风险 |
 |------|------|----------|------|
 | `src/api/v1/repositories.py` | ≈ 78KB / 2300+ 行 | 按子域拆为 `repositories/`（crud / endpoints / limits / approval / proxy）包 | 高（同文件大量共享辅助函数，需先抽 `_shared.py`） |
-| `src/services/payment_service.py` | ≈ 44KB | 拆为 `payment/`（packages / alipay / callback / query） | 中 |
+| ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
 | `web/src/pages/developer/Recharge.tsx` | ≈ 76KB | 拆组件 + 抽 `useRechargeFlow` Hook | 中 |
 | `web/src/pages/owner/Repos.tsx` | ≈ 38KB | 拆为列表/表单/详情三个组件 | 中 |
 | `web/src/pages/admin/Analytics.tsx` | ≈ 34KB | 拆图表组件 | 低 |
@@ -514,7 +963,7 @@ CI 中其实**一直有** `npx tsc --noEmit`（`cicd.yml` 第 124-127 行），
 
 ---
 
-### 3.2 P1-6 统计预聚合 📋
+### 3.2 P1-6 统计预聚合 ✅（三步已全部落地，保留供追溯）
 
 **问题**：`dashboard/stats`、`analytics/*` 直接对 `repositories` / `accounts` / `api_keys` / `api_call_logs` 做实时 `COUNT/SUM/GROUP BY`，数据量增长后会拖垮主库。
 

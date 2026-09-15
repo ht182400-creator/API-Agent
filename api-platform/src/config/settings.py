@@ -129,6 +129,14 @@ class Settings(BaseSettings):
     # 生产环境该接口直接下线（返回 404），不受此配置影响
     internal_api_token: str = ""
 
+    # 支付回调来源 IP 白名单（逗号分隔的 IPv4/IPv6 地址或 CIDR 网段，如
+    # "110.75.0.0/16,100.116.0.0/14"）。
+    # 作用于 /payments/alipay/callback 与 /payments/callback：不在名单内的直连来源
+    # 一律拒绝（403）。**未配置或为空 = 关闭校验**（保持既有部署行为不变）。
+    # ⚠️ 安全决策只基于**直连 IP**（request.client.host），不使用 X-Forwarded-For
+    #    （可伪造）。反代/负载均衡部署时，请将代理出口 IP 加入名单。
+    payment_callback_ip_allowlist: str = ""
+
     # 分库护栏豁免：非生产环境**显式**允许连接生产库（危险，仅限确需的场景）
     # 默认 False —— 非生产环境若检测到 DATABASE_URL 指向疑似生产库，将拒绝启动
     allow_production_database: bool = False
