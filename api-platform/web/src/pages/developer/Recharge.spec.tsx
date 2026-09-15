@@ -339,6 +339,29 @@ describe('下单', () => {
     await waitFor(() => expect(paymentApi.createPayment).toHaveBeenCalled())
     expect(mocks.showError).not.toHaveBeenCalled()
   })
+
+  /**
+   * ⚠️ 这条覆盖 **原缺陷的真实触发形态**，与 TC-FE-RECHARGE-009 互补、缺一不可：
+   *
+   *   - 009：clientLog **同步抛错**   → 源码的 `try/catch` 能兜住；
+   *   - 本条：clientLog **返回 undefined**（非 Promise）→ 源码的 `.catch(...)` 直接抛
+   *     `TypeError: Cannot read properties of undefined (reading 'catch')`，
+   *     这才是当初"点充值完全没反应"的真正原因。
+   *
+   * （差异由变异检验暴露：只保留 009 时，去掉 `Promise.resolve` 包壳后用例仍然通过。）
+   */
+  it('TC-FE-RECHARGE-016: 日志接口返回非 Promise（undefined）时也不得中断下单', async () => {
+    vi.mocked(paymentApi.clientLog).mockReturnValue(undefined as never)
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('入门包'))
+    await clickRechargeButton()
+
+    await waitFor(() => expect(paymentApi.createPayment).toHaveBeenCalled())
+    expect(mocks.showError).not.toHaveBeenCalled()
+  })
 })
 
 /**

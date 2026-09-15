@@ -198,8 +198,11 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **143 passed**
-（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 15；其中 TC-FE-API-008 参数化展开为 10 条）。
+**当前结果**：`npm run test:unit` → **144 passed**
+（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 16；其中 TC-FE-API-008 参数化展开为 10 条）。
+
+> ⚠️ **用例有效性由变异检验保障**：`npm run verify:fixes` 会把每个已修复的缺陷**改回缺陷形态**，
+> 再跑对应用例 —— 用例必须变红，否则判定为"空测试"。详见 `web/scripts/dev/verify-fixes.mjs`。
 **类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
 
 > 本节只覆盖**工具层**（权限判定 / 请求层）。**页面级**用例见 **§2.5**；

@@ -715,7 +715,10 @@ export default function OwnerRepos() {
             {selectedRepo.endpoints && selectedRepo.endpoints.length > 0 ? (
               <Table
                 dataSource={selectedRepo.endpoints}
-                rowKey={(record) => `${record.method}-${record.path}`}
+                // ⚠️ 原为 `${record.method}-${record.path}`：一旦端点缺这两个字段，
+                //    key 会退化成 "undefined-undefined" 并重复（React 告警、且行更新可能错乱）。
+                //    现优先用 id，并以 index 兜底保证**恒唯一**。
+                rowKey={(record, index) => `${record.id || `${record.method}-${record.path}`}-${index}`}
                 pagination={false}
                 size="small"
                 columns={[

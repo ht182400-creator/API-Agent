@@ -61,7 +61,11 @@ const repoList = [
     status: 'online',
     description: '天气查询',
     created_at: '2026-09-01T00:00:00Z',
-    endpoints: [{ id: 'e1' }, { id: 'e2' }],
+    // ⚠️ 补全 method/path：此前只有 id，导致详情抽屉的 rowKey 退化成 "undefined-undefined"（重复 key 告警）
+    endpoints: [
+      { id: 'e1', method: 'GET', path: '/current' },
+      { id: 'e2', method: 'POST', path: '/forecast' },
+    ],
   },
   {
     id: 'r2',

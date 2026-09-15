@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 14,
-      "cases": 143,
+      "cases": 144,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -181,7 +181,8 @@
         { "id": "TC-FE-RECHARGE-012", "name": "超过 30 分钟的暂存作废并清理（不发确认请求）", "status": "done" },
         { "id": "TC-FE-RECHARGE-013", "name": "取消订单后扫码轮询必须停止（不再向后端查询）", "status": "done" },
         { "id": "TC-FE-RECHARGE-014", "name": "组件卸载后定时器必须清理（不得继续轮询）", "status": "done" },
-        { "id": "TC-FE-RECHARGE-015", "name": "自定义模式赠送比例按百分比显示（不拿金额冒充）", "status": "done" }
+        { "id": "TC-FE-RECHARGE-015", "name": "自定义模式赠送比例按百分比显示（不拿金额冒充）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-016", "name": "日志接口返回非 Promise（undefined）时也不得中断下单（原缺陷真实形态）", "status": "done" }
       ]
     },
     {
