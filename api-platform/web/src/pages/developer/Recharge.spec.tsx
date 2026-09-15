@@ -508,3 +508,32 @@ describe('扫码轮询的停止', () => {
     expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtUnmount)
   }, 20000)
 })
+
+/**
+ * 自定义模式「赠送比例」的显示口径。
+ *
+ * ⚠️ 这条同样是**暴露真实缺陷**的用例：
+ *    `default_bonus_ratio` 是**小数**（0.05），但页面写成 `+(customAmount * ratio)%`
+ *    —— 算出来是**金额**却标了 `%`。数额越大越离谱：
+ *      充 200 → 显示「+10%」（实际 5%，看着像对的，纯属巧合）
+ *      充 500 → 显示「+25%」（实际仍是 5%）
+ *
+ * ⚠️ 注意与套餐的 `bonus_ratio` 区分：后者是**百分数**（10 表示 10%，
+ *    见 calcArrivedAmount 里的 `bonus_ratio / 100`）。两个后端字段的语义不一致，
+ *    这正是当初写错的原因。
+ */
+describe('自定义模式赠送比例的显示', () => {
+  it('TC-FE-RECHARGE-015: 赠送比例按"百分比"显示，而不是拿金额冒充百分比', async () => {
+    // beforeEach 里 default_bonus_ratio = 0.05（即 5%）
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('自定义金额'))
+    await fillCustomAmount('500')
+
+    // 无论充多少，赠送比例都应显示 5%
+    await waitFor(() => expect(screen.getByText('+5%')).toBeInTheDocument())
+    // 修复前这里会是「+25%」（500 × 0.05），一个随金额变化、不可能正确的"百分比"
+    expect(screen.queryByText('+25%')).not.toBeInTheDocument()
+  })
+})

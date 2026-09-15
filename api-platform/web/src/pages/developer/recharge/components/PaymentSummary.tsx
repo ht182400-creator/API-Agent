@@ -6,11 +6,16 @@
  *
  * 纯展示 + 一个受控输入：不持有状态，金额与回调由父组件传入。
  *
- * ⚠️ 已知显示缺陷（拆分时**原样保留**，未顺手改行为，待确认后再动）：
- *    自定义模式下的「赠送金额」写成 `+{(customAmount||0) * default_bonus_ratio}%`，
- *    但 `default_bonus_ratio` 是**小数**（如 0.05）—— 于是它算出来的是**金额**却标了「%」。
- *    例：充 200、ratio=0.05 → 显示「+10%」，而实际赠送是 10 元（10% 是巧合）。
- *    若要修，应为 `+{default_bonus_ratio * 100}%` 或 `+¥{customAmount * ratio}`。
+ * ⚠️ 已修复的显示缺陷（TC-FE-RECHARGE-015 覆盖）：
+ *    自定义模式的「赠送金额」原写作 `+{(customAmount||0) * default_bonus_ratio}%`，
+ *    但 `default_bonus_ratio` 是**小数**（0.05）—— 算出的是**金额**却标了「%」，
+ *    于是一个"不可能正确的百分比"会随充值额变化：
+ *      充 200 → 显示「+10%」、充 500 → 显示「+25%」（实际恒为 5%，前面看着对纯属巧合）。
+ *    现改为 `+{ratio * 100}%`。
+ *
+ * ⚠️ 字段语义差异（写错的根源，务必区分）：
+ *    - `rechargeConfig.default_bonus_ratio` = **小数**（0.05 表示 5%）
+ *    - `RechargePackage.bonus_ratio`       = **百分数**（10 表示 10%，见 calcArrivedAmount 的 `/100`）
  */
 import { Descriptions, InputNumber, Typography } from 'antd'
 import type { RechargeConfig, RechargePackage } from '../../../../api/payment'
@@ -72,8 +77,8 @@ export function PaymentSummary({
           </Descriptions.Item>
           <Descriptions.Item label="赠送金额">
             {rechargeConfig && customRatio > 0 ? (
-              // ⚠️ 见文件顶部「已知显示缺陷」：这里把金额当成了百分比
-              <Text type="warning">+{(customAmount || 0) * customRatio}%</Text>
+              // 比例与充值额无关：0.05 → +5%
+              <Text type="warning">+{customRatio * 100}%</Text>
             ) : (
               '无'
             )}
