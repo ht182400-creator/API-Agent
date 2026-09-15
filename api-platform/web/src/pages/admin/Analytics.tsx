@@ -49,27 +49,12 @@ import {
 import { adminAnalyticsApi, AdminOverview, TrendData, RepoDetailItem, RepoTrendData } from '../../api/adminAnalytics'
 import { useNavigate } from 'react-router-dom'
 import styles from './Analytics.module.css'
+// 【P1-4 拆分】状态映射与图表数据整形已抽到同目录 `analytics/`（纯数据 / 纯函数，均已单测）
+import { statusColors, statusText } from './analytics/constants'
+import { buildRepoTrendChartData, buildTrendChartData } from './analytics/chartData'
 
 const { Title, Text } = Typography
 const { TabPane } = Tabs
-
-// 状态颜色映射
-const statusColors: Record<string, string> = {
-  online: 'green',
-  pending: 'orange',
-  approved: 'blue',
-  rejected: 'red',
-  offline: 'default'
-}
-
-// 状态文本映射
-const statusText: Record<string, string> = {
-  online: '已上线',
-  pending: '待审核',
-  approved: '已审核',
-  rejected: '已拒绝',
-  offline: '已下线'
-}
 
 export default function AdminAnalytics() {
   const navigate = useNavigate()
@@ -208,9 +193,11 @@ export default function AdminAnalytics() {
   }
 
   // 初始化加载
+  // 【2026-09-15 修复】原先这里也调用了 loadTrend()，但紧随其后的
+  // `[trendPeriod, trendDays]` effect 在挂载时同样会执行（初始 activeTab='overview' 满足其条件）
+  // → 首屏会**重复请求**一次趋势数据（实测 2 次）。此处去掉，行为等价且少一次查询。
   useEffect(() => {
     loadOverview()
-    loadTrend()
     loadRepoDetails()
   }, [])
 
@@ -228,15 +215,7 @@ export default function AdminAnalytics() {
     }
   }, [activeTab, repoPagination.page, detailStatus, detailSortBy, detailSortOrder])
 
-  // 准备趋势图表数据
-  const getTrendChartData = () => {
-    if (!trendData) return []
-    return trendData.labels.map((label, index) => ({
-      time: label,
-      calls: trendData.series.calls[index] || 0,
-      revenue: trendData.series.revenue[index] || 0
-    }))
-  }
+  // 趋势图表数据改由 `analytics/chartData.ts` 的 buildTrendChartData(trendData) 生成（纯函数，已单测）
 
   // 仓库明细表格列
   const repoDetailColumns = [
@@ -523,7 +502,7 @@ export default function AdminAnalytics() {
                 >
                   <Spin spinning={trendLoading}>
                     <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={getTrendChartData()}>
+                      <LineChart data={buildTrendChartData(trendData)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="time" tick={{ fontSize: 12 }} />
                         <YAxis 
@@ -609,7 +588,7 @@ export default function AdminAnalytics() {
                   }
                 >
                   <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={getTrendChartData()}>
+                    <LineChart data={buildTrendChartData(trendData)}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="time" tick={{ fontSize: 12 }} />
                       <YAxis 
@@ -657,7 +636,7 @@ export default function AdminAnalytics() {
                 {/* 数据统计表 */}
                 <Card title="趋势数据明细" className={styles.dataTable}>
                   <Table
-                    dataSource={getTrendChartData()}
+                    dataSource={buildTrendChartData(trendData)}
                     rowKey="time"
                     pagination={false}
                     size="small"
@@ -880,14 +859,7 @@ export default function AdminAnalytics() {
             {repoTrendData ? (
               <>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={
-                    repoTrendData.labels.map((label, index) => ({
-                      time: label,
-                      calls: repoTrendData.series.calls[index] || 0,
-                      revenue: repoTrendData.series.revenue[index] || 0,
-                      avgLatency: repoTrendData.series.avg_latency[index] || 0
-                    }))
-                  }>
+                  <LineChart data={buildRepoTrendChartData(repoTrendData)}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="time" tick={{ fontSize: 12 }} />
                     <YAxis

@@ -3,7 +3,7 @@
  * 支持响应式布局，适配桌面端和移动端
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import '../../styles/cyber-theme.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { Form, Input, Button, Card, Checkbox, message } from 'antd'
@@ -28,8 +28,13 @@ const getCardClassName = (isMobile: boolean): string => {
 // 存储上次登录的用户名/邮箱，用于退出后清空
 let lastLoginIdentifier = ''
 
-// 用户类型映射到重定向路径
-const getRedirectPath = (userType: string): string => {
+/**
+ * 用户类型 → 登录后重定向路径。
+ *
+ * 【可测性】导出以便单测：这是登录流程的关键分支（类型 → 落地页），
+ * 一旦映射写错，用户登录后会被送到无权访问的页面。
+ */
+export const getRedirectPath = (userType: string): string => {
   switch (userType) {
     case 'super_admin':
       return '/superadmin'
@@ -68,8 +73,18 @@ export default function Login() {
   // 是否使用紧凑模式（移动端或平板竖屏）
   const isCompact = isMobile || isTablet
 
+  // 【2026-09-15 修复】用户是否已主动输入。
+  // 原实现在挂载后 300/1000/2000ms 无条件清空输入框（本意是对抗浏览器自动填充），
+  // 但它会把用户**正在输入**的内容一并清掉 —— 实测逐字符输入 `admin@example.com` 时被
+  // 300ms 那次清空，最终只提交了 `username="com"`（慢速输入/移动端/长邮箱真实会踩）。
+  // 现在：一旦检测到用户交互（onValuesChange）就彻底停止该机制。
+  const userInteractedRef = useRef(false)
+
   // 清除输入框中的浏览器自动填充数据
   const clearAutofillData = useCallback(() => {
+    // 用户已开始输入 → 不再干预，否则会吞掉正在输入的内容
+    if (userInteractedRef.current) return
+
     // 清除所有密码输入框
     const passwordInputs = document.querySelectorAll('input[type="password"]')
     passwordInputs.forEach((input) => {
@@ -216,6 +231,10 @@ export default function Login() {
             form={form}
             name="login"
             onFinish={onFinish}
+            // 用户一旦改动任一字段即标记为"已交互" → 停止自动清空（见 clearAutofillData）
+            onValuesChange={() => {
+              userInteractedRef.current = true
+            }}
             autoComplete="off"
             size={isMobile ? 'middle' : 'large'}
           >

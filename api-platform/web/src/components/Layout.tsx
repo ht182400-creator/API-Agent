@@ -42,7 +42,6 @@ import type { MenuProps } from 'antd'
 import { useAuthStore } from '../stores/auth'
 import { authApi } from '../api/auth'
 import { notificationApi, Notification } from '../api/notification'
-import { api } from '../api/client'
 import { useDevice } from '../hooks/useDevice'  // 【移动端适配】引入设备检测Hook
 import styles from './Layout.module.css'
 
@@ -128,24 +127,6 @@ const developerWithReposMenu: MenuProps['items'] = [
   { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
 
-// 【V4.2新增】开发者菜单（无仓库版本）
-// 【V5.0更新】默认显示仓库管理入口，API 会正确返回空列表
-const developerWithoutReposMenu: MenuProps['items'] = [
-  { key: '/', icon: <DashboardOutlined />, label: '工作台' },
-  { key: '/developer/keys', icon: <KeyOutlined />, label: 'API Keys' },
-  { key: '/developer/repos', icon: <ShopOutlined />, label: '仓库市场' },
-  // 【V5.0更新】仓库管理入口 - 默认显示，让开发者能访问
-  { key: '/owner/repos', icon: <FolderOutlined />, label: '仓库管理' },
-  { key: '/developer/quota', icon: <PieChartOutlined />, label: '配额使用' },
-  { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
-  { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
-  { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
-  // 注意：antd 的 divider 类型不支持 label。如需带文字的分组，应改用 type: 'group' + children
-  { type: 'divider' },
-  { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
-  { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
-]
-
 // 管理员菜单
 const adminMenu: MenuProps['items'] = [
   { key: '/admin', icon: <DashboardOutlined />, label: '工作台' },
@@ -190,7 +171,10 @@ const superAdminMenu: MenuProps['items'] = [
 
 // 根据用户类型获取菜单
 // 【V5.0更新】统一开发者菜单，所有开发者都能看到仓库管理入口
-const getMenuItems = (userType: string, userHasRepos: boolean = false): MenuProps['items'] => {
+// 【可测性】导出以便单测：菜单决定"用户看得到哪些入口"，属**越权可见性**的展示层防线。
+// 【2026-09-15 清理】原先的 `userHasRepos` 参数自 V5.0 起不再影响任何分支
+//   （developer 统一走 developerWithReposMenu），已随 developerWithoutReposMenu 一并移除。
+export const getMenuItems = (userType: string): MenuProps['items'] => {
   switch (userType) {
     case 'super_admin':
       return superAdminMenu
@@ -219,8 +203,6 @@ export default function Layout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [notificationOpen, setNotificationOpen] = useState(false)
-  // 【V4.2新增】用户是否有仓库的状态
-  const [hasRepos, setHasRepos] = useState(false)
   // 【L5 新增】运行环境标识 —— 用于顶栏环境徽标与生产环境警示条
   const [envInfo, setEnvInfo] = useState<{
     environment: string
@@ -277,17 +259,6 @@ export default function Layout() {
     }
   }, [])
 
-  // 【V4.2新增】检查用户是否有仓库
-  const fetchHasRepos = useCallback(async () => {
-    try {
-      const result = await api.get<{ has_repos: boolean; repo_count: number }>('/user/has-repos')
-      setHasRepos(result.has_repos || false)
-    } catch (error) {
-      console.error('检查仓库失败:', error)
-      setHasRepos(false)
-    }
-  }, [])
-
   // 获取最近通知
   const fetchRecentNotifications = useCallback(async () => {
     try {
@@ -331,12 +302,8 @@ export default function Layout() {
     if (user && !loading) {
       fetchUnreadCount()
       fetchRecentNotifications()
-      // 【V4.2新增】检查用户是否有仓库（开发者及以上角色）
-      if (['developer', 'owner', 'admin', 'super_admin'].includes(user.user_type)) {
-        fetchHasRepos()
-      }
     }
-  }, [user, loading, fetchUnreadCount, fetchRecentNotifications, fetchHasRepos])
+  }, [user, loading, fetchUnreadCount, fetchRecentNotifications])
 
   // 标记单条通知已读
   const handleMarkAsRead = async (notificationId: string, e: React.MouseEvent) => {
@@ -502,7 +469,7 @@ export default function Layout() {
             mode="inline"
             selectedKeys={[selectedKeys]}
             defaultOpenKeys={[firstLevelPath]}
-            items={getMenuItems(user?.user_type || 'user', hasRepos)}
+            items={getMenuItems(user?.user_type || 'user')}
             onClick={({ key }) => navigate(key)}
             className={styles.menu}
           />
@@ -539,7 +506,7 @@ export default function Layout() {
               mode="inline"
               selectedKeys={[selectedKeys]}
               defaultOpenKeys={[firstLevelPath]}
-              items={getMenuItems(user?.user_type || 'user', hasRepos)}
+              items={getMenuItems(user?.user_type || 'user')}
               onClick={({ key }) => {
                 navigate(key)
                 setDrawerVisible(false) // 点击后关闭抽屉

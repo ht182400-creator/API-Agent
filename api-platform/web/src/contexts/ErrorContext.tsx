@@ -31,8 +31,8 @@ export enum ErrorType {
   UNKNOWN = 'unknown',         // 未知错误
 }
 
-// 错误配置
-interface ErrorConfig {
+// 错误配置（导出以便单测断言文案表完整性）
+export interface ErrorConfig {
   icon: React.ReactNode
   title: string
   subTitle: string
@@ -49,7 +49,9 @@ const authErrorConfigByCode: Record<number, { title: string; subTitle: string }>
 }
 
 // 获取认证错误的配置（根据错误码）
-function getAuthErrorConfig(error: any): ErrorConfig {
+// 【可测性】导出以便单测：认证错误码 → 弹窗文案（40101 密码错 / 40102 登录过期 /
+// 40103~40105 API Key 各种失效），文案错了用户无法判断该重登还是该换 Key。
+export function getAuthErrorConfig(error: any): ErrorConfig {
   const code = error?.response?.data?.code || error?.code
   const customConfig = authErrorConfigByCode[code]
   
@@ -71,7 +73,8 @@ function getAuthErrorConfig(error: any): ErrorConfig {
   }
 }
 
-const errorConfigs: Record<ErrorType, ErrorConfig> = {
+// 【可测性】导出以便单测：7 种错误类型的标题/副标题文案表（全局兜底文案）
+export const errorConfigs: Record<ErrorType, ErrorConfig> = {
   [ErrorType.AUTH]: {
     icon: <LogoutOutlined style={{ color: '#faad14', fontSize: 48 }} />,
     title: '登录已过期',
@@ -128,12 +131,23 @@ interface ErrorContextType {
 const ErrorContext = createContext<ErrorContextType | null>(null)
 
 // 解析错误类型
-function parseErrorType(error: any): ErrorType {
+// 【可测性】导出以便单测：HTTP 状态码 / 消息关键词 → 错误类型的分类矩阵
+// （分类错了会把"数据验证失败"显示成"服务器故障"，直接影响用户下一步动作）。
+export function parseErrorType(error: any): ErrorType {
   if (!error) return ErrorType.UNKNOWN
 
   const status = error.response?.status || error.status
   const data = error.response?.data
   const message = (error.message || '').toLowerCase()
+
+  // 【2026-09-15 修复】axios 的**超时/网络类**错误把错误码放在 `error.code` 上，而非 `status`。
+  //   原实现写成 `case 'ECONNABORTED'` / `case 'Network Error'`，实际是拿这两个值去和
+  //   `status` 比较 → 分支**永远不可达**，导致请求超时（且消息里不含"网络/连接"等词时）
+  //   被展示为"操作失败（未知错误）"，而不是"网络连接失败"。此处显式识别常见网络错误码。
+  const networkErrorCodes = ['ECONNABORTED', 'ETIMEDOUT', 'ERR_NETWORK', 'ERR_CONNECTION_REFUSED']
+  if (typeof error.code === 'string' && networkErrorCodes.includes(error.code)) {
+    return ErrorType.NETWORK
+  }
 
   // 根据状态码判断
   switch (status) {
@@ -160,8 +174,8 @@ function parseErrorType(error: any): ErrorType {
     case 504:
       return ErrorType.SERVER
     case 0:
-    case 'ECONNABORTED':
-    case 'Network Error':
+      // status=0 表示请求未到达服务端（网络中断 / 被拦截）
+      // 注：`ECONNABORTED` / `Network Error` 已由上方 error.code 判断处理（原先写在 case 里不可达）
       return ErrorType.NETWORK
     default:
       // 根据错误消息关键词判断
@@ -179,7 +193,8 @@ function parseErrorType(error: any): ErrorType {
 }
 
 // 提取友好的错误消息
-function extractErrorMessage(error: any): string {
+// 【可测性】导出以便单测：后端 message/detail 优先、超长截断（200 字符）、各类兜底
+export function extractErrorMessage(error: any): string {
   if (!error) return '未知错误'
 
   // 优先使用后端返回的 message

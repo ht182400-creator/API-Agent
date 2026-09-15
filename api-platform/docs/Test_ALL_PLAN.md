@@ -26,8 +26,15 @@ web/e2e/
 └── api-contract.spec.ts      # 前后端联测（API 契约）[新增]
 
 web/src/**/*.spec.ts(x)       # 前端单元测试（Vitest）[新增]
+├── src/test/renderWithProviders.tsx  # 组件测试统一挂载助手（Router + ErrorProvider）
 ├── src/config/permissions.spec.ts   # 权限判定（越权防护第一道门）
-└── src/api/client.spec.ts           # 请求层（认证头/统一解包/错误文案/401 自动登出）
+├── src/api/client.spec.ts           # 请求层（认证头/统一解包/错误文案/401 自动登出）
+├── src/hooks/useDevice.spec.ts      # 响应式断点判定
+├── src/pages/auth/Login.spec.tsx    # 登录页（类型→落地页、邮箱/用户名判别、写 store）
+├── src/pages/admin/Analytics.spec.tsx          # 分析页冒烟（三数据源 / 报错不白屏）
+└── src/pages/admin/analytics/chartData.spec.ts # 图表数据整形纯函数
+
+web/tests/cases/frontend_cases.json  # 前端测试用例库（全量页面清单 + 优先级 + 覆盖状态）[新增]
 ```
 
 ---
@@ -191,8 +198,12 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **35 passed**（permissions 13 + client 22，其中 TC-FE-API-008 参数化展开为 10 条）。
+**当前结果**：`npm run test:unit` → **76 passed**
+（8 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 4 + chartData 5；其中 TC-FE-API-008 参数化展开为 10 条）。
 **类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
+
+> 本节只覆盖**工具层**（权限判定 / 请求层）。**页面级**用例见 **§2.5**；
+> 全量页面清单、优先级与覆盖状态见用例库 `web/tests/cases/frontend_cases.json`。
 
 ### 2.4 前后端联测（API 契约）[新增]
 
@@ -225,6 +236,76 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-E2E-API-012 | 登出契约 ↔ 前端 `authApi.logout` | `POST /auth/logout`（带 token） | 200；`code=0` |
 
 **当前结果**：**12 passed**（对真实后端 development / simulation 环境实测）。
+
+### 2.5 前端页面测试（组件级，Vitest）[新增]
+
+**为什么补这一层**：截至 2026-09-15，前端有 **51 个页面/组件**，但单测只覆盖
+`permissions` / `client` 两个工具模块 —— **没有任何页面级测试**。后果是：
+`tsc --noEmit` 只保证类型自洽，而**页面白屏 / 渲染错位 / 接口没被调用**这类缺陷
+只能靠人工点或 E2E 兜（E2E 依赖真实后端与浏览器，跑得慢，不适合当提交前防线）。
+
+**基建（`src/test/renderWithProviders.tsx`）**：统一在 `MemoryRouter + ErrorProvider`
+下渲染组件 —— `useError` 在 Provider 外会直接 throw，而页面普遍依赖二者，
+手写包裹层既啰嗦又容易漏（漏了表现为测试内白屏，错误信息还不指向真实原因）。
+
+**用例编号**：`TC-FE-<模块>-NNN`（沿用既有 `TC-FE-PERM` / `TC-FE-API` 约定）。
+**用例库**：`web/tests/cases/frontend_cases.json` —— 全量 51 个文件按 P0~P3 分级，
+逐项标注关键用例与**覆盖状态**，未覆盖项一律可见，避免"没人认领的盲区"。
+
+**覆盖优先级（为什么这么排）**：
+1. **P0 入口 / 骨架 / 全局机制** —— 坏了全站不可用：`Login`、`Register`、
+   `Layout`（菜单按权限渲染，属**越权可见性**）、`ErrorContext`、`useDevice`；
+2. **P1 巨型页面 + 资金/审核链路** —— 改动频繁、影响面大：`Recharge`(2001)、
+   `Repos`(1059/924)、`Analytics`(964)、`ApiTester`、`ConsumptionDetails`、`paymentErrors`；
+3. **P2 一般业务页**、**P3 展示型组件**。
+
+| 用例ID | 用例 | 被测文件 | 类型 | 状态 |
+|--------|------|----------|------|------|
+| TC-FE-DEVICE-001~005 | 4 个断点边界 / 布尔标志互斥 / 横竖屏 / resize 同步 / 卸载清监听 | `hooks/useDevice.ts` | 纯逻辑 | ✅ |
+| TC-FE-LOGIN-001 | 用户类型 → 落地页映射（含 unknown 兜底） | `pages/auth/Login.tsx` | 纯逻辑 | ✅ |
+| TC-FE-LOGIN-002~007 | 渲染 / 空表单被拦截 / 邮箱判别 / 用户名判别 / 成功写 store / 缺 token 不写 store | 同上 | 组件 | ✅ |
+| TC-FE-LOGIN-008 | 逐字符真实输入长邮箱不被自动清空截断（已修缺陷的回归） | 同上 | 组件 | ✅ |
+| TC-FE-ANA-001~004 | 首屏渲染+三数据源 / 数据落卡片 / 刷新追加请求 / 报错不白屏 | `pages/admin/Analytics.tsx` | 组件 | ✅ |
+| TC-FE-ANA-DATA-001~005 | 图表整形纯函数（null / 对齐 / 补齐 / avgLatency） | `pages/admin/analytics/chartData.ts` | 纯逻辑 | ✅ |
+| TC-FE-LAYOUT-001~006 | 各角色菜单可见性（超管/admin/developer/owner/普通用户/未知兜底）：越权入口不得出现 | `components/Layout.tsx` | 纯逻辑 | ✅ |
+| TC-FE-LAYOUT-007~008 | 组件渲染菜单入口 / 登出清空登录态 | 同上 | 组件 | 📋 |
+| TC-FE-ERRCTX-001~010 | 状态码分类矩阵 / 业务码区间 / 关键词兜底 / 文案提取与截断 / 认证码映射 / 兜底文案表完整性 | `contexts/ErrorContext.tsx` | 纯逻辑 | ✅ |
+| TC-FE-ERRCTX-011~013 | Provider 外抛错 / 认证错误弹窗文案 / 服务器错误弹窗 | 同上 | 组件 | ✅ |
+| TC-FE-RECHARGE-001~005 | 套餐渲染 / 优惠计算 / 自定义金额边界 / 下单 / 记录分页 | `pages/developer/Recharge.tsx` | 组件 | 📋 |
+| TC-FE-OREPO-001~004 / TC-FE-AREPO-001~003 | 仓库列表、表单、端点批量、审核上下线 | `pages/{owner,admin}/Repos.tsx` | 组件 | 📋 |
+| TC-FE-TESTER-001~003 | 端点列表 / 动态表单 / 响应面板 | `pages/developer/ApiTester.tsx` | 组件 | 📋 |
+| TC-FE-PAYERR-001~003 | 支付错误码 → 用户可读文案映射 | `utils/paymentErrors.tsx` | 纯逻辑 | 📋 |
+| TC-FE-ADMINMISC / DEVMISC-001~002 | 其余 21 个页面：首屏渲染 + 报错不白屏（统一骨架） | 各页面 | 组件 | 📋 |
+
+**⚠️ 本层挖出的真实缺陷：4 条，**全部已修复**（详见用例库 `knownDefects` 字段）**：
+
+1. **✅ `Login.tsx` 的自动清空定时器会截断用户输入** —— 挂载后 300/1000/2000ms 各执行一次
+   `clearAutofillData()`（为对抗浏览器自动填充）。实测用 `user.type` 逐字符输入
+   `admin@example.com`，300ms 的定时器把已输入内容清空，**最终只提交了 `username="com"`**；
+   5 字符的 `admin` 因耗时 <300ms 而未受影响（慢速输入 / 移动端 / 弱网真实会踩）。
+   **修法**：新增 `userInteractedRef` —— 由 `Form` 的 `onValuesChange` 置位，
+   `clearAutofillData()` 首行早返回（**用户一旦交互即停止干预**）。
+   **回归用例：`TC-FE-LOGIN-008`**（刻意保留真实 `user.type` 逐字符输入，修复前必失败）。
+2. **✅ `Analytics.tsx` 首屏 `getTrend` 重复请求** —— `[]` 与 `[trendPeriod, trendDays]`
+   两个 `useEffect` 都会触发它；已从 `[]` 中移除该调用（挂载时由另一个 effect 负责，行为等价），
+   首屏只请求一次。**回归断言：`TC-FE-ANA-001`**。
+3. **✅ `ErrorContext.parseErrorType` 的超时分支不可达** —— 原写成
+   `case 'ECONNABORTED'` / `case 'Network Error'`，实际是拿这两个值与 `status` 比较，
+   而 axios 把该错误码放在 **`error.code`** 上 → 分支永不命中，请求超时会被显示为
+   "操作失败（未知错误）"而非"网络连接失败"。已在 `switch` 前显式识别
+   `ECONNABORTED` / `ETIMEDOUT` / `ERR_NETWORK` / `ERR_CONNECTION_REFUSED`，
+   并删除原先不可达的 case。**回归断言：`TC-FE-ERRCTX-001`**。
+4. **✅ `Layout` 死代码** —— `developerWithoutReposMenu` 自 V5.0 起无任何引用
+   （developer 统一走 `developerWithReposMenu`），`getMenuItems` 的 `userHasRepos` 参数
+   也不再影响任何分支。二者已移除，并**连带清理**只为该参数服务的 `hasRepos` 状态、
+   `fetchHasRepos()` 与 `/user/has-repos` 请求（少一次无谓请求）。
+
+**运行**：
+```bash
+cd d:/Work_Area/AI/API-Agent/api-platform/web
+npm run test:unit        # 单次运行（当前 76 passed）
+npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
+```
 
 ## 三、测试数据准备
 

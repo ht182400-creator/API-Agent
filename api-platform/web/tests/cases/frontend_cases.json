@@ -1,0 +1,480 @@
+{
+  "meta": {
+    "purpose": "前端测试用例库：把「所有页面/组件」纳入统一清单，标明优先级、关键用例与当前覆盖状态，避免测试盲区无人认领。",
+    "runner": "vitest (jsdom) 组件级；另见 web/e2e/*.spec.ts (Playwright) 页面级",
+    "commands": {
+      "unit": "cd api-platform/web && npm run test:unit",
+      "typecheck": "cd api-platform/web && npm run typecheck",
+      "e2e": "cd api-platform/web && npx playwright test"
+    },
+    "doc": "docs/Test_ALL_PLAN.md §2.5",
+    "helper": "src/test/renderWithProviders.tsx（Router + ErrorProvider 统一挂载）",
+    "conventions": [
+      "用例编号：TC-FE-<模块>-NNN（与既有 TC-FE-PERM / TC-FE-API 保持一致）",
+      "spec 与被测文件同级放置（src/**/*.spec.ts(x)）→ 自动纳入 tsc --noEmit",
+      "必须显式 import { describe, it, expect, vi } from 'vitest'（tsconfig 未启用 vitest 全局类型）",
+      "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
+    ],
+    "stats": {
+      "sourceFiles": 51,
+      "specFiles": 8,
+      "cases": 76,
+      "covered": [
+        "src/config/permissions.ts",
+        "src/api/client.ts",
+        "src/hooks/useDevice.ts",
+        "src/components/Layout.tsx (partial: 菜单可见性)",
+        "src/contexts/ErrorContext.tsx",
+        "src/pages/auth/Login.tsx",
+        "src/pages/admin/Analytics.tsx (partial)",
+        "src/pages/admin/analytics/chartData.ts"
+      ],
+      "note": "统计随用例增补更新（2026-09-15：35 → 56 → 76；P0 入口/骨架/全局机制已覆盖）"
+    },
+    "priorityLegend": {
+      "P0": "入口/骨架/全局机制：坏了全站不可用",
+      "P1": "巨型页面 + 高风险交互：业务主链路，改动频繁",
+      "P2": "一般业务页面：有明确数据加载与表单",
+      "P3": "小组件/展示层：状态简单，最后补"
+    }
+  },
+  "suites": [
+    {
+      "id": "FE-AUTH-LOGIN",
+      "level": "P0",
+      "file": "src/pages/auth/Login.tsx",
+      "lines": 277,
+      "why": "全站唯一入口；含「用户类型→落地页映射」与「邮箱/用户名自动判别」，错了会把人送到无权页面",
+      "status": "covered",
+      "specFile": "src/pages/auth/Login.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-LOGIN-001", "name": "用户类型→落地页映射（含 unknown 兜底）", "status": "done" },
+        { "id": "TC-FE-LOGIN-002", "name": "渲染标题/输入框/按钮/注册链接", "status": "done" },
+        { "id": "TC-FE-LOGIN-003", "name": "空表单提交被校验拦截且不发请求", "status": "done" },
+        { "id": "TC-FE-LOGIN-004", "name": "含 @ → 按 email 提交（且值完整）", "status": "done" },
+        { "id": "TC-FE-LOGIN-005", "name": "不含 @ → 按 username 提交", "status": "done" },
+        { "id": "TC-FE-LOGIN-006", "name": "成功写入 token 与 /auth/me 真实用户信息", "status": "done" },
+        { "id": "TC-FE-LOGIN-007", "name": "缺 access_token → 不写入登录态且不崩", "status": "done" },
+        { "id": "TC-FE-LOGIN-008", "name": "逐字符真实输入长邮箱不被自动清空截断（缺陷回归）", "status": "done" }
+      ]
+    },
+    {
+      "id": "FE-AUTH-REGISTER",
+      "level": "P0",
+      "file": "src/pages/auth/Register.tsx",
+      "lines": 215,
+      "why": "入口页；含注册表单校验与 user_type 选择",
+      "status": "planned",
+      "specFile": "src/pages/auth/Register.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-REG-001", "name": "渲染注册表单关键字段", "status": "planned" },
+        { "id": "TC-FE-REG-002", "name": "密码不一致/长度不足被拦截", "status": "planned" },
+        { "id": "TC-FE-REG-003", "name": "注册成功后跳登录页", "status": "planned" },
+        { "id": "TC-FE-REG-004", "name": "后端报错经统一错误处理呈现", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-LAYOUT",
+      "level": "P0",
+      "file": "src/components/Layout.tsx",
+      "lines": 707,
+      "why": "全站骨架；菜单按角色/权限渲染 —— 越权菜单可见性属安全问题",
+      "status": "partial",
+      "specFile": "src/components/Layout.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-LAYOUT-001", "name": "super_admin 只见超管入口（无 admin/developer 泄漏）", "status": "done" },
+        { "id": "TC-FE-LAYOUT-002", "name": "admin 含财务对账/计费配置子菜单，无超管入口", "status": "done" },
+        { "id": "TC-FE-LAYOUT-003", "name": "developer 含仓库市场+仓库管理，无 admin/超管入口", "status": "done" },
+        { "id": "TC-FE-LAYOUT-004", "name": "普通用户仅 /user/* 且不出现 API Keys 入口", "status": "done" },
+        { "id": "TC-FE-LAYOUT-005", "name": "owner 含 owner 专属的数据分析/收益结算", "status": "done" },
+        { "id": "TC-FE-LAYOUT-006", "name": "未知 user_type 兜底为普通用户菜单", "status": "done" },
+        { "id": "TC-FE-LAYOUT-007", "name": "组件渲染：按当前用户渲染菜单入口（非白屏）", "status": "planned" },
+        { "id": "TC-FE-LAYOUT-008", "name": "登出调用 authApi.logout 并清空 store", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ERROR-CTX",
+      "level": "P0",
+      "file": "src/contexts/ErrorContext.tsx",
+      "lines": 406,
+      "why": "全局错误处理：所有页面的失败路径都经过它；认证类错误码文案映射错了会误导用户",
+      "status": "covered",
+      "specFile": "src/contexts/ErrorContext.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-ERRCTX-001", "name": "状态码分类矩阵（401/403/404/410/422/400/429/5xx/0）", "status": "done" },
+        { "id": "TC-FE-ERRCTX-002", "name": "400 + 4xxxx 业务码 → 业务错误", "status": "done" },
+        { "id": "TC-FE-ERRCTX-003", "name": "无状态码时按消息关键词兜底", "status": "done" },
+        { "id": "TC-FE-ERRCTX-004", "name": "空输入 → UNKNOWN 且不抛错", "status": "done" },
+        { "id": "TC-FE-ERRCTX-005", "name": "友好文案：message 优先于 detail", "status": "done" },
+        { "id": "TC-FE-ERRCTX-006", "name": "超长文案截断为 200 字符 + ...", "status": "done" },
+        { "id": "TC-FE-ERRCTX-007", "name": "无可用字段的可读兜底", "status": "done" },
+        { "id": "TC-FE-ERRCTX-008", "name": "5 个认证错误码各有专属标题（40101~40105）", "status": "done" },
+        { "id": "TC-FE-ERRCTX-009", "name": "未登记认证码走默认「登录已过期」", "status": "done" },
+        { "id": "TC-FE-ERRCTX-010", "name": "7 种错误类型文案表完整（标题+副标题）", "status": "done" },
+        { "id": "TC-FE-ERRCTX-011", "name": "useError 在 Provider 外直接抛错（防误用）", "status": "done" },
+        { "id": "TC-FE-ERRCTX-012", "name": "showError 弹窗按认证错误码显示正确文案", "status": "done" },
+        { "id": "TC-FE-ERRCTX-013", "name": "服务器错误弹窗显示类型标题 + 原始消息", "status": "done" }
+      ],
+      "knownIssues": []
+    },
+    {
+      "id": "FE-HOOK-DEVICE",
+      "level": "P0",
+      "file": "src/hooks/useDevice.ts",
+      "lines": 217,
+      "why": "全站响应式分支依据（移动端抽屉/桌面侧栏、表格列数）；断点边界人工点不出来",
+      "status": "covered",
+      "specFile": "src/hooks/useDevice.spec.ts",
+      "cases": [
+        { "id": "TC-FE-DEVICE-001", "name": "4 个断点边界（575/576/767/768/991/992）", "status": "done" },
+        { "id": "TC-FE-DEVICE-002", "name": "四个布尔标志互斥且 desktop 兼容 largeDesktop", "status": "done" },
+        { "id": "TC-FE-DEVICE-003", "name": "横竖屏判定", "status": "done" },
+        { "id": "TC-FE-DEVICE-004", "name": "resize 后 deviceType/screenSize 同步", "status": "done" },
+        { "id": "TC-FE-DEVICE-005", "name": "卸载移除 resize/orientationchange 监听", "status": "done" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-ANALYTICS",
+      "level": "P1",
+      "file": "src/pages/admin/Analytics.tsx",
+      "lines": 964,
+      "why": "P1-4 待拆巨型页（后端同源 analytics 已拆分）；纯逻辑已抽出并单测，页面本体为冒烟",
+      "status": "partial",
+      "specFile": "src/pages/admin/Analytics.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-ANA-001", "name": "首屏渲染不崩且三个数据源被调用", "status": "done" },
+        { "id": "TC-FE-ANA-002", "name": "概览数据落到统计卡片与状态标签", "status": "done" },
+        { "id": "TC-FE-ANA-003", "name": "「刷新数据」各数据源各追加一次请求", "status": "done" },
+        { "id": "TC-FE-ANA-004", "name": "接口报错不白屏", "status": "done" },
+        { "id": "TC-FE-ANA-005", "name": "Tab 切换触发对应 Tab 的数据加载", "status": "planned" },
+        { "id": "TC-FE-ANA-006", "name": "仓库明细分页/排序/状态筛选参数正确传递", "status": "planned" },
+        { "id": "TC-FE-ANA-007", "name": "打开仓库明细弹窗并加载趋势；切换天数重新加载", "status": "planned" },
+        { "id": "TC-FE-ANA-DATA-001", "name": "buildTrendChartData(null) → 空数组", "status": "done" },
+        { "id": "TC-FE-ANA-DATA-002", "name": "趋势 labels/calls/revenue 逐项对齐", "status": "done" },
+        { "id": "TC-FE-ANA-DATA-003", "name": "series 短于 labels 时补 0 保持等长", "status": "done" },
+        { "id": "TC-FE-ANA-DATA-004", "name": "buildRepoTrendChartData(null) → 空数组", "status": "done" },
+        { "id": "TC-FE-ANA-DATA-005", "name": "带出 avgLatency（缺失补 0）", "status": "done" }
+      ],
+      "knownIssues": []
+    },
+    {
+      "id": "FE-DEV-RECHARGE",
+      "level": "P1",
+      "file": "src/pages/developer/Recharge.tsx",
+      "lines": 2001,
+      "why": "全前端最大文件（P1-4 目标）；充值属资金链路，金额格式/支付方式分支必须锁死",
+      "status": "planned",
+      "specFile": "src/pages/developer/Recharge.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-RECHARGE-001", "name": "套餐列表渲染与金额格式化", "status": "planned" },
+        { "id": "TC-FE-RECHARGE-002", "name": "选择套餐后应付金额与优惠计算正确", "status": "planned" },
+        { "id": "TC-FE-RECHARGE-003", "name": "自定义金额边界（0/负数/超上限）被拦截", "status": "planned" },
+        { "id": "TC-FE-RECHARGE-004", "name": "下单成功跳转支付；失败不丢单据状态", "status": "planned" },
+        { "id": "TC-FE-RECHARGE-005", "name": "充值记录分页与状态文案", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-OWNER-REPOS",
+      "level": "P1",
+      "file": "src/pages/owner/Repos.tsx",
+      "lines": 1059,
+      "why": "P1-4 目标；仓库 CRUD + 端点/限流配置提交，字段多易漂移",
+      "status": "planned",
+      "specFile": "src/pages/owner/Repos.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-OREPO-001", "name": "列表渲染与状态标签（online/pending/...）", "status": "planned" },
+        { "id": "TC-FE-OREPO-002", "name": "新建仓库校验（slug 格式/必填）", "status": "planned" },
+        { "id": "TC-FE-OREPO-003", "name": "端点批量提交的参数结构与顺序", "status": "planned" },
+        { "id": "TC-FE-OREPO-004", "name": "限流配置提交与回显", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-REPOS",
+      "level": "P1",
+      "file": "src/pages/admin/Repos.tsx",
+      "lines": 924,
+      "why": "P1-4 目标；审核/上下线操作直接影响仓库可用性",
+      "status": "planned",
+      "specFile": "src/pages/admin/Repos.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-AREPO-001", "name": "待审核列表与筛选", "status": "planned" },
+        { "id": "TC-FE-AREPO-002", "name": "通过/驳回调用对应接口并刷新", "status": "planned" },
+        { "id": "TC-FE-AREPO-003", "name": "上线/下线按钮可用性随状态变化", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-APITESTER",
+      "level": "P1",
+      "file": "src/pages/developer/ApiTester.tsx",
+      "lines": 577,
+      "why": "开发者主链路（在线调试）；与后端转发契约强耦合",
+      "status": "planned",
+      "specFile": "src/pages/developer/ApiTester.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-TESTER-001", "name": "选择仓库加载端点列表", "status": "planned" },
+        { "id": "TC-FE-TESTER-002", "name": "动态表单按端点参数渲染", "status": "planned" },
+        { "id": "TC-FE-TESTER-003", "name": "发送请求后展示响应/错误面板", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-CONSUMPTION",
+      "level": "P1",
+      "file": "src/pages/developer/ConsumptionDetails.tsx",
+      "lines": 780,
+      "why": "P1-4 目标；消费明细含金额合计与多维筛选，算错直接影响对账认知",
+      "status": "planned",
+      "specFile": "src/pages/developer/ConsumptionDetails.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-CONSUME-001", "name": "明细列表与金额格式化", "status": "planned" },
+        { "id": "TC-FE-CONSUME-002", "name": "筛选/分页参数传递", "status": "planned" },
+        { "id": "TC-FE-CONSUME-003", "name": "合计与实际行数据一致", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-PAYMENT-ERRORS",
+      "level": "P1",
+      "file": "src/utils/paymentErrors.tsx",
+      "lines": 452,
+      "why": "支付错误码→用户可读文案映射（纯逻辑，最适合单测；文案错了用户无法自救）",
+      "status": "planned",
+      "specFile": "src/utils/paymentErrors.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-PAYERR-001", "name": "已知错误码映射到约定文案", "status": "planned" },
+        { "id": "TC-FE-PAYERR-002", "name": "未知错误码走兜底文案", "status": "planned" },
+        { "id": "TC-FE-PAYERR-003", "name": "空/畸形输入不抛错", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-QUOTA",
+      "level": "P2",
+      "file": "src/pages/developer/Quota.tsx",
+      "lines": 470,
+      "why": "配额进度与用量历史；图表数据整形可测",
+      "status": "planned",
+      "specFile": "src/pages/developer/Quota.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-QUOTA-001", "name": "配额进度按百分比正确渲染（含 0%/100% 边界）", "status": "planned" },
+        { "id": "TC-FE-QUOTA-002", "name": "用量历史窗口与标签", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-KEYS",
+      "level": "P2",
+      "file": "src/pages/developer/Keys.tsx",
+      "lines": 448,
+      "why": "API Key 管理：明文 key 只在创建时展示一次（安全语义）",
+      "status": "planned",
+      "specFile": "src/pages/developer/Keys.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-KEYS-001", "name": "列表默认不显示明文 key", "status": "planned" },
+        { "id": "TC-FE-KEYS-002", "name": "新建后一次性展示并提示保存", "status": "planned" },
+        { "id": "TC-FE-KEYS-003", "name": "禁用/删除需二次确认", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-BILLING",
+      "level": "P2",
+      "file": "src/pages/developer/Billing.tsx",
+      "lines": 484,
+      "why": "账单列表/统计；金额与周期文案",
+      "status": "planned",
+      "specFile": "src/pages/developer/Billing.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-BILLING-001", "name": "账单列表与金额格式化", "status": "planned" },
+        { "id": "TC-FE-BILLING-002", "name": "月度周期选择回显", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-LOGS",
+      "level": "P2",
+      "file": "src/pages/developer/Logs.tsx",
+      "lines": 376,
+      "why": "调用日志查询；筛选条件组合多",
+      "status": "planned",
+      "specFile": "src/pages/developer/Logs.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-DEVLOGS-001", "name": "默认查询与分页", "status": "planned" },
+        { "id": "TC-FE-DEVLOGS-002", "name": "状态码/时间范围筛选参数传递", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-CREATEREPO",
+      "level": "P2",
+      "file": "src/pages/developer/CreateRepo.tsx",
+      "lines": 334,
+      "why": "创建仓库表单（含 endpoint_url 校验提示）",
+      "status": "planned",
+      "specFile": "src/pages/developer/CreateRepo.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-CREATEREPO-001", "name": "必填与格式校验", "status": "planned" },
+        { "id": "TC-FE-CREATEREPO-002", "name": "提交成功提示与跳转", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-REPODETAIL",
+      "level": "P2",
+      "file": "src/pages/developer/RepoDetail.tsx",
+      "lines": 583,
+      "why": "仓库详情（端点/限流/价格只读展示）",
+      "status": "planned",
+      "specFile": "src/pages/developer/RepoDetail.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-REPODETAIL-001", "name": "加载到数据渲染各区块", "status": "planned" },
+        { "id": "TC-FE-REPODETAIL-002", "name": "仓库不存在 → 友好提示", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-ADMINLOGS",
+      "level": "P2",
+      "file": "src/pages/admin/AdminLogs.tsx",
+      "lines": 904,
+      "why": "日志管理（列表/备份配置/文件列表）",
+      "status": "planned",
+      "specFile": "src/pages/admin/AdminLogs.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-ADMINLOGS-001", "name": "日志列表分页与筛选", "status": "planned" },
+        { "id": "TC-FE-ADMINLOGS-002", "name": "备份配置回显与保存", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-RECON",
+      "level": "P2",
+      "file": "src/pages/admin/Reconciliation.tsx",
+      "lines": 751,
+      "why": "对账工作台；金额/差异必须精确",
+      "status": "planned",
+      "specFile": "src/pages/admin/Reconciliation.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-RECON-001", "name": "按日期查询并渲染差异明细", "status": "planned" },
+        { "id": "TC-FE-RECON-002", "name": "差异金额高亮与合计正确", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-PRICING",
+      "level": "P2",
+      "file": "src/pages/admin/PricingConfig.tsx",
+      "lines": 670,
+      "why": "定价配置：直接决定计费金额",
+      "status": "planned",
+      "specFile": "src/pages/admin/PricingConfig.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-PRICING-001", "name": "配置回显与必填校验", "status": "planned" },
+        { "id": "TC-FE-PRICING-002", "name": "保存后重新拉取并提示", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-ADMIN-MISC",
+      "level": "P2",
+      "files": [
+        "src/pages/admin/Users.tsx (347)",
+        "src/pages/admin/Settings.tsx (224)",
+        "src/pages/admin/RechargeRecords.tsx (422)",
+        "src/pages/admin/PlatformAccounts.tsx (270)",
+        "src/pages/admin/Dashboard.tsx (334)",
+        "src/pages/admin/ChannelSummary.tsx (227)",
+        "src/pages/admin/AdminMonthlyBills.tsx (481)",
+        "src/pages/admin/DevTools.tsx (133)"
+      ],
+      "why": "一般业务页面：数据加载 + 表单/表格，模式相近，可复用同一套测试骨架",
+      "status": "planned",
+      "cases": [
+        { "id": "TC-FE-ADMINMISC-001", "name": "页面首屏加载成功（列表/统计渲染）", "status": "planned" },
+        { "id": "TC-FE-ADMINMISC-002", "name": "接口报错不白屏", "status": "planned" },
+        { "id": "TC-FE-ADMINMISC-003", "name": "关键操作调用预期接口", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-DEV-MISC",
+      "level": "P2",
+      "files": [
+        "src/pages/developer/Dashboard.tsx (270)",
+        "src/pages/developer/Usage.tsx (335)",
+        "src/pages/developer/Repos.tsx (237)",
+        "src/pages/user/UserDashboard.tsx (379)",
+        "src/pages/notifications/Notifications.tsx (325)",
+        "src/pages/owner/Dashboard.tsx (177)",
+        "src/pages/owner/Analytics.tsx (446)",
+        "src/pages/owner/Settlement.tsx (138)",
+        "src/pages/PaymentSuccess.tsx (288)",
+        "src/pages/superadmin/SuperAdminDashboard.tsx (278)",
+        "src/pages/superadmin/SuperAdminUsers.tsx (302)",
+        "src/pages/superadmin/SuperAdminSystem.tsx (435)",
+        "src/pages/superadmin/SuperAdminRoles.tsx (237)"
+      ],
+      "why": "其余角色页面：数据加载与展示为主",
+      "status": "planned",
+      "cases": [
+        { "id": "TC-FE-DEVMISC-001", "name": "首屏渲染不崩 + 数据源被调用", "status": "planned" },
+        { "id": "TC-FE-DEVMISC-002", "name": "报错不白屏", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-SHARED-UI",
+      "level": "P3",
+      "files": [
+        "src/components/ErrorModal.tsx (259)",
+        "src/components/ResponsiveTable.tsx (198)",
+        "src/components/RepoLogo.tsx (125)",
+        "src/components/api-tester/DynamicForm.tsx (148)",
+        "src/components/api-tester/EndpointList.tsx (98)",
+        "src/components/api-tester/RepositoryCard.tsx (77)",
+        "src/components/api-tester/ResponsePanel.tsx (151)",
+        "src/config/permissionHooks.tsx (124)",
+        "src/App.tsx (216)",
+        "src/main.tsx (28)"
+      ],
+      "why": "展示层/小组件：状态简单，优先级最低；App.tsx 的路由守卫值得单独补",
+      "status": "planned",
+      "cases": [
+        { "id": "TC-FE-UI-001", "name": "按 props 渲染（含空数据/边界）", "status": "planned" },
+        { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录访问受保护路由被重定向", "status": "planned" }
+      ]
+    }
+  ],
+  "knownDefects": [
+    {
+      "id": "FE-BUG-LOGIN-AUTOCLEAR",
+      "title": "登录页挂载后 300/1000/2000ms 的自动清空会截断正在输入的内容",
+      "file": "src/pages/auth/Login.tsx",
+      "evidence": "TC-FE-LOGIN-004：用 user.type 逐字符输入 admin@example.com，实际提交 username=\"com\"（被 300ms 定时器清空后仅剩尾部）；5 字符的 admin 因耗时<300ms 未受影响",
+      "impact": "慢速输入（移动端/弱网/长邮箱）可能被清空，用户需重输",
+      "suggestion": "clearAutofillData 增加「用户已交互则跳过」标记",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "Login.tsx 新增 userInteractedRef：Form 的 onValuesChange 置位，clearAutofillData() 首行早返回；回归用例 TC-FE-LOGIN-008（真实逐字符输入）"
+    },
+    {
+      "id": "FE-BUG-ERRCTX-ECONNABORTED",
+      "title": "错误分类中 ECONNABORTED / 'Network Error' 两个 case 永远不可达",
+      "file": "src/contexts/ErrorContext.tsx",
+      "evidence": "parseErrorType 的 switch 比较的是 `error.response?.status || error.status`，而 axios 超时错误把 ECONNABORTED 放在 `error.code` 上 → TC-FE-ERRCTX-001 实测该输入落到 UNKNOWN",
+      "impact": "请求超时若消息里不含「网络/连接/network/fetch」等词，会显示为「操作失败（未知错误）」而不是「网络连接失败」，用户在超时场景拿不到正确指引",
+      "suggestion": "在 switch 前补 `error.code` 判断",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "parseErrorType 在 switch 前显式识别 ECONNABORTED / ETIMEDOUT / ERR_NETWORK / ERR_CONNECTION_REFUSED 并归类为 NETWORK；同时删除原先不可达的 case 'ECONNABORTED' / case 'Network Error'。回归断言见 TC-FE-ERRCTX-001"
+    },
+    {
+      "id": "FE-BUG-LAYOUT-DEAD-MENU",
+      "title": "Layout 的 developerWithoutReposMenu 已成为死代码，getMenuItems 的 userHasRepos 参数不再生效",
+      "file": "src/components/Layout.tsx",
+      "evidence": "V5.0 起 case 'developer' 统一 return developerWithReposMenu（忽略 userHasRepos）；全项目搜索 developerWithoutReposMenu 无其它引用",
+      "impact": "无害（仅冗余），但会误导后续维护者以为「无仓库开发者」有独立菜单",
+      "suggestion": "删除 developerWithoutReposMenu 与该参数",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "已删除 developerWithoutReposMenu 与 getMenuItems 的 userHasRepos 参数，并连带清理只为该参数服务的 hasRepos 状态、fetchHasRepos 及 /user/has-repos 请求（少一次无谓请求）"
+    },
+    {
+      "id": "FE-BUG-ANALYTICS-DOUBLE-TREND",
+      "title": "分析页首屏 getTrend 重复请求（两个 useEffect 均触发）",
+      "file": "src/pages/admin/Analytics.tsx",
+      "evidence": "TC-FE-ANA-001 断言首屏 getTrend 调用 2 次",
+      "impact": "多一次 DB 查询（后端已加 60s 缓存，影响有限）",
+      "suggestion": "合并为单个 useEffect",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "从 `[]` 的 useEffect 中移除 loadTrend()（挂载时由 [trendPeriod, trendDays] 的 effect 负责，行为等价）。回归断言见 TC-FE-ANA-001（期望 getTrend 调用 1 次）"
+    }
+  ]
+}
