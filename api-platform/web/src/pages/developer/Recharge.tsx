@@ -7,7 +7,6 @@ import { useState, useEffect, useRef } from 'react'
 import '../../styles/cyber-theme.css'
 import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, InputNumber, Alert } from 'antd'
 import { 
-  GiftOutlined, 
   CheckCircleOutlined, 
   // ⚠️ AlipayOutlined 仍有本文件内的直接使用（跳转支付 / 二维码弹窗），
   //    不能随 PAYMENT_METHODS 一起迁走；Wechat/CreditCard 才是仅由常量使用的。
@@ -29,6 +28,7 @@ import '../../styles/payment-methods.css'
 import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
 import { useRechargeData } from './recharge/useRechargeData'
+import { PackageCard } from './recharge/components/PackageCard'
 import {
   savePaymentToSession,
   restorePaymentFromSession,
@@ -1390,61 +1390,7 @@ export default function DeveloperRecharge() {
     }
   }
 
-  const renderPackageCard = (pkg: RechargePackage) => {
-    const isSelected = selectedPackage?.id === pkg.id
-    const hasBonus = pkg.bonus_amount > 0 || pkg.bonus_ratio > 0
-
-    return (
-      <Card
-        key={pkg.id}
-        className={`${styles.packageCard} ${isSelected ? styles.selected : ''} ${pkg.is_featured ? styles.featured : ''}`}
-        hoverable
-        onClick={() => handleSelectPackage(pkg)}
-      >
-        {pkg.is_featured && (
-          <div className={styles.featuredTag}>
-            <GiftOutlined /> 推荐
-          </div>
-        )}
-        
-        <div className={styles.packageHeader}>
-          <Text strong className={styles.packageName}>{pkg.name}</Text>
-          {hasBonus && (
-            <Tag color="gold" icon={<GiftOutlined />}>
-              {pkg.bonus_ratio > 0 ? `赠送${pkg.bonus_ratio}%` : `+¥${pkg.bonus_amount}`}
-            </Tag>
-          )}
-        </div>
-
-        <div className={styles.priceSection}>
-          <span className={styles.currencyIcon}>¥</span>
-          <span className={styles.price}>{pkg.price.toFixed(2)}</span>
-        </div>
-
-        <div className={styles.packageDetail}>
-          <Text type="secondary">
-            {hasBonus ? (
-              <>实际到账：<Text strong>¥{((pkg.price || 0) + (pkg.bonus_amount || 0) + (pkg.price || 0) * ((pkg.bonus_ratio || 0) / 100)).toFixed(2)}</Text></>
-            ) : (
-              '无赠送'
-            )}
-          </Text>
-        </div>
-
-        {pkg.description && (
-          <Paragraph type="secondary" className={styles.description}>
-            {pkg.description}
-          </Paragraph>
-        )}
-
-        {isSelected && (
-          <div className={styles.selectedIndicator}>
-            <CheckCircleOutlined /> 已选择
-          </div>
-        )}
-      </Card>
-    )
-  }
+  // renderPackageCard 已抽为展示组件 ./recharge/components/PackageCard
 
   if (loading) {
     return (
@@ -1512,7 +1458,11 @@ export default function DeveloperRecharge() {
             <Row gutter={[16, 16]}>
               {packages.map(pkg => (
                 <Col xs={24} sm={12} lg={8} xl={6} key={pkg.id}>
-                  {renderPackageCard(pkg)}
+                  <PackageCard
+                    pkg={pkg}
+                    selected={selectedPackage?.id === pkg.id}
+                    onSelect={handleSelectPackage}
+                  />
                 </Col>
               ))}
             </Row>
