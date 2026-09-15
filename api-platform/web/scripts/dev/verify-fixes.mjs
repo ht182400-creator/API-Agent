@@ -54,8 +54,11 @@ const MUTATIONS = [
     caseId: 'TC-FE-RECHARGE-013',
     spec: 'src/pages/developer/Recharge.spec.tsx',
     file: 'src/pages/developer/Recharge.tsx',
-    find: '    qrcodePollingRef.current = false\n    setQrcodePolling(false)',
-    replace: '    setQrcodePolling(false)',
+    // ⚠️ 必须带函数头上下文唯一定位 stopQrcodePolling：
+    //    "ref=false + setQrcodePolling(false)" 的组合在轮询成功/超时分支也各有一份
+    //    （后续实现演化所致），不带上下文会命中多次而被安全跳过（实测）。
+    find: '  const stopQrcodePolling = () => {\n    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态\n    qrcodePollingRef.current = false\n    setQrcodePolling(false)\n  }',
+    replace: '  const stopQrcodePolling = () => {\n    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态\n    setQrcodePolling(false)\n  }',
     note: 'stopQrcodePolling 不再置 ref → 循环条件恒为 true（回到缺陷形态）',
   },
   {

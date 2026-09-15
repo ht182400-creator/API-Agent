@@ -40,9 +40,31 @@ _WATERMARK_ID = 1
 
 
 def _hour_base() -> datetime:
-    """对齐到 UTC 当前整点，再往前推 3 小时（远离"当前小时"边界）"""
+    """对齐到 UTC 当前整点，再往前推 3 小时（远离"当前小时"边界）。
+
+    ⚠️ 该锚点被两类用例共享，**不能**改成固定钟点：
+    - 水位/追赶类（TC-STATQ-008/009）隐式依赖「h 距当前整点约 3 小时」
+      （`aggregate_until_now()` 要从 h 追平到 now，009 还断言"h 距 now 3 小时"）；
+    - 分组类只要求"相对关系"，不关心绝对钟点。
+    """
     now = datetime.now(timezone.utc)
     return (now - timedelta(hours=3)).replace(minute=0, second=0, microsecond=0)
+
+
+def _day_base() -> datetime:
+    """返回「北京时间当天 12:00」对应的 UTC 时刻 —— 专供**跨自然日分组**用例。
+
+    ⚠️ group_by_period 按**北京时间自然日**分组（见其 docstring，9-15 时区口径收敛的
+    有意设计）。若用 `_hour_base()`（UTC 整点）构造"跨 2 天"数据，当 UTC 处于
+    16:00~20:00（= 北京 0:00~4:00）时，`h-1` 与 `h+24` 会横跨 **3 个**北京自然日，
+    用例在每天这 4 小时窗口内**必挂** —— 回归实测：UTC 19:21 全量运行时
+    TC-STATQ-006 `assert len(rows) == 2` 得到 3（9-15/9-16/9-17）。
+
+    锚在北京时间 12:00：`h-1`/`h` 同日、`h+24` 恰为次日，**任意时刻运行都不跨界**。
+    """
+    bj_now = datetime.now(timezone.utc) + timedelta(hours=8)
+    bj_noon = bj_now.replace(hour=12, minute=0, second=0, microsecond=0)
+    return bj_noon - timedelta(hours=8)
 
 
 async def _make_repo(db, test_user, name: str) -> Repository:
@@ -260,7 +282,9 @@ class TestStatsQueryService:
     async def test_group_by_day_merges_segments(self, db_session, test_user):
         """TC-STATQ-006: 按天分组 —— 预聚合段与实时段合并后与实时分组一致"""
         repo = await _make_repo(db_session, test_user, "SQ6")
-        h = _hour_base()
+        # ⚠️ 必须用 _day_base（北京 12:00 锚）：本用例断言"跨 2 个北京自然日"，
+        #    _hour_base 的 UTC 锚在北京 0~4 点窗口运行时数据会跨 3 天（实测 flaky）
+        h = _day_base()
         # 第 1 天 2 条（预聚合）、第 2 天 1 条（实时尾部）
         db_session.add_all([
             _make_log(repo.id, test_user.id, h, offset_h=-1, cost="0.10"),
