@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 8,
-      "cases": 76,
+      "specFiles": 10,
+      "cases": 103,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -146,9 +146,10 @@
         { "id": "TC-FE-ANA-002", "name": "概览数据落到统计卡片与状态标签", "status": "done" },
         { "id": "TC-FE-ANA-003", "name": "「刷新数据」各数据源各追加一次请求", "status": "done" },
         { "id": "TC-FE-ANA-004", "name": "接口报错不白屏", "status": "done" },
-        { "id": "TC-FE-ANA-005", "name": "Tab 切换触发对应 Tab 的数据加载", "status": "planned" },
-        { "id": "TC-FE-ANA-006", "name": "仓库明细分页/排序/状态筛选参数正确传递", "status": "planned" },
-        { "id": "TC-FE-ANA-007", "name": "打开仓库明细弹窗并加载趋势；切换天数重新加载", "status": "planned" },
+        { "id": "TC-FE-ANA-005", "name": "切到「趋势分析」展示趋势卡片与周期控件", "status": "done" },
+        { "id": "TC-FE-ANA-006", "name": "切到「仓库明细」展示表格、行数据与分页总数", "status": "done" },
+        { "id": "TC-FE-ANA-007", "name": "点击「查看明细」按仓库打开弹窗并加载其趋势（默认 7 天）", "status": "done" },
+        { "id": "TC-FE-ANA-008", "name": "状态筛选/排序切换后带参重新查询（antd Select 交互）", "status": "planned" },
         { "id": "TC-FE-ANA-DATA-001", "name": "buildTrendChartData(null) → 空数组", "status": "done" },
         { "id": "TC-FE-ANA-DATA-002", "name": "趋势 labels/calls/revenue 逐项对齐", "status": "done" },
         { "id": "TC-FE-ANA-DATA-003", "name": "series 短于 labels 时补 0 保持等长", "status": "done" },
@@ -207,13 +208,18 @@
       "level": "P1",
       "file": "src/pages/developer/ApiTester.tsx",
       "lines": 577,
-      "why": "开发者主链路（在线调试）；与后端转发契约强耦合",
-      "status": "planned",
+      "why": "开发者主链路（在线调试）；与后端转发契约强耦合。仓库/端点来自静态配置、发请求用原生 fetch → 只需 mock global.fetch",
+      "status": "covered",
       "specFile": "src/pages/developer/ApiTester.spec.tsx",
       "cases": [
-        { "id": "TC-FE-TESTER-001", "name": "选择仓库加载端点列表", "status": "planned" },
-        { "id": "TC-FE-TESTER-002", "name": "动态表单按端点参数渲染", "status": "planned" },
-        { "id": "TC-FE-TESTER-003", "name": "发送请求后展示响应/错误面板", "status": "planned" }
+        { "id": "TC-FE-TESTER-001", "name": "渲染标题、仓库/接口统计与三个分类按钮", "status": "done" },
+        { "id": "TC-FE-TESTER-002", "name": "分类切换（全部/自研/第三方）只展示对应来源仓库", "status": "done" },
+        { "id": "TC-FE-TESTER-003", "name": "点击仓库后展示其端点列表", "status": "done" },
+        { "id": "TC-FE-TESTER-004", "name": "API Key 配置面板：打开/输入/保存 → 显示「已配置」", "status": "done" },
+        { "id": "TC-FE-TESTER-005", "name": "未配置 Key 时请求头用 YOUR_API_KEY 占位", "status": "done" },
+        { "id": "TC-FE-TESTER-006", "name": "请求经后端 proxy 发出：URL 前缀 / method / X-Access-Key 正确", "status": "done" },
+        { "id": "TC-FE-TESTER-007", "name": "成功响应展示在面板且历史计数 +1", "status": "done" },
+        { "id": "TC-FE-TESTER-008", "name": "请求失败仍记历史（status=0）且页面不崩", "status": "done" }
       ]
     },
     {
@@ -236,13 +242,27 @@
       "file": "src/utils/paymentErrors.tsx",
       "lines": 452,
       "why": "支付错误码→用户可读文案映射（纯逻辑，最适合单测；文案错了用户无法自救）",
-      "status": "planned",
+      "status": "covered",
       "specFile": "src/utils/paymentErrors.spec.tsx",
       "cases": [
-        { "id": "TC-FE-PAYERR-001", "name": "已知错误码映射到约定文案", "status": "planned" },
-        { "id": "TC-FE-PAYERR-002", "name": "未知错误码走兜底文案", "status": "planned" },
-        { "id": "TC-FE-PAYERR-003", "name": "空/畸形输入不抛错", "status": "planned" }
-      ]
+        { "id": "TC-FE-PAYERR-001", "name": "支付宝/网关错误码映射（10 个码）", "status": "done" },
+        { "id": "TC-FE-PAYERR-002", "name": "兼容 error_code / errorCode 字段别名", "status": "done" },
+        { "id": "TC-FE-PAYERR-003", "name": "无错误码时按中英混合关键词分类（9 类）", "status": "done" },
+        { "id": "TC-FE-PAYERR-004", "name": "「超时」优先于「已过期」（如实记录既有优先级）", "status": "done" },
+        { "id": "TC-FE-PAYERR-005", "name": "兜底走 HTTP 状态码（404 / status=0）", "status": "done" },
+        { "id": "TC-FE-PAYERR-006", "name": "空/无法识别 → UNKNOWN 且不抛错", "status": "done" },
+        { "id": "TC-FE-PAYERR-007", "name": "优先级：错误码 > 消息 > 状态码", "status": "done" },
+        { "id": "TC-FE-PAYERR-008", "name": "详情提取：code / message / orderNo", "status": "done" },
+        { "id": "TC-FE-PAYERR-009", "name": "回落到 response.data 字段（含 payment_no）", "status": "done" },
+        { "id": "TC-FE-PAYERR-010", "name": "清理堆栈 + 超长截断为 200 字符", "status": "done" },
+        { "id": "TC-FE-PAYERR-011", "name": "无信息时给出「未知错误」", "status": "done" },
+        { "id": "TC-FE-PAYERR-012", "name": "错误 → 预设配置（retryable / 引导项 / icon）", "status": "done" },
+        { "id": "TC-FE-PAYERR-013", "name": "未知错误回落 UNKNOWN 配置（不返 undefined）", "status": "done" },
+        { "id": "TC-FE-PAYERR-014", "name": "消息级别由 retryable 决定（warning / error）", "status": "done" },
+        { "id": "TC-FE-PAYERR-015", "name": "isPaymentError 识别（含仅靠 message 含 pay/支付）", "status": "done" },
+        { "id": "TC-FE-PAYERR-016", "name": "默认导出包含全部公开 API", "status": "done" }
+      ],
+      "knownIssues": []
     },
     {
       "id": "FE-DEV-QUOTA",
@@ -464,6 +484,28 @@
       "status": "fixed",
       "fixedAt": "2026-09-15",
       "fix": "已删除 developerWithoutReposMenu 与 getMenuItems 的 userHasRepos 参数，并连带清理只为该参数服务的 hasRepos 状态、fetchHasRepos 及 /user/has-repos 请求（少一次无谓请求）"
+    },
+    {
+      "id": "FE-BUG-PAYERR-ECONNABORTED",
+      "title": "支付错误分类中 ECONNABORTED 归为 UNKNOWN（status 分支写法无效）",
+      "file": "src/utils/paymentErrors.tsx",
+      "evidence": "原实现末尾写 `status === 'ECONNABORTED'`，但 axios 把该错误码放在 error.code 上 → 分支永不命中；TC-FE-PAYERR-006 实测归为 UNKNOWN",
+      "impact": "支付超时被显示为「未知错误」，用户拿不到"超时/可重试"的指引",
+      "suggestion": "按 error.code 显式识别超时/网络类错误码",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "parsePaymentErrorType 第 1b 步按 error.code 识别：ECONNABORTED/ETIMEDOUT → PAYMENT_TIMEOUT，ERR_CONNECTION_REFUSED/RESET → PAYMENT_NETWORK_ERROR；并删除不可达的 status 分支。回归断言见 TC-FE-PAYERR-006"
+    },
+    {
+      "id": "FE-BUG-PAYERR-ISPAYMENT-TYPE",
+      "title": "isPaymentError 对不识别的普通错误返回 undefined（声明为 boolean）",
+      "file": "src/utils/paymentErrors.tsx",
+      "evidence": "实现为 `false || error.message?.toLowerCase().includes(...)`，空 message 时整链短路为 undefined；TC-FE-PAYERR-015 实测",
+      "impact": "返回值类型不符（undefined 在条件中使用虽等价 false，但会误导调用方与类型检查）",
+      "suggestion": "统一转字符串后判断，保证严格返回 boolean",
+      "status": "fixed",
+      "fixedAt": "2026-09-15",
+      "fix": "改为 `String(error.message ?? error.msg ?? '').toLowerCase()` 后判断，严格返回 boolean（并兼容 msg 字段）。回归断言见 TC-FE-PAYERR-015"
     },
     {
       "id": "FE-BUG-ANALYTICS-DOUBLE-TREND",

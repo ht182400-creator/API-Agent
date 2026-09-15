@@ -77,10 +77,20 @@ function renderPage() {
   )
 }
 
+const repoTrend = {
+  repo_id: 'r1',
+  repo_name: '天气服务',
+  labels: ['09-14', '09-15'],
+  series: { calls: [3, 4], revenue: [0.3, 0.4], avg_latency: [120, 150] },
+  days: 7,
+  generated_at: '2026-09-15T00:00:00Z',
+}
+
 beforeEach(() => {
   vi.mocked(adminAnalyticsApi.getOverview).mockResolvedValue(overview as never)
   vi.mocked(adminAnalyticsApi.getTrend).mockResolvedValue(trend as never)
   vi.mocked(adminAnalyticsApi.getRepoDetails).mockResolvedValue(repoDetails as never)
+  vi.mocked(adminAnalyticsApi.getRepoTrend).mockResolvedValue(repoTrend as never)
 })
 
 describe('管理员分析报表页', () => {
@@ -143,5 +153,49 @@ describe('管理员分析报表页', () => {
     await waitFor(() => expect(adminAnalyticsApi.getOverview).toHaveBeenCalled())
     expect(screen.getByText('数据分析')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /刷新数据/ })).toBeInTheDocument()
+  })
+})
+
+describe('Tab 切换与仓库明细弹窗', () => {
+  it('TC-FE-ANA-005: 切到「趋势分析」展示趋势卡片与周期控件', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('tab', { name: /趋势分析/ }))
+
+    // ⚠️ 用 findAll：antd Tabs 会保留已渲染 Tab 的 DOM，且标题可能与表格/卡片重复
+    expect((await screen.findAllByText('调用与收入趋势')).length).toBeGreaterThan(0)
+    // 周期选择器当前值（默认「按天统计」）—— 该文本唯一，可证明趋势 Tab 内容已挂载
+    expect(screen.getByText('按天统计')).toBeInTheDocument()
+  })
+
+  it('TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('tab', { name: /仓库明细/ }))
+
+    expect(await screen.findByText('仓库调用与收入明细')).toBeInTheDocument()
+    // 行数据来自 mock 的 repoDetails
+    expect(screen.getByText('天气服务')).toBeInTheDocument()
+    // 分页 showTotal
+    expect(screen.getByText('共 1 条')).toBeInTheDocument()
+  })
+
+  it('TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('tab', { name: /仓库明细/ }))
+    await user.click(await screen.findByText('查看明细'))
+
+    // 默认 7 天
+    await waitFor(() => expect(adminAnalyticsApi.getRepoTrend).toHaveBeenCalledWith('r1', 7))
+
+    // 弹窗标题与基本信息（仓库 ID / Slug）出现；
+    // ⚠️ repo_id / slug 在明细表格中也可能出现，故用 findAll 判定"至少出现一次"
+    expect(await screen.findByText('仓库收入明细')).toBeInTheDocument()
+    expect(screen.getAllByText('r1').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('weather').length).toBeGreaterThan(0)
   })
 })

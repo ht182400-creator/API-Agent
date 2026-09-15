@@ -206,6 +206,16 @@ export function parsePaymentErrorType(error: any): PaymentErrorType {
     return paymentErrorMappings[errorCode]
   }
 
+  // 1b.【2026-09-15 修复】axios 把**超时/网络类**错误码放在 `error.code` 上（不是 status）——
+  //   原实现只在末尾用 `status === 'ECONNABORTED'` 判断，该分支永远不命中，
+  //   导致请求超时被归为 UNKNOWN（用户看到"未知错误"而非"支付超时/网络失败"）。
+  if (errorCode === 'ECONNABORTED' || errorCode === 'ETIMEDOUT') {
+    return PaymentErrorType.PAYMENT_TIMEOUT
+  }
+  if (errorCode === 'ERR_CONNECTION_REFUSED' || errorCode === 'ERR_CONNECTION_RESET') {
+    return PaymentErrorType.PAYMENT_NETWORK_ERROR
+  }
+
   // 2. 从错误消息提取
   const errorMessage = (error.message || error.msg || '').toLowerCase()
   
@@ -240,7 +250,10 @@ export function parsePaymentErrorType(error: any): PaymentErrorType {
   if (status === 404) {
     return PaymentErrorType.ORDER_NOT_FOUND
   }
-  if (status === 0 || status === 'ECONNABORTED') {
+  if (status === 0) {
+    // status=0 表示请求未到达服务端（网络中断 / 被拦截）
+    // 注：`ECONNABORTED` 已在上方按 `error.code` 归类为 PAYMENT_TIMEOUT
+    //     （原写法比较的是 status，实际不可达）
     return PaymentErrorType.PAYMENT_NETWORK_ERROR
   }
 
@@ -433,12 +446,14 @@ export function getPaymentErrorMessage(error: any): {
  */
 export function isPaymentError(error: any): boolean {
   if (!error) return false
-  
-  const errorType = parsePaymentErrorType(error)
-  return errorType !== PaymentErrorType.UNKNOWN || 
-         error.message?.toLowerCase().includes('payment') ||
-         error.message?.toLowerCase().includes('pay') ||
-         error.message?.includes('支付')
+
+  if (parsePaymentErrorType(error) !== PaymentErrorType.UNKNOWN) return true
+
+  // 【2026-09-15 修复】原实现为 `false || error.message?.includes(...)`：
+  //   当 message 为空时整条链短路成 `undefined`（函数声明返回 boolean 却返回 undefined）。
+  //   这里先统一转成字符串再判断，保证**严格返回 boolean**；`error.msg` 也一并兼容。
+  const message = String(error.message ?? error.msg ?? '').toLowerCase()
+  return message.includes('payment') || message.includes('pay') || message.includes('支付')
 }
 
 export default {

@@ -198,8 +198,8 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **76 passed**
-（8 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 4 + chartData 5；其中 TC-FE-API-008 参数化展开为 10 条）。
+**当前结果**：`npm run test:unit` → **103 passed**
+（10 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8；其中 TC-FE-API-008 参数化展开为 10 条）。
 **类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
 
 > 本节只覆盖**工具层**（权限判定 / 请求层）。**页面级**用例见 **§2.5**；
@@ -266,6 +266,8 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-FE-LOGIN-002~007 | 渲染 / 空表单被拦截 / 邮箱判别 / 用户名判别 / 成功写 store / 缺 token 不写 store | 同上 | 组件 | ✅ |
 | TC-FE-LOGIN-008 | 逐字符真实输入长邮箱不被自动清空截断（已修缺陷的回归） | 同上 | 组件 | ✅ |
 | TC-FE-ANA-001~004 | 首屏渲染+三数据源 / 数据落卡片 / 刷新追加请求 / 报错不白屏 | `pages/admin/Analytics.tsx` | 组件 | ✅ |
+| TC-FE-ANA-005~007 | 切「趋势分析」出趋势卡片与周期控件 / 切「仓库明细」出表格+行数据+分页总数 / 点「查看明细」开弹窗并加载该仓库趋势 | 同上 | 组件 | ✅ |
+| TC-FE-ANA-008 | 状态筛选 / 排序切换后带参重新查询（antd Select 交互） | 同上 | 组件 | 📋 |
 | TC-FE-ANA-DATA-001~005 | 图表整形纯函数（null / 对齐 / 补齐 / avgLatency） | `pages/admin/analytics/chartData.ts` | 纯逻辑 | ✅ |
 | TC-FE-LAYOUT-001~006 | 各角色菜单可见性（超管/admin/developer/owner/普通用户/未知兜底）：越权入口不得出现 | `components/Layout.tsx` | 纯逻辑 | ✅ |
 | TC-FE-LAYOUT-007~008 | 组件渲染菜单入口 / 登出清空登录态 | 同上 | 组件 | 📋 |
@@ -273,8 +275,8 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-FE-ERRCTX-011~013 | Provider 外抛错 / 认证错误弹窗文案 / 服务器错误弹窗 | 同上 | 组件 | ✅ |
 | TC-FE-RECHARGE-001~005 | 套餐渲染 / 优惠计算 / 自定义金额边界 / 下单 / 记录分页 | `pages/developer/Recharge.tsx` | 组件 | 📋 |
 | TC-FE-OREPO-001~004 / TC-FE-AREPO-001~003 | 仓库列表、表单、端点批量、审核上下线 | `pages/{owner,admin}/Repos.tsx` | 组件 | 📋 |
-| TC-FE-TESTER-001~003 | 端点列表 / 动态表单 / 响应面板 | `pages/developer/ApiTester.tsx` | 组件 | 📋 |
-| TC-FE-PAYERR-001~003 | 支付错误码 → 用户可读文案映射 | `utils/paymentErrors.tsx` | 纯逻辑 | 📋 |
+| TC-FE-TESTER-001~008 | 渲染与统计 / 分类筛选 / 端点列表 / Key 配置面板 / 请求头占位 / **proxy URL 与 X-Access-Key 正确** / 成功响应与历史 / 失败仍记历史 | `pages/developer/ApiTester.tsx` | 组件 | ✅ |
+| TC-FE-PAYERR-001~016 | 支付错误码映射 / 字段别名 / 关键词分类 / 优先级 / 详情提取与截断 / 配置与消息级别 / isPaymentError / 默认导出完整性 | `utils/paymentErrors.tsx` | 纯逻辑 | ✅ |
 | TC-FE-ADMINMISC / DEVMISC-001~002 | 其余 21 个页面：首屏渲染 + 报错不白屏（统一骨架） | 各页面 | 组件 | 📋 |
 
 **⚠️ 本层挖出的真实缺陷：4 条，**全部已修复**（详见用例库 `knownDefects` 字段）**：
@@ -303,7 +305,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 76 passed）
+npm run test:unit        # 单次运行（当前 103 passed）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 
