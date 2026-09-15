@@ -317,4 +317,24 @@ describe('下单', () => {
     expect(screen.getAllByText('入门包').length).toBeGreaterThan(0)
     expect(screen.getByRole('button', { name: /立即充值/ })).toBeInTheDocument()
   })
+
+  it('TC-FE-RECHARGE-009: 日志上报异常不得拦截下单（回归防线）', async () => {
+    // 模拟日志服务不可用：同步抛错 + 返回非 Promise 两种坏形态都要能扛住
+    vi.mocked(paymentApi.clientLog).mockImplementation(() => {
+      throw new Error('日志服务不可用')
+    })
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('入门包'))
+    await clickRechargeButton()
+
+    // ⚠️ 关键：日志崩了也必须把订单创建出去。
+    //    修复前 paymentLogger 里是 `clientLog(...).catch(...)`，一旦 clientLog 抛错/返回非 Promise，
+    //    异常会被 handleCreateOrder 的 try/catch 吞掉 → 后端请求根本没发出，
+    //    用户只看到"点了没反应"（详见该文件顶部 sendPaymentLog 的注释）。
+    await waitFor(() => expect(paymentApi.createPayment).toHaveBeenCalled())
+    expect(mocks.showError).not.toHaveBeenCalled()
+  })
 })

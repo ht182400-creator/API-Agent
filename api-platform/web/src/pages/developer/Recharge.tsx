@@ -49,21 +49,40 @@ const PAYMENT_METHODS = [
 ]
 
 // 【调试日志】支付流程追踪
+//
+// ⚠️ 该 logger 在**支付主流程中同步调用**（handleCreateOrder / 各轮询回调），
+//    因此它自身**绝不能抛错**。一旦抛错，异常会被上层的 try/catch 当成"下单失败"吞掉，
+//    用户看到的现象是"点了充值按钮没有任何反应"，且只在 console 留一条 TypeError，极难排查。
+//    （实测踩过：clientLog 返回非 Promise 时抛
+//     `Cannot read properties of undefined (reading 'catch')`，后端请求根本没发出。）
+const sendPaymentLog = (
+  step: string,
+  level: 'info' | 'warning' | 'error',
+  logData: Record<string, unknown>
+): void => {
+  try {
+    // Promise.resolve 兼容"返回非 Promise"（如同步实现/被 mock 成 undefined）
+    Promise.resolve(paymentApi.clientLog(step, level, logData)).catch(() => {})
+  } catch {
+    /* 日志上报失败不影响业务 */
+  }
+}
+
 const paymentLogger = {
   info: (step: string, data?: any) => {
     const logData = { step, timestamp: new Date().toISOString(), ...data }
     console.log(`[PaymentFlow] ${step}`, logData)
-    paymentApi.clientLog(step, 'info', logData).catch(() => {})
+    sendPaymentLog(step, 'info', logData)
   },
   error: (step: string, error: any) => {
     const logData = { step, timestamp: new Date().toISOString(), error: String(error) }
     console.error(`[PaymentFlow] ERROR - ${step}`, logData)
-    paymentApi.clientLog(step, 'error', logData).catch(() => {})
+    sendPaymentLog(step, 'error', logData)
   },
   warn: (step: string, data?: any) => {
     const logData = { step, timestamp: new Date().toISOString(), ...data }
     console.warn(`[PaymentFlow] WARN - ${step}`, logData)
-    paymentApi.clientLog(step, 'warning', logData).catch(() => {})
+    sendPaymentLog(step, 'warning', logData)
   }
 }
 
