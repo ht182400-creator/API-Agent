@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 12,
-      "cases": 119,
+      "specFiles": 13,
+      "cases": 127,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -179,14 +179,18 @@
       "level": "P1",
       "file": "src/pages/owner/Repos.tsx",
       "lines": 1059,
-      "why": "P1-4 目标；仓库 CRUD + 端点/限流配置提交，字段多易漂移",
-      "status": "planned",
+      "why": "P1-4 目标；仓库 CRUD + 端点/限流配置提交。重点：图标上传三分支（类型/200KB 边界/base64 回填）；loadRepoConfig 取失败时静默回落默认限流值（可能放大用户原本更严格的限流）；删除必须经 Popconfirm 确认",
+      "status": "covered",
       "specFile": "src/pages/owner/Repos.spec.tsx",
       "cases": [
-        { "id": "TC-FE-OREPO-001", "name": "列表渲染与状态标签（online/pending/...）", "status": "planned" },
-        { "id": "TC-FE-OREPO-002", "name": "新建仓库校验（slug 格式/必填）", "status": "planned" },
-        { "id": "TC-FE-OREPO-003", "name": "端点批量提交的参数结构与顺序", "status": "planned" },
-        { "id": "TC-FE-OREPO-004", "name": "限流配置提交与回显", "status": "planned" }
+        { "id": "TC-FE-OREPO-001", "name": "首屏按分页参数加载我的仓库并渲染统计", "status": "done" },
+        { "id": "TC-FE-OREPO-002", "name": "删除需经 Popconfirm 确认，确认后 delete 并刷新（未确认不发请求）", "status": "done" },
+        { "id": "TC-FE-OREPO-003", "name": "编辑时并行加载端点与限流（getEndpoints + getLimits）", "status": "done" },
+        { "id": "TC-FE-OREPO-004", "name": "详情用 slug（而非 id）拉取仓库详情", "status": "done" },
+        { "id": "TC-FE-OREPO-005", "name": "图标上传：非图片文件被拒绝", "status": "done" },
+        { "id": "TC-FE-OREPO-006", "name": "图标上传：超过 200KB 被拒绝（边界）", "status": "done" },
+        { "id": "TC-FE-OREPO-007", "name": "图标上传：合法图片经 FileReader 转 base64 进入预览态", "status": "done" },
+        { "id": "TC-FE-OREPO-008", "name": "列表加载失败不白屏（走 showError）", "status": "done" }
       ]
     },
     {
