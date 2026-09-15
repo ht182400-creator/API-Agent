@@ -13,14 +13,16 @@
     "  - antd: Card.bodyStyle deprecated（原 8 条）",
     "  - react: duplicate keys（原 4 条）",
     "  - rc-collapse: children deprecated（原 2 条）",
-    "累计已消除：182 条（458 → 276）",
+    "累计已消除：182 条",
     "",
-    "剩余两类中：",
-    "  - jsdom getComputedStyle 属环境限制（jsdom 未实现伪元素），无法根治，只能接受；",
-    "  - act 警告属测试质量问题，是下一阶段重点（消除它可能暴露被掩盖的真实问题）。"
+    "剩余两类：",
+    "  - jsdom getComputedStyle：环境限制（jsdom 未实现伪元素），无法根治，只能接受；",
+    "  - act：测试质量问题（异步更新未包裹），下一阶段重点。",
+    "    ⚠️ 已尝试在测试中关闭 antd 动画（ConfigProvider motion:false），act 仅从 223 降到 208，",
+    "       说明大头不在动画，而在组件自身的异步更新（如 Recharge 的轮询定时器）。"
   ],
   "counts": {
-    "act: update not wrapped in act": 223,
+    "act: update not wrapped in act": 208,
     "jsdom: getComputedStyle pseudo-elements": 61
   }
 }

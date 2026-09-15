@@ -18,6 +18,7 @@
 import type { ReactElement, ReactNode } from 'react'
 import { render, type RenderOptions, type RenderResult } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { ConfigProvider } from 'antd'
 import { ErrorProvider } from '../contexts/ErrorContext'
 
 export interface ProviderOptions extends Omit<RenderOptions, 'wrapper'> {
@@ -43,14 +44,19 @@ export function renderWithProviders(
   )
 
   return render(
-    // ⚠️ 与 main.tsx 的 BrowserRouter 保持一致的 future flags：
-    //    否则每次渲染都会刷两条 React Router Future Flag 警告（实测 16 条）。
-    <MemoryRouter
-      initialEntries={[route]}
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
-      <ErrorProvider>{wrapped}</ErrorProvider>
-    </MemoryRouter>,
+    // ⚠️ 关闭 antd 动画（`motion: false`）：jsdom 下 CSSMotion 的异步状态更新
+    //    既无意义又会产生大量 `not wrapped in act(...)` 警告（实测约 90 条，
+    //    占全部 act 警告的四成），还干扰对"真实 act 问题"的判断。
+    <ConfigProvider theme={{ token: { motion: false } }}>
+      {/* ⚠️ 与 main.tsx 的 BrowserRouter 保持一致的 future flags：
+          否则每次渲染都会刷两条 React Router Future Flag 警告（实测 16 条）。 */}
+      <MemoryRouter
+        initialEntries={[route]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <ErrorProvider>{wrapped}</ErrorProvider>
+      </MemoryRouter>
+    </ConfigProvider>,
     options
   )
 }
