@@ -66,6 +66,18 @@ python scripts/init_db.py
 uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+#### Windows 一键启动（推荐）
+
+根目录提供两个批处理文件，**双击即可，启动前会自动结束旧的同名服务进程**：
+
+| 文件 | 作用 | 地址 |
+|------|------|------|
+| `start-backend.bat` | 结束后端旧进程 → 启动 uvicorn（8000） | http://localhost:8000/docs |
+| `start-frontend.bat` | 结束 Vite 旧进程 → 启动前端（3000 起） | http://localhost:3000 |
+
+启动顺序：先 `start-backend.bat`，再 `start-frontend.bat`。
+杀进程为精确匹配（`uvicorn`/`src.main`、`vite`+`api-platform`），不会误杀其他 Python / Node 程序；后端另有 8000 端口兜底释放。
+
 ### 访问API文档
 
 - Swagger UI: http://localhost:8000/docs

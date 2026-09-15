@@ -14,6 +14,8 @@ tests/
 ├── test_billing.py           # 计费模块测试
 ├── test_repositories.py      # 仓库模块测试
 ├── test_quota_api.py         # 配额管理 API 测试 [新增]
+├── test_payment.py           # 支付 API 测试
+└── test_environment_guard.py # 环境隔离与生产安全门控测试 [V1.0 新增]
 
 web/e2e/
 ├── auth.spec.ts              # 认证 E2E 测试
@@ -286,6 +288,101 @@ npm run dev
 
 ---
 
-## 八、联系人
+## 八、环境隔离与支付门控测试（V1.0 新增）
+
+> 对应改造：环境分层 + 生产启动强校验 + 账单环境隔离 + 模拟回调门控。
+> 详细设计见 [环境隔离与支付模式设计文档](./ENVIRONMENT_AND_PAYMENT_MODE.md)。
+
+### 8.1 运行方式
+
+```bash
+cd d:/Work_Area/AI/API-Agent/api-platform
+
+# 运行全部新增用例
+pytest tests/test_environment_guard.py -v
+
+# 仅运行无需数据库的单元用例
+pytest tests/test_environment_guard.py -v -k "not Callback"
+```
+
+> 说明：`TestPaymentCallbackGuard` 为集成用例，依赖 PostgreSQL（与既有测试一致）；
+> 其余用例为纯单元用例，无外部依赖。
+
+### 8.2 用例清单
+
+| 用例ID | 测试名称 | 分类 | 类型 | 预期结果 |
+|--------|----------|------|------|----------|
+| TC-ENV-001 | 账单环境标识由运行环境决定（与 mock 解耦） | 环境 | 单元 | 非生产→simulation，生产→production |
+| TC-ENV-002 | 生产环境识别 | 环境 | 单元 | production/PROD 为真，其余为假 |
+| TC-ENV-003 | 非生产环境跳过强校验 | 环境 | 单元 | 不抛异常 |
+| TC-ENV-004 | 生产 + 模拟支付 | 安全 | 单元 | 抛 RuntimeError |
+| TC-ENV-005 | 生产 + 沙箱网关 | 安全 | 单元 | 抛 RuntimeError |
+| TC-ENV-006 | 生产 + 默认密钥 | 安全 | 单元 | 抛 RuntimeError |
+| TC-ENV-007 | 生产安全配置 | 安全 | 单元 | 校验通过 |
+| TC-ENV-008 | 默认配置非生产 | 环境 | 单元 | is_production 为假 |
+| TC-ENV-009 | 不传环境 → 当前环境 | 环境 | 单元 | 等于 current_environment() |
+| TC-ENV-010 | 空字符串 → 当前环境 | 环境 | 单元 | 等于 current_environment() |
+| TC-ENV-011 | all 通配 | 环境 | 单元 | 返回 all |
+| TC-ENV-012 | 合法具体值 | 环境 | 单元 | 原样返回（大小写不敏感） |
+| TC-ENV-013 | 非法值降级 | 环境 | 单元 | 降级为当前环境并告警 |
+| TC-ENV-014 | 与 settings 一致 | 环境 | 单元 | 两处取值一致 |
+| TC-ENV-015 | env_match(all) | 环境 | 单元 | 恒真条件 |
+| TC-ENV-016 | env_match(具体值) | 环境 | 单元 | 等值条件，绑定值正确 |
+| TC-PAY-GUARD-001 | 生产环境通用回调 | 支付 | 集成 | HTTP 404 |
+| TC-PAY-GUARD-002 | 非生产匿名调用 | 支付 | 集成 | HTTP 401 |
+| TC-PAY-GUARD-003 | 内部令牌错误 | 支付 | 集成 | HTTP 401 |
+| TC-PAY-GUARD-004 | 内部令牌正确 | 支付 | 集成 | 200，订单不存在时返回业务提示 |
+| TC-ENV-017 | 充值落库账单 environment == billing_environment | 环境 | 集成(DB) | 开发环境落 `simulation` |
+| TC-ENV-018 | 显式传入 environment 时以显式值为准 | 环境 | 集成(DB) | 落库为 `production` |
+| TC-ENV-019 | 落库账单可被当前环境命中、另一环境不命中、all 命中 | 环境 | 集成(DB) | 1 / 0 / 1 |
+| TC-ENV-020 | 模型默认值改为「跟随环境」的可调用对象 | 环境 | 单元 | `Bill`/`MonthlyBill` 默认值可调用 |
+| TC-ENV-021 | 生产环境下默认值为 `production` | 环境 | 单元 | 漏传也不会漏账 |
+| TC-ENV-022 | 未显式传 `environment` 时按当前环境**落库** | 环境 | 集成(DB) | development → `simulation` |
+| TC-ENV-023 | 写入守卫：生产写 simulation 账单记录 **ERROR** | 环境 | 单元 | 触发 ERROR 日志 |
+| TC-ENV-024 | 写入守卫：`environment` 为空时按当前环境补全 | 环境 | 单元 | 补为当前环境 |
+| TC-ENV-025 | 响应携带 `X-Environment` / `X-Billing-Environment` | 环境 | 集成 | 头值等于当前环境 |
+| TC-ENV-026 | `/health` 暴露环境标识（供前端徽标） | 环境 | 集成 | 含 `billing_environment` / `is_production` |
+
+### 8.3 手工回归清单
+
+| 编号 | 验证项 | 预期 |
+|------|--------|------|
+| R1 | 开发环境模拟充值 | 余额增加，生成 simulation 账单 |
+| R2 | 重复提交同一回调 | 幂等，不重复加钱 |
+| R3 | 未登录且无内部令牌调用回调 | 401 |
+| R4 | 错误内部令牌调用回调 | 401 |
+| R5 | 已登录用户触发他人订单 | 403 |
+| R6 | 生产环境调用通用回调 | 404 |
+| R7 | 生产环境 mock 未关闭 | 服务拒绝启动 |
+| R8 | 生产环境使用默认密钥 | 服务拒绝启动 |
+| R9 | `GET /billing/bills` 不传 environment | 仅当前环境数据 |
+| R10 | `GET /billing/bills?environment=all` | 返回两个环境数据 |
+| R11 | `GET /billing/bills?environment=xxx` | 降级当前环境 |
+| R12 | `POST /admin/billing/monthly-bills/generate?environment=all` | 400 拒绝 |
+
+### 8.4 测试环境修复记录（2026-09-15）
+
+修复前 `pytest` 报 `ValueError: I/O operation on closed file` 且收集 0 条用例。根因为两个代码缺陷叠加：
+
+| 缺陷 | 位置 | 修复 |
+|------|------|------|
+| 包文件误写入 conftest 内容并在顶层 `from src.main import app`，收集阶段即触发应用初始化 | `tests/__init__.py` | 清空为纯包标记，fixtures 统一放 `conftest.py` |
+| Windows 分支用 `io.TextIOWrapper(sys.stdout.buffer)` 包裹标准输出，GC 时关闭真实 stdout | `src/config/logging_config.py` | 新增 `create_console_handler()`，改用 `sys.stdout.reconfigure(...)`，不包裹 buffer |
+
+同时修复恢复收集能力后暴露的 26 条历史用例缺陷（`test_user.access_token` 不存在、`/api/v1/quota` 路径错误、`bill_type` 断言值错误）。
+
+**当前状态**：
+
+```bash
+cd api-platform
+python -m pytest tests/ -v
+# => collected 88 items / 88 passed in ~72s
+```
+
+详见 [环境隔离与支付模式设计文档](./ENVIRONMENT_AND_PAYMENT_MODE.md) 附录。
+
+---
+
+## 九、联系人
 
 如有问题，请联系开发团队。

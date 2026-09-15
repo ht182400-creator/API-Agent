@@ -208,13 +208,30 @@ class Settings(BaseSettings):
         return self.environment == "production"
 ```
 
-### 方案二：使用独立的测试数据库
+### 方案二：使用独立的测试数据库【必选 · 2026-09-15 起为默认】
+
+> ⚠️ **这不是可选项**：`tests/conftest.py` 的 `test_engine` 会在**每个用例结束后执行 DROP ALL**。
+> 历史上默认指向开发库 `api_platform`，导致**"跑一次 pytest 就清空开发库"**（已实际发生并修复）。
+> 现在默认使用专用测试库，并内置安全护栏：**库名不含 `test` 时直接拒绝运行**。
 
 ```powershell
-# 创建测试数据库 (可选，与开发环境隔离)
+# 创建测试数据库（只需执行一次）
 $env:PGPASSWORD = 'postgres'
-& "D:\Program Files\PostgreSQL\16\bin\psql.exe" -h localhost -U postgres -d postgres -c "CREATE DATABASE api_platform_test;"
+& "D:\Program Files\PostgreSQL\16\bin\psql.exe" -h localhost -U postgres -d postgres -c "CREATE DATABASE api_platform_test OWNER api_user;"
 & "D:\Program Files\PostgreSQL\16\bin\psql.exe" -h localhost -U postgres -d postgres -c "GRANT ALL ON DATABASE api_platform_test TO api_user;"
+```
+
+默认测试库连接串（无需额外配置）：
+
+```
+TEST_DATABASE_URL=postgresql+asyncpg://api_user:api_password@localhost:5432/api_platform_test
+```
+
+确需对非 `test` 库运行（明确知晓数据会被清空）：
+
+```powershell
+$env:ALLOW_NON_TEST_DATABASE = "1"
+python -m pytest tests/ -v
 ```
 
 测试时指定测试数据库：
@@ -325,6 +342,31 @@ async with AsyncClient(
 
 ---
 
+### 6. pytest 收集到 0 个用例 / I/O operation on closed file
+
+**现象**：执行 `python -m pytest tests/ -v` 输出 `collected 0 items`，结束时抛
+`ValueError: I/O operation on closed file`。
+
+**根因**（已于 2026-09-15 修复）：
+
+1. `tests/__init__.py` 被误写入了 `conftest.py` 的内容，并在模块顶层执行
+   `from src.main import app`，导致 pytest 在**收集阶段**导入 `tests` 包时就触发应用/日志初始化；
+2. `src/config/logging_config.py` 的 Windows 分支使用
+   `io.TextIOWrapper(sys.stdout.buffer, ...)` 包裹标准输出。`TextIOWrapper` 在垃圾回收时会
+   **关闭真实的 stdout**，使 pytest 无法输出并中断收集。
+
+**修复**：
+
+- `tests/__init__.py` 清空为纯包标记，所有 fixtures 保留在 `tests/conftest.py`；
+- `logging_config.py` 新增 `create_console_handler()`，改用
+  `sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)`，**不再包裹 buffer**。
+
+**验证**：修复后 `python -m pytest tests/ -v` → `88 passed`。
+
+**注意**：请勿再向 `tests/__init__.py` 写入任何 import 或 fixture。
+
+---
+
 ## 快速启动命令汇总
 
 ```powershell
@@ -349,41 +391,27 @@ python -m pytest tests/ --cov=src --cov-report=html
 
 ## 测试结果
 
-运行 `python -m pytest tests/ -v` 应该看到：
+运行 `python -m pytest tests/ -v` 应该看到（2026-09-15 更新）：
 
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
-collected 28 items
+configfile: pytest.ini
+plugins: anyio-4.11.0, asyncio-1.3.0, cov-7.1.0
+collected 88 items
 
-tests/test_auth.py::TestPasswordHashing::test_hash_password PASSED       [  3%]
-tests/test_auth.py::TestPasswordHashing::test_verify_password_success PASSED [  7%]
-tests/test_auth.py::TestPasswordHashing::test_verify_password_failure PASSED [ 10%]
-tests/test_auth.py::TestAPIKeyGeneration::test_generate_api_key PASSED   [ 14%]
-tests/test_auth.py::TestAPIKeyGeneration::test_hash_api_key PASSED       [ 17%]
-tests/test_auth.py::TestJWTToken::test_create_access_token PASSED        [ 21%]
-tests/test_auth.py::TestJWTToken::test_verify_token PASSED               [ 25%]
-tests/test_auth.py::TestJWTToken::test_verify_invalid_token PASSED       [ 28%]
-tests/test_auth.py::TestAuthAPI::test_register PASSED                    [ 32%]
-tests/test_auth.py::TestAuthAPI::test_register_duplicate_email PASSED    [ 35%]
-tests/test_auth.py::TestAuthAPI::test_login PASSED                       [ 39%]
-tests/test_auth.py::TestAuthAPI::test_login_wrong_password PASSED        [ 42%]
-tests/test_billing.py::TestBillingService::test_get_account PASSED       [ 46%]
-tests/test_billing.py::TestBillingService::test_get_account_auto_create PASSED [ 50%]
-tests/test_billing.py::TestBillingService::test_recharge PASSED          [ 53%]
-tests/test_billing.py::TestBillingService::test_recharge_negative_amount PASSED [ 57%]
-tests/test_billing.py::TestBillingService::test_create_consumption PASSED [ 60%]
-tests/test_billing.py::TestBillingService::test_insufficient_balance PASSED [ 64%]
-tests/test_billing.py::TestBillingService::test_freeze_balance PASSED    [ 67%]
-tests/test_billing.py::TestBillingService::test_unfreeze_balance PASSED   [ 71%]
-tests/test_billing.py::TestBillingService::test_refund PASSED            [ 75%]
-tests/test_billing.py::TestBillingService::test_get_bills PASSED         [ 78%]
-tests/test_billing.py::TestBillingService::test_get_monthly_summary PASSED [100%]
-tests/test_repositories.py::TestRepositoryAPI::test_list_repositories PASSED [ 85%]
-tests/test_repositories.py::TestRepositoryAPI::test_list_repositories_with_filter PASSED [ 89%]
-tests/test_repositories.py::TestRepositoryAPI::test_get_repository_not_found PASSED [ 92%]
-tests/test_repositories.py::TestQuotaAPI::test_get_quota PASSED          [ 96%]
-tests/test_repositories.py::TestLogsAPI::test_get_logs PASSED            [100%]
+tests\test_auth.py .............                                    [ 14%]
+tests\test_backend_proxy.py ....                                    [ 19%]
+tests\test_billing.py ...........                                   [ 31%]
+tests\test_environment_guard.py ......................              [ 56%]
+tests\test_payment.py ....                                          [ 61%]
+tests\test_quota_api.py ..........................                  [ 90%]
+tests\test_rate_limit.py ...                                        [ 94%]
+tests\test_repositories.py .....                                    [100%]
 
-============================== 28 passed in 10.37s ==============================
+======================== 88 passed in 72.08s (0:01:12) ========================
 ```
+
+> 说明：修复 `tests/__init__.py` 与 `logging_config.py` 后，用例数由 28 增长至 88（
+> 此前因收集中断实际一条都跑不了）。如仅需快速验证环境门控改造，可运行
+> `python -m pytest tests/test_environment_guard.py -v`。

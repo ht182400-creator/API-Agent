@@ -43,6 +43,10 @@ npm --version
 
 ## 快速开始
 
+> **一键启动（推荐）**：完成依赖安装后，直接双击 `api-platform/start-frontend.bat`
+> 即可启动前端（会先自动结束旧的 Vite 进程）；后端对应脚本为 `api-platform/start-backend.bat`。
+> 两者均支持双击运行，并内置 `python` / `npm` 环境自检。
+
 复制以下命令，一键完成前端环境设置：
 
 ```powershell
