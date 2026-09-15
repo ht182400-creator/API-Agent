@@ -1,0 +1,3 @@
+
+# Git hooks 必须使用 LF（Windows 下 CRLF 会导致 bad interpreter: /bin/sh^M）
+.githooks/* text eol=lf

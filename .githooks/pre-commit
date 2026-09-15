@@ -1,0 +1,60 @@
+#!/bin/sh
+# ==============================================================================
+# Git pre-commit hook —— 提交前防线
+# ------------------------------------------------------------------------------
+# 目的：把 TypeScript 类型检查（tsc --noEmit）放到本地提交环节，
+#       避免类型问题被带进仓库。
+#
+# 背景（2026-09-15）：
+#   src/config/permissionHooks.ts 里写了 JSX（扩展名应为 .tsx），
+#   这**一个语法错误**导致 TypeScript **跳过全部语义（类型）检查**，
+#   使 48 个类型错误长期隐身、从未被发现。
+#   CI（.github/workflows/cicd.yml）其实早已配置 tsc 检查，但项目为本地开发、
+#   未触发过 Actions，因此真正缺失的是"本地提交防线"。
+#
+# 启用方式（每次 clone 后执行一次）：
+#     git config core.hooksPath .githooks
+#   或运行：api-platform/scripts/dev/setup_git_hooks.bat
+#
+# 临时跳过（不推荐）：
+#     git commit --no-verify
+# ==============================================================================
+
+# 本次提交是否涉及前端 TS/TSX（纯后端/文档提交不检查，避免拖慢）
+CHANGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^api-platform/web/src/.*\.(ts|tsx)$')
+
+if [ -z "$CHANGED" ]; then
+    exit 0
+fi
+
+if [ ! -d "api-platform/web" ]; then
+    exit 0
+fi
+
+cd api-platform/web || exit 0
+
+# 未安装依赖时跳过（提示而非阻断）
+if [ ! -d "node_modules" ]; then
+    echo "[pre-commit] 未找到 api-platform/web/node_modules，跳过类型检查（请先执行 npm install）"
+    exit 0
+fi
+
+echo "[pre-commit] 检测到前端 TS/TSX 变更，执行类型检查 (tsc --noEmit) ..."
+
+if npx tsc --noEmit; then
+    echo "[pre-commit] 类型检查通过"
+    exit 0
+fi
+
+echo ""
+echo "=============================================================="
+echo "  提交被拒绝：TypeScript 类型检查未通过"
+echo "=============================================================="
+echo "  请修复上述错误后重新提交。"
+echo ""
+echo "  提示：只要存在 1 个**语法错误**，tsc 就会跳过全部语义检查 ——"
+echo "        请先确认没有语法错误，再逐条处理类型错误。"
+echo ""
+echo "  临时跳过（不推荐）：git commit --no-verify"
+echo "=============================================================="
+exit 1
