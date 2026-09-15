@@ -52,6 +52,7 @@ import styles from './Analytics.module.css'
 // 【P1-4 拆分】状态映射与图表数据整形已抽到同目录 `analytics/`（纯数据 / 纯函数，均已单测）
 import { statusColors, statusText } from './analytics/constants'
 import { createRepoDetailColumns } from './analytics/repoDetailColumns'
+import { OverviewTab } from './analytics/OverviewTab'
 import { buildRepoTrendChartData, buildTrendChartData } from './analytics/chartData'
 
 const { Title, Text } = Typography
@@ -255,189 +256,17 @@ export default function AdminAnalytics() {
               <span><ApiOutlined />数据概览</span>
             ),
             children: (
-              <Spin spinning={overviewLoading}>
-                {/* 统计卡片 */}
-                <Row gutter={[12, 12]} className={styles.statsRow}>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card className={styles.statCard}>
-                      <Statistic
-                        title="仓库总数"
-                        value={overview?.repos.total || 0}
-                        prefix={<ApiOutlined />}
-                        valueStyle={{ color: '#10b981' }}
-                      />
-                      <div className={styles.statSub}>
-                        <Tag color="green">{overview?.repos.online || 0} 已上线</Tag>
-                        <Tag color="orange">{overview?.repos.pending || 0} 待审核</Tag>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card className={styles.statCard}>
-                      <Statistic
-                        title="今日调用"
-                        value={overview?.calls.today || 0}
-                        prefix={<ThunderboltOutlined />}
-                        valueStyle={{ color: '#059669' }}
-                        suffix="次"
-                      />
-                      <div className={styles.statSub}>
-                        <Text type="success">
-                          <ArrowUpOutlined /> {overview?.calls.today_success || 0} 成功
-                        </Text>
-                        <Text type="danger" style={{ marginLeft: 8 }}>
-                          <ArrowDownOutlined /> {overview?.calls.today_failed || 0} 失败
-                        </Text>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card className={styles.statCard}>
-                      <Statistic
-                        title="本周调用"
-                        value={overview?.calls.week || 0}
-                        prefix={<LineChartOutlined />}
-                        valueStyle={{ color: '#10b981' }}
-                        suffix="次"
-                      />
-                      <div className={styles.statSub}>
-                        <Text type="secondary">
-                          本月: {(overview?.calls.month || 0).toLocaleString()} 次
-                        </Text>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card className={styles.statCard}>
-                      <Statistic
-                        title="总收入"
-                        value={overview?.revenue.total || 0}
-                        prefix={<DollarOutlined />}
-                        valueStyle={{ color: '#faad14' }}
-                        precision={2}
-                      />
-                      <div className={styles.statSub}>
-                        <Text type="secondary">
-                          今日: ¥{(overview?.revenue.today || 0).toFixed(2)}
-                        </Text>
-                      </div>
-                    </Card>
-                  </Col>
-                </Row>
-
-                {/* 快捷统计 */}
-                <Row gutter={[12, 12]} className={styles.quickStats}>
-                  <Col xs={24} sm={8}>
-                    <Card size="small">
-                      <Statistic
-                        title="活跃用户（本周）"
-                        value={overview?.active_users || 0}
-                        prefix={<UserOutlined />}
-                        valueStyle={{ color: '#059669' }}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <Card size="small">
-                      <Statistic
-                        title="本月调用"
-                        value={overview?.calls.month || 0}
-                        suffix="次"
-                        valueStyle={{ color: '#10b981' }}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <Card size="small">
-                      <Statistic
-                        title="本月收入"
-                        value={overview?.revenue.month || 0}
-                        prefix="¥"
-                        precision={2}
-                        valueStyle={{ color: '#faad14' }}
-                      />
-                    </Card>
-                  </Col>
-                </Row>
-
-                {/* 趋势预览（简化版） */}
-                <Card 
-                  title="调用与收入趋势" 
-                  className={styles.chartCard}
-                  extra={
-                    <Space wrap size="small">
-                      <Select 
-                        value={trendPeriod} 
-                        onChange={setTrendPeriod}
-                        style={{ width: 90 }}
-                        options={[
-                          { label: '按小时', value: 'hour' },
-                          { label: '按天', value: 'day' }
-                        ]}
-                      />
-                      {trendPeriod === 'day' && (
-                        <Select 
-                          value={trendDays} 
-                          onChange={setTrendDays}
-                          style={{ width: 90 }}
-                          options={[
-                            { label: '近7天', value: 7 },
-                            { label: '近30天', value: 30 },
-                            { label: '近90天', value: 90 }
-                          ]}
-                        />
-                      )}
-                    </Space>
-                  }
-                >
-                  <Spin spinning={trendLoading}>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={buildTrendChartData(trendData)}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="time" tick={{ fontSize: 12 }} />
-                        <YAxis 
-                          yAxisId="left" 
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
-                        />
-                        <YAxis 
-                          yAxisId="right" 
-                          orientation="right" 
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(v) => `¥${v.toFixed(0)}`}
-                        />
-                        <RechartsTooltip 
-                          formatter={(value: number, name: string) => [
-                            name === 'calls' ? `${value.toLocaleString()} 次` : `¥${value.toFixed(2)}`,
-                            name === 'calls' ? '调用次数' : '收入'
-                          ]}
-                        />
-                        <Legend />
-                        <Line 
-                          yAxisId="left"
-                          type="monotone" 
-                          dataKey="calls" 
-                          stroke="#10b981" 
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                          activeDot={{ r: 5 }}
-                          name="调用次数"
-                        />
-                        <Line 
-                          yAxisId="right"
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#faad14" 
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                          activeDot={{ r: 5 }}
-                          name="收入"
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </Spin>
-                </Card>
-              </Spin>
+              // 概览内容已抽为 ./analytics/OverviewTab
+              <OverviewTab
+                overview={overview}
+                overviewLoading={overviewLoading}
+                trendData={trendData}
+                trendLoading={trendLoading}
+                trendPeriod={trendPeriod}
+                trendDays={trendDays}
+                onPeriodChange={setTrendPeriod}
+                onDaysChange={setTrendDays}
+              />
             )
           },
           
