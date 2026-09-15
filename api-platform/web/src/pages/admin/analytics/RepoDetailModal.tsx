@@ -79,7 +79,7 @@ export function RepoDetailModal({
       footer={null}
       width="95%"
       style={{ maxWidth: 900 }}
-      destroyOnClose
+      destroyOnHidden
     >
       <Spin spinning={loading}>
         {/* 基本信息 */}

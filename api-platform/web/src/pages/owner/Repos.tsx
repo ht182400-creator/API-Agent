@@ -595,7 +595,7 @@ export default function OwnerRepos() {
         onCancel={() => { setModalVisible(false); form.resetFields(); setEditingRepo(null); setEndpoints([]); setLogoPreview('') }}
         footer={null}
         width={800}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" onFinish={handleCreate}>
           <Tabs items={tabItems} defaultActiveKey="basic" />
@@ -618,7 +618,7 @@ export default function OwnerRepos() {
         onOk={handleSaveEndpoint}
         okText="保存"
         cancelText="取消"
-        destroyOnClose
+        destroyOnHidden
         afterOpenChange={(open) => {
           if (open) {
             if (editingEndpoint) {

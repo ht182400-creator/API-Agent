@@ -1,0 +1,18 @@
+{
+  "updatedAt": "2026-09-16T00:00:00.000Z",
+  "_note": [
+    "测试警告预算基线 —— 由 scripts/dev/check-test-warnings.mjs 维护。",
+    "规则：出现基线之外的种类，或某类超过 基线×(1+容差)，即判定失败。",
+    "⚠️ 正确用法：修掉某一类后重建基线，让它从基线中消失 —— 此后它再出现即失败（只减不增）。"
+  ],
+  "counts": {
+    "act: update not wrapped in act": 201,
+    "jsdom: getComputedStyle pseudo-elements": 60,
+    "antd: Card.bordered deprecated": 28,
+    "react-router: future flag": 16,
+    "antd: Spin.tip misuse": 15,
+    "antd: Card.bodyStyle deprecated": 8,
+    "react: duplicate keys": 4,
+    "rc-collapse: children deprecated": 2
+  }
+}
