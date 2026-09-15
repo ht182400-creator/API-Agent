@@ -51,6 +51,7 @@ import { useNavigate } from 'react-router-dom'
 import styles from './Analytics.module.css'
 // 【P1-4 拆分】状态映射与图表数据整形已抽到同目录 `analytics/`（纯数据 / 纯函数，均已单测）
 import { statusColors, statusText } from './analytics/constants'
+import { createRepoDetailColumns } from './analytics/repoDetailColumns'
 import { buildRepoTrendChartData, buildTrendChartData } from './analytics/chartData'
 
 const { Title, Text } = Typography
@@ -218,122 +219,11 @@ export default function AdminAnalytics() {
   // 趋势图表数据改由 `analytics/chartData.ts` 的 buildTrendChartData(trendData) 生成（纯函数，已单测）
 
   // 仓库明细表格列
-  const repoDetailColumns = [
-    {
-      title: '仓库名称',
-      dataIndex: 'name',
-      key: 'name',
-      width: 200,
-      render: (text: string, record: RepoDetailItem) => (
-        <div>
-          <div style={{ fontWeight: 500 }}>{text}</div>
-          <div style={{ color: '#999', fontSize: 12 }}>{record.slug}</div>
-        </div>
-      )
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: 100,
-      render: (status: string) => (
-        <Tag color={statusColors[status] || 'default'}>
-          {statusText[status] || status}
-        </Tag>
-      )
-    },
-    {
-      title: '总调用',
-      dataIndex: 'total_calls',
-      key: 'total_calls',
-      width: 120,
-      sorter: true,
-      render: (value: number) => (
-        <span style={{ color: '#059669' }}>
-          {value.toLocaleString()} 次
-        </span>
-      )
-    },
-    {
-      title: '成功',
-      dataIndex: 'success_calls',
-      key: 'success_calls',
-      width: 100,
-      render: (value: number) => (
-        <span style={{ color: '#52c41a' }}>
-          {value.toLocaleString()}
-        </span>
-      )
-    },
-    {
-      title: '失败',
-      dataIndex: 'failed_calls',
-      key: 'failed_calls',
-      width: 100,
-      render: (value: number) => (
-        <span style={{ color: value > 0 ? '#ff4d4f' : '#999' }}>
-          {value.toLocaleString()}
-        </span>
-      )
-    },
-    {
-      title: '成功率',
-      dataIndex: 'success_rate',
-      key: 'success_rate',
-      width: 100,
-      render: (value: number) => (
-        <span style={{ 
-          color: value >= 99 ? '#52c41a' : value >= 95 ? '#faad14' : '#ff4d4f' 
-        }}>
-          {value.toFixed(1)}%
-        </span>
-      )
-    },
-    {
-      title: '总收入',
-      dataIndex: 'total_cost',
-      key: 'total_cost',
-      width: 120,
-      sorter: true,
-      render: (value: number) => (
-        <span style={{ color: '#faad14', fontWeight: 500 }}>
-          ¥{value.toFixed(2)}
-        </span>
-      )
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      width: 170,
-      render: (time: string) => time ? new Date(time).toLocaleString('zh-CN') : '-'
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 180,
-      fixed: 'right' as const,
-      render: (_: any, record: RepoDetailItem) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<LineChartOutlined />}
-            onClick={() => openRepoDetail(record)}
-          >
-            查看明细
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => navigate(`/admin/repos/${record.slug}`)}
-          >
-            详情
-          </Button>
-        </Space>
-      )
-    }
-  ]
+  // 「仓库明细」表格列定义已抽至 ./analytics/repoDetailColumns（工厂函数，需传入两个动作回调）
+  const repoDetailColumns = createRepoDetailColumns({
+    onViewDetail: openRepoDetail,
+    onOpenRepo: (slug) => navigate(`/admin/repos/${slug}`),
+  })
 
   return (
     <div className={`${styles.container} bamboo-bg-pattern`}>
