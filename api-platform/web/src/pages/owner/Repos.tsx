@@ -16,6 +16,7 @@ import { RepoLogo } from '../../components/RepoLogo'
 import { useDevice } from '../../hooks/useDevice'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
+import { createRepoColumns } from './repos/repoColumns'
 
 const { Title, Text } = Typography
 
@@ -289,87 +290,12 @@ export default function OwnerRepos() {
     return colors[method] || 'default'
   }
 
-  const columns = [
-    {
-      title: '图标',
-      key: 'logo',
-      width: 70,
-      render: (_: any, record: Repository) => (
-        <RepoLogo logoUrl={record.logo_url} repoType={record.type} size={40} />
-      ),
-    },
-    { 
-      title: '仓库名称', 
-      dataIndex: 'name', 
-      key: 'name', 
-      render: (name: string, record: Repository) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>{record.display_name || name}</Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>{name}</Text>
-        </Space>
-      )
-    },
-    { title: '描述', dataIndex: 'description', key: 'description', ellipsis: true },
-    { title: '分类', dataIndex: 'type', key: 'type', render: (t: string) => <Tag>{t}</Tag> },
-    { 
-      title: 'API端点', 
-      key: 'endpoints',
-      render: (_: any, record: Repository) => (
-        <Space>
-          <Tag icon={<ApiOutlined />}>{record.endpoints?.length || 0} 个</Tag>
-        </Space>
-      )
-    },
-    { 
-      title: '限流配置', 
-      key: 'limits',
-      render: (_: any, record: Repository) => (
-        <Space direction="vertical" size={0}>
-          <Text style={{ fontSize: 12 }}>
-            <ThunderboltOutlined /> {record.limits?.rpm || 1000}/分
-          </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {record.limits?.rph || 10000}/时
-          </Text>
-        </Space>
-      )
-    },
-    { 
-      title: '状态', 
-      dataIndex: 'status', 
-      key: 'status',
-      render: (status: string) => {
-        const statusMap: Record<string, { color: string; text: string }> = {
-          pending: { color: 'orange', text: '待审核' },
-          approved: { color: 'blue', text: '已审核（待上线）' },
-          rejected: { color: 'red', text: '已拒绝' },
-          online: { color: 'green', text: '已上线' },
-          offline: { color: 'default', text: '已下线' },
-        }
-        const config = statusMap[status] || { color: 'default', text: status }
-        return <Tag color={config.color}>{config.text}</Tag>
-      }
-    },
-    { title: '创建时间', dataIndex: 'created_at', key: 'created_at', render: (d: string) => dayjs(d).format('YYYY-MM-DD') },
-    {
-      title: '操作',
-      key: 'action',
-      width: 280,
-      render: (_: any, record: Repository) => (
-        <Space size="small" wrap>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => handleViewDetail(record)}>详情</Button>
-          <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>编辑</Button>
-          <Popconfirm
-            title="确认删除？"
-            description="删除后无法恢复"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
+  // 表格列定义已抽至 ./repos/repoColumns（工厂函数，需传入三个动作回调）
+  const columns = createRepoColumns({
+    onViewDetail: handleViewDetail,
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+  })
 
   // Tab 内容组件
   const BasicInfoTab = () => (
