@@ -18,9 +18,8 @@ import {
   RocketOutlined
 } from '@ant-design/icons'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { paymentApi, RechargePackage, Payment, RechargeConfig } from '../../api/payment'
-import { authApi } from '../../api/auth'
-import { billingApi } from '../../api/billing'
+import { paymentApi, RechargePackage, Payment } from '../../api/payment'
+// 注：authApi 早已是未使用的 dead import；billingApi / RechargeConfig 随 useRechargeData 抽出后不再需要
 import { useErrorModal } from '../../components/ErrorModal'
 import { PaymentErrorResult, getPaymentErrorMessage, isPaymentError } from '../../utils/paymentErrors.tsx'
 import { useAuthStore } from '../../stores/auth'
@@ -29,6 +28,7 @@ import '../../styles/payment-methods.css'
 // 【P1-4 拆分】纯逻辑层已抽出到 ./recharge/（常量与支付日志）
 import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
+import { useRechargeData } from './recharge/useRechargeData'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -36,8 +36,8 @@ export default function DeveloperRecharge() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { user } = useAuthStore()
-  const [loading, setLoading] = useState(false)
-  const [packages, setPackages] = useState<RechargePackage[]>([])
+  // 【P1-4 拆分】loading / packages / rechargeConfig / currentBalance 及其加载函数
+  // 已抽到 ./recharge/useRechargeData（在 useErrorModal() 之后调用，见下方）
   const [selectedPackage, setSelectedPackage] = useState<RechargePackage | null>(null)
   // payment_method 取值受后端约束（详见 api/payment.ts 的 createPayment 参数类型），故收窄为联合类型
   const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay' | 'bankcard'>('alipay')
@@ -48,8 +48,7 @@ export default function DeveloperRecharge() {
   const [paySuccess, setPaySuccess] = useState(false)
   const [countdown, setCountdown] = useState(0)
   
-  // 最新账户余额
-  const [currentBalance, setCurrentBalance] = useState<number | null>(null)
+  // 最新账户余额  —— 已迁至 ./recharge/useRechargeData
   
   // 支付错误处理
   const [payError, setPayError] = useState<any>(null)
@@ -61,7 +60,7 @@ export default function DeveloperRecharge() {
   // 自定义金额
   const [showCustomAmount, setShowCustomAmount] = useState(false)
   const [customAmount, setCustomAmount] = useState<number | null>(null)
-  const [rechargeConfig, setRechargeConfig] = useState<RechargeConfig | null>(null)
+  // rechargeConfig 已迁至 ./recharge/useRechargeData
   
   // 扫码支付轮询
   const [qrcodePolling, setQrcodePolling] = useState(false)
@@ -142,6 +141,12 @@ export default function DeveloperRecharge() {
   }
 
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
+
+  // 【P1-4 拆分】套餐 / 充值配置 / 账户余额的加载与状态。
+  // ⚠️ 把 showError 传进去（而非让 hook 自己 useErrorModal）：否则会存在两套独立的
+  //    errorModal 状态，hook 里报的错不会显示在页面这个弹窗上。
+  const { loading, packages, rechargeConfig, currentBalance, fetchPackages, fetchConfig, fetchBalance } =
+    useRechargeData(showError)
   
   // 判断是否是普通用户
   const isNormalUser = user?.user_type === 'user'
@@ -645,36 +650,7 @@ export default function DeveloperRecharge() {
     }
   }, [])
 
-  const fetchPackages = async () => {
-    setLoading(true)
-    try {
-      const data = await paymentApi.getPackages()
-      setPackages(data.filter(pkg => pkg.is_active))
-    } catch (error: any) {
-      showError(error, fetchPackages)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchConfig = async () => {
-    try {
-      const config = await paymentApi.getConfig()
-      setRechargeConfig(config)
-    } catch (error) {
-      console.error('获取充值配置失败', error)
-    }
-  }
-
-  // 获取账户余额
-  const fetchBalance = async () => {
-    try {
-      const account = await billingApi.getAccount()
-      setCurrentBalance(account.balance)
-    } catch (error) {
-      console.error('获取账户余额失败', error)
-    }
-  }
+  // fetchPackages / fetchConfig / fetchBalance 已迁至 ./recharge/useRechargeData
 
   const handleSelectPackage = (pkg: RechargePackage) => {
     setSelectedPackage(pkg)
