@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons'
 import { repoApi, Repository, RepoStats } from '../../api/repo'
 import { useNavigate } from 'react-router-dom'
+import { repoStatusConfig } from '../../config/repoStatus'
 import dayjs from 'dayjs'
 import styles from './Dashboard.module.css'
 
@@ -76,14 +77,8 @@ export default function OwnerDashboard() {
       dataIndex: 'status', 
       key: 'status',
       render: (status: string) => {
-        const statusMap: Record<string, { color: string; text: string }> = {
-          pending: { color: 'orange', text: '待审核' },
-          approved: { color: 'blue', text: '已审核（待上线）' },
-          rejected: { color: 'red', text: '已拒绝' },
-          online: { color: 'green', text: '已上线' },
-          offline: { color: 'default', text: '已下线' },
-        }
-        const config = statusMap[status] || { color: 'default', text: status || '未知' }
+        // ⚠️ map 收敛到 src/config/repoStatus（owner 变体）；`status || '未知'` 的兜底语义保留
+        const config = repoStatusConfig(status || '未知', 'owner')
         return <Tag color={config.color}>{config.text}</Tag>
       }
     },

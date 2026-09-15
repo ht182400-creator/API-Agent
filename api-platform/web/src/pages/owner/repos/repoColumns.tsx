@@ -11,6 +11,7 @@
  *    后续可统一提到共享常量（拆分不夹带重构，故留待单独一轮）。
  */
 import { Button, Popconfirm, Space, Tag, Typography } from 'antd'
+import { repoStatusConfig } from '../../../config/repoStatus'
 import {
   ApiOutlined,
   ThunderboltOutlined,
@@ -83,14 +84,8 @@ export const createRepoColumns = (actions: RepoColumnActions): TableProps<Reposi
     dataIndex: 'status',
     key: 'status',
     render: (status: string) => {
-      const statusMap: Record<string, { color: string; text: string }> = {
-        pending: { color: 'orange', text: '待审核' },
-        approved: { color: 'blue', text: '已审核（待上线）' },
-        rejected: { color: 'red', text: '已拒绝' },
-        online: { color: 'green', text: '已上线' },
-        offline: { color: 'default', text: '已下线' },
-      }
-      const config = statusMap[status] || { color: 'default', text: status }
+      // ⚠️ map 收敛到 src/config/repoStatus（owner 变体："已审核（待上线）"是提醒所有者的业务语义）
+      const config = repoStatusConfig(status, 'owner')
       return <Tag color={config.color}>{config.text}</Tag>
     },
   },

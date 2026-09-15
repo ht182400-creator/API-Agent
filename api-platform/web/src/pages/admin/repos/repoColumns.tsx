@@ -16,6 +16,7 @@ import {
   EyeOutlined,
 } from '@ant-design/icons'
 import type { Repository } from '../../../api/repo'
+import { repoStatusConfig } from '../../../config/repoStatus'
 import { RepoLogo } from '../../../components/RepoLogo'
 
 /** 单仓库的调用统计（与主组件 state 共用的形状） */
@@ -31,16 +32,9 @@ export interface RepoStats {
 
 export type RepoStatsMap = Record<string, RepoStats>
 
-/** 状态标签：pending/approved/rejected/online/offline → 颜色与文案 */
+/** 状态标签：map 收敛到 src/config/repoStatus（admin 变体） */
 export function getStatusTag(status: string) {
-  const statusMap: Record<string, { color: string; text: string }> = {
-    pending: { color: 'orange', text: '待审核' },
-    approved: { color: 'blue', text: '已审核' },
-    rejected: { color: 'red', text: '已拒绝' },
-    online: { color: 'green', text: '已上线' },
-    offline: { color: 'default', text: '已下线' },
-  }
-  const config = statusMap[status] || { color: 'default', text: status }
+  const config = repoStatusConfig(status, 'admin')
   return <Tag color={config.color}>{config.text}</Tag>
 }
 

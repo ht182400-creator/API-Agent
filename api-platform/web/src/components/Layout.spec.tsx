@@ -15,10 +15,13 @@
  */
 import { describe, it, expect, vi } from 'vitest'
 
-vi.mock('../../api/auth', () => ({
+// ⚠️ mock 路径必须与 Layout.tsx 的 import 路径解析到同一模块（'../api/auth'）。
+//    原先写成 '../../api/auth' 从本文件解析到不存在的位置 → mock 从未生效
+//    （001~006 只测纯函数所以没暴露；007/008 一旦渲染组件立即炸出真模块）。
+vi.mock('../api/auth', () => ({
   authApi: { logout: vi.fn(), me: vi.fn() },
 }))
-vi.mock('../../api/notification', () => ({
+vi.mock('../api/notification', () => ({
   notificationApi: {
     getUnreadCount: vi.fn().mockResolvedValue(0),
     getList: vi.fn().mockResolvedValue({ items: [] }),
@@ -26,6 +29,14 @@ vi.mock('../../api/notification', () => ({
 }))
 
 import { getMenuItems } from './Layout'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
+import { beforeEach } from 'vitest'
+import { ErrorProvider } from '../contexts/ErrorContext'
+import { useAuthStore } from '../stores/auth'
+import Layout from './Layout'
+import { authApi } from '../api/auth'
 
 /**
  * 把 antd 菜单树拍平成 key 列表。
@@ -105,5 +116,74 @@ describe('getMenuItems（用户类型 → 菜单可见性）', () => {
     expect(keys).not.toContain('/developer/keys')
     // 缺省参数路径同样安全
     expect(flatKeys(getMenuItems(''))).toEqual(keys)
+  })
+})
+
+// ==================== 组件级渲染与登出（TC-FE-LAYOUT-007/008）====================
+// 与 001~006 的差异：那组测「给定角色应有哪些菜单」的纯函数；
+// 这组测「登录用户真的打开页面后，菜单/用户区渲染出来、登出链路真的清空登录态」。
+
+const mockUser = {
+  id: 'u1',
+  username: 'devadmin',
+  email: 'dev@example.com',
+  user_type: 'developer',
+  role: 'developer',
+  permissions: [],
+}
+
+function renderLayout() {
+  return render(
+    <MemoryRouter
+      initialEntries={['/developer/dashboard']}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <ErrorProvider>
+        <Layout />
+      </ErrorProvider>
+    </MemoryRouter>
+  )
+}
+
+describe('Layout 组件渲染与登出', () => {
+  beforeEach(() => {
+    // forceRefreshUser 内部会调 authApi.me；即便形状不符也会被 Layout 的 try/catch 吞掉
+    vi.mocked(authApi.me).mockResolvedValue({ code: 0, data: mockUser } as never)
+    useAuthStore.setState({
+      user: mockUser,
+      accessToken: 'tok',
+      refreshToken: 'r',
+    } as never)
+  })
+
+  it('TC-FE-LAYOUT-007: 登录用户进入布局后渲染出菜单入口与用户信息', async () => {
+    renderLayout()
+
+    // 顶栏用户名（username 优先于 email 前缀）
+    expect(await screen.findByText('devadmin')).toBeInTheDocument()
+    // 菜单已渲染且含可点击项
+    expect(screen.getAllByRole('menuitem').length).toBeGreaterThan(0)
+    // 越权可见性呼应 001~006：developer 的 DOM 中不得出现超管入口
+    expect(screen.queryByText(/超级管理/)).not.toBeInTheDocument()
+  })
+
+  it('TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态', async () => {
+    const user = userEvent.setup()
+    renderLayout()
+    await screen.findByText('devadmin')
+
+    // 打开用户下拉（antd Dropdown 可能是 hover 或 click 触发，两种都兼容）
+    const trigger = screen.getByText('devadmin')
+    await user.click(trigger)
+    let logoutItem = screen.queryByText('退出登录')
+    if (!logoutItem) {
+      await user.hover(trigger)
+      logoutItem = await screen.findByText('退出登录')
+    }
+    await user.click(logoutItem)
+
+    // 后端登出被调用；本地登录态（store.user）被清空
+    await waitFor(() => expect(vi.mocked(authApi.logout)).toHaveBeenCalled())
+    await waitFor(() => expect(useAuthStore.getState().user).toBeNull())
   })
 })

@@ -15,9 +15,10 @@
  * 用例编号：TC-FE-ANA-001 ~ TC-FE-ANA-004
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+import { ConfigProvider } from 'antd'
 
 // 组件唯一数据源 → 整体 mock（避免真实 axios 请求）
 vi.mock('../../api/adminAnalytics', () => ({
@@ -71,9 +72,13 @@ const repoDetails = {
 
 function renderPage() {
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Analytics />
-    </MemoryRouter>
+    // ⚠️ 与 renderWithProviders 一致关掉动画：曾导致 Select 下拉停在
+    //    `ant-slide-up-appear-prepare` 帧，option 迟迟不进入可交互状态（ANA-008 实测）。
+    <ConfigProvider theme={{ token: { motion: false } }}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Analytics />
+      </MemoryRouter>
+    </ConfigProvider>
   )
 }
 
@@ -200,5 +205,57 @@ describe('Tab 切换与仓库明细弹窗', () => {
     expect(await screen.findByText('仓库收入明细')).toBeInTheDocument()
     expect(screen.getAllByText('r1').length).toBeGreaterThan(0)
     expect(screen.getAllByText('weather').length).toBeGreaterThan(0)
+  })
+
+  it('TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('tab', { name: /仓库明细/ }))
+    await waitFor(() => expect(adminAnalyticsApi.getRepoDetails).toHaveBeenCalled())
+
+    // ⚠️ antd Select 交互的 jsdom 深坑（ANA-008 实测）：
+    //   1. 打开下拉必须 `fireEvent.mouseDown(selector)`（userEvent.click 的 pointer 序列无效）；
+    //   2. 弹层 option **渲染正常**但 dropdown 会停在 `ant-slide-up-appear-prepare` 动画帧
+    //      （`ConfigProvider motion:false` 的 token 禁不掉 rc-motion 的 slide-up）→
+    //      弹层容器不可见 → `getByRole('option')` 的可访问性判定**永远找不到**；
+    //   3. 因此改为：mouseDown 打开 → 在未 hidden 的弹层里按文本找 option → fireEvent.click
+    //      （fireEvent 不做可见性检查，React 的 onSelect 照常触发）。
+    const pick = (selector: HTMLElement, optionText: string) => {
+      fireEvent.mouseDown(selector)
+      const dd = [...document.querySelectorAll('.ant-select-dropdown')].find((d) =>
+        !d.className.includes('hidden')
+      )
+      if (!dd) throw new Error('Select 下拉未打开')
+      const opt = [...dd.querySelectorAll('.ant-select-item-option')].find(
+        (o) => o.textContent === optionText
+      )
+      if (!opt) throw new Error(`下拉中无 option：${optionText}`)
+      fireEvent.click(opt)
+    }
+    // 用"当前可见文本"定位 Select（placeholder 或当前选中值的文案在页面内唯一）
+    const comboOf = (visibleText: string): HTMLElement => {
+      const el = screen.getByText(visibleText).closest('.ant-select')
+      if (!el) throw new Error(`未找到 Select：${visibleText}`)
+      const selector = el.querySelector('.ant-select-selector')
+      if (!selector) throw new Error(`Select 缺少 selector：${visibleText}`)
+      return selector as HTMLElement
+    }
+
+    // 1) 状态筛选（placeholder 唯一）→ 选「待审核」
+    await pick(comboOf('状态筛选'), '待审核')
+    // 2) 排序字段：当前值「按调用量排序」→ 按收入
+    await pick(comboOf('按调用量排序'), '按收入排序')
+    // 3) 排序次序：当前值「降序」→ 升序
+    await pick(comboOf('降序'), '升序')
+
+    // detailStatus / detailSortBy / detailSortOrder 任一变化都会触发 effect 重查
+    await waitFor(() => {
+      const calls = vi.mocked(adminAnalyticsApi.getRepoDetails).mock.calls
+      const last = calls[calls.length - 1][0] as Record<string, unknown>
+      expect(last.status).toBe('pending')
+      expect(last.sort_by).toBe('total_cost')
+      expect(last.sort_order).toBe('asc')
+    })
   })
 })

@@ -23,7 +23,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     // ⚠️ 必须排除 e2e/：那里的 *.spec.ts 由 `npm run test:e2e`（Playwright）运行，
     //    混进 vitest 会因缺少 Playwright 运行期而全部报错。
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    //    tests/** 纳入收集：用例库自检（tests/cases/frontend_cases.spec.ts）放这里。
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'tests/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       'node_modules/**',
       'dist/**',

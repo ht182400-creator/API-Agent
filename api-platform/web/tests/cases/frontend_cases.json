@@ -29,7 +29,7 @@
         "src/pages/admin/Analytics.tsx (partial)",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35 → 56 → 76；2026-09-16：P1 全部覆盖 → 144；cases=142 为登记条目数，vitest 报 144 因参数化展开；P0/P1 已覆盖，剩 P2/P3 与 ANA-008/LAYOUT-007~008）"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖 → 149 条登记用例，vitest 151（144 组件 + 7 用例库自检）；specFiles=14 为 src 下口径，自检 spec 在 tests/ 不计入；ANA-008 / LAYOUT-007~008 已转 done，剩 P2/P3 与 UI-001~002）"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -88,8 +88,8 @@
         { "id": "TC-FE-LAYOUT-004", "name": "普通用户仅 /user/* 且不出现 API Keys 入口", "status": "done" },
         { "id": "TC-FE-LAYOUT-005", "name": "owner 含 owner 专属的数据分析/收益结算", "status": "done" },
         { "id": "TC-FE-LAYOUT-006", "name": "未知 user_type 兜底为普通用户菜单", "status": "done" },
-        { "id": "TC-FE-LAYOUT-007", "name": "组件渲染：按当前用户渲染菜单入口（非白屏）", "status": "planned" },
-        { "id": "TC-FE-LAYOUT-008", "name": "登出调用 authApi.logout 并清空 store", "status": "planned" }
+        { "id": "TC-FE-LAYOUT-007", "name": "组件渲染：按当前用户渲染菜单入口（非白屏），DOM 无越权入口", "status": "done" },
+        { "id": "TC-FE-LAYOUT-008", "name": "登出调用 authApi.logout 并清空 store", "status": "done" }
       ]
     },
     {
@@ -149,7 +149,7 @@
         { "id": "TC-FE-ANA-005", "name": "切到「趋势分析」展示趋势卡片与周期控件", "status": "done" },
         { "id": "TC-FE-ANA-006", "name": "切到「仓库明细」展示表格、行数据与分页总数", "status": "done" },
         { "id": "TC-FE-ANA-007", "name": "点击「查看明细」按仓库打开弹窗并加载其趋势（默认 7 天）", "status": "done" },
-        { "id": "TC-FE-ANA-008", "name": "状态筛选/排序切换后带参重新查询（antd Select 交互）", "status": "planned" },
+        { "id": "TC-FE-ANA-008", "name": "状态筛选/排序切换后带参重新查询（antd Select 交互）", "status": "done" },
         { "id": "TC-FE-ANA-DATA-001", "name": "buildTrendChartData(null) → 空数组", "status": "done" },
         { "id": "TC-FE-ANA-DATA-002", "name": "趋势 labels/calls/revenue 逐项对齐", "status": "done" },
         { "id": "TC-FE-ANA-DATA-003", "name": "series 短于 labels 时补 0 保持等长", "status": "done" },
@@ -474,6 +474,24 @@
       "cases": [
         { "id": "TC-FE-UI-001", "name": "按 props 渲染（含空数据/边界）", "status": "planned" },
         { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录访问受保护路由被重定向", "status": "planned" }
+      ]
+    },
+    {
+      "id": "FE-CASES",
+      "level": "P0",
+      "file": "tests/cases/frontend_cases.json",
+      "lines": 510,
+      "why": "P0 元测试：用例库是覆盖全景的唯一清单，曾因未转义引号整体损坏且无任何警报 —— 本 suite 让「JSON 损坏 / 结构漂移 / 登记与现实脱节」在 test:unit 里直接变红",
+      "status": "covered",
+      "specFile": "tests/cases/frontend_cases.spec.ts",
+      "cases": [
+        { "id": "TC-FE-CASES-001", "name": "JSON 可解析", "status": "done" },
+        { "id": "TC-FE-CASES-002", "name": "顶层结构完整（meta/suites/knownDefects）", "status": "done" },
+        { "id": "TC-FE-CASES-003", "name": "suite 必填字段与合法 status（聚合 suite 允许无 file）", "status": "done" },
+        { "id": "TC-FE-CASES-004", "name": "全库用例 id 唯一", "status": "done" },
+        { "id": "TC-FE-CASES-005", "name": "suite.file 指向的被测文件真实存在", "status": "done" },
+        { "id": "TC-FE-CASES-006", "name": "covered/partial 的 specFile 真实存在", "status": "done" },
+        { "id": "TC-FE-CASES-007", "name": "meta.stats.specFiles 与磁盘 src 下 spec 数一致", "status": "done" }
       ]
     }
   ],

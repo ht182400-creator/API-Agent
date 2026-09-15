@@ -271,10 +271,11 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-FE-LOGIN-008 | 逐字符真实输入长邮箱不被自动清空截断（已修缺陷的回归） | 同上 | 组件 | ✅ |
 | TC-FE-ANA-001~004 | 首屏渲染+三数据源 / 数据落卡片 / 刷新追加请求 / 报错不白屏 | `pages/admin/Analytics.tsx` | 组件 | ✅ |
 | TC-FE-ANA-005~007 | 切「趋势分析」出趋势卡片与周期控件 / 切「仓库明细」出表格+行数据+分页总数 / 点「查看明细」开弹窗并加载该仓库趋势 | 同上 | 组件 | ✅ |
-| TC-FE-ANA-008 | 状态筛选 / 排序切换后带参重新查询（antd Select 交互） | 同上 | 组件 | 📋 |
+| TC-FE-ANA-008 | 明细状态筛选 / 排序字段 / 排序次序变化后带参重查（antd Select 交互） | 同上 | 组件 | ✅ |
 | TC-FE-ANA-DATA-001~005 | 图表整形纯函数（null / 对齐 / 补齐 / avgLatency） | `pages/admin/analytics/chartData.ts` | 纯逻辑 | ✅ |
 | TC-FE-LAYOUT-001~006 | 各角色菜单可见性（超管/admin/developer/owner/普通用户/未知兜底）：越权入口不得出现 | `components/Layout.tsx` | 纯逻辑 | ✅ |
-| TC-FE-LAYOUT-007~008 | 组件渲染菜单入口 / 登出清空登录态 | 同上 | 组件 | 📋 |
+| TC-FE-LAYOUT-007~008 | 组件渲染菜单入口（DOM 无越权入口）/ 登出清空登录态 | 同上 | 组件 | ✅ |
+| TC-FE-CASES-001~007 | 用例库自检：JSON 可解析 / 结构完整 / id 唯一 / file·specFile 真实存在 / specFiles 与磁盘一致 | `tests/cases/frontend_cases.json` | 元测试 | ✅ |
 | TC-FE-ERRCTX-001~010 | 状态码分类矩阵 / 业务码区间 / 关键词兜底 / 文案提取与截断 / 认证码映射 / 兜底文案表完整性 | `contexts/ErrorContext.tsx` | 纯逻辑 | ✅ |
 | TC-FE-ERRCTX-011~013 | Provider 外抛错 / 认证错误弹窗文案 / 服务器错误弹窗 | 同上 | 组件 | ✅ |
 | TC-FE-RECHARGE-001~015 | 套餐/配置/余额并行加载并过滤未启用套餐 / **到账金额（固定赠送 + 比例赠送）** / 套餐下单参数 / 自定义金额上下限（UI 层 min/max）/ 自定义下单参数 / 两者互斥 / 失败不白屏 / 自定义到账计算 / **日志异常不拦截下单** / **不丢单链路（写入暂存 / 恢复并用暂存单号确认 / 超 30 分钟作废清理）** / **取消订单后扫码轮询真正停止** / **组件卸载后定时器统一清理** / **自定义赠送比例按百分比显示** | `pages/developer/Recharge.tsx` | 组件 | ✅ |
@@ -311,7 +312,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 144 passed）
+npm run test:unit        # 单次运行（当前 151 passed / 15 个 spec 文件 = 14 组件 + 1 用例库自检）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 
@@ -334,8 +335,9 @@ npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEm
 | 重复 key | 4 | 真实缺陷 |
 | rc-collapse children | 2 | 改 `items`（属性是 `label` 不是 `header`） |
 
-**剩余两类（接受，已论证）**：`act`(96，**100% 集中在 Recharge spec** —— 该组件重异步
-特性所致，非测试写法问题) 与 `jsdom`(61，getComputedStyle 伪元素为环境限制)。
+**剩余两类（接受，已论证）**：`act`(102，**几乎全部集中在 Recharge spec** —— 该组件重异步
+特性所致，非测试写法问题) 与 `jsdom`(62，getComputedStyle 伪元素为环境限制)。
+（96→102 / 61→62 的增量来自 D/A/B 轮新增用例，基线已同步。）
 
 **回归与变异检验**（`npm run run verify:fixes` → `scripts/dev/verify-fixes.mjs`）：
 把已修复的缺陷**改回缺陷形态**再跑用例 —— 用例必须变红，否则判定为"空测试"。
