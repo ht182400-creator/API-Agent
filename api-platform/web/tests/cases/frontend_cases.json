@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 14,
-      "cases": 135,
+      "cases": 139,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -174,7 +174,11 @@
         { "id": "TC-FE-RECHARGE-005", "name": "自定义金额下单成功，createCustomRecharge 带金额与支付参数", "status": "done" },
         { "id": "TC-FE-RECHARGE-006", "name": "套餐与自定义金额互斥（选一即取消另一）", "status": "done" },
         { "id": "TC-FE-RECHARGE-007", "name": "下单失败不白屏（页面骨架保留，可重试）", "status": "done" },
-        { "id": "TC-FE-RECHARGE-008", "name": "自定义金额到账 = 金额×(1 + 默认比例)", "status": "done" }
+        { "id": "TC-FE-RECHARGE-008", "name": "自定义金额到账 = 金额×(1 + 默认比例)", "status": "done" },
+        { "id": "TC-FE-RECHARGE-009", "name": "日志上报异常不拦截下单（同步抛错仍能创建订单）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-010", "name": "下单成功后写入 sessionStorage（含单号与金额）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-011", "name": "挂载时恢复暂存的未完成支付并用暂存单号向后端确认", "status": "done" },
+        { "id": "TC-FE-RECHARGE-012", "name": "超过 30 分钟的暂存作废并清理（不发确认请求）", "status": "done" }
       ]
     },
     {

@@ -338,3 +338,76 @@ describe('下单', () => {
     expect(mocks.showError).not.toHaveBeenCalled()
   })
 })
+
+/**
+ * 「不丢单」链路 —— 用户跳到支付宝 / 刷新页面回来后仍能确认结果。
+ * 这三条是后续拆分支付流程 hook 的安全网。
+ */
+describe('待支付订单暂存（不丢单）', () => {
+  const KEY = 'pending_payment'
+
+  const statusOk = {
+    status: 'pending',
+    payment_no: 'PAY-OLD',
+    created_at: new Date().toISOString(),
+    expires_in: 600,
+  }
+
+  it('TC-FE-RECHARGE-010: 下单成功后写入 sessionStorage（含单号与金额）', async () => {
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('入门包'))
+    await clickRechargeButton()
+
+    await waitFor(() => expect(paymentApi.createPayment).toHaveBeenCalled())
+
+    await waitFor(() => {
+      const raw = sessionStorage.getItem(KEY)
+      expect(raw).toBeTruthy()
+      const saved = JSON.parse(raw as string)
+      expect(saved.payment_no).toBe('PAY-NEW')
+      expect(saved.amount).toBe(10)
+      expect(typeof saved.savedAt).toBe('number')
+    })
+  })
+
+  it('TC-FE-RECHARGE-011: 页面挂载时恢复暂存的未完成支付并向后端确认', async () => {
+    sessionStorage.setItem(
+      KEY,
+      JSON.stringify({
+        payment_no: 'PAY-OLD',
+        order_no: 'ORD-OLD',
+        amount: 100,
+        pay_url: '',
+        savedAt: Date.now(),
+      })
+    )
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue(statusOk as never)
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+
+    // ⚠️ 关键：必须拿**暂存的单号**去问后端，而不是当作新页面什么都不做
+    await waitFor(() => expect(paymentApi.getPaymentStatus).toHaveBeenCalledWith('PAY-OLD'))
+  })
+
+  it('TC-FE-RECHARGE-012: 超过 30 分钟的暂存视为作废并清理（不发确认请求）', async () => {
+    sessionStorage.setItem(
+      KEY,
+      JSON.stringify({
+        payment_no: 'PAY-EXPIRED',
+        order_no: 'ORD-OLD',
+        amount: 100,
+        savedAt: Date.now() - 31 * 60 * 1000, // 31 分钟前
+      })
+    )
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    // 不得用过期单号去问后端
+    expect(paymentApi.getPaymentStatus).not.toHaveBeenCalledWith('PAY-EXPIRED')
+    // 且顺手清理掉
+    expect(sessionStorage.getItem(KEY)).toBeNull()
+  })
+})

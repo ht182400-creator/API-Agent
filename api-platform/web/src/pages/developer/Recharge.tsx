@@ -29,6 +29,11 @@ import '../../styles/payment-methods.css'
 import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
 import { useRechargeData } from './recharge/useRechargeData'
+import {
+  savePaymentToSession,
+  restorePaymentFromSession,
+  clearPaymentFromSession,
+} from './recharge/paymentSession'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -911,48 +916,8 @@ export default function DeveloperRecharge() {
     }
   }
 
-  // 保存支付信息到 sessionStorage，以便从支付宝返回后恢复
-  const savePaymentToSession = (payment: Payment) => {
-    try {
-      sessionStorage.setItem('pending_payment', JSON.stringify({
-        payment_no: payment.payment_no,
-        amount: payment.amount,
-        order_no: payment.order_no,
-        pay_url: payment.pay_url,
-        savedAt: Date.now()
-      }))
-    } catch (e) {
-      console.error('保存支付信息失败:', e)
-    }
-  }
-
-  // 从 sessionStorage 恢复支付信息
-  const restorePaymentFromSession = (): { payment_no: string; amount: number; order_no: string; pay_url?: string } | null => {
-    try {
-      const saved = sessionStorage.getItem('pending_payment')
-      if (saved) {
-        const data = JSON.parse(saved)
-        // 检查是否过期（30分钟内）
-        if (Date.now() - data.savedAt < 30 * 60 * 1000) {
-          return data
-        } else {
-          sessionStorage.removeItem('pending_payment')
-        }
-      }
-    } catch (e) {
-      console.error('恢复支付信息失败:', e)
-    }
-    return null
-  }
-
-  // 清除 sessionStorage 中的支付信息
-  const clearPaymentFromSession = () => {
-    try {
-      sessionStorage.removeItem('pending_payment')
-    } catch (e) {
-      console.error('清除支付信息失败:', e)
-    }
-  }
+  // savePaymentToSession / restorePaymentFromSession / clearPaymentFromSession
+  // 已迁至 ./recharge/paymentSession（含 30 分钟过期规则）
 
   const handleOpenPay = async () => {
     if (!currentPayment) return
