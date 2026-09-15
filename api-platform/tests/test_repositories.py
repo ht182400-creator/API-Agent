@@ -81,7 +81,7 @@ class TestQuotaAPI:
         api_key, secret = test_api_key
         
         response = await client.get(
-            "/api/v1/quota",
+            "/api/v1/quota/overview",
             headers={
                 "X-Access-Key": api_key,
                 "X-Signature": "dummy",

@@ -43,11 +43,11 @@ class Notification(Base):
     priority = Column(String(20), nullable=False, default="normal")
     
     # 过期时间（可选，过期后自动标记为已过期）
-    expire_at = Column(DateTime, nullable=True)
+    expire_at = Column(DateTime(timezone=True), nullable=True)
     
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now())
-    read_at = Column(DateTime, nullable=True)  # 阅读时间
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    read_at = Column(DateTime(timezone=True), nullable=True)  # 阅读时间
 
     def __repr__(self):
         return f"<Notification {self.title}>"
@@ -79,8 +79,8 @@ class NotificationPreference(Base):
     })
 
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<NotificationPreference user_id={self.user_id}>"

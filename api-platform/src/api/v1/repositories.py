@@ -18,7 +18,9 @@ from src.schemas.response import (
     RepositorySLAResponse,
 )
 from src.core.exceptions import RepositoryNotFoundError, RateLimitError, AuthorizationError
-from src.services.auth_service import get_current_user
+from src.services.auth_service import get_current_user, check_admin_permission
+from src.utils.url_safety import ensure_outbound_url_allowed, OutboundURLBlocked
+from src.utils.sanitize import sanitize
 from src.models.repository import Repository, RepoEndpoint, RepoLimits, RepoPricing
 from src.schemas.request import (
     EndpointCreate,
@@ -30,6 +32,41 @@ from src.schemas.request import (
 from uuid import uuid4, UUID
 
 router = APIRouter()
+
+
+# ==================== 安全辅助函数 ====================
+
+def _validate_endpoint_url(endpoint_url: Optional[str]) -> Optional[str]:
+    """
+    校验仓库后端地址（**写入侧** SSRF 防护，评审项 N-1）。
+
+    与转发时的请求侧校验形成双重防护：在仓库创建/更新阶段即拒绝非法地址，
+    避免脏数据落库后才在调用时暴露问题。
+
+    Args:
+        endpoint_url: 待校验地址（可为空，表示未配置后端）
+
+    Returns:
+        去除首尾空白后的地址；输入为空时返回 None
+
+    Raises:
+        HTTPException(400): 地址非法（协议不支持 / 内网地址 / 元数据地址 / 无法解析）
+    """
+    if not endpoint_url or not str(endpoint_url).strip():
+        return None
+
+    from src.config.settings import settings as _settings
+
+    candidate = str(endpoint_url).strip()
+    try:
+        ensure_outbound_url_allowed(
+            candidate,
+            allow_private=_settings.private_repo_endpoints_allowed,
+        )
+    except OutboundURLBlocked as exc:
+        raise HTTPException(status_code=400, detail=f"仓库后端地址不被允许: {exc}")
+
+    return candidate
 
 
 # ==================== 计费辅助函数 ====================
@@ -145,8 +182,8 @@ async def calculate_and_charge(
     account.balance = str(balance_after)
     account.total_consume = str(Decimal(str(account.total_consume)) + cost)
     
-    # 获取环境标识
-    environment = "simulation" if settings.payment_mock_mode else "production"
+    # 获取环境标识（唯一数据源：settings.billing_environment）
+    environment = settings.billing_environment
     
     # 生成账单号
     import time
@@ -766,8 +803,16 @@ async def chat(
     if repo.endpoint_url:
         # 有配置后端URL，尝试调用
         try:
+            backend_url = f"{repo.endpoint_url.rstrip('/')}/chat"
+
+            # 【安全】SSRF 防护：校验出站地址（协议/内网/元数据地址）
+            from src.config.settings import settings as _settings
+            ensure_outbound_url_allowed(
+                backend_url,
+                allow_private=_settings.private_repo_endpoints_allowed,
+            )
+
             async with httpx.AsyncClient(timeout=30.0) as client:
-                backend_url = f"{repo.endpoint_url.rstrip('/')}/chat"
                 resp = await client.post(
                     backend_url,
                     json=request_data,
@@ -782,6 +827,9 @@ async def chat(
                     response_data = resp.json()
                 else:
                     response_data = {"error": resp.text}
+        except OutboundURLBlocked as e:
+            response_data = {"error": f"仓库后端地址不被允许: {e}"}
+            status_code = 403
         except httpx.TimeoutException:
             response_data = {"error": "Backend service timeout"}
             status_code = 504
@@ -826,7 +874,7 @@ async def chat(
             request_id=getattr(request.state, "request_id", None),
             endpoint="/chat",
             method="POST",
-            request_params=json.dumps(request_data) if request_data else None,
+            request_params=json.dumps(sanitize(request_data), ensure_ascii=False) if request_data else None,
             tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
             status_code=status_code,
             response_time=str(response_time),
@@ -997,6 +1045,8 @@ async def create_repository(
         owner_id=current_user.id,
         owner_type="external",  # 外部用户创建
         logo_url=repo_data.logo_url,  # V5.0 自定义图标
+        # 【N-1】写入侧校验后端地址（原先该字段被接收但未落库，属缺陷一并修复）
+        endpoint_url=_validate_endpoint_url(repo_data.endpoint_url),
     )
     
     db.add(repo)
@@ -1081,7 +1131,8 @@ async def update_repository(
     if repo_data.repo_type is not None:
         repo.repo_type = repo_data.repo_type
     if repo_data.endpoint_url is not None:
-        repo.endpoint_url = repo_data.endpoint_url
+        # 【N-1】写入侧 SSRF 校验
+        repo.endpoint_url = _validate_endpoint_url(repo_data.endpoint_url)
     if repo_data.status is not None:
         repo.status = repo_data.status
         if repo_data.status == "online" and not repo.online_at:
@@ -1161,13 +1212,8 @@ async def delete_repository(
 
 
 # ==================== 管理员仓库审核接口 ====================
-
-def check_admin_permission(user: "User") -> None:  # noqa: F821
-    """【V4.0 重构】检查用户是否有管理员权限"""
-    from src.core.exceptions import AuthorizationError
-    from src.services.permission_service import PermissionService
-    if not PermissionService.is_admin(user):
-        raise AuthorizationError("只有管理员可以执行此操作")
+# 说明：管理员权限校验统一使用 src.services.auth_service.check_admin_permission，
+#       不再在本模块重复定义（已在上方 import 引入）。
 
 
 @router.get("/admin/all", response_model=BaseResponse[RepositoryListResponse])
@@ -2003,7 +2049,8 @@ async def update_repository_config(
     if config_data.description is not None:
         repo.description = config_data.description
     if config_data.endpoint_url is not None:
-        repo.endpoint_url = config_data.endpoint_url
+        # 【N-1】写入侧 SSRF 校验
+        repo.endpoint_url = _validate_endpoint_url(config_data.endpoint_url)
     if config_data.repo_type is not None:
         repo.repo_type = config_data.repo_type
 
@@ -2235,7 +2282,16 @@ async def proxy_repository_endpoint(
         
         # 获取请求体
         body = await request.body()
-        
+
+        # 【安全】SSRF 防护：校验出站地址（协议/内网/元数据地址）
+        # 注意：放在 query_params / body 之后，保证 finally 中的日志记录不会因
+        #       变量未定义而二次报错。
+        from src.config.settings import settings as _settings
+        ensure_outbound_url_allowed(
+            backend_url,
+            allow_private=_settings.private_repo_endpoints_allowed,
+        )
+
         import time
         start_time = time.time()
         
@@ -2267,6 +2323,10 @@ async def proxy_repository_endpoint(
                 response_data = {"status_code": resp.status_code, "content": resp.text}
                 return {"status_code": resp.status_code, "content": resp.text}
                 
+    except OutboundURLBlocked as e:
+        status_code = 403
+        response_data = {"error": f"仓库后端地址不被允许: {e}"}
+        raise HTTPException(status_code=403, detail=f"仓库后端地址不被允许: {e}")
     except httpx.TimeoutException:
         status_code = 504
         response_data = {"error": "Backend service timeout"}
@@ -2310,7 +2370,7 @@ async def proxy_repository_endpoint(
                 request_id=getattr(request.state, "request_id", None),
                 endpoint=f"/{path}",
                 method=request.method,
-                request_params=json.dumps(request_params) if request_params else None,
+                request_params=json.dumps(sanitize(request_params), ensure_ascii=False) if request_params else None,
                 tester=getattr(user, "username", None) or getattr(user, "name", None) or getattr(user, "email", None),
                 status_code=status_code,
                 response_time=str(response_time),

@@ -13,6 +13,42 @@ from src.core.security import hash_password
 
 
 @pytest.fixture
+async def test_user(db_session):
+    """
+    测试用户（兼容历史用例）
+
+    历史用例直接使用 ``test_user.access_token`` 构造 Authorization 请求头，
+    但 ``User`` ORM 模型并没有该字段，导致用例全部报
+    ``AttributeError: 'User' object has no attribute 'access_token'``。
+
+    为在不修改生产模型的前提下修复历史用例，这里覆盖 conftest 中的同名 fixture，
+    为测试对象动态附加一个有效的 JWT ``access_token``。
+
+    说明：**新编写用例请统一使用 conftest 提供的 ``auth_headers`` fixture**，
+    不要继续依赖此兼容垫片。
+    """
+    from src.models.user import User
+    from src.core.security import hash_password, create_access_token
+
+    user = User(
+        username="testuser",
+        email="test@example.com",
+        password_hash=hash_password("testpassword"),
+        user_type="developer",
+        user_status="active",
+        role="user",
+        permissions=["user:read", "user:write", "api:read", "api:write"],
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # 兼容垫片：附加有效 JWT，供历史用例构造 Authorization 头
+    user.access_token = create_access_token({"sub": str(user.id)})
+    return user
+
+
+@pytest.fixture
 async def test_api_key(db_session, test_user):
     """创建测试 API Key"""
     key = APIKey(

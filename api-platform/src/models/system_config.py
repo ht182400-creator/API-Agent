@@ -37,8 +37,8 @@ class SystemConfig(Base):
     is_editable = Column(Boolean, default=True)  # 是否可编辑
     
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
     updated_by = Column(String(100), nullable=True)
 
     # 复合唯一索引

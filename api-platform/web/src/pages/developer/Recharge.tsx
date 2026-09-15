@@ -74,7 +74,8 @@ export default function DeveloperRecharge() {
   const [loading, setLoading] = useState(false)
   const [packages, setPackages] = useState<RechargePackage[]>([])
   const [selectedPackage, setSelectedPackage] = useState<RechargePackage | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<string>('alipay')
+  // payment_method 取值受后端约束（详见 api/payment.ts 的 createPayment 参数类型），故收窄为联合类型
+  const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay' | 'bankcard'>('alipay')
   const [paymentType, setPaymentType] = useState<'page' | 'qrcode'>('qrcode')  // 默认扫码支付
   const [payModalVisible, setPayModalVisible] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
@@ -107,7 +108,7 @@ export default function DeveloperRecharge() {
   const payWindowRef = useRef<Window | null>(null)
 
   // 轮询支付窗口关闭的 interval ID
-  const payWindowIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const payWindowIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   
   // 【新增】用于跟踪最新的支付状态，避免闭包问题
   const paymentStateRef = useRef<{
@@ -126,7 +127,7 @@ export default function DeveloperRecharge() {
   }, [currentPayment, payModalVisible, paySuccess])
   
   // 【新增】轮询定时器 ref，用于检测支付结果
-  const paymentPollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const paymentPollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   
   // 【新增】启动支付结果轮询
   const startPaymentPoll = () => {
@@ -370,7 +371,10 @@ export default function DeveloperRecharge() {
           // 从后端获取最新的订单信息（包括 created_at_timestamp）
           try {
             const paymentStatus = await paymentApi.getPaymentStatus(savedPayment.payment_no)
-            const createdAtTimestamp = paymentStatus.created_at_timestamp || Date.now()
+            // 后端返回 created_at（ISO 字符串），换算为时间戳；缺失时回退当前时间
+            const createdAtTimestamp = paymentStatus.created_at
+              ? new Date(paymentStatus.created_at).getTime()
+              : Date.now()
             setCurrentPayment({
               payment_no: savedPayment.payment_no,
               order_no: savedPayment.order_no,
@@ -530,7 +534,7 @@ export default function DeveloperRecharge() {
       // 【关键修复】使用 ref 获取最新状态，避免闭包问题
       // 只在弹窗打开、支付未成功、有支付信息时才查询
       if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
-        if (state.currentPayment.status !== 'paid' && state.currentPayment.status !== 'completed') {
+        if (state.currentPayment.status !== 'paid') {
           console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
           // 【优化】自动刷新时不显示错误提示
           handleRefreshStatus(false)
@@ -554,7 +558,7 @@ export default function DeveloperRecharge() {
         
         // 【关键修复】使用 ref 获取最新状态
         if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
-          if (state.currentPayment.status !== 'paid' && state.currentPayment.status !== 'completed') {
+          if (state.currentPayment.status !== 'paid') {
             console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
             // 【优化】自动刷新时不显示错误提示
             handleRefreshStatus(false)
@@ -1113,7 +1117,7 @@ export default function DeveloperRecharge() {
                 closePayWindow()  // 关闭支付宝窗口
                 clearPaymentFromSession()
                 setPaySuccess(true)
-                setCurrentPayment({ ...currentPayment, status: 'completed' })
+                setCurrentPayment({ ...currentPayment, status: 'paid' })
                 await fetchBalance()
                 message.success({ content: '该订单已支付成功！正在刷新...', key: 'paySuccess' })
                 setTimeout(() => {
@@ -1965,7 +1969,7 @@ export default function DeveloperRecharge() {
 
             <div style={{ marginTop: 16, textAlign: 'center' }}>
               <Space>
-                <Button onClick={handleRefreshStatus}>
+                <Button onClick={() => handleRefreshStatus()}>
                   <ReloadOutlined /> 刷新状态
                 </Button>
                 <Button 

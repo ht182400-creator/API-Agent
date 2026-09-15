@@ -687,7 +687,7 @@ async def claim_trial_amount(
             balance_after=str(new_balance),
             description=f"试用金额",
             status="completed",
-            environment="simulation" if settings.payment_mock_mode else "production",
+            environment=settings.billing_environment,
         )
         db.add(bill)
         
@@ -757,7 +757,7 @@ async def claim_trial_amount(
         balance_after=str(new_balance),
         description=f"试用金额（升级为开发者）",
         status="completed",
-        environment="simulation" if settings.payment_mock_mode else "production",
+        environment=settings.billing_environment,
     )
     db.add(bill)
     

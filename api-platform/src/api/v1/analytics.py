@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func, and_, or_, Numeric
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.services.auth_service import get_current_user
+from src.services.auth_service import get_current_user, check_admin_permission
 from src.models.user import User
 from src.models.repository import Repository
 from src.models.billing import APICallLog
@@ -24,11 +24,8 @@ from src.config.database import get_db
 
 router = APIRouter(prefix="/analytics", tags=["Analytics - 分析报表"])
 
-
-def check_admin_permission(current_user: User):
-    """检查是否为管理员"""
-    if not PermissionService.is_admin(current_user):
-        raise AuthorizationError("需要管理员权限")
+# 说明：管理员权限校验统一使用 src.services.auth_service.check_admin_permission，
+#       不再在本模块重复定义（已在上方 import 引入）。
 
 
 def check_analytics_permission(current_user: User):

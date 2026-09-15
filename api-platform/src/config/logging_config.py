@@ -321,6 +321,53 @@ class AutoBackupRotatingFileHandler(RotatingFileHandler):
         self.backup_manager.perform_backup(Path(self.baseFilename))
 
 
+def create_console_handler(
+    level: int,
+    formatter: logging.Formatter,
+) -> Optional[logging.StreamHandler]:
+    """
+    创建安全的控制台日志处理器。
+
+    【重要】不要用 ``io.TextIOWrapper(sys.stdout.buffer)`` 包裹标准输出。
+    ``TextIOWrapper`` 会接管底层 buffer 的所有权，在其被垃圾回收时会
+    **关闭真实的 stdout**，从而导致：
+
+      - 其他库（pytest / uvicorn / 交互式解释器）再写入时抛出
+        ``ValueError: I/O operation on closed file``；
+      - Windows 多进程子进程日志异常；
+      - pytest 无法输出结果（表现为 collected 0 items 后崩溃）。
+
+    这里改为：在可用时对 ``sys.stdout`` 直接 ``reconfigure``（Python 3.7+），
+    仅调整编码与行缓冲，不改变流的归属，因此不会关闭标准输出。
+
+    Args:
+        level: 日志级别
+        formatter: 日志格式化器
+
+    Returns:
+        配置好的 StreamHandler；若无法创建（如无控制台）则返回 None
+    """
+    stream = sys.stdout
+    if stream is None:  # pythonw / 无控制台场景
+        return None
+
+    try:
+        # 直接重配置现有流的编码与行缓冲，不创建新的包装对象（避免关闭 stdout）
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", line_buffering=True)
+    except Exception:
+        # 重配置失败不影响日志功能，继续使用原流
+        pass
+
+    try:
+        handler = logging.StreamHandler(stream)
+        handler.setLevel(level)
+        handler.setFormatter(formatter)
+        return handler
+    except Exception:
+        return None
+
+
 def setup_module_loggers(
     root_level: str = "INFO",
     enable_console: bool = False,  # 默认禁用控制台输出
@@ -367,23 +414,11 @@ def setup_module_loggers(
         logger.setLevel(level)
         logger.propagate = False
 
-        # 控制台处理器
+        # 控制台处理器（安全创建，避免关闭真实 stdout）
         if enable_console:
-            try:
-                # Windows 兼容：使用更安全的方式处理异步环境的日志输出
-                if sys.platform == 'win32':
-                    import io
-                    try:
-                        console_handler = logging.StreamHandler(io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True))
-                    except Exception:
-                        console_handler = logging.StreamHandler(sys.stdout)
-                else:
-                    console_handler = logging.StreamHandler(sys.stdout)
-                console_handler.setLevel(level)
-                console_handler.setFormatter(formatter)
+            console_handler = create_console_handler(level, formatter)
+            if console_handler is not None:
                 logger.addHandler(console_handler)
-            except Exception:
-                pass
 
         # 模块文件处理器 - 文件名加上日期后缀
         if enable_file:
@@ -447,25 +482,14 @@ def setup_logger(
         datefmt=LogConfig.DATE_FORMAT
     )
 
-    # 控制台处理器
+    # 控制台处理器（安全创建，避免关闭真实 stdout）
     if enable_console:
-        try:
-            # Windows 兼容：使用更安全的方式处理异步环境的日志输出
-            if sys.platform == 'win32':
-                import io
-                # 使用 TextIOWrapper 包装 buffer 以支持字符串输出
-                try:
-                    console_handler = logging.StreamHandler(io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True))
-                except Exception:
-                    # 如果失败，使用标准的 StreamHandler（让它自己处理）
-                    console_handler = logging.StreamHandler(sys.stdout)
-            else:
-                console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(LogConfig.LEVELS.get(level.upper(), logging.INFO))
-            console_handler.setFormatter(colored_formatter)
+        console_handler = create_console_handler(
+            LogConfig.LEVELS.get(level.upper(), logging.INFO),
+            colored_formatter,
+        )
+        if console_handler is not None:
             logger.addHandler(console_handler)
-        except Exception:
-            pass
 
     # 文件处理器
     if enable_file:

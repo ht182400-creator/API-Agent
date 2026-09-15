@@ -93,6 +93,8 @@ export interface UpdateRepoConfigRequest {
   description?: string
   endpoint_url?: string
   repo_type?: string
+  // 自定义图标（后端 RepositoryUpdate schema 支持，此前类型定义遗漏）
+  logo_url?: string
 
   // 端点配置
   endpoints?: CreateEndpointRequest[]

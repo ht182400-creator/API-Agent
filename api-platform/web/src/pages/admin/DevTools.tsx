@@ -40,12 +40,14 @@ export default function DevTools() {
   }
 
   const handleExport = () => {
-    const content = log.export()
+    // 注意：log.export() 返回 { filename, content } 对象，
+    //       原实现把整个对象传给 Blob（TS2322），此处改为取其中的文本内容。
+    const { filename, content } = log.export()
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `app-logs-${new Date().toISOString().slice(0, 10)}.txt`
+    a.download = filename || `app-logs-${new Date().toISOString().slice(0, 10)}.txt`
     a.click()
     URL.revokeObjectURL(url)
     message.success('日志已导出')

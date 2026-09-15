@@ -156,10 +156,10 @@ class AccountService:
         if amount <= 0:
             raise ValidationError("增加金额必须大于0")
         
-        # 如果未指定环境，根据配置自动判断
+        # 如果未指定环境，使用全局唯一的环境标识（模拟/生产）
         if environment is None:
             from src.config.settings import settings
-            environment = "simulation" if settings.payment_mock_mode else "production"
+            environment = settings.billing_environment
         
         account = await self.get_or_create_account(user_id)
         logger.info(f"[AddBalance] Account obtained: id={account.id}, user_id={account.user_id}, current_balance={account.balance}")
@@ -211,6 +211,7 @@ class AccountService:
         source_type: str = "consume",
         source_id: str = None,
         description: str = None,
+        environment: str = None,
     ) -> Tuple[Account, Bill]:
         """
         扣除账户余额
@@ -223,6 +224,7 @@ class AccountService:
             source_type: 来源类型 (consume/refund/withdraw)
             source_id: 来源ID
             description: 描述
+            environment: 环境标志 (simulation/production)，未指定时取当前环境
             
         Returns:
             (更新后的账户, 账单记录)
@@ -232,6 +234,12 @@ class AccountService:
         
         if amount <= 0:
             raise ValidationError("扣除金额必须大于0")
+        
+        # 【修复】原实现漏传 environment，导致生产环境扣费账单被静默写成 simulation，
+        #        而默认查询只看 production → 该笔扣费"消失"（对账漏账）。
+        if environment is None:
+            from src.config.settings import settings
+            environment = settings.billing_environment
         
         account = await self.get_or_create_account(user_id)
         
@@ -262,6 +270,8 @@ class AccountService:
             description=description,
             status="completed",
             completed_at=datetime.now(timezone.utc),
+            # 环境标识：必须显式传入（漏传会被模型默认值兜底，但仍应在源头写清）
+            environment=environment,
         )
         self.db.add(bill)
         

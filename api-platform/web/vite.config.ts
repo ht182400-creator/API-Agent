@@ -42,6 +42,12 @@ export default defineConfig(async () => {
           changeOrigin: true,
           logLevel: 'silent',
         },
+        // 【L5】存活探针（含环境标识）—— 前端环境徽标据此判断当前环境
+        '/health': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          logLevel: 'silent',
+        },
       },
     },
     build: {

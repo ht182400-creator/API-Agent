@@ -77,6 +77,27 @@ async def get_current_user(
     return user
 
 
+async def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[User]:
+    """
+    可选获取当前登录用户（不强制登录）
+
+    用于同时服务于"匿名公开接口"与"需登录的受限场景"：
+    - 未携带 Token → 返回 None
+    - 携带无效/过期 Token → 返回 None（不抛异常）
+
+    典型场景：模拟支付回调接口，允许已登录用户或持内部令牌的调用方触发。
+    """
+    if not credentials:
+        return None
+    try:
+        return await get_current_user(credentials=credentials, db=db)
+    except HTTPException:
+        return None
+
+
 async def get_current_admin_user(
     current_user: User = Depends(get_current_user),
 ) -> dict:
@@ -127,6 +148,29 @@ async def get_current_super_admin_user(
         "user_type": current_user.user_type,
         "role": current_user.role,
     }
+
+
+def check_admin_permission(user: User) -> None:
+    """
+    检查用户是否具备管理员权限（统一入口）。
+
+    平台内【唯一】的管理员权限同步校验函数，所有需要"管理员"身份的地方
+    都应调用本函数，不要在各 API 模块内重复定义。
+
+    权限判定统一委托给 PermissionService.is_admin（以 user_type 为准，
+    兼容历史 role 字段），因此 admin 与 super_admin 均通过。
+
+    Args:
+        user: 当前用户
+
+    Raises:
+        AuthorizationError: 用户不具备管理员权限
+    """
+    from src.core.exceptions import AuthorizationError
+    from src.services.permission_service import PermissionService
+
+    if not PermissionService.is_admin(user):
+        raise AuthorizationError("只有管理员可以执行此操作")
 
 
 class AuthService:
@@ -217,36 +261,53 @@ class AuthService:
         now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         
-        # 1. 检查每分钟请求数（RPM）- 使用Redis或数据库
-        # 这里简化实现，实际应该使用Redis
-        rpm_result = await self.db.execute(
-            select(func.count(APICallLog.id)).where(
-                and_(
-                    APICallLog.api_key_id == key.id,
-                    APICallLog.created_at >= now - timedelta(minutes=1)
-                )
+        # 1. 检查每分钟请求数（RPM）
+        # 【P0-3】优先使用 Redis 计数；Redis 不可用或配置为 database 时回落数据库计数
+        if key.rate_limit_rpm:
+            rpm_result = await self._rate_limit_check(
+                scope="rpm",
+                identifier=str(key.id),
+                limit=key.rate_limit_rpm,
+                window_seconds=60,
             )
-        )
-        rpm_count = rpm_result.scalar() or 0
-        
-        if key.rate_limit_rpm and rpm_count >= key.rate_limit_rpm:
-            logger.warning("RPM limit exceeded: %s, rpm: %s/%s", key.key_prefix, rpm_count, key.rate_limit_rpm)
-            raise QuotaExceededError(f"请求过于频繁，请稍后再试（RPM限制: {key.rate_limit_rpm}）")
-        
+            if rpm_result is None:
+                # 降级：数据库计数（改造前行为）
+                rpm_count = await self._count_recent_calls(key.id, now - timedelta(minutes=1))
+                if rpm_count >= key.rate_limit_rpm:
+                    logger.warning(
+                        "RPM limit exceeded (db fallback): %s, rpm: %s/%s",
+                        key.key_prefix, rpm_count, key.rate_limit_rpm,
+                    )
+                    raise QuotaExceededError(
+                        f"请求过于频繁，请稍后再试（RPM限制: {key.rate_limit_rpm}）"
+                    )
+            elif not rpm_result.allowed:
+                raise QuotaExceededError(
+                    f"请求过于频繁，请稍后再试（RPM限制: {key.rate_limit_rpm}）"
+                )
+
         # 2. 检查小时请求数（RPH）
-        rph_result = await self.db.execute(
-            select(func.count(APICallLog.id)).where(
-                and_(
-                    APICallLog.api_key_id == key.id,
-                    APICallLog.created_at >= now - timedelta(hours=1)
-                )
+        if key.rate_limit_rph:
+            rph_result = await self._rate_limit_check(
+                scope="rph",
+                identifier=str(key.id),
+                limit=key.rate_limit_rph,
+                window_seconds=3600,
             )
-        )
-        rph_count = rph_result.scalar() or 0
-        
-        if key.rate_limit_rph and rph_count >= key.rate_limit_rph:
-            logger.warning("RPH limit exceeded: %s, rph: %s/%s", key.key_prefix, rph_count, key.rate_limit_rph)
-            raise QuotaExceededError(f"小时请求数超限（RPH限制: {key.rate_limit_rph}）")
+            if rph_result is None:
+                rph_count = await self._count_recent_calls(key.id, now - timedelta(hours=1))
+                if rph_count >= key.rate_limit_rph:
+                    logger.warning(
+                        "RPH limit exceeded (db fallback): %s, rph: %s/%s",
+                        key.key_prefix, rph_count, key.rate_limit_rph,
+                    )
+                    raise QuotaExceededError(
+                        f"小时请求数超限（RPH限制: {key.rate_limit_rph}）"
+                    )
+            elif not rph_result.allowed:
+                raise QuotaExceededError(
+                    f"小时请求数超限（RPH限制: {key.rate_limit_rph}）"
+                )
         
         # 3. 检查日配额（从Quota表）
         if key.daily_quota:
@@ -295,6 +356,64 @@ class AuthService:
             if balance < min_balance:
                 logger.warning("Low balance for API key: %s, balance: %s", key.key_prefix, balance)
                 # 可以选择阻止或只是警告，这里选择警告而不是阻止
+
+    async def _rate_limit_check(
+        self,
+        scope: str,
+        identifier: str,
+        limit: int,
+        window_seconds: int,
+    ):
+        """
+        执行一次限流判定（Redis 优先）。
+
+        Args:
+            scope: 限流维度（rpm / rph）
+            identifier: 维度取值（此处为 API Key ID）
+            limit: 窗口内最大次数
+            window_seconds: 窗口大小（秒）
+
+        Returns:
+            RateLimitResult  —— 已完成判定（Redis 或进程内内存计数）
+            None             —— 需要调用方回落数据库计数
+                                （显式配置 database，或 Redis 不可用）
+        """
+        from src.config.settings import settings as _settings
+
+        backend = _settings.rate_limit_backend
+
+        # 显式要求使用数据库计数（保留旧行为，便于排障与灰度回退）
+        if backend == "database":
+            return None
+
+        if backend == "redis":
+            from src.core.rate_limiter import RedisRateLimiter
+
+            return await RedisRateLimiter.check(
+                scope,
+                identifier,
+                limit,
+                window_seconds,
+                prefix=_settings.rate_limit_redis_prefix,
+            )
+
+        # memory：单实例进程内计数
+        from src.core.rate_limiter import InMemoryRateLimiter
+
+        return await InMemoryRateLimiter.check(scope, identifier, limit, window_seconds)
+
+    async def _count_recent_calls(self, key_id, since) -> int:
+        """统计 API Key 在指定时间之后的调用次数（数据库降级方案）"""
+        from src.models.billing import APICallLog
+        from sqlalchemy import func
+
+        result = await self.db.execute(
+            select(func.count(APICallLog.id)).where(
+                APICallLog.api_key_id == key_id,
+                APICallLog.created_at >= since,
+            )
+        )
+        return result.scalar() or 0
 
     async def verify_hmac_request(
         self,

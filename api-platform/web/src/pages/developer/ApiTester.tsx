@@ -163,7 +163,7 @@ export const ApiTester: React.FC = () => {
       const record: RequestHistory = {
         id: `req_${Date.now()}`,
         timestamp: new Date().toISOString(),
-        tester: user?.username || user?.name || user?.email || '未知用户',
+        tester: user?.username || user?.email || '未知用户',
         repository: selectedRepo.name,
         repositoryId: selectedRepo.id,
         endpoint: selectedEndpoint.name,
@@ -187,7 +187,7 @@ export const ApiTester: React.FC = () => {
       const record: RequestHistory = {
         id: `req_${Date.now()}`,
         timestamp: new Date().toISOString(),
-        tester: user?.username || user?.name || user?.email || '未知用户',
+        tester: user?.username || user?.email || '未知用户',
         repository: selectedRepo.name,
         repositoryId: selectedRepo.id,
         endpoint: selectedEndpoint.name,

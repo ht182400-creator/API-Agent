@@ -69,7 +69,9 @@ client.interceptors.response.use(
     
     // 统一处理业务错误码
     if (data.code !== undefined && data.code !== 0) {
-      const error = new Error(data.message || '请求失败') as AxiosError & { 
+      // 注意：AxiosError 自带 `code?: string`，直接交叉会得到 string & number = never（TS2322）。
+      //       这里用 Omit 去掉它，再声明业务错误码为 number。
+      const error = new Error(data.message || '请求失败') as Omit<AxiosError, 'code'> & {
         code?: number
         request_id?: string
         userMessage?: string

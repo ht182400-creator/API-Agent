@@ -13,18 +13,21 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, Result, Descriptions, Button, Spin, Alert, Space, Typography } from 'antd'
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { paymentApi } from '../api/payment'
+import { paymentApi, PaymentStatus as ApiPaymentStatus } from '../api/payment'
 import { useAuthStore } from '../stores/auth'
 
 const { Title, Text, Paragraph } = Typography
 
-interface PaymentStatus {
-  payment_no: string
-  order_no: string
-  status: string
-  amount: number
+/**
+ * 页面内使用的支付状态。
+ *
+ * 说明：后端 /payments/status 实际返回的字段比 `api/payment.ts` 中声明的更多
+ *（如 order_no / balance）。此前本页自行定义了**同名但结构不同**的接口，
+ * 导致 API 返回值无法赋给本地 state（TS2345）。现改为**扩展** API 类型。
+ */
+interface PaymentStatus extends ApiPaymentStatus {
+  order_no?: string
   balance?: number
-  created_at?: string
 }
 
 export default function PaymentSuccess() {

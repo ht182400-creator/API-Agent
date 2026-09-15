@@ -128,7 +128,7 @@ const Usage: React.FC = () => {
       title: 'API 调用次数',
       dataIndex: 'call_count',
       key: 'call_count',
-      align: 'right',
+      align: 'right' as const,
       sorter: (a, b) => a.call_count - b.call_count,
       render: (count: number) => (
         <Text strong>{count?.toLocaleString() || 0}</Text>
@@ -139,7 +139,7 @@ const Usage: React.FC = () => {
       title: '总 Tokens',
       dataIndex: 'total_tokens',
       key: 'total_tokens',
-      align: 'right',
+      align: 'right' as const,
       sorter: (a: RepoUsage, b: RepoUsage) => a.total_tokens - b.total_tokens,
       render: (tokens: number) => (
         <Tooltip title={`${tokens?.toLocaleString() || 0} Tokens`}>
@@ -153,7 +153,7 @@ const Usage: React.FC = () => {
       title: '总费用',
       dataIndex: 'total_cost',
       key: 'total_cost',
-      align: 'right',
+      align: 'right' as const,
       sorter: (a, b) => a.total_cost - b.total_cost,
       render: (cost: number) => (
         <Text type="danger" strong>

@@ -12,7 +12,7 @@ import asyncio
 import sys
 import hashlib
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import uuid
 import secrets
@@ -57,7 +57,10 @@ async def create_test_data(session: AsyncSession):
     """创建测试数据"""
     print("Creating test data...")
     
-    now = datetime.now()
+    # 全项目时间列统一为 TIMESTAMP WITH TIME ZONE（DateTime(timezone=True)），
+    # 因此这里使用带时区的 UTC 时间（aware），语义明确且不依赖会话时区。
+    # 原实现使用 datetime.now()（本地时间/北京时间）会与 UTC 列产生 8 小时偏差。
+    now = datetime.now(timezone.utc)
     
     # ==================== 用户数据 ====================
     # 默认权限配置

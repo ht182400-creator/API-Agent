@@ -117,7 +117,7 @@ export default function CreateRepo() {
       // 使用统一的 api 客户端
       const result = await repoApi.create(values as CreateRepoRequest)
 
-      message.success(result.message || '仓库创建成功')
+      message.success('仓库创建成功')
       // 根据状态跳转到不同页面
       if (result.status === 'online') {
         // 管理员创建的仓库直接上线，跳转到管理员仓库管理页面

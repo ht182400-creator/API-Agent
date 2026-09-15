@@ -104,7 +104,13 @@ def get_utc_now() -> callable:
     SQLAlchemy 要求 default 必须是可调用对象，不能是具体值
 
     Usage:
-        created_at = Column(DateTime, default=get_utc_now())
+        created_at = Column(DateTime(timezone=True), default=get_utc_now())
+
+    注意:
+        时间列必须声明为 ``DateTime(timezone=True)``（TIMESTAMP WITH TIME ZONE）。
+        若声明为无时区的 ``DateTime`` 却使用本函数（返回 aware UTC），
+        asyncpg 会抛出：
+            ``can't subtract offset-naive and offset-aware datetimes``
 
     Returns:
         callable: 返回当前 UTC 时间的可调用对象

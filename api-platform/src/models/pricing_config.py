@@ -120,12 +120,12 @@ class PricingConfig(Base):
 
     # 生效时间范围
     valid_from = Column(
-        DateTime,
+        DateTime(timezone=True),
         nullable=True,
         comment="配置生效开始时间"
     )
     valid_until = Column(
-        DateTime,
+        DateTime(timezone=True),
         nullable=True,
         comment="配置生效结束时间"
     )
@@ -145,8 +145,8 @@ class PricingConfig(Base):
     )
 
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
     created_by = Column(UUID(as_uuid=True), nullable=True, comment="创建人")
 
     # Relationships

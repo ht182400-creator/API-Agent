@@ -20,7 +20,6 @@ import {
 import dayjs from 'dayjs'
 import { billingApi, AdminMonthlyBill, PaginatedAdminMonthlyBills } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
-import { adminApi } from '../../api/superadmin'
 import { useDevice } from '../../hooks/useDevice'
 import styles from './AdminBilling.module.css'
 

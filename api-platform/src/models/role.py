@@ -34,8 +34,8 @@ class Role(Base):
     priority = Column(Integer, default=0)  # 优先级，数字越大权限越高
     
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
     created_by = Column(String(100), nullable=True)
 
     def __repr__(self):

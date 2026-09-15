@@ -5,14 +5,64 @@ import asyncio
 import pytest
 from typing import AsyncGenerator, Generator
 
-# Use PostgreSQL for integration tests (supports JSONB)
-# For unit tests that don't need database, SQLite can be used
+# ---------------------------------------------------------------------------
+# 测试数据库配置
+# ---------------------------------------------------------------------------
+# ⚠️ 重要：本文件的 test_engine fixture 会在**每个用例结束后执行 DROP ALL**，
+#         因此**绝不能指向开发库或生产库**。
+#
+# 历史问题（已修复）：
+#     默认值曾指向开发库 `api_platform`，导致"跑一次 pytest 就会清空开发库"。
+#
+# 现在：
+#     1. 默认使用专用测试库 `api_platform_test`；
+#     2. 增加安全护栏：库名不含 "test" 时直接拒绝运行（除非显式放行）。
+#
+# 创建测试库（只需执行一次）：
+#     $env:PGPASSWORD='postgres'
+#     & "D:\Program Files\PostgreSQL\16\bin\psql.exe" -h localhost -U postgres -d postgres `
+#         -c "CREATE DATABASE api_platform_test OWNER api_user;"
+#
+# 如需改用其它测试库：设置环境变量 TEST_DATABASE_URL。
+# ---------------------------------------------------------------------------
 TEST_DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL",
-    "postgresql+asyncpg://api_user:api_password@localhost:5432/api_platform"
+    "postgresql+asyncpg://api_user:api_password@localhost:5432/api_platform_test",
 )
 
-# Set environment variables
+# 显式放行（明确知晓数据会被清空时才使用）
+_ALLOW_NON_TEST_DATABASE = os.getenv("ALLOW_NON_TEST_DATABASE") == "1"
+
+
+def _database_name(url: str) -> str:
+    """从连接串中提取数据库名"""
+    tail = url.rsplit("/", 1)[-1]
+    return tail.split("?")[0].strip()
+
+
+_TEST_DB_NAME = _database_name(TEST_DATABASE_URL)
+
+if not _ALLOW_NON_TEST_DATABASE and "test" not in _TEST_DB_NAME.lower():
+    raise RuntimeError(
+        "\n"
+        "========================================================\n"
+        "  已拒绝运行测试：测试数据库名称不安全\n"
+        "========================================================\n"
+        f"  当前 TEST_DATABASE_URL 指向数据库：{_TEST_DB_NAME}\n"
+        f"  连接串：{TEST_DATABASE_URL}\n"
+        "\n"
+        "  原因：tests/conftest.py 会在每个用例后 DROP 所有表，\n"
+        "        指向开发/生产库会导致**数据被清空**。\n"
+        "\n"
+        "  解决方式（任选其一）：\n"
+        "    1) 使用专用测试库（推荐）：\n"
+        "       TEST_DATABASE_URL=postgresql+asyncpg://api_user:api_password@localhost:5432/api_platform_test\n"
+        "    2) 确认风险后强制放行：\n"
+        "       ALLOW_NON_TEST_DATABASE=1 python -m pytest tests/\n"
+        "========================================================\n"
+    )
+
+# 让被测应用使用测试库（src/config/database.py 读取 settings.database_url）
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["REDIS_URL"] = "redis://localhost:6379/0"
 

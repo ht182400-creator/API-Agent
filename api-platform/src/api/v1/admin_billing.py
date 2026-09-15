@@ -16,6 +16,11 @@ from src.models.user import User
 from src.models.billing import Account, Bill, APICallLog, MonthlyBill
 from src.models.repository import Repository
 from src.services.auth_service import get_current_user
+from src.utils.environment import (
+    resolve_environment,
+    env_match,
+    ENVIRONMENT_ALL,
+)
 
 router = APIRouter()
 
@@ -25,7 +30,7 @@ async def get_all_accounts(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     user_id: Optional[str] = Query(None, description="按用户ID筛选"),
-    environment: Optional[str] = Query(None, description="环境过滤：simulation/production"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -33,12 +38,10 @@ async def get_all_accounts(
     获取所有用户账户列表
     仅限管理员使用
     """
-    from src.config.settings import settings
     from decimal import Decimal
-    
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
     
     # 构建基础查询 - 关联用户信息
     query = (
@@ -106,7 +109,7 @@ async def get_all_usage(
     user_id: Optional[str] = Query(None, description="按用户ID筛选"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -114,12 +117,10 @@ async def get_all_usage(
     获取所有用户的使用情况
     从 APICallLog 表统计调用次数、Token使用量、消费金额
     """
-    from src.config.settings import settings
     from decimal import Decimal
-    
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
     
     # 日期范围处理
     start_dt = None
@@ -204,7 +205,7 @@ async def get_all_monthly_bills(
     year: Optional[int] = Query(None, description="年份"),
     month: Optional[int] = Query(None, description="月份"),
     user_id: Optional[str] = Query(None, description="按用户ID筛选"),
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -212,12 +213,10 @@ async def get_all_monthly_bills(
     获取所有用户的月度账单
     按用户聚合每月的充值、消费数据
     """
-    from src.config.settings import settings
     from decimal import Decimal
-    
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
     
     # 默认年月
     if year is None:
@@ -250,7 +249,7 @@ async def get_all_monthly_bills(
         )
         .join(User, Bill.user_id == User.id, isouter=True)
         .where(
-            Bill.environment == environment,
+            env_match(Bill.environment, environment),
             Bill.created_at >= start_date,
             Bill.created_at < end_date,
         )
@@ -308,25 +307,23 @@ async def get_all_monthly_bills(
 
 @router.get("/statistics", response_model=BaseResponse[dict])
 async def get_billing_statistics(
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     获取账单统计数据概览
     """
-    from src.config.settings import settings
     from decimal import Decimal
-    
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
     
     # 总充值金额
     recharge_result = await db.execute(
         select(func.coalesce(func.sum(func.cast(Bill.amount, Decimal)), 0)).where(
             Bill.bill_type == "recharge",
-            Bill.environment == environment,
+            env_match(Bill.environment, environment),
         )
     )
     total_recharge = float(recharge_result.scalar() or 0)
@@ -335,7 +332,7 @@ async def get_billing_statistics(
     consume_result = await db.execute(
         select(func.coalesce(func.sum(func.cast(Bill.amount, Decimal)), 0)).where(
             Bill.bill_type == "consume",
-            Bill.environment == environment,
+            env_match(Bill.environment, environment),
         )
     )
     total_consume = abs(float(consume_result.scalar() or 0))
@@ -376,19 +373,17 @@ async def get_user_billing_detail(
     user_id: str,
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     获取指定用户的详细账单信息
     """
-    from src.config.settings import settings
     from decimal import Decimal
-    
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
     
     # 日期范围处理
     start_dt = None
@@ -423,7 +418,7 @@ async def get_user_billing_detail(
     # 构建账单查询条件
     bill_conditions = [
         Bill.user_id == user_id,
-        Bill.environment == environment,
+        env_match(Bill.environment, environment),
     ]
     if start_dt:
         bill_conditions.append(Bill.created_at >= start_dt)
@@ -512,7 +507,7 @@ async def get_generated_monthly_bills(
     month: Optional[int] = Query(None, description="月份"),
     user_id: Optional[str] = Query(None, description="按用户ID筛选"),
     status: Optional[str] = Query(None, description="账单状态: pending/generated/reviewed/published"),
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -520,17 +515,14 @@ async def get_generated_monthly_bills(
     获取已生成的月度账单列表
     从 MonthlyBill 表查询
     """
-    from src.config.settings import settings
-
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
 
     # 构建查询
     query = (
         select(MonthlyBill, User.username, User.email)
         .join(User, MonthlyBill.user_id == User.id, isouter=True)
-        .where(MonthlyBill.environment == environment)
+        .where(env_match(MonthlyBill.environment, environment))
     )
 
     # 应用筛选条件
@@ -544,7 +536,7 @@ async def get_generated_monthly_bills(
         query = query.where(MonthlyBill.status == status)
 
     # 获取总数
-    count_query = select(func.count(MonthlyBill.id)).where(MonthlyBill.environment == environment)
+    count_query = select(func.count(MonthlyBill.id)).where(env_match(MonthlyBill.environment, environment))
     if year:
         count_query = count_query.where(MonthlyBill.year == year)
     if month:
@@ -611,7 +603,7 @@ async def generate_monthly_bill(
     year: int = Query(..., description="年份"),
     month: int = Query(..., description="月份"),
     user_id: Optional[str] = Query(None, description="指定用户ID，不指定则生成所有用户"),
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -619,17 +611,19 @@ async def generate_monthly_bill(
     生成月度账单
     根据指定年月，从 bills 和 api_call_logs 表统计数据，生成月度汇总账单
     """
-    from src.config.settings import settings
-
     # 验证年月
     if month < 1 or month > 12:
         raise HTTPException(status_code=400, detail="Invalid month (1-12)")
     if year < 2020 or year > 2100:
         raise HTTPException(status_code=400, detail="Invalid year")
 
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+    # 生成账单为写操作，必须落定到具体环境，不接受 all 通配
+    environment = resolve_environment(environment)
+    if environment == ENVIRONMENT_ALL:
+        raise HTTPException(
+            status_code=400,
+            detail="生成月度账单必须指定具体环境（simulation/production），不支持 all",
+        )
 
     # 计算月份范围
     start_date = datetime(year, month, 1)
@@ -648,7 +642,7 @@ async def generate_monthly_bill(
     else:
         # 获取所有有账单的用户
         user_query = select(Bill.user_id).where(
-            Bill.environment == environment,
+            env_match(Bill.environment, environment),
             Bill.created_at >= start_date,
             Bill.created_at < end_date,
         ).distinct()
@@ -664,7 +658,7 @@ async def generate_monthly_bill(
                     MonthlyBill.user_id == uid,
                     MonthlyBill.year == year,
                     MonthlyBill.month == month,
-                    MonthlyBill.environment == environment,
+                    env_match(MonthlyBill.environment, environment),
                 )
             )
             existing_bill = existing.scalar_one_or_none()
@@ -700,7 +694,7 @@ async def generate_monthly_bill(
             # 查询期初余额（使用账单表中的最新余额）
             balance_query = select(Bill.balance_after).where(
                 Bill.user_id == uid,
-                Bill.environment == environment,
+                env_match(Bill.environment, environment),
                 Bill.created_at < start_date,
             ).order_by(desc(Bill.created_at)).limit(1)
             balance_result = await db.execute(balance_query)
@@ -712,7 +706,7 @@ async def generate_monthly_bill(
                 select(func.coalesce(func.sum(func.cast(Bill.amount, Decimal)), 0)).where(
                     Bill.user_id == uid,
                     Bill.bill_type.in_(["recharge", "refund"]),
-                    Bill.environment == environment,
+                    env_match(Bill.environment, environment),
                     Bill.created_at >= start_date,
                     Bill.created_at < end_date,
                 )
@@ -724,7 +718,7 @@ async def generate_monthly_bill(
                 select(func.coalesce(func.sum(func.abs(func.cast(Bill.amount, Decimal))), 0)).where(
                     Bill.user_id == uid,
                     Bill.bill_type == "consumption",
-                    Bill.environment == environment,
+                    env_match(Bill.environment, environment),
                     Bill.created_at >= start_date,
                     Bill.created_at < end_date,
                 )
@@ -917,23 +911,20 @@ async def publish_monthly_bill(
 
 @router.get("/monthly-bills/years-months", response_model=BaseResponse[list])
 async def get_available_periods(
-    environment: Optional[str] = Query(None, description="环境过滤"),
+    environment: Optional[str] = Query(None, description="环境过滤：simulation/production/all（all=不过滤）"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     获取有账单的年月列表（用于选择器）
     """
-    from src.config.settings import settings
-
-    # 自动判断环境
-    if environment is None:
-        environment = "simulation" if settings.payment_mock_mode else "production"
+    # 解析环境过滤（默认当前环境，支持 all 通配）
+    environment = resolve_environment(environment)
 
     # 查询所有不同的年月
     query = (
         select(MonthlyBill.year, MonthlyBill.month)
-        .where(MonthlyBill.environment == environment)
+        .where(env_match(MonthlyBill.environment, environment))
         .distinct()
         .order_by(desc(MonthlyBill.year), desc(MonthlyBill.month))
     )

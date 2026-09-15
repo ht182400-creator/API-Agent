@@ -3,7 +3,7 @@
  * @description 自研仓库 - 物流追踪服务
  */
 
-import { Repository } from '../../../types/api-tester';
+import { Repository } from '../../types/api-tester';
 
 export const logisticsRepository: Repository = {
   id: 'logistics-api',

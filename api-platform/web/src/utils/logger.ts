@@ -367,10 +367,12 @@ export const logger = new Logger()
 
 // 导出快捷方法
 export const log = {
-  debug: (...args: any[]) => logger.debug(...args),
-  info: (...args: any[]) => logger.info(...args),
-  warn: (...args: any[]) => logger.warn(...args),
-  error: (...args: any[]) => logger.error(...args),
+  // 注意：logger 的方法签名为 (message: string, ...args: any[])，
+  //       直接把 rest 数组整体展开会触发 TS2556，故显式声明首参。
+  debug: (message: string, ...args: any[]) => logger.debug(message, ...args),
+  info: (message: string, ...args: any[]) => logger.info(message, ...args),
+  warn: (message: string, ...args: any[]) => logger.warn(message, ...args),
+  error: (message: string, ...args: any[]) => logger.error(message, ...args),
   getLogs: () => logger.getLogs(),
   getStats: () => logger.getStats(),
   clear: () => logger.clearLogs(),

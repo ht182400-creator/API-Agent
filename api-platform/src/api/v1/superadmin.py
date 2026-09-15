@@ -19,6 +19,7 @@ from src.models.system_config import SystemConfig, ConfigCategory, DEFAULT_CONFI
 from src.models.role import Role, DEFAULT_ROLES
 from src.schemas.response import BaseResponse, PaginatedResponse
 from src.services.auth_service import get_current_super_admin_user
+from src.utils.sanitize import sanitize
 
 router = APIRouter(tags=["超级管理员"])
 
@@ -617,8 +618,8 @@ async def update_config(
         resource_type=ResourceType.SYSTEM,
         resource_id=str(config.id),
         description=f"更新系统配置 {config.key}",
-        old_data={"value": old_value},
-        new_data={"value": update_data.value},
+        old_data=sanitize({"value": old_value}),
+        new_data=sanitize({"value": update_data.value}),
         status="success",
     )
     db.add(audit_log)

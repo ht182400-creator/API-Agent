@@ -41,7 +41,7 @@ class AuditLog(Base):
     error_message = Column(Text, nullable=True)
     
     # 审计字段
-    created_at = Column(DateTime, default=get_utc_now(), index=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
 
     # 复合索引
     __table_args__ = (

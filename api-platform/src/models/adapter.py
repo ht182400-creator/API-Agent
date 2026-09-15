@@ -40,8 +40,8 @@ class Adapter(Base):
     total_repos = Column(Integer, default=0)  # Number of repositories using this adapter
 
     # Audit fields
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<Adapter {self.name}:{self.version}>"
@@ -64,7 +64,7 @@ class AdapterInstance(Base):
 
     # Health check
     health_status = Column(String(20), default="unknown")  # healthy, unhealthy, unknown
-    last_health_check = Column(DateTime, nullable=True)
+    last_health_check = Column(DateTime(timezone=True), nullable=True)
     health_check_interval = Column(Integer, default=60)  # seconds
 
     # Statistics
@@ -73,8 +73,8 @@ class AdapterInstance(Base):
     avg_latency_ms = Column(Integer, nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime, default=get_utc_now())
-    updated_at = Column(DateTime, default=get_utc_now(), onupdate=get_utc_now())
+    created_at = Column(DateTime(timezone=True), default=get_utc_now())
+    updated_at = Column(DateTime(timezone=True), default=get_utc_now(), onupdate=get_utc_now())
 
     def __repr__(self):
         return f"<AdapterInstance {self.repo_id}:{self.adapter_id}>"

@@ -69,7 +69,7 @@ class UserOperationLog(Base):
     error_message = Column(Text, nullable=True)  # 错误信息
     
     # 时间戳
-    created_at = Column(DateTime, default=get_utc_now(), index=True)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now(), index=True)
     duration_ms = Column(String(20), nullable=True)  # 操作耗时（毫秒）
 
     # 复合索引

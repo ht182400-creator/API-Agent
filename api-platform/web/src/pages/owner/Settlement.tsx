@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
 import { Card, Row, Col, Statistic, Table, Typography, Button, message, Space, Tag, Tabs } from 'antd'
 import { DollarOutlined, BankOutlined, AlipayOutlined, WechatOutlined } from '@ant-design/icons'
-import { billingApi, Account, Bill } from '../../api/billing'
+import { billingApi, UserAccount, Bill } from '../../api/billing'
 import dayjs from 'dayjs'
 import styles from './Settlement.module.css'
 
@@ -14,7 +14,7 @@ const { Title, Text } = Typography
 
 export default function OwnerSettlement() {
   const [loading, setLoading] = useState(false)
-  const [account, setAccount] = useState<Account | null>(null)
+  const [account, setAccount] = useState<UserAccount | null>(null)
   const [settlementBills, setSettlementBills] = useState<Bill[]>([])
   const [activeTab, setActiveTab] = useState('overview')
 

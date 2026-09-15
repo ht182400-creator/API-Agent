@@ -3,7 +3,7 @@
 from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +11,7 @@ from src.config.database import get_db
 from src.config.logging_config import get_logger
 from src.schemas.response import BaseResponse
 from src.services.payment_service import PaymentService
-from src.services.auth_service import get_current_user
+from src.services.auth_service import get_current_user, get_current_user_optional
 from src.models.user import User
 
 # 日志记录器
@@ -171,33 +171,46 @@ async def list_recharge_packages(
 ):
     """
     获取可用充值套餐列表
-    
+
     返回所有启用的充值套餐，按排序顺序排列。
+
+    【P1-5】读多写少的热点数据，使用 Redis 缓存（TTL 300 秒）；
+            缓存不可用时自动回落数据库，不影响可用性。
     """
+    from src.core.cache import cache_get_json, cache_set_json, make_key
+
+    cache_key = make_key("recharge_packages", "active")
+
+    cached = await cache_get_json(cache_key)
+    if cached is not None:
+        return BaseResponse(data=cached)
+
     service = PaymentService(db)
     packages = await service.list_packages(is_active=True)
-    
-    return BaseResponse(
-        data=[
-            RechargePackageResponse(
-                id=str(pkg.id),
-                name=pkg.name,
-                description=pkg.description,
-                original_amount=float(pkg.original_amount),
-                price=float(pkg.price),
-                bonus_amount=float(pkg.bonus_amount) if pkg.bonus_amount else 0,
-                bonus_ratio=float(pkg.bonus_ratio) if pkg.bonus_ratio else None,
-                min_amount=float(pkg.min_amount) if pkg.min_amount else None,
-                max_amount=float(pkg.max_amount) if pkg.max_amount else None,
-                included_calls=pkg.included_calls,
-                validity_days=pkg.validity_days,
-                is_active=pkg.is_active == "true",
-                is_featured=pkg.is_featured == "true",
-                is_custom=pkg.is_custom == "true",
-            )
-            for pkg in packages
-        ]
-    )
+
+    items = [
+        RechargePackageResponse(
+            id=str(pkg.id),
+            name=pkg.name,
+            description=pkg.description,
+            original_amount=float(pkg.original_amount),
+            price=float(pkg.price),
+            bonus_amount=float(pkg.bonus_amount) if pkg.bonus_amount else 0,
+            bonus_ratio=float(pkg.bonus_ratio) if pkg.bonus_ratio else None,
+            min_amount=float(pkg.min_amount) if pkg.min_amount else None,
+            max_amount=float(pkg.max_amount) if pkg.max_amount else None,
+            included_calls=pkg.included_calls,
+            validity_days=pkg.validity_days,
+            is_active=pkg.is_active == "true",
+            is_featured=pkg.is_featured == "true",
+            is_custom=pkg.is_custom == "true",
+        ).model_dump()
+        for pkg in packages
+    ]
+
+    await cache_set_json(cache_key, items, ttl=300)
+
+    return BaseResponse(data=items)
 
 
 @router.get("/packages/{package_id}", response_model=BaseResponse[RechargePackageResponse])
@@ -770,18 +783,19 @@ async def alipay_callback(
 @router.post("/callback", response_model=BaseResponse[dict])
 async def payment_callback(
     request: PaymentCallbackRequest,
+    raw_request: Request,
+    current_user: Optional[User] = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    支付回调通知接口
-    
-    由支付渠道回调，用于更新支付状态和发放资金。
-    此接口应仅允许支付渠道服务器访问，需要做IP白名单或签名验证。
-    
-    根据 payment_mock_mode 配置：
-    - True (开发模式): 允许模拟回调，测试用
-    - False (生产模式): 需要真实支付渠道回调
-    
+    通用支付回调接口（仅用于模拟支付/联调，生产环境已下线）
+
+    门控策略：
+    - 生产环境：直接返回 404（真实支付请走 /payments/alipay/callback，含 RSA 验签）
+    - 非生产环境：必须满足以下任一条件
+        a) 携带正确的内部令牌请求头 X-Internal-Token
+        b) 已登录用户（JWT），且订单归属于该用户
+
     Args:
         request: 回调参数
     """
@@ -791,26 +805,37 @@ async def payment_callback(
     logger = get_logger("payment")
     logger.info(f"[PaymentCallback] Received callback: payment_no={request.payment_no}, status={request.status}")
     
-    # 检查是否启用模拟模式
-    if not settings.payment_mock_mode:
-        # 生产模式：检查必要的签名验证
-        if not request.sign:
-            return BaseResponse(
-                data={"success": False, "message": "生产模式需要签名验证"}
-            )
-        
-        # TODO: 实现真实支付渠道的签名验证逻辑
-        # 这里需要根据实际的支付渠道（支付宝/微信）实现签名验证
-        # 暂时返回错误提示
-        return BaseResponse(
-            data={
-                "success": False, 
-                "message": "生产模式请接入真实支付渠道（支付宝/微信支付SDK）"
-            }
+    # ==================== 生产环境：该通用模拟回调接口直接下线 ====================
+    if settings.is_production:
+        logger.warning(
+            "[PaymentCallback] 生产环境已禁用通用回调接口，请使用渠道专用回调 "
+            "(/payments/alipay/callback)。payment_no=%s",
+            request.payment_no,
         )
+        raise HTTPException(status_code=404, detail="Not Found")
     
-    # 开发/模拟模式：允许模拟回调
+    # ==================== 非生产环境：模拟回调门控 ====================
+    internal_token = raw_request.headers.get("X-Internal-Token")
+    token_ok = bool(settings.internal_api_token) and internal_token == settings.internal_api_token
+    
+    if not token_ok and current_user is None:
+        logger.warning("[PaymentCallback] 模拟回调被拒绝：缺少登录态或内部令牌")
+        raise HTTPException(status_code=401, detail="模拟支付回调需要登录或内部令牌")
+    
     service = PaymentService(db)
+    
+    # 登录态下校验订单归属，防止越权触发他人订单
+    payment = await service.query_payment(request.payment_no)
+    if payment is None:
+        return BaseResponse(data={"success": False, "message": "订单不存在"})
+    
+    if not token_ok and current_user is not None and str(payment.user_id) != str(current_user.id):
+        logger.warning(
+            "[PaymentCallback] 越权触发被拒绝: current_user=%s, order_owner=%s",
+            current_user.id,
+            payment.user_id,
+        )
+        raise HTTPException(status_code=403, detail="无权操作该订单")
     
     try:
         success = await service.handle_payment_callback(
@@ -870,7 +895,12 @@ async def admin_create_package(
         description=description,
         is_featured=is_featured,
     )
-    
+
+    # 【P1-5】套餐变更后失效缓存，避免读到旧套餐列表
+    from src.core.cache import cache_delete_prefix, make_key
+
+    await cache_delete_prefix(make_key("recharge_packages"))
+
     return BaseResponse(
         data=RechargePackageResponse(
             id=str(package.id),

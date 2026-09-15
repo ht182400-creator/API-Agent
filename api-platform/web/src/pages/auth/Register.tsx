@@ -69,7 +69,8 @@ export default function Register() {
     email: string
     password: string
     confirmPassword: string
-    user_type: string
+    // 与 authApi.register 的参数类型保持一致（后端仅接受这三种注册类型）
+    user_type: 'user' | 'owner' | 'developer'
   }) => {
     if (values.password !== values.confirmPassword) {
       message.error('两次输入的密码不一致')

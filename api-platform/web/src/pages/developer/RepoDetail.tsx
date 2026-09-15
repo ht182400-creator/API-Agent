@@ -570,7 +570,7 @@ export default function RepoDetail() {
           <Descriptions.Item label="仓库类型">{repo.type}</Descriptions.Item>
           <Descriptions.Item label="协议类型">{repo.protocol?.toUpperCase()}</Descriptions.Item>
           {repo.owner && <Descriptions.Item label="所有者">{repo.owner.name}</Descriptions.Item>}
-          {repo.api_docs_url && <Descriptions.Item label="API文档地址">{repo.api_docs_url}</Descriptions.Item>}
+          {repo.docs_url && <Descriptions.Item label="API文档地址">{repo.docs_url}</Descriptions.Item>}
           <Descriptions.Item label="创建时间">{repo.created_at}</Descriptions.Item>
           {repo.online_at && <Descriptions.Item label="上线时间">{repo.online_at}</Descriptions.Item>}
         </Descriptions>

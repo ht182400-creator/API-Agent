@@ -19,6 +19,7 @@ from src.core.exceptions import (
     NotFoundError,
 )
 from src.config.logging_config import get_logger
+from src.config.settings import settings
 
 # 模块日志记录器
 logger = get_logger("billing")
@@ -140,6 +141,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="recharge",
             amount=str(amount),
             balance_before=str(balance_before),
@@ -205,6 +207,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="consume",
             amount=str(-abs(amount)),
             balance_before=str(balance_before),
@@ -255,6 +258,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="freeze",
             amount=str(-abs(amount)),
             balance_before=str(balance_before),
@@ -303,6 +307,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="unfreeze",
             amount=str(amount),
             balance_before=str(balance_before),
@@ -355,6 +360,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="refund",
             amount=str(amount),
             balance_before=str(balance_before),
@@ -606,6 +612,7 @@ class BillingService:
         bill = Bill(
             user_id=uuid.UUID(user_id),
             bill_no=generate_bill_no(),
+            environment=settings.billing_environment,
             bill_type="settlement",
             amount=str(amount),
             balance_before=str(balance_before),

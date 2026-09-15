@@ -144,14 +144,16 @@ export default function Login() {
       }
       
       // 先保存 token 到 store
+      // 登录后先写入占位用户信息（随后由 authApi.me() 覆盖为真实数据）
       setAuth({ 
         id: '', 
-        email: values.email, 
+        email: values.identifier,   // 表单字段为 identifier（邮箱或用户名），原写法 values.email 恒为 undefined
         user_type: 'developer', 
         role: 'user',
         user_status: 'active', 
         email_verified: false, 
         vip_level: 0, 
+        permissions: [],            // User 类型要求该字段必填
         created_at: '' 
       }, tokenData.access_token, tokenData.refresh_token)
       
@@ -181,7 +183,7 @@ export default function Login() {
     } catch (error: any) {
       logger.error('[Login] Failed', {
         message: error.message,
-        email: values.email,
+        identifier: values.identifier,
       })
       // 使用统一的错误处理
       showError(error)

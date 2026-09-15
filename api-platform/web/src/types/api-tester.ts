@@ -26,7 +26,8 @@ export interface Parameter {
   description: string;
   placeholder?: string;
   defaultValue?: string | number | boolean;
-  options?: { label: string; value: string }[]; // for select type
+  // 注意：value 需兼容数值型选项（如天气 API 的 days=1/3/5/7），与 defaultValue 的联合类型保持一致
+  options?: { label: string; value: string | number }[]; // for select type
   in: ParamLocation;
   validation?: {
     pattern?: string;

@@ -5,7 +5,7 @@
  * @see Developer/CallWeatherTest Tool/
  */
 
-import { Repository } from '../../../types/api-tester';
+import { Repository } from '../../types/api-tester';
 
 export const weatherRepository: Repository = {
   id: 'weather-api',

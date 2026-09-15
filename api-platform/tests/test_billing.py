@@ -117,7 +117,7 @@ class TestBillingService:
         assert float(updated_account.balance) == 70.00
         assert float(updated_account.total_consume) == 30.00
         assert bill is not None
-        assert bill.bill_type == "consumption"
+        assert bill.bill_type == "consume"
         assert float(bill.amount) == -30.00
         # api_key_id存入source_id
         assert str(bill.source_id) == api_key_id

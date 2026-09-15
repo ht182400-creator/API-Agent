@@ -20,7 +20,7 @@ import {
   RocketOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
-import { billingApi, Bill, Account, MonthlySummary } from '../../api/billing'
+import { billingApi, Bill, UserAccount, MonthlySummary } from '../../api/billing'
 import { useErrorModal } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
 import { useDevice } from '../../hooks/useDevice'
@@ -37,7 +37,7 @@ export default function DeveloperBilling() {
   const { user } = useAuthStore()
   const { isMobile } = useDevice()
   const [loading, setLoading] = useState(false)
-  const [account, setAccount] = useState<Account | null>(null)
+  const [account, setAccount] = useState<UserAccount | null>(null)
   const [bills, setBills] = useState<Bill[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -418,7 +418,6 @@ export default function DeveloperBilling() {
               format="YYYY-MM-DD"
               placeholder={['开始日期', '结束日期']}
               allowClear
-              onClear={() => setDateRange(null)}
             />
             <Text type="secondary">共 {total} 条记录</Text>
             <Button 

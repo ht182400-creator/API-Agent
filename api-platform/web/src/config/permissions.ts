@@ -63,7 +63,9 @@ export const Permission = {
   OWNER_SETTLEMENT: 'owner:settlement', // 收益结算
 } as const
 
-export type PermissionKey = typeof Permission[keyof typeof Permission]
+// 说明：'*' 为**通配权限**（超级管理员），必须纳入联合类型，
+//       否则 RolePermissions.super_admin = ['*'] 会因类型不匹配报错。
+export type PermissionKey = typeof Permission[keyof typeof Permission] | '*'
 
 // 各用户类型的默认权限
 export const RolePermissions: Record<Role, PermissionKey[]> = {

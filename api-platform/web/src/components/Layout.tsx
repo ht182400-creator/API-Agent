@@ -122,7 +122,8 @@ const developerWithReposMenu: MenuProps['items'] = [
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
   { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
-  { type: 'divider', label: '仓库所有者功能' },
+  // 注意：antd 的 divider 类型不支持 label。如需带文字的分组，应改用 type: 'group' + children
+  { type: 'divider' },
   { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
   { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
@@ -139,7 +140,8 @@ const developerWithoutReposMenu: MenuProps['items'] = [
   { key: '/developer/logs', icon: <FileTextOutlined />, label: '调用日志' },
   { key: '/developer/billing', icon: <WalletOutlined />, label: '账单中心' },
   { key: '/developer/recharge', icon: <DollarOutlined />, label: '充值中心' },
-  { type: 'divider', label: '仓库所有者功能' },
+  // 注意：antd 的 divider 类型不支持 label。如需带文字的分组，应改用 type: 'group' + children
+  { type: 'divider' },
   { key: '/owner/analytics', icon: <BarChartOutlined />, label: '数据分析' },
   { key: '/owner/settlement', icon: <DollarOutlined />, label: '收益结算' },
 ]
@@ -219,6 +221,12 @@ export default function Layout() {
   const [notificationOpen, setNotificationOpen] = useState(false)
   // 【V4.2新增】用户是否有仓库的状态
   const [hasRepos, setHasRepos] = useState(false)
+  // 【L5 新增】运行环境标识 —— 用于顶栏环境徽标与生产环境警示条
+  const [envInfo, setEnvInfo] = useState<{
+    environment: string
+    billing_environment: string
+    is_production: boolean
+  } | null>(null)
   
   // 【移动端适配】设备检测
   const { isMobile, isTablet, isDesktop, deviceType } = useDevice()
@@ -231,6 +239,32 @@ export default function Layout() {
       setCollapsed(true)
     }
   }, [isMobile])
+
+  // 【L5 新增】获取运行环境标识（用于顶栏环境徽标 / 生产环境警示条）
+  // 说明：环境信息属于非关键路径，获取失败仅不显示徽标，不影响主流程。
+  useEffect(() => {
+    let cancelled = false
+    const fetchEnvironment = async () => {
+      try {
+        const resp = await fetch('/health')
+        if (!resp.ok) return
+        const data = await resp.json()
+        if (!cancelled) {
+          setEnvInfo({
+            environment: data.environment || 'unknown',
+            billing_environment: data.billing_environment || 'unknown',
+            is_production: Boolean(data.is_production),
+          })
+        }
+      } catch (error) {
+        console.warn('[Layout] 获取环境信息失败（不影响使用）:', error)
+      }
+    }
+    fetchEnvironment()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
 
   // 获取未读通知数量
@@ -425,6 +459,12 @@ export default function Layout() {
 
   return (
     <AntLayout className={styles.layout}>
+      {/* 【L5】生产环境警示条 —— 防止在真实环境上误操作 */}
+      {envInfo?.is_production && (
+        <div className={styles.prodWarningBar}>
+          当前为生产环境（账单环境：{envInfo.billing_environment}）—— 所有操作影响真实资金，请谨慎操作
+        </div>
+      )}
       {/* 【移动端适配】桌面端：固定侧边栏；移动端：抽屉菜单 */}
       {/* 修复：移动端完全不渲染Sider，避免CSS隐藏失效问题 */}
       {!isMobile && (isDesktop || isTablet) && (
@@ -539,6 +579,15 @@ export default function Layout() {
           </div>
           
           <div className={styles.headerRight}>
+          {/* 【L5】环境标识徽标 —— 常驻显示，避免在错误环境上误操作 */}
+          {envInfo && (
+            <Tag
+              color={envInfo.is_production ? 'red' : 'orange'}
+              className={styles.envBadge}
+            >
+              {envInfo.is_production ? '生产环境 · PRODUCTION' : '测试环境 · SIMULATION'}
+            </Tag>
+          )}
           <Dropdown
             trigger={['click']}
             placement="bottomRight"

@@ -194,7 +194,7 @@ export function useBreakpoint(breakpoint: keyof typeof BREAKPOINTS): boolean {
  */
 export function useResponsiveValue<T>(values: {
   mobile?: T
-  table?: T
+  tablet?: T
   desktop?: T
   largeDesktop?: T
   default: T

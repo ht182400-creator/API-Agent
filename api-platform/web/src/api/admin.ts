@@ -22,7 +22,15 @@ export const adminApi = {
   getStats: () => api.get<AdminDashboardStats>('/admin/dashboard/stats'),
   
   // 获取用户列表
-  listUsers: (params?: { page?: number; page_size?: number; keyword?: string; user_type?: string }) => 
+  // 注意：后端 /admin/users 支持 user_status 过滤（src/api/v1/admin.py 的 Query 参数），
+  //       此前类型定义遗漏，导致 Users.tsx 传入被 TS 拒绝。
+  listUsers: (params?: {
+    page?: number
+    page_size?: number
+    keyword?: string
+    user_type?: string
+    user_status?: string
+  }) =>
     api.get<{ items: any[]; total: number; page: number; page_size: number }>('/admin/users', params),
 }
 
