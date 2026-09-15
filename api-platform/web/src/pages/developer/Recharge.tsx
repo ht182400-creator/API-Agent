@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import '../../styles/cyber-theme.css'
-import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, InputNumber, Alert } from 'antd'
+import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, Alert } from 'antd'
 import { 
   CheckCircleOutlined, 
   // ⚠️ AlipayOutlined 仍有本文件内的直接使用（跳转支付 / 二维码弹窗），
@@ -29,6 +29,7 @@ import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants
 import { paymentLogger } from './recharge/rechargeLogger'
 import { useRechargeData } from './recharge/useRechargeData'
 import { PackageCard } from './recharge/components/PackageCard'
+import { PaymentSummary } from './recharge/components/PaymentSummary'
 import {
   savePaymentToSession,
   restorePaymentFromSession,
@@ -1551,56 +1552,12 @@ export default function DeveloperRecharge() {
 
           <Divider />
 
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label="充值方式">
-              {selectedPackage ? selectedPackage.name : '自定义金额'}
-            </Descriptions.Item>
-            {selectedPackage ? (
-              <>
-                <Descriptions.Item label="赠送金额">
-                  {selectedPackage.bonus_amount > 0 && `+¥${selectedPackage.bonus_amount}`}
-                  {selectedPackage.bonus_ratio > 0 && ` + ${selectedPackage.bonus_ratio}%`}
-                  {!selectedPackage.bonus_amount && !selectedPackage.bonus_ratio && '无'}
-                </Descriptions.Item>
-                <Descriptions.Item label="支付金额">
-                  <Text strong className={styles.payAmount}>¥{selectedPackage.price.toFixed(2)}</Text>
-                </Descriptions.Item>
-                <Descriptions.Item label="实际到账">
-                  <Text type="success">
-                    ¥{((selectedPackage.price || 0) + (selectedPackage.bonus_amount || 0) + (selectedPackage.price || 0) * ((selectedPackage.bonus_ratio || 0) / 100)).toFixed(2)}
-                  </Text>
-                </Descriptions.Item>
-              </>
-            ) : (
-              <>
-                <Descriptions.Item label="充值金额">
-                  <InputNumber
-                    min={rechargeConfig?.min_amount || 1}
-                    max={rechargeConfig?.max_amount || 10000}
-                    value={customAmount}
-                    onChange={handleCustomAmountChange}
-                    prefix="¥"
-                    style={{ width: 150 }}
-                    placeholder={`${rechargeConfig?.min_amount || 1} - ${rechargeConfig?.max_amount || 10000}`}
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item label="赠送金额">
-                  {rechargeConfig && rechargeConfig.default_bonus_ratio > 0 ? (
-                    <Text type="warning">+{(customAmount || 0) * rechargeConfig.default_bonus_ratio}%</Text>
-                  ) : '无'}
-                </Descriptions.Item>
-                <Descriptions.Item label="实际到账">
-                  {rechargeConfig && rechargeConfig.default_bonus_ratio > 0 ? (
-                    <Text type="success">
-                      ¥{((customAmount || 0) * (1 + rechargeConfig.default_bonus_ratio)).toFixed(2)}
-                    </Text>
-                  ) : (
-                    <Text type="success">¥{(customAmount || 0).toFixed(2)}</Text>
-                  )}
-                </Descriptions.Item>
-              </>
-            )}
-          </Descriptions>
+          <PaymentSummary
+            selectedPackage={selectedPackage}
+            customAmount={customAmount}
+            rechargeConfig={rechargeConfig}
+            onCustomAmountChange={handleCustomAmountChange}
+          />
 
           <div className={styles.actionSection}>
             {selectedPackage ? (

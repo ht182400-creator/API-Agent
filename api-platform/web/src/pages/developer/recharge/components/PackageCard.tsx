@@ -10,6 +10,7 @@
 import { Card, Tag, Typography } from 'antd'
 import { GiftOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { RechargePackage } from '../../../../api/payment'
+import { calcArrivedAmount } from '../constants'
 // ⚠️ 注意层级：本组件在 recharge/components/ 下，而样式文件在 developer/ 下 → 需要回退两级
 import styles from '../../Recharge.module.css'
 
@@ -22,14 +23,6 @@ export interface PackageCardProps {
   /** 点击卡片（父组件负责切换选中态） */
   onSelect: (pkg: RechargePackage) => void
 }
-
-/** 实际到账 = 价格 + 固定赠送 + 价格 × 比例赠送% */
-export const calcArrivedAmount = (pkg: RechargePackage): string =>
-  (
-    (pkg.price || 0) +
-    (pkg.bonus_amount || 0) +
-    (pkg.price || 0) * ((pkg.bonus_ratio || 0) / 100)
-  ).toFixed(2)
 
 export function PackageCard({ pkg, selected, onSelect }: PackageCardProps) {
   const hasBonus = pkg.bonus_amount > 0 || pkg.bonus_ratio > 0
