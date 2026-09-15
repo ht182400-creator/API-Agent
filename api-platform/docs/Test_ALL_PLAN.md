@@ -198,8 +198,8 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **142 passed**
-（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 8 + Recharge 15；其中 TC-FE-API-008 参数化展开为 10 条）。
+**当前结果**：`npm run test:unit` → **143 passed**
+（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 15；其中 TC-FE-API-008 参数化展开为 10 条）。
 **类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
 
 > 本节只覆盖**工具层**（权限判定 / 请求层）。**页面级**用例见 **§2.5**；
@@ -307,7 +307,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 142 passed）
+npm run test:unit        # 单次运行（当前 143 passed）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 

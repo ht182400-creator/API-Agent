@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 14,
-      "cases": 142,
+      "cases": 143,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -200,7 +200,8 @@
         { "id": "TC-FE-OREPO-005", "name": "图标上传：非图片文件被拒绝", "status": "done" },
         { "id": "TC-FE-OREPO-006", "name": "图标上传：超过 200KB 被拒绝（边界）", "status": "done" },
         { "id": "TC-FE-OREPO-007", "name": "图标上传：合法图片经 FileReader 转 base64 进入预览态", "status": "done" },
-        { "id": "TC-FE-OREPO-008", "name": "列表加载失败不白屏（走 showError）", "status": "done" }
+        { "id": "TC-FE-OREPO-008", "name": "列表加载失败不白屏（走 showError）", "status": "done" },
+        { "id": "TC-FE-OREPO-009", "name": "详情抽屉「每日请求 (RPD)」显示真实限额而非兜底值（字段为 daily，非 rpd）", "status": "done" }
       ]
     },
     {

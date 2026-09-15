@@ -190,6 +190,39 @@ describe('仓库操作', () => {
     expect(await screen.findByText('编辑仓库配置')).toBeInTheDocument()
   })
 
+  /**
+   * 详情抽屉的限流展示（此前**完全没有用例覆盖**）。
+   *
+   * ⚠️ 字段名很容易搞错，务必以**后端真实响应**为准：
+   *    - 详情（读）：字段名是 **`daily`** —— 见后端
+   *      `src/api/v1/repositories/catalog.py` / `config.py`：`daily=limits_data.rpd or 100000`
+   *      即后端把存储的 `rpd` **映射成**响应里的 `daily`。
+   *    - 保存（写）：字段名是 **`rpd`**（`UpdateLimitsRequest`）。
+   *
+   * 也就是说：**读写字段不对称**（前端这里读 `daily` 是对的）。
+   * 我曾一度按 `rpd` 造 mock，结果抽屉显示兜底值 100000 —— 是 mock 与真实响应不符，
+   * 不是前端缺陷。本用例用**真实形态**（daily=5000）锁住"显示真实限额而非兜底值"。
+   */
+  it('TC-FE-OREPO-009: 详情抽屉「每日请求 (RPD)」显示真实限额，而非兜底值', async () => {
+    // 按后端真实响应形态：daily=5000（rph 另设以免与 rpd 数值混淆）
+    vi.mocked(repoApi.get).mockResolvedValue({
+      ...repoList[0],
+      limits: { rpm: 500, rph: 6000, daily: 5000, burst_limit: 20, concurrent_limit: 5 },
+    } as never)
+
+    renderWithProviders(<OwnerRepos />, { route: '/developer/repos' })
+    await screen.findByText('天气 API')
+
+    fireEvent.click(screen.getAllByRole('button', { name: /详情/ })[0])
+    await waitFor(() => expect(repoApi.get).toHaveBeenCalled())
+
+    // 抽屉打开后：应能看到真实值 5000
+    expect(await screen.findByText('每日请求 (RPD)')).toBeInTheDocument()
+    expect(screen.getByText('5000')).toBeInTheDocument()
+    // 且**不得**退化成兜底值 100000
+    expect(screen.queryByText('100000')).not.toBeInTheDocument()
+  })
+
   it('TC-FE-OREPO-004: 详情用 slug 拉取仓库详情', async () => {
     renderWithProviders(<OwnerRepos />, { route: '/developer/repos' })
     await screen.findByText('天气 API')

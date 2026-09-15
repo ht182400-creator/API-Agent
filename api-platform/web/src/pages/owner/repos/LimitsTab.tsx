@@ -10,6 +10,13 @@
  * ⚠️ 7 个数字输入目前是**逐字重复**的写法（label/value/onChange/placeholder 各一遍），
  *    后续可用一个字段配置数组 + `map` 生成，能砍掉约 60 行。
  *    本次是纯搬运，不做夹带重构 —— 留待单独一轮。
+ *
+ * ⚠️⚠️ **字段名陷阱（曾据此误判过一次）**：
+ *    - 本 Tab 是**写入**侧，字段叫 **`rpd`**（`UpdateLimitsRequest`）；
+ *    - 仓库详情接口**返回**的字段却叫 **`daily`**（后端做了映射：
+ *      `src/api/v1/repositories/catalog.py` → `daily=limits_data.rpd or 100000`）。
+ *    即**读写字段不对称**。在详情里误用 `rpd` 会静默取到兜底值 100000，
+ *    不报错也不异常 —— 详见 `owner/Repos.spec.tsx` 的 `TC-FE-OREPO-009`。
  */
 import { Alert, Button, Col, Form, Input, Row } from 'antd'
 import { UpdateLimitsRequest } from '../../../api/repo'
