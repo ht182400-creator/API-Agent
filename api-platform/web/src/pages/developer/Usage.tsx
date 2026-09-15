@@ -183,7 +183,9 @@ const Usage: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" tip="正在加载使用量数据..." />
+        {/* ⚠️ Spin 的 tip 单独使用不渲染 → 自行渲染文字 */}
+        <Spin size="large" />
+        <div style={{ marginTop: 12, color: '#666' }}>正在加载使用量数据...</div>
       </div>
     )
   }

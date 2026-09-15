@@ -79,7 +79,9 @@ export default function Repos() {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" tip="加载仓库列表..." />
+        {/* ⚠️ Spin 的 tip 单独使用不渲染 → 自行渲染文字 */}
+        <Spin size="large" />
+        <div style={{ marginTop: 12, color: '#666' }}>加载仓库列表...</div>
       </div>
     )
   }

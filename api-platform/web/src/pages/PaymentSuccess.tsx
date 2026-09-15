@@ -159,7 +159,9 @@ export default function PaymentSuccess() {
     if (loading) {
       return (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <Spin size="large" tip="正在加载支付信息..." />
+          {/* ⚠️ Spin 的 tip 单独使用不渲染 → 自行渲染文字 */}
+          <Spin size="large" />
+          <div style={{ marginTop: 12, color: '#666' }}>正在加载支付信息...</div>
         </div>
       )
     }

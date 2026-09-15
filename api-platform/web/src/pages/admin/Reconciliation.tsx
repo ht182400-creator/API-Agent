@@ -499,7 +499,9 @@ export default function AdminReconciliation() {
               <div>
                 {loading ? (
                   <div className={styles.loadingContainer}>
-                    <Spin size="large" tip="加载中..." />
+                    {/* ⚠️ Spin 的 tip 单独使用不渲染 → 自行渲染文字 */}
+                    <Spin size="large" />
+                    <div style={{ marginTop: 12, color: '#666' }}>加载中...</div>
                   </div>
                 ) : reconciliationResult ? (
                   <Card className={styles.resultCard}>
@@ -632,7 +634,9 @@ export default function AdminReconciliation() {
                 <Row gutter={[16, 16]}>
                   <Col xs={24} sm={12}>
                     <Card title="调度器状态" size="small">
-                      {schedulerLoading ? <Spin tip="加载中..." /> : schedulerStatus ? (
+                      {/* ⚠️ tip 单独使用不渲染；此处为三元分支值，不宜插 div → 去掉无效 tip
+                          （用户原本就看不到这段文字，行为不变） */}
+                      {schedulerLoading ? <Spin /> : schedulerStatus ? (
                         <Space direction="vertical" style={{ width: '100%' }}>
                           <Space><Text type="secondary">运行状态：</Text><Badge status={schedulerStatus.is_running ? 'processing' : 'default'} text={schedulerStatus.is_running ? '执行中' : '空闲'} /></Space>
                           <Space><Text type="secondary">上次运行：</Text><Text>{schedulerStatus.last_run_time ? dayjs(schedulerStatus.last_run_time).format('YYYY-MM-DD HH:mm:ss') : '从未运行'}</Text></Space>
@@ -686,7 +690,11 @@ export default function AdminReconciliation() {
                   </Space>
                 </div>
                 {reportLoading ? (
-                  <div className={styles.loadingContainer}><Spin size="large" tip="生成报表中..." /></div>
+                  <div className={styles.loadingContainer}>
+                    {/* ⚠️ Spin 的 tip 单独使用不渲染 → 自行渲染文字 */}
+                    <Spin size="large" />
+                    <div style={{ marginTop: 12, color: '#666' }}>生成报表中...</div>
+                  </div>
                 ) : reportData ? (
                   <>
                     <Card size="small" style={{ marginBottom: 16 }}>

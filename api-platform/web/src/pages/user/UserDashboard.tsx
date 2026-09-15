@@ -233,7 +233,9 @@ export default function UserDashboard() {
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
-        <Spin size="large" tip="加载中..." />
+        {/* ⚠️ Spin 的 tip 单独使用不渲染（antd 仅嵌套/全屏模式生效）→ 自行渲染文字 */}
+        <Spin size="large" />
+        <div style={{ marginTop: 12, color: '#666' }}>加载中...</div>
       </div>
     )
   }

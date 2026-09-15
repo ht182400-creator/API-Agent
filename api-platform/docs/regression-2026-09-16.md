@@ -150,15 +150,58 @@ python -m pytest tests -q（全量）
 
 ---
 
-## 6. 残余风险与说明（不粉饰）
+## 6. 残余项完善（第二轮，同日）
 
-1. **act 警告 96 条**：全部为 antd 内部组件（CSSMotion 72 / EllipsisMeasure 24 / Notifications 18 等）
-   在 jsdom 的异步行为；根治需 mock antd 内部模块，风险 > 收益，**已接受并受预算看管**（只减不增）；
-2. **jsdom 61 条**：环境限制（`getComputedStyle` 不支持伪元素），无法根治；
-3. **未覆盖区**：144 条前端用例覆盖的是"写了断言的行为"；`Spin.tip` 其余 10 处修复
-   （无测试文件）本次仅验证"不产生警告"，**未验证 UI 文字显示**（它们不被任何测试渲染）；
-4. **API 契约联测**（`e2e/api-contract.spec.ts`，12 条）需要真实后端运行，本次未跑
-   （回归以单元层为主）；如需可在后端启动后补跑。
+首轮报告的 4 个残余项已全部处理：
+
+### 6.1 API 契约联测 ✅ 已补跑
+
+启动真实后端（`uvicorn src.main:app --port 8000`，`/health` 200，billing=simulation）
+后运行 `npx playwright test e2e/api-contract.spec.ts`：
+
+```
+36 passed (29.2s)
+```
+
+（该套件已从早期 12 条扩展到 **36 条**；测试结束后端进程已停止、端口已确认关闭。）
+
+### 6.2 Spin.tip 其余 10 处 ✅ 已修复
+
+8 个文件（UserDashboard / PaymentSuccess / Usage / developer·Repos / RepoDetail /
+ChannelSummary / PlatformAccounts / Reconciliation×3）全部按方案 C 修复：
+普通位置自行渲染文字；`Reconciliation` L635 处于三元分支值不宜插 div，
+去掉无效 `tip`（该文字原本就不渲染，行为不变，已注释说明）。
+验证：`<Spin…tip=` 残留 **0**、typecheck 0 错误、前端全量通过。
+
+### 6.3 act(96) / jsdom(61)：完成归属分析，维持"接受"但依据更充分
+
+verbose 归属分析（Recharge 单文件，96 条 act 与全量一致）：
+
+| 归属用例组 | act 条数 |
+|---|---|
+| 下单（001~009/016） | 58 |
+| 扫码轮询停止（013） | 26 |
+| 待支付订单暂存（010~012） | 12 |
+
+**关键发现**：act 警告 **100% 集中在 Recharge spec** —— 其余 13 个 spec 为 0。
+即：警告来自该组件本身的重异步特性（下单链路多个异步 setState + 轮询 + 倒计时），
+**不是**其它测试的写法问题；且变异检验已证明这些用例的行为断言全部有效。
+彻底清零需 mock antd 内部模块（CSSMotion/Notifications）或整组改 fake timers，
+两者风险 > 收益 → 维持接受，受预算看管（只减不增）。
+jsdom 61 条大头在其它 spec（Typography/antd 读取伪元素样式，环境限制）。
+
+## 7. 结论（更新后）
+
+| 维度 | 结果 |
+|---|---|
+| 后端全量 | **269 passed**（0 失败） |
+| 前端全量 | **144 passed / 14 spec**，typecheck 0 错误 |
+| API 契约联测（真后端） | **36 passed** |
+| 缺陷回归用例有效性 | **变异 4/4 全部变红**（无空测试） |
+| 警告预算机制 | **负向拦截验证通过**（exit 1 + 指认种类） |
+| 回归新发现 | **1 个**（STATQ 时区敏感 flaky）→ 已修复并全量复跑 |
+| 两天全部问题（B1~B8 / F1~F12） | 无一回归 ✅ |
+| 首轮 4 个残余项 | **全部闭环**（6.1~6.3） |
 
 ---
 
