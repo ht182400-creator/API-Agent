@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 进行中（1/5） | `payment_service.py` 已拆为 `payment/` 包（§2.20）；其余见 §3.1 |
+| P1-4 | 巨型文件 | P1 | 🔄 进行中（3 个后端文件已完成） | `payment_service.py`/`analytics.py`/`billing.py` 已拆包（§2.20/§2.23）；剩余 `repositories.py` + 3 个前端组件，见 §3.1 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -979,14 +979,49 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 2. **即便 force push，旧对象在 GitHub 侧仍可能短期可访问** → **支付宝密钥轮换仍是唯一的止损手段**（待人工）。
 3. 本地备份 `.codebuddy/git-mirror-backup.git`（约 70MB）确认无误后可自行删除。
 
+### 2.23 P1-4 扩展：`billing.py` 拆分（第 3 个巨型文件）
+
+> §3.1 原清单只有 5 项，但排查发现另有 3 个文件同样超过「单文件 ≤500 行」：
+> `src/api/v1/repositories.py`(2426) / `billing.py`(956) / `analytics.py`(716)。
+> 本次完成 `billing.py`（`analytics.py` 见 §2.20 之后的记录）。
+
+**拆分**：`src/api/v1/billing.py`（956 行 / 12 个端点）→ `src/api/v1/billing/` 包
+
+| 文件 | 行数 | 职责 |
+|------|------|------|
+| `_shared.py` | 31 | 共享辅助（`_to_utc_iso_string`） |
+| `account.py` | 191 | 账户信息与充值 |
+| `bills.py` | 227 | 账单查询与导出 |
+| `stats.py` | 246 | 账单统计与趋势 |
+| `usage.py` | 189 | 用量统计与消费明细 |
+| `monthly.py` | 199 | 月度账单（列表 / 明细 / 可查周期） |
+| `__init__.py` | 27 | 汇总 router |
+
+最大 246 行（原 956）。函数体逐字搬移；**挂载方式未变**（prefix 仍由 `src/api/v1/__init__.py` 的
+`include_router(billing_router, prefix="/billing", tags=["Billing"])` 传入）。
+
+**新增可复用工具**：`scripts/dev/split_api_router.py`（AST 定位成员边界 → 按分组精确截取 →
+按使用情况筛选 import + 覆盖性校验）。改配置区即可**复用于 `repositories.py`**。
+
+**⚠️ 踩坑（两个都是"编译期不报、运行期 NameError"）**：
+1. 文件头固定写 `logger = get_logger("billing")`，而成员体里只出现 `logger.xxx` →
+   按使用情况筛选 import 必然漏掉 `get_logger`；
+2. 同理漏掉 `APIRouter`（成员体里只出现 `@router.get(...)`）。
+→ 修复：脚本对这两个名字**强制补齐**（`_ensure_import`），不受筛选影响；`_shared.py` 不再生成多余 router。
+
+**验证**：路由快照对比 **12 条完全一致**（应用共 147 条路径未变）；`py_compile` 通过；
+权限守卫 + 环境门控子集 **80 passed**；`pytest --collect-only` 收集 **269 用例**（导入链零错误）。
+
 ## 3. 待办项详细计划
 
-### 3.1 P1-4 巨型文件拆分 🔄（1/5 已完成）
+### 3.1 P1-4 巨型文件拆分 🔄（清单 1/5 + 额外 2 个后端文件已完成）
 
 | 文件 | 现状 | 拆分方案 | 风险 |
 |------|------|----------|------|
-| `src/api/v1/repositories.py` | ≈ 78KB / 2300+ 行 | 按子域拆为 `repositories/`（crud / endpoints / limits / approval / proxy）包 | 高（同文件大量共享辅助函数，需先抽 `_shared.py`） |
+| `src/api/v1/repositories.py` | ≈ 78KB / 2426 行 | 按子域拆为 `repositories/`（crud / endpoints / limits / approval / proxy）包 | 高（同文件大量共享辅助函数，需先抽 `_shared.py`） |
 | ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
+| ~~`src/api/v1/analytics.py`~~（清单外） | ✅ **已拆分** | → `src/api/v1/analytics/` 包（`_shared` + 5 子模块，最大 194 行） | 中 |
+| ~~`src/api/v1/billing.py`~~（清单外） | ✅ **已拆分**（§2.23） | → `src/api/v1/billing/` 包（`_shared` + 5 子模块，最大 246 行） | 中 |
 | `web/src/pages/developer/Recharge.tsx` | ≈ 76KB | 拆组件 + 抽 `useRechargeFlow` Hook | 中 |
 | `web/src/pages/owner/Repos.tsx` | ≈ 38KB | 拆为列表/表单/详情三个组件 | 中 |
 | `web/src/pages/admin/Analytics.tsx` | ≈ 34KB | 拆图表组件 | 低 |
