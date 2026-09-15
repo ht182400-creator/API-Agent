@@ -198,8 +198,8 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **139 passed**
-（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 8 + Recharge 12；其中 TC-FE-API-008 参数化展开为 10 条）。
+**当前结果**：`npm run test:unit` → **140 passed**
+（14 个 spec：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 8 + Recharge 13；其中 TC-FE-API-008 参数化展开为 10 条）。
 **类型检查**：新增 spec 位于 `src/`，纳入 `npm run typecheck`（`tsc --noEmit`）→ 通过。
 
 > 本节只覆盖**工具层**（权限判定 / 请求层）。**页面级**用例见 **§2.5**；
@@ -273,7 +273,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-FE-LAYOUT-007~008 | 组件渲染菜单入口 / 登出清空登录态 | 同上 | 组件 | 📋 |
 | TC-FE-ERRCTX-001~010 | 状态码分类矩阵 / 业务码区间 / 关键词兜底 / 文案提取与截断 / 认证码映射 / 兜底文案表完整性 | `contexts/ErrorContext.tsx` | 纯逻辑 | ✅ |
 | TC-FE-ERRCTX-011~013 | Provider 外抛错 / 认证错误弹窗文案 / 服务器错误弹窗 | 同上 | 组件 | ✅ |
-| TC-FE-RECHARGE-001~012 | 套餐/配置/余额并行加载并过滤未启用套餐 / **到账金额（固定赠送 + 比例赠送）** / 套餐下单参数 / 自定义金额上下限（UI 层 min/max）/ 自定义下单参数 / 两者互斥 / 失败不白屏 / 自定义到账计算 / **日志异常不拦截下单** / **不丢单链路（写入暂存 / 恢复并用暂存单号确认 / 超 30 分钟作废清理）** | `pages/developer/Recharge.tsx` | 组件 | ✅ |
+| TC-FE-RECHARGE-001~013 | 套餐/配置/余额并行加载并过滤未启用套餐 / **到账金额（固定赠送 + 比例赠送）** / 套餐下单参数 / 自定义金额上下限（UI 层 min/max）/ 自定义下单参数 / 两者互斥 / 失败不白屏 / 自定义到账计算 / **日志异常不拦截下单** / **不丢单链路（写入暂存 / 恢复并用暂存单号确认 / 超 30 分钟作废清理）** / **取消订单后扫码轮询真正停止** | `pages/developer/Recharge.tsx` | 组件 | ✅ |
 | TC-FE-AREPO-001~008 | 列表与各状态统计加载 / 行与状态标签 / 状态筛选 / **通过审核（带备注）** / **拒绝审核（带原因）** / **上线（Modal.confirm）** / 操作后自动刷新 / 失败不白屏 | `pages/admin/Repos.tsx` | 组件 | ✅ |
 | TC-FE-OREPO-001~008 | 列表与统计 / 删除经 Popconfirm 确认（未确认不发请求）/ 编辑并行加载端点与限流 / 详情用 slug / **图标上传三分支（非图片拒、200KB 边界、base64 回填）** / 失败不白屏 | `pages/owner/Repos.tsx` | 组件 | ✅ |
 | TC-FE-TESTER-001~008 | 渲染与统计 / 分类筛选 / 端点列表 / Key 配置面板 / 请求头占位 / **proxy URL 与 X-Access-Key 正确** / 成功响应与历史 / 失败仍记历史 | `pages/developer/ApiTester.tsx` | 组件 | ✅ |
@@ -307,7 +307,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 139 passed）
+npm run test:unit        # 单次运行（当前 140 passed）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 

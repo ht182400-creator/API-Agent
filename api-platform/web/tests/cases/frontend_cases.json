@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 14,
-      "cases": 139,
+      "cases": 140,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -178,7 +178,8 @@
         { "id": "TC-FE-RECHARGE-009", "name": "日志上报异常不拦截下单（同步抛错仍能创建订单）", "status": "done" },
         { "id": "TC-FE-RECHARGE-010", "name": "下单成功后写入 sessionStorage（含单号与金额）", "status": "done" },
         { "id": "TC-FE-RECHARGE-011", "name": "挂载时恢复暂存的未完成支付并用暂存单号向后端确认", "status": "done" },
-        { "id": "TC-FE-RECHARGE-012", "name": "超过 30 分钟的暂存作废并清理（不发确认请求）", "status": "done" }
+        { "id": "TC-FE-RECHARGE-012", "name": "超过 30 分钟的暂存作废并清理（不发确认请求）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-013", "name": "取消订单后扫码轮询必须停止（不再向后端查询）", "status": "done" }
       ]
     },
     {

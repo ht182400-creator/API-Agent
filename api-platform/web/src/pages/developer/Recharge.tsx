@@ -97,6 +97,13 @@ export default function DeveloperRecharge() {
   
   // 【新增】轮询定时器 ref，用于检测支付结果
   const paymentPollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // 【P1-4 修复】扫码轮询的"是否继续"标志。
+  // ⚠️ 必须用 ref 而非局部变量：`stopQrcodePolling` 是由「取消订单 / 关闭弹窗」从**外部**调用的，
+  //    局部变量对它不可见。原实现用局部 `isPolling` + stop 里只 setState，
+  //    导致**取消订单后轮询仍会跑满 8 次（约 32 秒）**，期间若后端返回 paid，
+  //    还会把已取消的订单标记成支付成功（代码里"用户关闭弹窗时停止轮询"的注释与实现不符）。
+  const qrcodePollingRef = useRef(false)
   
   // 【新增】启动支付结果轮询
   const startPaymentPoll = () => {
@@ -678,18 +685,18 @@ export default function DeveloperRecharge() {
   const startQrcodePolling = async (paymentNo: string) => {
     console.log('[DEBUG] startQrcodePolling 函数被调用, paymentNo:', paymentNo)
     setQrcodePolling(true)
-    let isPolling = true  // 使用局部变量，避免 React 状态异步问题
+    qrcodePollingRef.current = true
     const intervals = [2000, 2000, 2000, 3000, 3000, 5000, 5000, 10000]
     
     for (let i = 0; i < intervals.length; i++) {
-      if (!isPolling) break // 用户关闭弹窗时停止轮询
+      if (!qrcodePollingRef.current) break // 用户取消订单 / 关闭弹窗时立即停止（外部可写）
       
       try {
         const status = await paymentApi.getPaymentStatus(paymentNo)
         console.log(`[QRCode Poll] 第 ${i + 1} 次:`, status)
         
         if (status.status === 'paid' || status.status === 'completed') {
-          isPolling = false
+          qrcodePollingRef.current = false
           setQrcodePolling(false)
           // 支付成功
           handleQrcodePaymentSuccess(status)
@@ -705,7 +712,7 @@ export default function DeveloperRecharge() {
     }
     
     // 轮询结束但未支付成功
-    isPolling = false
+    qrcodePollingRef.current = false
     setQrcodePolling(false)
     message.warning({ content: '支付状态查询超时，请点击"刷新状态"按钮确认', key: 'qrcodePoll' })
   }
@@ -739,6 +746,8 @@ export default function DeveloperRecharge() {
 
   // 停止扫码轮询
   const stopQrcodePolling = () => {
+    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态
+    qrcodePollingRef.current = false
     setQrcodePolling(false)
   }
 

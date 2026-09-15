@@ -31,6 +31,8 @@ vi.mock('../../api/payment', () => ({
     createPayment: vi.fn(),
     createCustomRecharge: vi.fn(),
     refreshQrCode: vi.fn(),
+    cancelPayment: vi.fn(),
+    mockPaymentCallback: vi.fn(),
     clientLog: vi.fn().mockResolvedValue(undefined),
   },
 }))
@@ -410,4 +412,58 @@ describe('待支付订单暂存（不丢单）', () => {
     // 且顺手清理掉
     expect(sessionStorage.getItem(KEY)).toBeNull()
   })
+})
+
+/**
+ * 扫码轮询的"停止"语义。
+ *
+ * ⚠️ 这条是**暴露真实缺陷**的用例：`startQrcodePolling` 的循环条件是局部变量 `isPolling`，
+ *    而 `stopQrcodePolling()` 只改 React state —— 两者根本不是同一个东西。
+ *    结果：用户点「取消订单」后，轮询仍会跑满 8 次（约 32 秒），期间若后端返回 paid，
+ *    还会触发 handleQrcodePaymentSuccess 把**已取消的订单**标记成支付成功。
+ *    代码里那句注释「用户关闭弹窗时停止轮询」与实现不符。
+ */
+describe('扫码轮询的停止', () => {
+  it('TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询）', async () => {
+    vi.mocked(paymentApi.createPayment).mockResolvedValue({
+      payment_no: 'PAY-QR',
+      order_no: 'ORD-QR',
+      amount: 10,
+      status: 'pending',
+      expires_in: 600,
+      qr_code: 'data:image/png;base64,AAAA',
+    } as never)
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue({
+      status: 'pending',
+      payment_no: 'PAY-QR',
+      created_at: new Date().toISOString(),
+      expires_in: 600,
+    } as never)
+    vi.mocked(paymentApi.cancelPayment).mockResolvedValue({} as never)
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('入门包'))
+    await clickRechargeButton()
+
+    // 带 qr_code + paymentType=qrcode → 自动启动扫码轮询（首次查询间隔 2s）
+    await waitFor(
+      () => expect(paymentApi.getPaymentStatus).toHaveBeenCalledWith('PAY-QR'),
+      { timeout: 3500 }
+    )
+
+    // 用户取消订单（内部会调 stopQrcodePolling()）
+    const cancelBtn = (await screen.findByText('取消订单')).closest('button')
+    if (!cancelBtn) throw new Error('未找到「取消订单」按钮')
+    fireEvent.click(cancelBtn)
+    await waitFor(() => expect(paymentApi.cancelPayment).toHaveBeenCalled())
+
+    const callsAtCancel = vi.mocked(paymentApi.getPaymentStatus).mock.calls.length
+
+    // 等超过一个轮询间隔（2s）：期间**不得**再有查询
+    await new Promise((resolve) => setTimeout(resolve, 2600))
+
+    expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtCancel)
+  }, 15000)
 })
