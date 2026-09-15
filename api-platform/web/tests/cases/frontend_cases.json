@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 11,
-      "cases": 111,
+      "specFiles": 12,
+      "cases": 119,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -194,13 +194,18 @@
       "level": "P1",
       "file": "src/pages/admin/Repos.tsx",
       "lines": 924,
-      "why": "P1-4 目标；审核/上下线操作直接影响仓库可用性",
-      "status": "planned",
+      "why": "P1-4 目标；审核/上下线操作直接影响仓库可用性。⚠️ 注意两个 N+1 模式：loadStats 循环 5 个状态各发一次 adminList，每次操作成功后又会 loadRepos + loadStats（一次操作 6 个请求）",
+      "status": "covered",
       "specFile": "src/pages/admin/Repos.spec.tsx",
       "cases": [
-        { "id": "TC-FE-AREPO-001", "name": "待审核列表与筛选", "status": "planned" },
-        { "id": "TC-FE-AREPO-002", "name": "通过/驳回调用对应接口并刷新", "status": "planned" },
-        { "id": "TC-FE-AREPO-003", "name": "上线/下线按钮可用性随状态变化", "status": "planned" }
+        { "id": "TC-FE-AREPO-001", "name": "首屏加载列表与各状态统计（5 次探测），渲染页面骨架", "status": "done" },
+        { "id": "TC-FE-AREPO-002", "name": "渲染仓库行与状态标签（pending → 待审核）", "status": "done" },
+        { "id": "TC-FE-AREPO-003", "name": "点击状态筛选按钮后带 status 重新查询", "status": "done" },
+        { "id": "TC-FE-AREPO-004", "name": "通过审核：弹窗确认后 adminApprove(id, {comment})", "status": "done" },
+        { "id": "TC-FE-AREPO-005", "name": "拒绝审核：弹窗确认后 adminReject(id, {reason})", "status": "done" },
+        { "id": "TC-FE-AREPO-006", "name": "上线：Modal.confirm 确认后 adminOnline(id)", "status": "done" },
+        { "id": "TC-FE-AREPO-007", "name": "操作成功后自动刷新列表与统计", "status": "done" },
+        { "id": "TC-FE-AREPO-008", "name": "列表加载失败不白屏", "status": "done" }
       ]
     },
     {
