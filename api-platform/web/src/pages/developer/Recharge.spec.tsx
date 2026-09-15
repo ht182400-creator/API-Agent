@@ -17,7 +17,7 @@
  * 用例编号：TC-FE-RECHARGE-001 ~ TC-FE-RECHARGE-008
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, waitFor, fireEvent } from '@testing-library/react'
+import { screen, waitFor, fireEvent, act } from '@testing-library/react'
 
 const mocks = vi.hoisted(() => ({
   showError: vi.fn(),
@@ -484,8 +484,12 @@ describe('扫码轮询的停止', () => {
 
     const callsAtCancel = vi.mocked(paymentApi.getPaymentStatus).mock.calls.length
 
-    // 等超过一个轮询间隔（2s）：期间**不得**再有查询
-    await new Promise((resolve) => setTimeout(resolve, 2600))
+    // 等超过一个轮询间隔（2s）：期间**不得**再有查询。
+    // ⚠️ 等待必须包在 act 里：这段时间内倒计时/轮询的 interval 会 fire 并 setState，
+    //    裸 await 会让这些更新发生在 act 之外（实测贡献大量 act 警告）。
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2600))
+    })
 
     expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtCancel)
   }, 15000)
@@ -525,7 +529,10 @@ describe('扫码轮询的停止', () => {
     const callsAtUnmount = vi.mocked(paymentApi.getPaymentStatus).mock.calls.length
 
     // 等待超过所有轮询间隔（扫码 2s / 支付结果 3s）
-    await new Promise((resolve) => setTimeout(resolve, 4200))
+    // ⚠️ 同 013：裸等待期间的一切 setState 都在 act 外 → 必须包裹
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 4200))
+    })
 
     // ⚠️ 组件已卸载，不得再有任何后端查询（否则就是定时器泄漏）
     expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtUnmount)

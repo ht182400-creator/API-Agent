@@ -22,7 +22,7 @@
     "       说明大头不在动画，而在组件自身的异步更新（如 Recharge 的轮询定时器）。"
   ],
   "counts": {
-    "act: update not wrapped in act": 208,
+    "act: update not wrapped in act": 96,
     "jsdom: getComputedStyle pseudo-elements": 61
   }
 }
