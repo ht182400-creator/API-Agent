@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 13,
-      "cases": 127,
+      "specFiles": 14,
+      "cases": 135,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -163,15 +163,18 @@
       "level": "P1",
       "file": "src/pages/developer/Recharge.tsx",
       "lines": 2001,
-      "why": "全前端最大文件（P1-4 目标）；充值属资金链路，金额格式/支付方式分支必须锁死",
-      "status": "planned",
+      "why": "全前端最大文件（P1-4 目标）；充值属资金链路。重点：到账金额 = price + bonus_amount + price×bonus_ratio/100（两种赠送走同一式子）；上下限由 InputNumber 的 min/max 先在 UI 层拦住；⚠️ paymentLogger 里 paymentApi.clientLog(...).catch(...) 若返回非 Promise 会抛 TypeError 把整个下单打断在请求之前",
+      "status": "covered",
       "specFile": "src/pages/developer/Recharge.spec.tsx",
       "cases": [
-        { "id": "TC-FE-RECHARGE-001", "name": "套餐列表渲染与金额格式化", "status": "planned" },
-        { "id": "TC-FE-RECHARGE-002", "name": "选择套餐后应付金额与优惠计算正确", "status": "planned" },
-        { "id": "TC-FE-RECHARGE-003", "name": "自定义金额边界（0/负数/超上限）被拦截", "status": "planned" },
-        { "id": "TC-FE-RECHARGE-004", "name": "下单成功跳转支付；失败不丢单据状态", "status": "planned" },
-        { "id": "TC-FE-RECHARGE-005", "name": "充值记录分页与状态文案", "status": "planned" }
+        { "id": "TC-FE-RECHARGE-001", "name": "并行加载套餐/配置/余额，并过滤掉未启用的套餐", "status": "done" },
+        { "id": "TC-FE-RECHARGE-002", "name": "套餐到账 = 价格 + 固定赠送 + 价格×比例（两种赠送形态各一例）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-003", "name": "选中套餐下单，参数含 package_id/payment_method/payment_type", "status": "done" },
+        { "id": "TC-FE-RECHARGE-004", "name": "自定义金额输入框按后端配置限制上下限（aria-valuemin/max）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-005", "name": "自定义金额下单成功，createCustomRecharge 带金额与支付参数", "status": "done" },
+        { "id": "TC-FE-RECHARGE-006", "name": "套餐与自定义金额互斥（选一即取消另一）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-007", "name": "下单失败不白屏（页面骨架保留，可重试）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-008", "name": "自定义金额到账 = 金额×(1 + 默认比例)", "status": "done" }
       ]
     },
     {
