@@ -7,8 +7,8 @@
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch, Upload, Pagination } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import { Table, Button, Modal, Form, Input, Select, Card, message, Tag, Popconfirm, Space, Typography, Row, Col, Statistic, Drawer, Descriptions, Divider, Alert, Tabs, Switch, Pagination } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, UpOutlined, DownOutlined, ApiOutlined, ThunderboltOutlined, SettingOutlined, EyeOutlined } from '@ant-design/icons'
 import { repoApi, Repository, RepositoryEndpoint, RepositoryLimits, CreateRepoRequest, Endpoint, CreateEndpointRequest, UpdateEndpointRequest, UpdateLimitsRequest } from '../../api/repo'
 import { useError } from '../../contexts/ErrorContext'
 import { useAuthStore } from '../../stores/auth'
@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 import { createRepoColumns } from './repos/repoColumns'
 import { LimitsTab } from './repos/LimitsTab'
+import { BasicInfoTab } from './repos/BasicInfoTab'
 
 const { Title, Text } = Typography
 
@@ -298,94 +299,7 @@ export default function OwnerRepos() {
     onDelete: handleDelete,
   })
 
-  // Tab 内容组件
-  const BasicInfoTab = () => (
-    <>
-      {/* 仓库图标上传 */}
-      <Form.Item label="仓库图标">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {logoPreview ? (
-            <div style={{
-              width: 72,
-              height: 72,
-              borderRadius: 8,
-              overflow: 'hidden',
-              border: '1px solid #d1d5db',
-              position: 'relative',
-            }}>
-              <img
-                src={logoPreview}
-                alt="仓库图标预览"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                onClick={handleRemoveLogo}
-                style={{
-                  position: 'absolute',
-                  top: 2,
-                  right: 2,
-                  background: 'rgba(0,0,0,0.5)',
-                  color: '#fff',
-                  borderRadius: '50%',
-                  width: 24,
-                  height: 24,
-                  minWidth: 24,
-                  padding: 0,
-                }}
-              />
-            </div>
-          ) : (
-            <Upload
-              accept="image/*"
-              showUploadList={false}
-              beforeUpload={handleLogoChange}
-            >
-              <Button icon={<UploadOutlined />}>上传图标</Button>
-            </Upload>
-          )}
-          {logoPreview && (
-            <Text type="secondary" style={{ fontSize: 12 }}>点击删除按钮可重新上传</Text>
-          )}
-          {!logoPreview && (
-            <Text type="secondary" style={{ fontSize: 12 }}>建议 64x64 像素，不超过 200KB</Text>
-          )}
-        </div>
-      </Form.Item>
-
-      <Form.Item name="name" label="仓库标识" rules={[{ required: true, message: '请输入仓库标识' }]}>
-        <Input placeholder="如：weather-api (唯一标识)" disabled={!!editingRepo} />
-      </Form.Item>
-      <Form.Item name="display_name" label="显示名称" rules={[{ required: true, message: '请输入显示名称' }]}>
-        <Input placeholder="如：天气 API" />
-      </Form.Item>
-      <Form.Item name="description" label="描述">
-        <Input.TextArea rows={3} placeholder="简要描述您的API服务" />
-      </Form.Item>
-      <Form.Item name="repo_type" label="仓库类型" rules={[{ required: true, message: '请选择仓库类型' }]}>
-        <Select placeholder="请选择仓库类型">
-          <Select.Option value="psychology">心理问答</Select.Option>
-          <Select.Option value="translation">翻译服务</Select.Option>
-          <Select.Option value="vision">图像识别</Select.Option>
-          <Select.Option value="stock">股票行情</Select.Option>
-          <Select.Option value="ai">AI服务</Select.Option>
-          <Select.Option value="custom">自定义</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item name="protocol" label="协议类型" rules={[{ required: true }]}>
-        <Select>
-          <Select.Option value="http">HTTP</Select.Option>
-          <Select.Option value="grpc">gRPC</Select.Option>
-          <Select.Option value="websocket">WebSocket</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item name="endpoint_url" label="API端点地址">
-        <Input placeholder="https://api.example.com/v1" />
-      </Form.Item>
-    </>
-  )
+  // Tab 内容组件：BasicInfoTab / LimitsTab 已抽至 ./repos/；EndpointsTab 仍在本文件
 
   const EndpointsTab = () => (
     <div>
@@ -503,7 +417,14 @@ export default function OwnerRepos() {
     {
       key: 'basic',
       label: '基本信息',
-      children: <BasicInfoTab />,
+      children: (
+        <BasicInfoTab
+          logoPreview={logoPreview}
+          nameDisabled={!!editingRepo}
+          onLogoChange={handleLogoChange}
+          onRemoveLogo={handleRemoveLogo}
+        />
+      ),
     },
     {
       key: 'endpoints',
