@@ -7,13 +7,14 @@
     "",
     "已消除的种类（不应再出现，出现即拦截）：",
     "  - antd: Modal.destroyOnClose deprecated（原 108 条）",
+    "  - antd: Card.bordered deprecated（原 28 条）",
     "  - antd: Card.bodyStyle deprecated（原 8 条）",
-    "  - react: duplicate keys（原 4 条）"
+    "  - react: duplicate keys（原 4 条）",
+    "累计已消除：148 条"
   ],
   "counts": {
     "act: update not wrapped in act": 221,
     "jsdom: getComputedStyle pseudo-elements": 61,
-    "antd: Card.bordered deprecated": 28,
     "react-router: future flag": 16,
     "antd: Spin.tip misuse": 16,
     "rc-collapse: children deprecated": 2

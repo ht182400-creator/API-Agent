@@ -220,7 +220,9 @@ export default function Login() {
       <div className={`${styles.content} ${isCompact ? styles.contentCompact : ''}`}>
         <Card 
           className={getCardClassName(isMobile)}
-          bordered={isMobile}
+          // ⚠️ `bordered` 在 antd v5 已废弃（控制台告警，实测 28 条全部来自此处）：
+          //    bordered=true  → variant="outlined"；bordered=false → variant="borderless"
+          variant={isMobile ? 'outlined' : 'borderless'}
         >
           <div className={`${styles.header} ${isCompact ? styles.headerCompact : ''}`}>
             <h1 className={styles.title}>API Platform</h1>
