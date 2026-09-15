@@ -15,15 +15,10 @@ import {
   Select,
   Button,
   Space,
-  Tag,
   Spin,
   Tabs,
   Typography,
-  message,
-  Modal,
-  Descriptions,
-  Divider,
-  Progress
+  message
 } from 'antd'
 import {
   ApiOutlined,
@@ -53,6 +48,7 @@ import styles from './Analytics.module.css'
 import { statusColors, statusText } from './analytics/constants'
 import { createRepoDetailColumns } from './analytics/repoDetailColumns'
 import { OverviewTab } from './analytics/OverviewTab'
+import { RepoDetailModal } from './analytics/RepoDetailModal'
 import { buildRepoTrendChartData, buildTrendChartData } from './analytics/chartData'
 
 const { Title, Text } = Typography
@@ -457,220 +453,16 @@ export default function AdminAnalytics() {
         ]}
       />
 
-      {/* 【V1.1新增】仓库明细弹窗 */}
-      <Modal
-        title={
-          <Space>
-            <LineChartOutlined />
-            <span style={{ fontSize: 14 }}>仓库收入明细</span>
-          </Space>
-        }
+      {/* 【V1.1新增】仓库明细弹窗 —— 内容已抽为 ./analytics/RepoDetailModal */}
+      <RepoDetailModal
         open={detailModalVisible}
-        onCancel={closeRepoDetail}
-        footer={null}
-        width="95%"
-        style={{ maxWidth: 900 }}
-        destroyOnClose
-      >
-        <Spin spinning={detailModalLoading}>
-          {/* 基本信息 */}
-          {detailModalRepo && (
-            <Descriptions size="small" column={{ xs: 1, sm: 2, md: 4 }} bordered style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="仓库ID">
-                <Text code style={{ fontSize: 12 }}>{detailModalRepo.repo_id}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="Slug">
-                <Text code style={{ fontSize: 12 }}>{detailModalRepo.slug}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="状态">
-                <Tag color={statusColors[detailModalRepo.status] || 'default'}>
-                  {statusText[detailModalRepo.status] || detailModalRepo.status}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间">
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {detailModalRepo.created_at ? new Date(detailModalRepo.created_at).toLocaleString('zh-CN') : '-'}
-                </Text>
-              </Descriptions.Item>
-            </Descriptions>
-          )}
-
-          {/* 汇总统计 */}
-          <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
-            <Col xs={12} sm={12} md={6}>
-              <Card size="small" bodyStyle={{ padding: 12 }}>
-                <Statistic
-                  title="总调用"
-                  value={detailModalRepo?.total_calls || 0}
-                  valueStyle={{ color: '#059669', fontSize: 18 }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={12} md={6}>
-              <Card size="small" bodyStyle={{ padding: 12 }}>
-                <Statistic
-                  title="成功"
-                  value={detailModalRepo?.success_calls || 0}
-                  valueStyle={{ color: '#52c41a', fontSize: 18 }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={12} md={6}>
-              <Card size="small" bodyStyle={{ padding: 12 }}>
-                <Statistic
-                  title="失败"
-                  value={detailModalRepo?.failed_calls || 0}
-                  valueStyle={{ color: '#ff4d4f', fontSize: 18 }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={12} md={6}>
-              <Card size="small" bodyStyle={{ padding: 12 }}>
-                <Statistic
-                  title="总收入"
-                  value={detailModalRepo?.total_cost || 0}
-                  prefix="¥"
-                  precision={2}
-                  valueStyle={{ color: '#faad14', fontSize: 18 }}
-                />
-              </Card>
-            </Col>
-          </Row>
-
-          {/* 成功率 */}
-          <Card size="small" style={{ marginBottom: 16 }}>
-            <Space>
-              <span>成功率：</span>
-              <Progress
-                percent={detailModalRepo?.success_rate || 0}
-                format={(p) => `${p?.toFixed(1)}%`}
-                strokeColor={{
-                  '0%': '#ff4d4f',
-                  '50%': '#faad14',
-                  '100%': '#52c41a'
-                }}
-                style={{ width: 200 }}
-              />
-              <Text type="secondary">
-                (成功 {detailModalRepo?.success_calls || 0} / 失败 {detailModalRepo?.failed_calls || 0})
-              </Text>
-            </Space>
-          </Card>
-
-          <Divider />
-
-          {/* 趋势图表 */}
-          <Card
-            title="趋势分析"
-            extra={
-              <Select
-                value={detailDays}
-                onChange={handleDetailDaysChange}
-                style={{ width: 120 }}
-                options={[
-                  { label: '近7天', value: 7 },
-                  { label: '近30天', value: 30 },
-                  { label: '近90天', value: 90 }
-                ]}
-              />
-            }
-          >
-            {repoTrendData ? (
-              <>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={buildRepoTrendChartData(repoTrendData)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tick={{ fontSize: 12 }} />
-                    <YAxis
-                      yAxisId="left"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
-                    />
-                    <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(v) => `¥${v.toFixed(0)}`}
-                    />
-                    <RechartsTooltip
-                      formatter={(value: number, name: string) => [
-                        name === 'calls' ? `${value.toLocaleString()} 次` : name === 'revenue' ? `¥${value.toFixed(2)}` : `${value.toFixed(0)}ms`,
-                        name === 'calls' ? '调用次数' : name === 'revenue' ? '收入' : '平均延迟'
-                      ]}
-                    />
-                    <Legend />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="calls"
-                      stroke="#10b981"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      name="调用次数"
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="revenue"
-                      stroke="#faad14"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      name="收入"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-
-                {/* 数据表格 */}
-                <Table
-                  dataSource={
-                    repoTrendData.labels.map((label, index) => ({
-                      key: index,
-                      time: label,
-                      calls: repoTrendData.series.calls[index] || 0,
-                      revenue: repoTrendData.series.revenue[index] || 0
-                    })).reverse()
-                  }
-                  columns={[
-                    { title: '日期', dataIndex: 'time', key: 'time', width: 100 },
-                    {
-                      title: '调用次数',
-                      dataIndex: 'calls',
-                      key: 'calls',
-                      width: 100,
-                      render: (v: number) => v.toLocaleString()
-                    },
-                    {
-                      title: '收入',
-                      dataIndex: 'revenue',
-                      key: 'revenue',
-                      width: 80,
-                      render: (v: number) => `¥${v.toFixed(2)}`
-                    }
-                  ]}
-                  pagination={false}
-                  size="small"
-                  scroll={{ x: 'max-content' }}
-                  tableLayout="fixed"
-                  style={{ marginTop: 16 }}
-                />
-              </>
-            ) : (
-              <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
-                暂无趋势数据
-              </div>
-            )}
-          </Card>
-
-          {/* 更新时间 */}
-          {repoTrendData && (
-            <div style={{ marginTop: 12, textAlign: 'right' }}>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                数据更新时间: {new Date(repoTrendData.generated_at).toLocaleString('zh-CN')}
-              </Text>
-            </div>
-          )}
-        </Spin>
-      </Modal>
+        onClose={closeRepoDetail}
+        loading={detailModalLoading}
+        repo={detailModalRepo}
+        trendData={repoTrendData}
+        days={detailDays}
+        onDaysChange={handleDetailDaysChange}
+      />
 
       {/* 底部信息 */}
       {overview && (
