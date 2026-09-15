@@ -114,11 +114,14 @@ describe('管理员分析报表页', () => {
   it('TC-FE-ANA-002: 概览数据落到统计卡片与状态标签上', async () => {
     renderPage()
 
+    // ⚠️ 这几处都必须用 findBy*（自带等待）：统计卡片、状态标签、Tab 文案由**不同的渲染分支**
+    //    产出，加载完成时机并不一致 —— 用同步 getByText 会在机器忙时（如全量跑）偶发失败。
+    //    （实测：全量跑偶现 `Unable to find an element with the text: 7 已上线`，而单跑该文件必过。）
     expect(await screen.findByText('仓库总数')).toBeInTheDocument()
-    expect(screen.getByText('今日调用')).toBeInTheDocument()
+    expect(await screen.findByText('今日调用')).toBeInTheDocument()
     // 标签文案由 overview.repos.online / pending 拼出（在页面中唯一）
-    expect(screen.getByText('7 已上线')).toBeInTheDocument()
-    expect(screen.getByText('3 待审核')).toBeInTheDocument()
+    expect(await screen.findByText('7 已上线')).toBeInTheDocument()
+    expect(await screen.findByText('3 待审核')).toBeInTheDocument()
   })
 
   it('TC-FE-ANA-003: 点击「刷新数据」每个数据源各追加一次请求', async () => {
