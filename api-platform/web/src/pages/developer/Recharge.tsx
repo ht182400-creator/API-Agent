@@ -152,6 +152,25 @@ export default function DeveloperRecharge() {
     }
   }
 
+  // 【P1-4 修复】组件卸载时清理**所有**轮询定时器。
+  // ⚠️ 原实现只在「关闭支付窗口 / 关闭弹窗」时清理；若用户开着支付弹窗直接切走页面
+  //    （SPA 路由跳转 / 关标签页），这些定时器会继续跑并持续请求后端。
+  //    实测：卸载后仍会多发出数次 getPaymentStatus（用例 TC-FE-RECHARGE-014 先失败后通过）。
+  useEffect(() => {
+    return () => {
+      // 直接写 ref（不在卸载后 setState）
+      qrcodePollingRef.current = false
+      if (paymentPollIntervalRef.current) {
+        clearInterval(paymentPollIntervalRef.current)
+        paymentPollIntervalRef.current = null
+      }
+      if (payWindowIntervalRef.current) {
+        clearInterval(payWindowIntervalRef.current)
+        payWindowIntervalRef.current = null
+      }
+    }
+  }, [])
+
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
 
   // 【P1-4 拆分】套餐 / 充值配置 / 账户余额的加载与状态。

@@ -466,4 +466,45 @@ describe('扫码轮询的停止', () => {
 
     expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtCancel)
   }, 15000)
+
+  it('TC-FE-RECHARGE-014: 组件卸载后定时器必须清理（不得继续轮询）', async () => {
+    vi.mocked(paymentApi.createPayment).mockResolvedValue({
+      payment_no: 'PAY-QR2',
+      order_no: 'ORD-QR2',
+      amount: 10,
+      status: 'pending',
+      expires_in: 600,
+      qr_code: 'data:image/png;base64,BBBB',
+    } as never)
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue({
+      status: 'pending',
+      payment_no: 'PAY-QR2',
+      created_at: new Date().toISOString(),
+      expires_in: 600,
+    } as never)
+
+    const { unmount } = renderWithProviders(<DeveloperRecharge />, {
+      route: '/developer/recharge',
+    })
+    await screen.findByText('入门包')
+
+    fireEvent.click(screen.getByText('入门包'))
+    await clickRechargeButton()
+
+    // 等轮询真正跑起来（扫码轮询间隔 2s）
+    await waitFor(
+      () => expect(paymentApi.getPaymentStatus).toHaveBeenCalledWith('PAY-QR2'),
+      { timeout: 3500 }
+    )
+
+    // 模拟用户直接切走页面（开着支付弹窗就离开）
+    unmount()
+    const callsAtUnmount = vi.mocked(paymentApi.getPaymentStatus).mock.calls.length
+
+    // 等待超过所有轮询间隔（扫码 2s / 支付结果 3s）
+    await new Promise((resolve) => setTimeout(resolve, 4200))
+
+    // ⚠️ 组件已卸载，不得再有任何后端查询（否则就是定时器泄漏）
+    expect(vi.mocked(paymentApi.getPaymentStatus).mock.calls.length).toBe(callsAtUnmount)
+  }, 20000)
 })
