@@ -9,9 +9,9 @@ import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Spa
 import { 
   GiftOutlined, 
   CheckCircleOutlined, 
-  WechatOutlined, 
-  AlipayOutlined, 
-  CreditCardOutlined,
+  // ⚠️ AlipayOutlined 仍有本文件内的直接使用（跳转支付 / 二维码弹窗），
+  //    不能随 PAYMENT_METHODS 一起迁走；Wechat/CreditCard 才是仅由常量使用的。
+  AlipayOutlined,
   ReloadOutlined,
   ExclamationCircleOutlined,
   EditOutlined,
@@ -26,65 +26,11 @@ import { PaymentErrorResult, getPaymentErrorMessage, isPaymentError } from '../.
 import { useAuthStore } from '../../stores/auth'
 import styles from './Recharge.module.css'
 import '../../styles/payment-methods.css'
+// 【P1-4 拆分】纯逻辑层已抽出到 ./recharge/（常量与支付日志）
+import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
+import { paymentLogger } from './recharge/rechargeLogger'
 
 const { Title, Text, Paragraph } = Typography
-
-// 计算订单剩余有效期（秒）
-// 后端直接计算 expires_in 返回，前端直接使用
-const calculateRemainingSeconds = (expiresIn: number | undefined): number => {
-  if (expiresIn === undefined || expiresIn === null) {
-    console.warn('[倒计时] expires_in 为空，使用默认值 600')
-    return 600
-  }
-  
-  console.log('[倒计时] expires_in:', expiresIn)
-  return Math.max(0, expiresIn)
-}
-
-// 支付方式配置
-const PAYMENT_METHODS = [
-  { value: 'wechat', label: '微信支付', icon: <WechatOutlined />, color: '#07C160' },
-  { value: 'alipay', label: '支付宝', icon: <AlipayOutlined />, color: '#1677FF' },
-  { value: 'bankcard', label: '银行卡', icon: <CreditCardOutlined />, color: '#722ED1' },
-]
-
-// 【调试日志】支付流程追踪
-//
-// ⚠️ 该 logger 在**支付主流程中同步调用**（handleCreateOrder / 各轮询回调），
-//    因此它自身**绝不能抛错**。一旦抛错，异常会被上层的 try/catch 当成"下单失败"吞掉，
-//    用户看到的现象是"点了充值按钮没有任何反应"，且只在 console 留一条 TypeError，极难排查。
-//    （实测踩过：clientLog 返回非 Promise 时抛
-//     `Cannot read properties of undefined (reading 'catch')`，后端请求根本没发出。）
-const sendPaymentLog = (
-  step: string,
-  level: 'info' | 'warning' | 'error',
-  logData: Record<string, unknown>
-): void => {
-  try {
-    // Promise.resolve 兼容"返回非 Promise"（如同步实现/被 mock 成 undefined）
-    Promise.resolve(paymentApi.clientLog(step, level, logData)).catch(() => {})
-  } catch {
-    /* 日志上报失败不影响业务 */
-  }
-}
-
-const paymentLogger = {
-  info: (step: string, data?: any) => {
-    const logData = { step, timestamp: new Date().toISOString(), ...data }
-    console.log(`[PaymentFlow] ${step}`, logData)
-    sendPaymentLog(step, 'info', logData)
-  },
-  error: (step: string, error: any) => {
-    const logData = { step, timestamp: new Date().toISOString(), error: String(error) }
-    console.error(`[PaymentFlow] ERROR - ${step}`, logData)
-    sendPaymentLog(step, 'error', logData)
-  },
-  warn: (step: string, data?: any) => {
-    const logData = { step, timestamp: new Date().toISOString(), ...data }
-    console.warn(`[PaymentFlow] WARN - ${step}`, logData)
-    sendPaymentLog(step, 'warning', logData)
-  }
-}
 
 export default function DeveloperRecharge() {
   const navigate = useNavigate()

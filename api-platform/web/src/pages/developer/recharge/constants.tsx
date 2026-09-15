@@ -3,6 +3,7 @@
  *
  * 放在 `.tsx` 是因为 PAYMENT_METHODS 内含 JSX 图标。
  */
+import type { ReactNode } from 'react'
 import { WechatOutlined, AlipayOutlined, CreditCardOutlined } from '@ant-design/icons'
 
 export type PaymentMethodValue = 'wechat' | 'alipay' | 'bankcard'
@@ -26,7 +27,7 @@ export const calculateRemainingSeconds = (expiresIn: number | undefined): number
 export const PAYMENT_METHODS: {
   value: PaymentMethodValue
   label: string
-  icon: React.ReactNode
+  icon: ReactNode
   color: string
 }[] = [
   { value: 'wechat', label: '微信支付', icon: <WechatOutlined />, color: '#07C160' },
