@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 10,
-      "cases": 103,
+      "specFiles": 11,
+      "cases": 111,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -227,13 +227,18 @@
       "level": "P1",
       "file": "src/pages/developer/ConsumptionDetails.tsx",
       "lines": 780,
-      "why": "P1-4 目标；消费明细含金额合计与多维筛选，算错直接影响对账认知",
-      "status": "planned",
+      "why": "P1-4 目标；消费明细含**客户端二次聚合**（按接口/按日期分组求和）与计费模式推断，算错会"明细行对、汇总错"，肉眼极难发现",
+      "status": "covered",
       "specFile": "src/pages/developer/ConsumptionDetails.spec.tsx",
       "cases": [
-        { "id": "TC-FE-CONSUME-001", "name": "明细列表与金额格式化", "status": "planned" },
-        { "id": "TC-FE-CONSUME-002", "name": "筛选/分页参数传递", "status": "planned" },
-        { "id": "TC-FE-CONSUME-003", "name": "合计与实际行数据一致", "status": "planned" }
+        { "id": "TC-FE-CONSUME-001", "name": "首屏加载 getUsage 并渲染汇总统计与仓库明细", "status": "done" },
+        { "id": "TC-FE-CONSUME-002", "name": "任一仓库有 Token → 判定按 Token 计费，汇总多出「总 Tokens」", "status": "done" },
+        { "id": "TC-FE-CONSUME-003", "name": "全部无 Token → 按次计费，且不出现「总 Tokens」", "status": "done" },
+        { "id": "TC-FE-CONSUME-004", "name": "getUsage 失败不白屏（Tab 骨架仍在）", "status": "done" },
+        { "id": "TC-FE-CONSUME-005", "name": "切「按日期」触发明细查询且带分页参数", "status": "done" },
+        { "id": "TC-FE-CONSUME-006", "name": "明细按日期聚合：同日多条合并为一行并倒序", "status": "done" },
+        { "id": "TC-FE-CONSUME-007", "name": "明细接口失败不崩", "status": "done" },
+        { "id": "TC-FE-CONSUME-008", "name": "「重置」后重新查询且分页回到第 1 页", "status": "done" }
       ]
     },
     {
