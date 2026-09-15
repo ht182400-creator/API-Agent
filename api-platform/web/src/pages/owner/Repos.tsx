@@ -17,6 +17,7 @@ import { useDevice } from '../../hooks/useDevice'
 import dayjs from 'dayjs'
 import styles from './Repos.module.css'
 import { createRepoColumns } from './repos/repoColumns'
+import { LimitsTab } from './repos/LimitsTab'
 
 const { Title, Text } = Typography
 
@@ -496,106 +497,7 @@ export default function OwnerRepos() {
     </div>
   )
 
-  const LimitsTab = () => (
-    <div>
-      <Alert 
-        message="限流配置说明" 
-        description="设置API的访问频率限制，保护您的服务不被过度调用" 
-        type="info" 
-        showIcon 
-        style={{ marginBottom: 16 }} 
-      />
-      
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="每分钟请求数 (RPM)">
-            <Input 
-              type="number" 
-              value={limits.rpm} 
-              onChange={(e) => setLimits({ ...limits, rpm: parseInt(e.target.value) || 0 })}
-              placeholder="1000"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="每小时请求数 (RPH)">
-            <Input 
-              type="number" 
-              value={limits.rph} 
-              onChange={(e) => setLimits({ ...limits, rph: parseInt(e.target.value) || 0 })}
-              placeholder="10000"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="每日请求数 (RPD)">
-            <Input 
-              type="number" 
-              value={limits.rpd} 
-              onChange={(e) => setLimits({ ...limits, rpd: parseInt(e.target.value) || 0 })}
-              placeholder="100000"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="突发限制">
-            <Input 
-              type="number" 
-              value={limits.burst_limit} 
-              onChange={(e) => setLimits({ ...limits, burst_limit: parseInt(e.target.value) || 0 })}
-              placeholder="100"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="并发限制">
-            <Input 
-              type="number" 
-              value={limits.concurrent_limit} 
-              onChange={(e) => setLimits({ ...limits, concurrent_limit: parseInt(e.target.value) || 0 })}
-              placeholder="10"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="请求超时 (秒)">
-            <Input 
-              type="number" 
-              value={limits.request_timeout} 
-              onChange={(e) => setLimits({ ...limits, request_timeout: parseInt(e.target.value) || 0 })}
-              placeholder="30"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="连接超时 (秒)">
-            <Input 
-              type="number" 
-              value={limits.connect_timeout} 
-              onChange={(e) => setLimits({ ...limits, connect_timeout: parseInt(e.target.value) || 0 })}
-              placeholder="10"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <div style={{ paddingTop: 4 }}>
-            <Button type="primary" onClick={handleSaveLimits}>
-              保存限流配置
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </div>
-  )
+  // LimitsTab 已抽为 ./repos/LimitsTab（必须在 <Form> 内使用）
 
   const tabItems = [
     {
@@ -611,7 +513,9 @@ export default function OwnerRepos() {
     {
       key: 'limits',
       label: <span><ThunderboltOutlined /> 限流配置</span>,
-      children: <LimitsTab />,
+      children: (
+        <LimitsTab limits={limits} onChange={setLimits} onSave={handleSaveLimits} />
+      ),
     },
   ]
 
