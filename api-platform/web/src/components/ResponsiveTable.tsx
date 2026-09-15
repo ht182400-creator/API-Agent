@@ -91,7 +91,7 @@ export default function ResponsiveTable<T extends { id?: string }>({
                     key={recordKey}
                     size="small"
                     style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                    bodyStyle={{ padding: 12 }}
+                    styles={{ body: { padding: 12 } }}
                   >
                     {/* 卡片头部：头像 + 标题 + 标签 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>

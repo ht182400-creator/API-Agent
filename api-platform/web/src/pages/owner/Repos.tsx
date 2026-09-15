@@ -320,7 +320,7 @@ export default function OwnerRepos() {
               key={endpoint.id || endpoint.path}
               size="small"
               style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-              bodyStyle={{ padding: 12 }}
+              styles={{ body: { padding: 12 } }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                 <Tag color={getMethodColor(endpoint.method)}>{endpoint.method}</Tag>
@@ -522,7 +522,7 @@ export default function OwnerRepos() {
                 key={repo.id}
                 size="small"
                 style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                bodyStyle={{ padding: 12 }}
+                styles={{ body: { padding: 12 } }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />

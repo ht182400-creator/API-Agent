@@ -11,8 +11,8 @@
  * ⚠️ 第 ④ 块的折线图与「概览」「趋势分析」Tab 的写法高度重复，
  *    连同 `buildRepoTrendChartData` 一起，后续可提为共用的 `TrendChart`。
  *
- * ⚠️ 保持原样未动：`bodyStyle` 在 antd v5 已废弃（控制台会提示改用 `styles.body`），
- *    本次是纯搬运，不做夹带重构。
+ * ✅ 已清理：`bodyStyle={{ padding: 12 }}` 已改为 `styles={{ body: { padding: 12 } }}`
+ *    （antd v5 已废弃 `bodyStyle`，控制台会提示改用 `styles.body`）。视觉表现不变。
  */
 import {
   Card,
@@ -116,7 +116,7 @@ export function RepoDetailModal({
         {/* 汇总统计 */}
         <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
           <Col xs={12} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="总调用"
                 value={repo?.total_calls || 0}
@@ -125,7 +125,7 @@ export function RepoDetailModal({
             </Card>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="成功"
                 value={repo?.success_calls || 0}
@@ -134,7 +134,7 @@ export function RepoDetailModal({
             </Card>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="失败"
                 value={repo?.failed_calls || 0}
@@ -143,7 +143,7 @@ export function RepoDetailModal({
             </Card>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="总收入"
                 value={repo?.total_cost || 0}

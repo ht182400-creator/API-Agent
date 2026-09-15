@@ -677,7 +677,7 @@ export default function AdminRepos() {
                   // 移动端：卡片列表
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {repos.map((repo) => (
-                      <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                           <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />
                           <div style={{ flex: 1, minWidth: 0 }}>
@@ -745,7 +745,7 @@ export default function AdminRepos() {
                 {/* 我的仓库统计卡片 */}
                 <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
                   <Col xs={24} sm={12} md={6}>
-                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                    <Card size="small" styles={{ body: { padding: '12px 12px' } }}>
                       <Statistic
                         title="我的仓库总数"
                         value={myStats.total}
@@ -754,7 +754,7 @@ export default function AdminRepos() {
                     </Card>
                   </Col>
                   <Col xs={24} sm={12} md={6}>
-                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                    <Card size="small" styles={{ body: { padding: '12px 12px' } }}>
                       <Statistic
                         title="已上线仓库"
                         value={myStats.online}
@@ -764,7 +764,7 @@ export default function AdminRepos() {
                     </Card>
                   </Col>
                   <Col xs={24} sm={12} md={6}>
-                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                    <Card size="small" styles={{ body: { padding: '12px 12px' } }}>
                       <Statistic
                         title="总调用次数"
                         value={myStats.totalCalls}
@@ -775,7 +775,7 @@ export default function AdminRepos() {
                     </Card>
                   </Col>
                   <Col xs={24} sm={12} md={6}>
-                    <Card size="small" bodyStyle={{ padding: '12px 12px' }}>
+                    <Card size="small" styles={{ body: { padding: '12px 12px' } }}>
                       <Statistic
                         title="总收入"
                         value={myStats.totalCost}
@@ -805,7 +805,7 @@ export default function AdminRepos() {
                       {myRepos.map((repo) => {
                         const stats = myRepoStats[repo.id]
                         return (
-                          <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                          <Card key={repo.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                               <RepoLogo logoUrl={repo.logo_url} repoType={repo.type} size={40} />
                               <div style={{ flex: 1, minWidth: 0 }}>

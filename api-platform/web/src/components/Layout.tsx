@@ -492,7 +492,7 @@ export default function Layout() {
             open={drawerVisible}
             width={250}
             className={styles.drawer}
-            bodyStyle={{ padding: 0 }}
+            styles={{ body: { padding: 0 } }}
           >
             {/* 用户类型标签 */}
             <div className={styles.userTypeTag}>

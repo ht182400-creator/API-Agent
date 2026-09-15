@@ -542,7 +542,7 @@ const ConsumptionDetails: React.FC = () => {
                     ? (repo.call_count / repoTotal.call_count) * 100
                     : 0
                   return (
-                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                         <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name}</Tag>
                         <Tag icon={BILLING_MODEL_CONFIG[repo.billing_model].icon}
@@ -617,7 +617,7 @@ const ConsumptionDetails: React.FC = () => {
               // 移动端：卡片列表
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {endpointSummary.map((endpoint) => (
-                  <Card key={endpoint.endpoint} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                  <Card key={endpoint.endpoint} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                     <div style={{ marginBottom: 8 }}>
                       <Tag color="green" style={{ marginInlineEnd: 0 }}>{endpoint.repo_name}</Tag>
                     </div>
@@ -675,7 +675,7 @@ const ConsumptionDetails: React.FC = () => {
             // 移动端：卡片列表
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {dailySummary.map((day) => (
-                <Card key={day.date} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                <Card key={day.date} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                     <Badge color="#1677ff" text={day.date} />
                   </div>
@@ -738,7 +738,7 @@ const ConsumptionDetails: React.FC = () => {
             // 移动端：卡片列表
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {details.map((detail) => (
-                <Card key={detail.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                <Card key={detail.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <Tag color="blue" style={{ marginInlineEnd: 0 }}>{detail.repo_name || '未知'}</Tag>
                     <Text code style={{ fontSize: 10 }}>{detail.endpoint?.substring(0, 20)}...</Text>
