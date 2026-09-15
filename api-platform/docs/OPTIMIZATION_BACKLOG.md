@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 完成，前端 3 项待办 | `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；剩余 3 个前端组件，见 §3.1 |
+| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 ✅；前端 4 项中 3 项已启动 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端巨型组件拆分进行中（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1739、`owner/Repos.tsx` 1059→985；剩余 `admin/Repos.tsx`(924) 见 §3.1 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1080,11 +1080,81 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
   `import src.api.v1.repositories.check_admin_permission`，正是「兼容导出」防线的验证。
 
 **P1-4 进度**：后端 4 个巨型文件**全部拆完**（`payment_service.py` / `analytics.py` / `billing.py` / `repositories.py`），
-剩余 3 个前端组件（`Recharge.tsx` / `Repos.tsx` / `Analytics.tsx`），已由 §2.21 的前端单测 + 联测基建兜底。
+已由 §2.21 的前端单测 + 联测基建兜底；**前端巨型组件拆分进展见 §2.25**。
+
+### 2.25 P1-4 前端巨型组件拆分 🔄（进行中）
+
+> 承接 §2.24。前端巨型组件与后端的关键差异：**状态集中在组件内部**，
+> 不能像后端那样按"端点 / 方法"直接切文件。
+
+#### 拆分策略（与后端的差异）
+
+| | 后端巨型模块 | 前端巨型组件 |
+|---|---|---|
+| 拆分依据 | 按端点 / 方法切文件 | **按"依赖数量"排序，从最少的开始切** |
+| 状态处理 | 本来就在类 / 模块上 | 多数在组件内 → 抽 hook，或以 prop 传入 |
+| 主要风险 | 漏搬代码 | 循环依赖；跨组件共享状态被"本地化" |
+
+⚠️ **不要一次抽"最大那块"**：最大的块往往依赖十几个状态与回调，
+硬抽会把 props 摊成一张大表、review 成本高、回归面大。
+实测下来**按依赖数量从少到多切，每一步都能稳稳通过测试**。
+
+#### 当前进度
+
+| 组件 | 拆分前 → 现在 | 抽出模块数 / 行数 |
+|------|--------------|------------------|
+| `developer/Recharge.tsx` | 2001 → **1739** | 7 个 / 566 行 |
+| `admin/Analytics.tsx` | 964 → **477**（**减半**） | 5 个（含复用）/ 652 行 |
+| `owner/Repos.tsx` | 1059 → **985** | 1 个 / 127 行 |
+| `admin/Repos.tsx` | 924（未开始） | — |
+
+**已抽出模块**：
+
+- `developer/recharge/`：`constants.tsx`(50) · `rechargeLogger.ts`(48) · `useRechargeData.ts`(77) ·
+  `paymentSession.ts`(75) · `components/PackageCard.tsx`(84) · `components/PaymentSummary.tsx`(97) ·
+  `components/PaySuccessView.tsx`(135)
+- `admin/analytics/`：`constants.ts`(25) · `chartData.ts`(50，带单测) · `repoDetailColumns.tsx`(119) ·
+  `OverviewTab.tsx`(246) · `RepoDetailModal.tsx`(291)
+- `owner/repos/`：`repoColumns.tsx`(127)
+
+#### ⚠️ 三条复用经验（都是实际踩出来的）
+
+1. **需要组件内回调的"配置块"用工厂函数，不要用模块级常量**
+   —— 列定义、弹窗内容等常要调 `navigate` / 某个 handler，
+   写成常量就得反过来 import 组件 → **形成循环依赖**。
+   统一写法：`createXxxColumns({ onEdit, onDelete })`。
+
+2. **跨 Tab / 跨组件共享的状态必须仍作为"受控 prop"**
+   —— `Analytics` 的 `trendPeriod` / `trendDays` 由"概览"与"趋势分析"两个 Tab 共用；
+   若图省事改成组件内部 state，会出现"在概览选了近 30 天、切 Tab 又变回 7 天"这类
+   **无报错、界面也不异常**的静默回归。
+
+3. **拆分不夹带重构 / 行为变更**
+   —— 遇到可疑逻辑（如把"金额"按 `%` 显示、antd 已废弃的 `bodyStyle`）一律
+   **原样保留 + 代码注释标注 + 单独汇报**，改与不改由人决定。
+
+#### 拆分过程中抓出的真实缺陷（4 个，全部"先补用例暴露"）
+
+| # | 缺陷 | 危害 |
+|---|------|------|
+| 1 | 日志异常中断下单（`clientLog` 返回非 Promise → `.catch` TypeError） | 点充值**完全没反应**，后端请求都没发出 |
+| 2 | 取消订单后扫码轮询停不下来（局部 `isPolling` vs `setState`） | 轮询 32 秒；可能把**已取消订单**标记为支付成功 |
+| 3 | 组件卸载不清理定时器 | 切走页面后持续请求后端 |
+| 4 | 自定义赠送比例拿"金额"冒充百分比 | 显示随充值额变化，**永远不可能正确** |
+
+> 这 4 个都属于"**页面看着正常、日志里也没报错**"的静默失效 —— 恰恰是测试最该拦的类型。
+> 做法统一为：**先写一条会失败的用例坐实它 → 再修 → 用例转绿**。
+> 另抓出 1 个 flaky（`TC-FE-ANA-002` 同步 `getByText` 导致全量跑偶挂，已统一改 `findBy*`）。
+
+#### 记录但尚未合并的重复（可后续单独做）
+
+- `statusMap`（pending/approved/… → 颜色与文案）在 **3 处**各写一份：
+  `owner/repos/repoColumns.tsx`、`admin/analytics/constants.ts`、`admin/Repos.tsx`；
+- 折线图（概览预览 / 趋势 Tab / 明细弹窗）写法**高度重复**，可提为共用 `TrendChart` 组件。
 
 ## 3. 待办项详细计划
 
-### 3.1 P1-4 巨型文件拆分 🔄（后端 4/4 ✅，剩余 3 个前端组件）
+### 3.1 P1-4 巨型文件拆分 🔄（后端 4/4 ✅，前端 4 项中 3 项已启动｜详见 §2.25）
 
 | 文件 | 现状 | 拆分方案 | 风险 |
 |------|------|----------|------|
@@ -1092,12 +1162,17 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 | ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
 | ~~`src/api/v1/analytics.py`~~（清单外） | ✅ **已拆分** | → `src/api/v1/analytics/` 包（`_shared` + 5 子模块，最大 194 行） | 中 |
 | ~~`src/api/v1/billing.py`~~（清单外） | ✅ **已拆分**（§2.23） | → `src/api/v1/billing/` 包（`_shared` + 5 子模块，最大 246 行） | 中 |
-| `web/src/pages/developer/Recharge.tsx` | ≈ 76KB | 拆组件 + 抽 `useRechargeFlow` Hook | 中 |
-| `web/src/pages/owner/Repos.tsx` | ≈ 38KB | 拆为列表/表单/详情三个组件 | 中 |
-| `web/src/pages/admin/Analytics.tsx` | ≈ 34KB | 拆图表组件 | 低 |
+| `web/src/pages/developer/Recharge.tsx` | 🔄 **拆分中**：2001 → **1739** 行（§2.25） | 已抽 `constants`/`rechargeLogger`/`useRechargeData`/`paymentSession` + `PackageCard`/`PaymentSummary`/`PaySuccessView`；剩余：支付弹窗剩余小块、`usePaymentPolling` | 中 |
+| `web/src/pages/owner/Repos.tsx` | 🔄 **已起步**：1059 → **985** 行（§2.25） | 已抽 `repos/repoColumns.tsx`；剩余：`BasicInfoTab`/`EndpointsTab`/`LimitsTab` 三个 Tab | 中 |
+| `web/src/pages/admin/Analytics.tsx` | ✅ **基本完成**：964 → **477** 行（**减半**，§2.25） | 已抽 `analytics/`（`constants`/`chartData`/`repoDetailColumns`/`OverviewTab`/`RepoDetailModal`）；剩余：趋势 Tab（约 110 行） | 低 |
+| `web/src/pages/admin/Repos.tsx` | 📋 待开始（924 行） | 已有 8 条用例兜底，可随时开拆 | 中 |
 
-**建议做法**：每次只拆一个文件，拆分后跑全量测试（当前 198 条）+ 前端构建 + 手工回归对应页面；
-`repositories.py` 建议放在最后，并先补齐该模块的测试覆盖。
+**建议做法**：每次只拆一个文件（前端则按"依赖数量"切最小的一块，见 §2.25），
+拆分后跑全量测试（后端 269 条 `pytest`；前端 142 条 `npm run test:unit`）
++ 前端构建 + 手工回归对应页面。
+
+> 💡 前端拆分**尤其依赖先有测试**：后端 `repositories.py` 与前端 `Recharge`/`Analytics`
+> 都是在补齐用例后才动刀的 —— 否则"静默失效"类问题（页面正常、日志无错）无从发现。
 
 **并行建议**：`RepoService.call_repository` 为死代码，建议在第 3.1 步中**直接删除**（连同 `services/__init__.py` 的导出），
 或改为内部薄封装委托到 `repositories.py` 的实现，避免两套转发逻辑并存。
