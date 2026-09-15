@@ -23,7 +23,10 @@ from .user import router as user_router  # 用户升级与试用功能新增
 api_router = APIRouter()
 
 api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
-api_router.include_router(repositories_router, prefix="/repositories", tags=["Repositories"])
+# 注意：repositories 包的 router **自带 /repositories 前缀**（源文件含空路径路由 `@router.get("")`，
+#       中间层必须持前缀才能通过 FastAPI 校验），故此处在**不再传** prefix，详见
+#       src/api/v1/repositories/__init__.py
+api_router.include_router(repositories_router, tags=["Repositories"])
 api_router.include_router(quota_router, prefix="/quota", tags=["Quota"])
 api_router.include_router(billing_router, prefix="/billing", tags=["Billing"])
 api_router.include_router(payment_router, tags=["Payments"])  # V2.5新增 (payment_router 已有 /payments 前缀)

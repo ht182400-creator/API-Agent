@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 进行中（3 个后端文件已完成） | `payment_service.py`/`analytics.py`/`billing.py` 已拆包（§2.20/§2.23）；剩余 `repositories.py` + 3 个前端组件，见 §3.1 |
+| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 完成，前端 3 项待办 | `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；剩余 3 个前端组件，见 §3.1 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1012,13 +1012,83 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 **验证**：路由快照对比 **12 条完全一致**（应用共 147 条路径未变）；`py_compile` 通过；
 权限守卫 + 环境门控子集 **80 passed**；`pytest --collect-only` 收集 **269 用例**（导入链零错误）。
 
+### 2.24 P1-4 完成：`repositories.py` 拆分（第 4 个后端巨型文件）
+
+> 承接 §2.23。`src/api/v1/repositories.py` **2426 行 / 29 个成员 / 23 个端点**，
+> 是 P1-4 中体量最大、耦合最深的一个（文件内共享 5 个辅助函数 + 一条 catch-all 兜底路由）。
+
+**拆分产物**：`src/api/v1/repositories/` 包（最大 476 行，原 2426 行）
+
+| 文件 | 行数 | 职责 |
+|------|------|------|
+| `_shared.py` | 216 | 共享辅助：`_validate_endpoint_url` / `calculate_and_charge` / `_check_repo_owner_permission` / `_get_repo_by_id` |
+| `catalog.py` | 476 | 仓库列表与详情（`list_repositories` / `list_my_repositories` / `get_repository_stats` / `get_repository`） |
+| `invoke.py` | 264 | 能力调用（`chat` / `translate` / `recognize`） |
+| `crud.py` | 239 | 创建 / 更新 / 删除 |
+| `admin.py` | 404 | 管理员列表与审核（通过 / 驳回 / 上线 / 下线） |
+| `endpoints.py` | 302 | 端点配置（列表 / 增删改 / 批量） |
+| `limits.py` | 141 | 限流配置 |
+| `config.py` | 208 | 配置更新（端点 + 限流 + 定价一次性提交） |
+| `proxy.py` | 236 | **catch-all 兜底路由**（`/{repo_slug}/{path:path}`） |
+
+**本文件特有的 3 个硬约束（都已踩坑并固化为工具防线）**：
+
+1. **catch-all 必须最后注册** —— `proxy_repository_endpoint` 用
+   `@router.api_route("/{repo_slug}/{path:path}", methods=[...])`，匹配任意两段路径。
+   若它先于 `/admin/all`、`/{repo_id}/stats` 等注册，这些静态路由**永远不可达**。
+   → 工具新增「**分组顺序自检**」：各分组最小成员行号必须单调递增，否则报错退出。
+
+2. **空路径路由 + 空 prefix 被 FastAPI 拒绝** —— `catalog.py` 含 `@router.get("")`（即 `/repositories` 本身）。
+   中间层 `include_router` 的 prefix 为空时抛 `Prefix and path cannot be both empty`。
+   ⚠️ 给**中间层 router** 设 prefix **无效**（校验只看 `include_router(prefix)` 与子路由**原始 path**）→
+   必须写 `router.include_router(catalog.router, prefix="/repositories")`，
+   并**移除** `src/api/v1/__init__.py` 挂载处的 `prefix=`（否则双重前缀）。
+
+3. **文件中部的模块级 import** —— 原文件 L999（位于两个函数之间）有
+   `from src.schemas.request import RepositoryCreate, ...`。
+   只搬"函数 / 类"的旧版工具会把这类 import **静默丢弃** → 运行期
+   `NameError: RepositoryCreate is not defined`（编译期不报）。
+   → 工具改为**从源文件 AST 自动派生 import 候选**（不再手工维护清单），任何位置/形式的顶层 import 不再漏。
+
+**工具本轮新增的 4 道防线**（`scripts/dev/split_api_router.py`）：
+
+| 防线 | 作用 |
+|------|------|
+| 分组顺序自检 | 分组顺序 ≠ 源码顺序 → 报错（保护 catch-all 与静态路由的匹配顺序） |
+| 模块级语句检查 | 源文件存在"非成员、非 import"的顶层语句（常量/映射表）→ 报错（这些**不会**被搬移，会静默丢失） |
+| 未绑定名字自检（**作用域感知**） | 生成文件出现"引用但未绑定"的名字 → 报错；**基线豁免**源文件本身就有的（既有缺陷不算拆分引入） |
+| 兼容导出 | 拆包前位于模块顶层、被外部引用的符号在包根 re-export，避免破坏既有 import |
+
+> ⚠️ 「未绑定名字」检测必须**作用域感知**。最初用"全文件绑定"近似，会掩盖
+> "某函数内 import、另一函数直接用"的缺陷（正是本案踩到的坑）；改为逐层收集作用域绑定后才准确。
+
+**顺带修复与清理（均由自检暴露，属源文件既有缺陷）**：
+
+1. **活代码缺陷**：`proxy.py`（原 `proxy_repository_endpoint`）内
+   `datetime.now(timezone.utc)` 用到 `timezone`，而该处只 `from datetime import datetime, timedelta`
+   → 走到该分支即 `NameError`（500）。该路径无测试覆盖，缺陷潜伏至今 → **已补 import**。
+2. **死代码清理**：`_check_repo_update_permission`（原 L530-613，**全项目 0 调用**，
+   仅定义 + 本文档工具配置各命中一次）函数体内使用未导入的 `timedelta` / `db`。
+   按 §2.12 同口径（0 调用即删）**已删除 84 行**。
+
+**验证（零回归证据链）**：
+
+- 路由快照：拆分前后 `/api/v1/repositories` **18 条路径逐字一致**（应用共 147 条未变）；
+- `py_compile` 全部通过；**lint 0 诊断**；
+- **全量 269 passed**；
+- `tests/test_url_safety.py::TestPermissionUnification` 通过 —— 它直接
+  `import src.api.v1.repositories.check_admin_permission`，正是「兼容导出」防线的验证。
+
+**P1-4 进度**：后端 4 个巨型文件**全部拆完**（`payment_service.py` / `analytics.py` / `billing.py` / `repositories.py`），
+剩余 3 个前端组件（`Recharge.tsx` / `Repos.tsx` / `Analytics.tsx`），已由 §2.21 的前端单测 + 联测基建兜底。
+
 ## 3. 待办项详细计划
 
-### 3.1 P1-4 巨型文件拆分 🔄（清单 1/5 + 额外 2 个后端文件已完成）
+### 3.1 P1-4 巨型文件拆分 🔄（后端 4/4 ✅，剩余 3 个前端组件）
 
 | 文件 | 现状 | 拆分方案 | 风险 |
 |------|------|----------|------|
-| `src/api/v1/repositories.py` | ≈ 78KB / 2426 行 | 按子域拆为 `repositories/`（crud / endpoints / limits / approval / proxy）包 | 高（同文件大量共享辅助函数，需先抽 `_shared.py`） |
+| ~~`src/api/v1/repositories.py`~~ | ✅ **已拆分**（§2.24） | → `src/api/v1/repositories/` 包（`_shared` + 8 子模块，最大 476 行；catch-all 兜底路由独立成 `proxy.py` 并最后注册） | 高 |
 | ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
 | ~~`src/api/v1/analytics.py`~~（清单外） | ✅ **已拆分** | → `src/api/v1/analytics/` 包（`_shared` + 5 子模块，最大 194 行） | 中 |
 | ~~`src/api/v1/billing.py`~~（清单外） | ✅ **已拆分**（§2.23） | → `src/api/v1/billing/` 包（`_shared` + 5 子模块，最大 246 行） | 中 |
