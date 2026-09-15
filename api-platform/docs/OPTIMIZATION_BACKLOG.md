@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 ✅；前端 4 项中 3 项已启动 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端巨型组件拆分进行中（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1739、`owner/Repos.tsx` 1059→985；剩余 `admin/Repos.tsx`(924) 见 §3.1 |
+| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 ✅；前端 3/4 ✅ | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1744、`owner/Repos.tsx` 1059→813；剩 `admin/Repos.tsx`(924) 见 §3.1 |
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1103,9 +1103,9 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 
 | 组件 | 拆分前 → 现在 | 抽出模块数 / 行数 |
 |------|--------------|------------------|
-| `developer/Recharge.tsx` | 2001 → **1739** | 7 个 / 566 行 |
+| `developer/Recharge.tsx` | 2001 → **1744** | 7 个 / 566 行 |
 | `admin/Analytics.tsx` | 964 → **477**（**减半**） | 5 个（含复用）/ 652 行 |
-| `owner/Repos.tsx` | 1059 → **985** | 1 个 / 127 行 |
+| `owner/Repos.tsx` | 1059 → **813** | 3 个 / 394 行 |
 | `admin/Repos.tsx` | 924（未开始） | — |
 
 **已抽出模块**：
@@ -1115,7 +1115,7 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
   `components/PaySuccessView.tsx`(135)
 - `admin/analytics/`：`constants.ts`(25) · `chartData.ts`(50，带单测) · `repoDetailColumns.tsx`(119) ·
   `OverviewTab.tsx`(246) · `RepoDetailModal.tsx`(291)
-- `owner/repos/`：`repoColumns.tsx`(127)
+- `owner/repos/`：`repoColumns.tsx`(127) · `LimitsTab.tsx`(133) · `BasicInfoTab.tsx`(134)
 
 #### ⚠️ 三条复用经验（都是实际踩出来的）
 
@@ -1151,6 +1151,28 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 - `statusMap`（pending/approved/… → 颜色与文案）在 **3 处**各写一份：
   `owner/repos/repoColumns.tsx`、`admin/analytics/constants.ts`、`admin/Repos.tsx`；
 - 折线图（概览预览 / 趋势 Tab / 明细弹窗）写法**高度重复**，可提为共用 `TrendChart` 组件。
+
+### 2.26 测试警告预算与全量回归（2026-09-16）
+
+**警告预算机制**（`web/scripts/dev/check-test-warnings.mjs` + `test-warnings-baseline.json`）：
+测试只校验断言、不检查 stderr → 警告曾堆到 **458 条 / 16 种**。机制：种类归一化后与基线比对，
+基线外新种类即失败；**修好一类就删出基线，只减不增**。
+治理成果：**458 → 157（-66%）**，7 类彻底清零（`destroyOnClose` 108 / `Card.bordered` 28 /
+`Spin.tip` 16（⚠️ 真缺陷：tip 单独使用不渲染，12 处 loading 文字用户看不到，已全部改为自行渲染）/
+react-router future 16 / `bodyStyle` 8 / 重复 key 4 / rc-collapse 2）。
+剩余 `act`(96，100% 集中在 Recharge 组件重异步特性) 与 `jsdom`(61，环境限制) 已论证接受。
+
+**变异检验**（`web/scripts/dev/verify-fixes.mjs`）：把修复改回缺陷形态，用例必须变红 ——
+4 个 Recharge 缺陷回归用例 **4/4 全部变红**（无空测试），
+另做预算负向验证（注入已清零属性 → exit 1 精确指认）。
+
+**全量回归**（报告 `docs/regression-2026-09-16.md`）：两天全部修复项逐条映射测试，
+后端 269 passed / 前端 144 passed / 契约联测 36 passed，无一回归；
+过程抓出并修复 1 个时区敏感 flaky（TC-STATQ-006：UTC 锚造数据在北京 0~4 点窗口跨 3 天）。
+
+**⚠️ 插曲：用例库 JSON 曾损坏** —— `frontend_cases.json` 两处字符串含未转义英文双引号
+（中文语境下写 `"..."` 引用词），`require()` 直接 SyntaxError，**而该 JSON 无任何测试消费**
+→ 损坏了也不会有警报。已修复并改为中文引号；后续考虑给用例库加一个"JSON 合法性"冒烟校验。
 
 ## 3. 待办项详细计划
 

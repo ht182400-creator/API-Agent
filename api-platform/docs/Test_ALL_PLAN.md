@@ -238,7 +238,8 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 | TC-E2E-API-011 | CORS 预检（联调必需） | `OPTIONS login` + `Origin=前端源` | 状态 <400 且回显 `access-control-allow-origin` |
 | TC-E2E-API-012 | 登出契约 ↔ 前端 `authApi.logout` | `POST /auth/logout`（带 token） | 200；`code=0` |
 
-**当前结果**：**12 passed**（对真实后端 development / simulation 环境实测）。
+**当前结果**：**36 passed**（2026-09-16 对真实后端 development / simulation 环境实测；
+套件已从最初 12 条扩展至 36 条，覆盖鉴权 / 分页 / 参数校验 / CORS / 登出等契约面）。
 
 ### 2.5 前端页面测试（组件级，Vitest）[新增]
 
@@ -310,9 +311,40 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 143 passed）
+npm run test:unit        # 单次运行（当前 144 passed）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
+
+### 2.6 测试警告预算与回归治理 [2026-09-16 新增]
+
+**警告预算**（`npm run test:budget` + `test-warnings-baseline.json`）：
+单元测试只校验断言、不检查 stderr，警告可年复一年堆积（实测曾达 **458 条 / 16 种**）。
+机制：警告按种类归一化后与基线比对，**基线外新种类 → 失败**；修好一类就从基线删除
+→ **只减不增**。
+
+**治理成果**：458 → **157**（-66%），以下 7 类**彻底清零**并上基线（再出现即失败）：
+
+| 清零项 | 数量 | 备注 |
+|---|---|---|
+| `Modal.destroyOnClose` | 108 | 改 `destroyOnHidden` |
+| `Card.bordered` | 28 | antd v5 默认已无框 |
+| `Spin.tip` 误用 | 16 | ⚠️ **真缺陷**：`tip` 单独使用不渲染，12 处 loading 文字用户根本看不到 → 全部改为自行渲染 |
+| react-router future flag | 16 | 来源是测试环境的 `MemoryRouter` |
+| `Card.bodyStyle` | 8 | 改 `styles.body` |
+| 重复 key | 4 | 真实缺陷 |
+| rc-collapse children | 2 | 改 `items`（属性是 `label` 不是 `header`） |
+
+**剩余两类（接受，已论证）**：`act`(96，**100% 集中在 Recharge spec** —— 该组件重异步
+特性所致，非测试写法问题) 与 `jsdom`(61，getComputedStyle 伪元素为环境限制)。
+
+**回归与变异检验**（`npm run run verify:fixes` → `scripts/dev/verify-fixes.mjs`）：
+把已修复的缺陷**改回缺陷形态**再跑用例 —— 用例必须变红，否则判定为"空测试"。
+4 个 Recharge 缺陷的回归用例 **4/4 全部变红**（无空测试）。
+
+**全量回归报告**：`docs/regression-2026-09-16.md` —— 9-15/9-16 两天全部修复项
+（后端 B1~B8 / 前端 F1~F12）逐条映射到测试，含负向验证与过程留痕。
+结论：后端 269 passed / 前端 144 passed / 契约联测 36 passed，无一回归；
+回归过程另抓出并修复 1 个时区敏感 flaky（TC-STATQ-006）。
 
 ## 三、测试数据准备
 
