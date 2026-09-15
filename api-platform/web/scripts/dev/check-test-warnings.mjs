@@ -80,6 +80,21 @@ if (res.error) {
 }
 
 const output = `${res.stdout || ''}\n${res.stderr || ''}`
+
+// ⚠️ 透传 vitest 的测试摘要 —— 只看警告统计无法确认"测试真的跑过且通过"（用户反馈缺失证据）。
+if (res.status !== 0) {
+  console.error(`[warn-budget] ❌ 单元测试未通过（vitest exit ${res.status}），先修测试再谈警告：`)
+  const failLines = output
+    .split('\n')
+    .filter((l) => /FAIL|×|failed \(/.test(l))
+    .slice(0, 20)
+  if (failLines.length) console.error(failLines.join('\n'))
+  process.exit(1)
+}
+for (const line of output.split('\n')) {
+  if (/^\s*(Test Files|Tests|Duration)\s+/.test(line)) console.log(`[vitest] ${line.trim()}`)
+}
+
 const counts = {}
 for (const line of output.split('\n')) {
   const kind = classify(line)

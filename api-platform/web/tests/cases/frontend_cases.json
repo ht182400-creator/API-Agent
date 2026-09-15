@@ -17,7 +17,7 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 14,
+      "specFiles": 16,
       "cases": 144,
       "covered": [
         "src/config/permissions.ts",
@@ -422,10 +422,11 @@
         "src/pages/admin/DevTools.tsx (133)"
       ],
       "why": "一般业务页面：数据加载 + 表单/表格，模式相近，可复用同一套测试骨架",
-      "status": "planned",
+      "status": "partial",
+      "specFile": "src/pages/misc/MiscPages.spec.tsx",
       "cases": [
         { "id": "TC-FE-ADMINMISC-001", "name": "页面首屏加载成功（列表/统计渲染）", "status": "planned" },
-        { "id": "TC-FE-ADMINMISC-002", "name": "接口报错不白屏", "status": "planned" },
+        { "id": "TC-FE-ADMINMISC-002", "name": "接口报错不白屏（8 页参数化，api 全挂骨架仍在）", "status": "done" },
         { "id": "TC-FE-ADMINMISC-003", "name": "关键操作调用预期接口", "status": "planned" }
       ]
     },
@@ -448,10 +449,11 @@
         "src/pages/superadmin/SuperAdminRoles.tsx (237)"
       ],
       "why": "其余角色页面：数据加载与展示为主",
-      "status": "planned",
+      "status": "partial",
+      "specFile": "src/pages/misc/MiscPages.spec.tsx",
       "cases": [
         { "id": "TC-FE-DEVMISC-001", "name": "首屏渲染不崩 + 数据源被调用", "status": "planned" },
-        { "id": "TC-FE-DEVMISC-002", "name": "报错不白屏", "status": "planned" }
+        { "id": "TC-FE-DEVMISC-002", "name": "报错不白屏（13 页参数化，api 全挂骨架仍在）", "status": "done" }
       ]
     },
     {
@@ -470,10 +472,11 @@
         "src/main.tsx (28)"
       ],
       "why": "展示层/小组件：状态简单，优先级最低；App.tsx 的路由守卫值得单独补",
-      "status": "planned",
+      "status": "partial",
+      "specFile": "src/App.spec.tsx",
       "cases": [
-        { "id": "TC-FE-UI-001", "name": "按 props 渲染（含空数据/边界）", "status": "planned" },
-        { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录访问受保护路由被重定向", "status": "planned" }
+        { "id": "TC-FE-UI-001", "name": "未登录访问任意路径 → 兜底重定向 /login（defaultPath 链路）", "status": "done" },
+        { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录 → /login；developer 访问 /admin → 按角色重定向", "status": "done" }
       ]
     },
     {

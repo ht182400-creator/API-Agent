@@ -252,9 +252,9 @@ export default function UserDashboard() {
         </Paragraph>
       </div>
 
-      {/* 试用金额卡片 */}
+      {/* 试用金额卡片（⚠️ `bordered` 在 antd v5 已废弃：false → variant="borderless"，与 Login.tsx 同款修法） */}
       {!userStatus?.trial_claimed && (
-        <Card className={styles.trialCard} bordered={false}>
+        <Card className={styles.trialCard} variant="borderless">
           <Row gutter={[24, 24]} align="middle">
             <Col xs={24} md={16}>
               <div className={styles.trialInfo}>
