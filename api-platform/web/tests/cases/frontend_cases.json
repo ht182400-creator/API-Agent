@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 24,
-      "cases": 217,
+      "specFiles": 27,
+      "cases": 231,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 224 tests − 7 条用例库自检 = **217 条组件用例**；specFiles=24 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 25 个文件）。剩 P2/P3 与 UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 238 tests − 7 条用例库自检 = **231 条组件用例**；specFiles=27 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 28 个文件）。剩：FE-ADMIN-ADMINLOGS / FE-ADMIN-MISC-001,003 / FE-DEV-MISC-001 / UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -350,12 +350,14 @@
       "level": "P2",
       "file": "src/pages/developer/Logs.tsx",
       "lines": 376,
-      "why": "调用日志查询；筛选条件组合多",
-      "status": "planned",
+      "why": "调用日志查询（排障入口）：状态码→文案/颜色、耗时→分档、筛选参数组合。🔑「全部 Keys」必须转成 undefined（不能把字符串 'all' 传给后端），且任一筛选变化要重置到第 1 页",
+      "status": "covered",
       "specFile": "src/pages/developer/Logs.spec.tsx",
       "cases": [
-        { "id": "TC-FE-DEVLOGS-001", "name": "默认查询与分页", "status": "planned" },
-        { "id": "TC-FE-DEVLOGS-002", "name": "状态码/时间范围筛选参数传递", "status": "planned" }
+        { "id": "TC-FE-DEVLOGS-001", "name": "默认查询与分页参数；列表字段派生（空仓库名→未知、超 30 字符路径截断、无 request_id 降级用记录 id、IP 空→-）", "status": "done" },
+        { "id": "TC-FE-DEVLOGS-002", "name": "状态码 2xx/4xx/5xx/缺省的文案；耗时 0.5s/1s/2s 分档", "status": "done" },
+        { "id": "TC-FE-DEVLOGS-003", "name": "筛选参数传递：选 Key 传 key_id、「全部 Keys」传 undefined、日期传区间；清除筛选全部复原（均重置到第 1 页）", "status": "done" },
+        { "id": "TC-FE-DEVLOGS-004", "name": "切换每页条数带新 page_size 重查；无数据时给空态引导文案", "status": "done" }
       ]
     },
     {
@@ -363,12 +365,15 @@
       "level": "P2",
       "file": "src/pages/developer/CreateRepo.tsx",
       "lines": 334,
-      "why": "创建仓库表单（含 endpoint_url 校验提示）",
-      "status": "planned",
+      "why": "创建仓库表单（含 endpoint_url 校验提示）。🔑 管理员与非管理员的提示/按钮/跳转目标不同（直接上线→/admin/repos vs 提交审核→/developer/repos）；图标上传有两道硬限制（仅图片、≤200KB）。⚠️ 同一个 file input 连续两次 change 不会二次触发 beforeUpload（rc-upload 内部状态），用例须分开渲染",
+      "status": "covered",
       "specFile": "src/pages/developer/CreateRepo.spec.tsx",
       "cases": [
-        { "id": "TC-FE-CREATEREPO-001", "name": "必填与格式校验", "status": "planned" },
-        { "id": "TC-FE-CREATEREPO-002", "name": "提交成功提示与跳转", "status": "planned" }
+        { "id": "TC-FE-CREATEREPO-001", "name": "空提交三条必填拦截；名称长度/字符集规则；端点 URL 格式规则（均不发请求）", "status": "done" },
+        { "id": "TC-FE-CREATEREPO-002", "name": "非管理员：审核须知 + 「提交审核」，成功后跳 /developer/repos；默认 protocol/repo_type 原样提交", "status": "done" },
+        { "id": "TC-FE-CREATEREPO-003", "name": "管理员：管理员提示 + 「创建并上线」，成功后跳 /admin/repos", "status": "done" },
+        { "id": "TC-FE-CREATEREPO-004", "name": "后端 detail 优先展示错误、停留本页可重试", "status": "done" },
+        { "id": "TC-FE-CREATEREPO-005", "name": "图标上传限制：非图片 / 超 200KB 均当场拒绝", "status": "done" }
       ]
     },
     {
@@ -376,12 +381,15 @@
       "level": "P2",
       "file": "src/pages/developer/RepoDetail.tsx",
       "lines": 583,
-      "why": "仓库详情（端点/限流/价格只读展示）",
-      "status": "planned",
+      "why": "仓库详情（端点/限流/价格只读展示）：接入方看的第一手资料，展示错会导致按错误价格/限制调用。🔑 limits 缺失回退 1000/10000/100000；价格精度（每次调用 toFixed(4)、每 Token toFixed(6)）；单端点时调用指南 defaultActiveKey 自动展开",
+      "status": "covered",
       "specFile": "src/pages/developer/RepoDetail.spec.tsx",
       "cases": [
-        { "id": "TC-FE-REPODETAIL-001", "name": "加载到数据渲染各区块", "status": "planned" },
-        { "id": "TC-FE-REPODETAIL-002", "name": "仓库不存在 → 友好提示", "status": "planned" }
+        { "id": "TC-FE-REPODETAIL-001", "name": "基本信息：面包屑/标题/状态/协议/文档入口/描述/SLA（可用性与 P99）", "status": "done" },
+        { "id": "TC-FE-REPODETAIL-002", "name": "统计与限流：limits 存在用真实值并展示突发/并发/超时；缺失回退 1000/10000/100000 且不渲染可选项", "status": "done" },
+        { "id": "TC-FE-REPODETAIL-003", "name": "定价：计费模式映射 + 金额精度（每次调用 4 位小数）+ 免费额度；未提供字段不渲染", "status": "done" },
+        { "id": "TC-FE-REPODETAIL-004", "name": "端点列表：描述/分类空值降级为 -；无端点给空态；单端点时调用指南自动展开（地址/请求头/Curl/JS 示例）", "status": "done" },
+        { "id": "TC-FE-REPODETAIL-005", "name": "仓库不存在：后端返回空或请求失败都给友好提示，不白屏", "status": "done" }
       ]
     },
     {

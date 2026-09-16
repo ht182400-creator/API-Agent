@@ -1,0 +1,770 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/CreateRepo.spec.tsx
+[20260917 00:51:18.641] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577478641_6vy0igjlx"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577478641_6vy0igjlx'
+}
+
+stdout | src/pages/developer/Logs.spec.tsx
+[20260917 00:51:18.862] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577478862_pucwj0opr"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577478862_pucwj0opr'
+}
+
+node.exe : stderr | src/pages/developer/Logs.spec.tsx > 默认查询与列表派生文案（TC-FE-DEVLOGS-001） > TC-FE-DEVLOGS-001: 默认分页参数正确；列表
+字段按规则渲染（含截断与降级）
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...字段按规则渲染（含截断与降级）:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the el
+ement you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Cell\index.js:44:33)
+    at tr
+    at BodyRow (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Body\BodyRow.js:95:33)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:76:7)
+    at tbody
+    at Body (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Body\index.js:23:33)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:76:7)
+    at table
+    at div
+    at div
+    at div
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at Provider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\context.js:21:22)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Table.js:131:28)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:42:34)
+    at div
+    at div
+    at Spin (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\spin\index.js:35:18)
+    at div
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperLogs (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Logs.tsx:24:46)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+stderr | src/pages/developer/Logs.spec.tsx > 状态码与响应耗时分档（TC-FE-DEVLOGS-002） > TC-FE-DEVLOGS-002: 2xx/4xx/5xx 与缺省各有对应文案；耗
+时按 0.5s/1s/2s 分档
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Logs.spec.tsx > 筛选参数传递（TC-FE-DEVLOGS-003） > TC-FE-DEVLOGS-003: 选 Key 传 key_id；「全部 Keys」传 u
+ndefined；日期传区间；清除筛选复原
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Logs.spec.tsx > 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引
+导文案
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Logs.spec.tsx > 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引
+导文案
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/developer/Logs.spec.tsx (4 tests | 1 failed) 2087ms
+   ✓ 默认查询与列表派生文案（TC-FE-DEVLOGS-001） > TC-FE-DEVLOGS-001: 默认分页参数正确；列表字段按规则渲染（含截断与降级） 1028ms
+   ✓ 状态码与响应耗时分档（TC-FE-DEVLOGS-002） > TC-FE-DEVLOGS-002: 2xx/4xx/5xx 与缺省各有对应文案；耗时按 0.5s/1s/2s 分档 336ms
+   × 筛选参数传递（TC-FE-DEVLOGS-003） > TC-FE-DEVLOGS-003: 选 Key 传 key_id；「全部 Keys」传 undefined；日期传区间；清除筛选复原 308ms
+     → Found multiple elements with the text: 生产应用
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-select-selection-item"[39m
+  [33mtitle[39m=[32m"生产应用"[39m
+[36m>[39m
+  [0m生产应用[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"ant-select-item-option-content"[39m
+[36m>[39m
+  [0m生产应用[0m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_76a215 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_76a215"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m调用日志[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ant-btn-icon"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"reload"[39m
+                  [33mclass[39m=[32m"anticon anticon-reload"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"reload"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M909.1 209.3l-56.4 44.1C775.8 155.1 656.2 92 521.9 92 290 92 102.3 279.5 102 511.5 101.7 743.7 289.8 932 521.9 932c181.3 0 335.8-115 394.6-276.1 1.5-4.2-.7-8.9-4.9-10.3l-56.7-19.5a8 8 0 00-10.1 4.8c-1.8 5-3.8 10-5.9 14.9-17.3 41-42.1 77.8-73.7 109.4A344.77 344.77 0 01655.9 829c-42.3 17.9-87.4 27-133.8 27-46.5 0-91.5-9.1-133.8-27A341.5 341.5 0 01279 755.2a342.16 342.16 0 01-73.7-109.4c-17.9-42.4-27-87.4-27-133.9s9.1-91.5 27-133.9c17.3-41 42.1-77.8 73.7-109.4 31.6-31.6 68.4-56.4 109.3-73.8 42.3-17.9 87.4-27 133.8-27 46.5 0 91.5 9.1 133.8 27a341.5 341.5 0 01109.3 73.8c9.9 9.9 19.2 20.4 27.8 31.4l-60.2 47a8 8 0 003 14.1l175.6 43c5 1.2 9.9-2.6 9.9-7.7l.8-180.9c-.1-6.6-7.8-10.3-13-6.2z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0m刷新[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _filterCard_76a215 css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+            [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"filter"[39m
+                    [33mclass[39m=[32m"anticon anticon-filter"[39m
+                    [33mrole[39m=[32m"img"[39m
+                    [33mstyle[39m=[32m"color: rgb(140, 140, 140);"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"filter"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880.1 154H143.9c-24.5 0-39.8 26.7-27.5 48L349 597.4V838c0 17.7 14.2 32 31.8 32h262.4c17.6 0 31.8-14.3 31.8-32V597.4L907.7 202c12.2-21.3-3.1-48-27.6-48zM603.4 798H420.6V642h182.9v156zm9.6-236.6l-9.5 16.6h-183l-9.5-16.6L212.7 226h598.6L613 561.4z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0m筛选条件[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-single ant-select-allow-clear ant-select-show-arrow"[39m
+                [33mstyle[39m=[32m"width: 200px;"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-select-selector"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-select-selection-search"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33maria-autocomplete[39m=[32m"list"[39m
+                        [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                        [33maria-expanded[39m=[32m"false"[39m
+                        [33maria-haspopup[39m=[32m"listbox"[39m
+                        [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                        [33mautocomplete[39m=[32m"off"[39m
+                        [33mclass[39m=[32m"ant-select-selection-search...
+   ✓ 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引导文案 412ms
+ ❯ src/pages/developer/CreateRepo.spec.tsx (5 tests | 1 failed) 3771ms
+   ✓ 必填与格式校验（TC-FE-CREATEREPO-001） > TC-FE-CREATEREPO-001: 空提交被三条必填拦截；名称规则与端点 URL 格式各自拦截 1710ms
+   ✓ 非管理员提交（TC-FE-CREATEREPO-002） > TC-FE-CREATEREPO-002: 提示需审核、按钮为「提交审核」；成功后跳开发者仓库页 372ms
+   ✓ 管理员提交（TC-FE-CREATEREPO-003） > TC-FE-CREATEREPO-003: 提示直上线、按钮为「创建并上线」；成功后跳管理员仓库页 344ms
+   × 图标上传限制（TC-FE-CREATEREPO-005） > TC-FE-CREATEREPO-005: 非图片与超 200KB 都被当场拒绝 1105ms
+     → expected "spy" to be called with arguments: [ '图标大小不能超过 200KB！' ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   "图标大小不能超过 200KB！",
++   "只能上传图片文件！",
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_dc25e8 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_header_dc25e8"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"shop"[39m
+              [33mclass[39m=[32m"anticon anticon-shop"[39m
+              [33mrole[39m=[32m"img"[39m
+              [33mstyle[39m=[32m"margin-right: 8px;"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"shop"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M882 272.1V144c0-17.7-14.3-32-32-32H174c-17.7 0-32 14.3-32 32v128.1c-16.7 1-30 14.9-30 31.9v131.7a177 177 0 0014.4 70.4c4.3 10.2 9.6 19.8 15.6 28.9v345c0 17.6 14.3 32 32 32h676c17.7 0 32-14.3 32-32V535a175 175 0 0015.6-28.9c9.5-22.3 14.4-46 14.4-70.4V304c0-17-13.3-30.9-30-31.9zM214 184h596v88H214v-88zm362 656.1H448V736h128v104.1zm234 0H640V704c0-17.7-14.3-32-32-32H416c-17.7 0-32 14.3-32 32v136.1H214V597.9c2.9 1.4 5.9 2.8 9 4 22.3 9.4 46 14.1 70.4 14.1s48-4.7 70.4-14.1c13.8-5.8 26.8-13.2 38.7-22.1.2-.1.4-.1.6 0a180.4 180.4 0 0038.7 22.1c22.3 9.4 46 14.1 70.4 14.1 24.4 0 48-4.7 70.4-14.1 13.8-5.8 26.8-13.2 38.7-22.1.2-.1.4-.1.6 0a180.4 180.4 0 0038.7 22.1c22.3 9.4 46 14.1 70.4 14.1 24.4 0 48-4.7 70.4-14.1 3-1.3 6-2.6 9-4v242.2zm30-404.4c0 59.8-49 108.3-109.3 108.3-40.8 0-76.4-22.1-95.2-54.9-2.9-5-8.1-8.1-13.9-8.1h-.6c-5.7 0-11 3.1-13.9 8.1A109.24 109.24 0 01512 544c-40.7 0-76.2-22-95-54.7-3-5.1-8.4-8.3-14.3-8.3s-11.4 3.2-14.3 8.3a109.63 109.63 0 01-95.1 54.7C233 544 184 495.5 184 435.7v-91.2c0-.3.2-.5.5-.5h655c.3 0 .5.2.5.5v91.2z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m创建仓库[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [0m发布您的API服务，让更多用户使用[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-warning ant-alert-with-description css-dev-only-do-not-override-7zmxdp"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+          [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"exclamation-circle"[39m
+            [33mclass[39m=[32m"anticon anticon-exclamation-circle ant-alert-icon"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mdata-icon[39m=[32m"exclamation-circle"[39m
+              [33mfill[39m=[32m"currentColor"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"1em"[39m
+              [33mviewBox[39m=[32m"64 64 896 896"[39m
+              [33mwidth[39m=[32m"1em"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M464 688a48 48 0 1096 0 48 48 0 10-96 0zm24-112h48c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-content"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-message"[39m
+            [36m>[39m
+              [0m审核须知[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [0m您创建的仓库需要管理员审核后才会正式上线。审核通过后，您将获得API销售收入分成。[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ant-form-item-required"[39m
+                      [33mfor[39m=[32m"name"[39m
+                      [33mtitle[39m=[32m"仓库名称"[39m
+                    [36m>[39m
+                      [0m仓库名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33maria-describedby[39m=[32m"name_extra"[39m
+                          [33maria-required[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mid[39m=[32m"name"[39m
+                          [33mplaceholder[39m=[32m"例如：weather-api"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/developer/CreateRepo.spec.tsx > 图标上传限制（TC-FE-CREATEREPO-005） > TC-FE-CREATEREPO-005: 非图片与超 200KB 都被当场拒
+绝
+AssertionError: expected "spy" to be called with arguments: [ '图标大小不能超过 200KB！' ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   "图标大小不能超过 200KB！",
++   "只能上传图片文件！",
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_dc25e8 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_header_dc25e8"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"shop"[39m
+              [33mclass[39m=[32m"anticon anticon-shop"[39m
+              [33mrole[39m=[32m"img"[39m
+              [33mstyle[39m=[32m"margin-right: 8px;"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"shop"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M882 272.1V144c0-17.7-14.3-32-32-32H174c-17.7 0-32 14.3-32 32v128.1c-16.7 1-30 14.9
+-30 31.9v131.7a177 177 0 0014.4 70.4c4.3 10.2 9.6 19.8 15.6 28.9v345c0 17.6 14.3 32 32 32h676c17.7 0 32-14.3 32-32V535a
+175 175 0 0015.6-28.9c9.5-22.3 14.4-46 14.4-70.4V304c0-17-13.3-30.9-30-31.9zM214 184h596v88H214v-88zm362 656.1H448V736h
+128v104.1zm234 0H640V704c0-17.7-14.3-32-32-32H416c-17.7 0-32 14.3-32 32v136.1H214V597.9c2.9 1.4 5.9 2.8 9 4 22.3 9.4 46
+ 14.1 70.4 14.1s48-4.7 70.4-14.1c13.8-5.8 26.8-13.2 38.7-22.1.2-.1.4-.1.6 0a180.4 180.4 0 0038.7 22.1c22.3 9.4 46 14.1 
+70.4 14.1 24.4 0 48-4.7 70.4-14.1 13.8-5.8 26.8-13.2 38.7-22.1.2-.1.4-.1.6 0a180.4 180.4 0 0038.7 22.1c22.3 9.4 46 14.1
+ 70.4 14.1 24.4 0 48-4.7 70.4-14.1 3-1.3 6-2.6 9-4v242.2zm30-404.4c0 59.8-49 108.3-109.3 108.3-40.8 0-76.4-22.1-95.2-54
+.9-2.9-5-8.1-8.1-13.9-8.1h-.6c-5.7 0-11 3.1-13.9 8.1A109.24 109.24 0 01512 544c-40.7 0-76.2-22-95-54.7-3-5.1-8.4-8.3-14
+.3-8.3s-11.4 3.2-14.3 8.3a109.63 109.63 0 01-95.1 54.7C233 544 184 495.5 184 435.7v-91.2c0-.3.2-.5.5-.5h655c.3 0 .5.2.5
+.5v91.2z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m创建仓库[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [0m发布您的API服务，让更多用户使用[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-warning ant-alert-with-description css-dev-only-do-not-override-7zm
+xdp"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+          [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"exclamation-circle"[39m
+            [33mclass[39m=[32m"anticon anticon-exclamation-circle ant-alert-icon"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mdata-icon[39m=[32m"exclamation-circle"[39m
+              [33mfill[39m=[32m"currentColor"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"1em"[39m
+              [33mviewBox[39m=[32m"64 64 896 896"[39m
+              [33mwidth[39m=[32m"1em"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z
+m0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M464 688a48 48 0 1096 0 48 48 0 10-96 0zm24-112h48c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-
+8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-content"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-message"[39m
+            [36m>[39m
+              [0m审核须知[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [0m您创建的仓库需要管理员审核后才会正式上线。审核通过后，您将获得API销售收入分成。[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ant-form-item-required"[39m
+                      [33mfor[39m=[32m"name"[39m
+                      [33mtitle[39m=[32m"仓库名称"[39m
+                    [36m>[39m
+                      [0m仓库名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33maria-describedby[39m=[32m"name_extra"[39m
+                          [33maria-required[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mid[39m=[32m"name"[39m
+                          [33mplaceholder[39m=[32m"例如：weather-api"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue...
+ ❯ src/pages/developer/CreateRepo.spec.tsx:198:34
+    196|     })
+    197|     await waitFor(() =>
+    198|       expect(messageSpies.error).toHaveBeenCalledWith('图标大小不能超…
+       |                                  ^
+    199|     )
+    200| 
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/developer/Logs.spec.tsx > 筛选参数传递（TC-FE-DEVLOGS-003） > TC-FE-DEVLOGS-003: 选 Key 传 key_id；「全部 Keys」传 und
+efined；日期传区间；清除筛选复原
+TestingLibraryElementError: Found multiple elements with the text: 生产应用
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-select-selection-item"[39m
+  [33mtitle[39m=[32m"生产应用"[39m
+[36m>[39m
+  [0m生产应用[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"ant-select-item-option-content"[39m
+[36m>[39m
+  [0m生产应用[0m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_76a215 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_76a215"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m调用日志[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-cent
+er ant-space-gap-row-small ant-space-gap-col-small"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-default ant-btn-color-default a
+nt-btn-variant-outlined"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ant-btn-icon"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"reload"[39m
+                  [33mclass[39m=[32m"anticon anticon-reload"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"reload"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M909.1 209.3l-56.4 44.1C775.8 155.1 656.2 92 521.9 92 290 92 102.3 279.5 102 51
+1.5 101.7 743.7 289.8 932 521.9 932c181.3 0 335.8-115 394.6-276.1 1.5-4.2-.7-8.9-4.9-10.3l-56.7-19.5a8 8 0 00-10.1 4.8c
+-1.8 5-3.8 10-5.9 14.9-17.3 41-42.1 77.8-73.7 109.4A344.77 344.77 0 01655.9 829c-42.3 17.9-87.4 27-133.8 27-46.5 0-91.5
+-9.1-133.8-27A341.5 341.5 0 01279 755.2a342.16 342.16 0 01-73.7-109.4c-17.9-42.4-27-87.4-27-133.9s9.1-91.5 27-133.9c17.
+3-41 42.1-77.8 73.7-109.4 31.6-31.6 68.4-56.4 109.3-73.8 42.3-17.9 87.4-27 133.8-27 46.5 0 91.5 9.1 133.8 27a341.5 341.
+5 0 01109.3 73.8c9.9 9.9 19.2 20.4 27.8 31.4l-60.2 47a8 8 0 003 14.1l175.6 43c5 1.2 9.9-2.6 9.9-7.7l.8-180.9c-.1-6.6-7.
+8-10.3-13-6.2z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0m刷新[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _filterCard_76a215 css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-ce
+nter ant-space-gap-row-small ant-space-gap-col-small"[39m
+            [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-alig
+n-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"filter"[39m
+                    [33mclass[39m=[32m"anticon anticon-filter"[39m
+                    [33mrole[39m=[32m"img"[39m
+                    [33mstyle[39m=[32m"color: rgb(140, 140, 140);"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"filter"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880.1 154H143.9c-24.5 0-39.8 26.7-27.5 48L349 597.4V838c0 17.7 14.2 32 31.8 
+32h262.4c17.6 0 31.8-14.3 31.8-32V597.4L907.7 202c12.2-21.3-3.1-48-27.6-48zM603.4 798H420.6V642h182.9v156zm9.6-236.6l-9
+.5 16.6h-183l-9.5-16.6L212.7 226h598.6L613 561.4z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"
+[39m
+                  [36m>[39m
+                    [0m筛选条件[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-sin
+gle ant-select-allow-clear ant-select-show-arrow"[39m
+                [33mstyle[39m=[32m"width: 200px;"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-select-selector"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-select-selection-search"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33maria-autocomplete[39m=[32m"list"[39m
+                        [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                        [33maria-expanded[39m=[32m"false"[39m
+                        [33maria-haspopup[39m=[32m"listbox"[39m
+                        [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                        [33mautocomplete[39m=[32m"off"[39m
+                        [33mclass[39m=[32m"ant-select-selection-search...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ comboOf src/pages/developer/Logs.spec.tsx:119:21
+    117| 
+    118| function comboOf(visibleText: string): HTMLElement {
+    119|   const el = screen.getByText(visibleText).closest('.ant-select')
+       |                     ^
+    120|   const selector = el?.querySelector('.ant-select-selector')
+    121|   if (!selector) throw new Error(`未找到 Select：${visibleText}`)
+ ❯ src/pages/developer/Logs.spec.tsx:241:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 7 passed (9)
+   Start at  00:51:13
+   Duration  9.30s (transform 434ms, setup 425ms, collect 7.78s, tests 5.86s, environment 1.77s, prepare 298ms)
+

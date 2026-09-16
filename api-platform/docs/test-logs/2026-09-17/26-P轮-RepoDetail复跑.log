@@ -1,0 +1,96 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/RepoDetail.spec.tsx
+[20260917 00:54:36.549] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577676549_u7env64cj"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577676549_u7env64cj'
+}
+
+node.exe : stderr | src/pages/developer/RepoDetail.spec.tsx > 基本信息与 SLA（TC-FE-REPODETAIL-001） > TC-FE-REPODETAIL-001: 面
+包屑/标题/状态/协议/文档入口/描述/SLA 均按数据渲染
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...口/描述/SLA 均按数据渲染:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-002: limits 存在
+时用真实值；缺失时回退 1000/10000/100000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-002: limits 存在
+时用真实值；缺失时回退 1000/10000/100000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-003: 定价计费模式映射与
+金额精度（每次调用 4 位小数）+ 免费额度
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无
+端点给空态；单端点时指南自动展开
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无
+端点给空态；单端点时指南自动展开
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 仓库不存在（TC-FE-REPODETAIL-005） > TC-FE-REPODETAIL-005: 后端返回空或请求失败都给友好提示
+，不白屏
+[20260917 00:54:38.376] [WEB] [ERROR] [Error] {
+  "message": "网络连接失败",
+  "stack": "Error: 网络连接失败\n    at D:\\Work_Area\\AI\\API-Agent\\api-platform\\web\\src\\pages\\developer\\RepoDetail.sp
+ec.tsx:187:46\n    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:
+5\n    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:11
+)\n    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:1
+5)\n    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:
+15)\n    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262
+:5)\n    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:12
+71:3)\n    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.
+js:126:11\n    at withEnv (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTe
+sts.3qpJUEJM.js:90:5)\n    at run (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/r
+unBaseTests.3qpJUEJM.js:112:3)"
+} {
+  message: '网络连接失败',
+  status: undefined,
+  code: undefined,
+  url: undefined,
+  method: undefined,
+  stack: 'Error: 网络连接失败\n' +
+    '    at D:\\Work_Area\\AI\\API-Agent\\api-platform\\web\\src\\pages\\developer\\RepoDetail.spec.tsx:187:46\n' +
+    '    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:5\n' +
+    '    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:
+11)\n' +
+    '    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205
+:15)\n' +
+    '    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205
+:15)\n' +
+    '    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262
+:5)\n' +
+    '    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:12
+71:3)\n' +
+    '    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js
+:126:11\n' +
+    '    at withEnv (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3q
+pJUEJM.js:90:5)\n' +
+    '    at run (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUE
+JM.js:112:3)'
+}
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/RepoDetail.spec.tsx (5 tests) 1767ms
+   ✓ 基本信息与 SLA（TC-FE-REPODETAIL-001） > TC-FE-REPODETAIL-001: 面包屑/标题/状态/协议/文档入口/描述/SLA 均按数据渲染 894ms
+   ✓ 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无端点给空态；单端点时指南自动展开 371ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:54:31
+   Duration  6.82s (transform 217ms, setup 186ms, collect 3.37s, tests 1.77s, environment 849ms, prepare 175ms)
+

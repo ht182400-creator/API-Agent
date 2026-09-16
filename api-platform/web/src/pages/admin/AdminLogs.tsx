@@ -462,7 +462,7 @@ export default function AdminLogs() {
       {stats && (
         <Row gutter={[8, 8]} className={styles.statsRow}>
           <Col xs={24} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="日志文件"
                 value={stats.total_files}
@@ -472,7 +472,7 @@ export default function AdminLogs() {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="日志总大小"
                 value={stats.total_size_formatted}
@@ -482,7 +482,7 @@ export default function AdminLogs() {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="备份文件"
                 value={stats.backup_count}
@@ -492,7 +492,7 @@ export default function AdminLogs() {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card size="small" bodyStyle={{ padding: 12 }}>
+            <Card size="small" styles={{ body: { padding: 12 } }}>
               <Statistic
                 title="备份总大小"
                 value={stats.backup_size_formatted}
@@ -548,7 +548,7 @@ export default function AdminLogs() {
           // 移动端：卡片列表
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {files.map((file) => (
-              <Card key={file.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+              <Card key={file.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <FileTextOutlined style={{ fontSize: 18, color: '#1890ff' }} />
                   <Text strong style={{ fontSize: 14 }}>{file.name}</Text>
@@ -588,7 +588,7 @@ export default function AdminLogs() {
           // 移动端：卡片列表
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {backups.map((backup) => (
-              <Card key={backup.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+              <Card key={backup.name} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                 <Text copyable={{ text: backup.name }} style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>{backup.name}</Text>
                 <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
                   <div>大小：{backup.size_formatted}</div>

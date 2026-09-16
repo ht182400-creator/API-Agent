@@ -1,0 +1,121 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/CreateRepo.spec.tsx
+[20260917 00:52:42.612] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577562612_3tf9ara03"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577562612_3tf9ara03'
+}
+
+stdout | src/pages/developer/Logs.spec.tsx
+[20260917 00:52:42.724] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577562724_7mg0rav8l"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577562724_7mg0rav8l'
+}
+
+node.exe : stderr | src/pages/developer/Logs.spec.tsx > 默认查询与列表派生文案（TC-FE-DEVLOGS-001） > TC-FE-DEVLOGS-001: 默认分页参数正确；列表
+字段按规则渲染（含截断与降级）
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...字段按规则渲染（含截断与降级）:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the el
+ement you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Cell\index.js:44:33)
+    at tr
+    at BodyRow (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Body\BodyRow.js:95:33)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:76:7)
+    at tbody
+    at Body (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Body\index.js:23:33)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:76:7)
+    at table
+    at div
+    at div
+    at div
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at Provider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\context.js:21:22)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-table\lib\Table.js:131:28)
+    at ImmutableComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\context\lib\Immutable.
+js:42:34)
+    at div
+    at div
+    at Spin (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\spin\index.js:35:18)
+    at div
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperLogs (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Logs.tsx:24:46)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+stderr | src/pages/developer/Logs.spec.tsx > 状态码与响应耗时分档（TC-FE-DEVLOGS-002） > TC-FE-DEVLOGS-002: 2xx/4xx/5xx 与缺省各有对应文案；耗
+时按 0.5s/1s/2s 分档
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Logs.spec.tsx > 筛选参数传递（TC-FE-DEVLOGS-003） > TC-FE-DEVLOGS-003: 选 Key 传 key_id；「全部 Keys」传 u
+ndefined；日期传区间；清除筛选复原
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/CreateRepo.spec.tsx (5 tests) 2799ms
+   ✓ 必填与格式校验（TC-FE-CREATEREPO-001） > TC-FE-CREATEREPO-001: 空提交被三条必填拦截；名称规则与端点 URL 格式各自拦截 1639ms
+   ✓ 非管理员提交（TC-FE-CREATEREPO-002） > TC-FE-CREATEREPO-002: 提示需审核、按钮为「提交审核」；成功后跳开发者仓库页 358ms
+   ✓ 管理员提交（TC-FE-CREATEREPO-003） > TC-FE-CREATEREPO-003: 提示直上线、按钮为「创建并上线」；成功后跳管理员仓库页 321ms
+stderr | src/pages/developer/Logs.spec.tsx > 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引
+导文案
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Logs.spec.tsx > 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引
+导文案
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Logs.spec.tsx (4 tests) 3313ms
+   ✓ 默认查询与列表派生文案（TC-FE-DEVLOGS-001） > TC-FE-DEVLOGS-001: 默认分页参数正确；列表字段按规则渲染（含截断与降级） 920ms
+   ✓ 状态码与响应耗时分档（TC-FE-DEVLOGS-002） > TC-FE-DEVLOGS-002: 2xx/4xx/5xx 与缺省各有对应文案；耗时按 0.5s/1s/2s 分档 364ms
+   ✓ 筛选参数传递（TC-FE-DEVLOGS-003） > TC-FE-DEVLOGS-003: 选 Key 传 key_id；「全部 Keys」传 undefined；日期传区间；清除筛选复原 1561ms
+   ✓ 分页与空态（TC-FE-DEVLOGS-004） > TC-FE-DEVLOGS-004: 切换每页条数带新 page_size 重查；无数据时给引导文案 462ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  00:52:37
+   Duration  8.46s (transform 299ms, setup 389ms, collect 6.75s, tests 6.11s, environment 1.85s, prepare 303ms)
+

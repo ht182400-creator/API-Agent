@@ -11,7 +11,7 @@
  * ⚠️ 第 ④ 块的折线图与「概览」「趋势分析」Tab 的写法高度重复，
  *    连同 `buildRepoTrendChartData` 一起，后续可提为共用的 `TrendChart`。
  *
- * ✅ 已清理：`bodyStyle={{ padding: 12 }}` 已改为 `styles={{ body: { padding: 12 } }}`
+ * ✅ 已清理：`styles={{ body: { padding: 12 } }}` 已改为 `styles={{ body: { padding: 12 } }}`
  *    （antd v5 已废弃 `bodyStyle`，控制台会提示改用 `styles.body`）。视觉表现不变。
  */
 import {

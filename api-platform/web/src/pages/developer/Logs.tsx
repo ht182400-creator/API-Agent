@@ -294,7 +294,7 @@ export default function DeveloperLogs() {
                     key={log.id}
                     size="small"
                     style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                    bodyStyle={{ padding: 12 }}
+                    styles={{ body: { padding: 12 } }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                       <ApiOutlined style={{ fontSize: 18, color: '#1890ff' }} />

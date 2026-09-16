@@ -377,7 +377,7 @@ export default function RepoDetail() {
       {/* 统计信息 */}
       <Row gutter={[8, 8]} className={styles.statsRow}>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small" bodyStyle={{ padding: 12 }}>
+          <Card size="small" styles={{ body: { padding: 12 } }}>
             <Statistic
               title="API端点"
               value={repo.endpoints?.length || 0}
@@ -387,7 +387,7 @@ export default function RepoDetail() {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small" bodyStyle={{ padding: 12 }}>
+          <Card size="small" styles={{ body: { padding: 12 } }}>
             <Statistic
               title="每分钟限制"
               value={repo.limits?.rpm || 1000}
@@ -398,7 +398,7 @@ export default function RepoDetail() {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small" bodyStyle={{ padding: 12 }}>
+          <Card size="small" styles={{ body: { padding: 12 } }}>
             <Statistic
               title="每小时限制"
               value={repo.limits?.rph || 10000}
@@ -409,7 +409,7 @@ export default function RepoDetail() {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small" bodyStyle={{ padding: 12 }}>
+          <Card size="small" styles={{ body: { padding: 12 } }}>
             <Statistic
               title="每日限制"
               value={repo.limits?.daily || 100000}
@@ -441,7 +441,7 @@ export default function RepoDetail() {
                 // 移动端：卡片列表
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {repo.endpoints.map((endpoint) => (
-                    <Card key={`${endpoint.method}-${endpoint.path}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                    <Card key={`${endpoint.method}-${endpoint.path}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         <Tag color={getMethodColor(endpoint.method)} style={{ marginInlineEnd: 0 }}>{endpoint.method}</Tag>
                         <Text code style={{ fontSize: 12 }}>{endpoint.path}</Text>

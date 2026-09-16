@@ -291,7 +291,7 @@ const Usage: React.FC = () => {
                   const totalCalls = usageData?.call_count || 1
                   const percent = (repo.call_count / totalCalls) * 100
                   return (
-                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                         <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name || '未知'}</Tag>
                         <Tag icon={BILLING_MODEL_CONFIG[repo.billing_model || 'per_call'].icon}

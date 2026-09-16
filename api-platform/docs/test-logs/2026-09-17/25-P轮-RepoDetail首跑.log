@@ -1,0 +1,790 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/RepoDetail.spec.tsx
+[20260917 00:53:59.931] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577639931_5bukxaggx"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577639931_5bukxaggx'
+}
+
+node.exe : stderr | src/pages/developer/RepoDetail.spec.tsx > 基本信息与 SLA（TC-FE-REPODETAIL-001） > TC-FE-REPODETAIL-001: 面
+包屑/标题/状态/协议/文档入口/描述/SLA 均按数据渲染
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...口/描述/SLA 均按数据渲染:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-002: limits 存在
+时用真实值；缺失时回退 1000/10000/100000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-002: limits 存在
+时用真实值；缺失时回退 1000/10000/100000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 统计 / 限流 / 定价（TC-FE-REPODETAIL-002） > TC-FE-REPODETAIL-003: 定价计费模式映射与
+金额精度（每次调用 4 位小数）+ 免费额度
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无
+端点给空态；单端点时指南自动展开
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/RepoDetail.spec.tsx > 仓库不存在（TC-FE-REPODETAIL-005） > TC-FE-REPODETAIL-005: 后端返回空或请求失败都给友好提示
+，不白屏
+[20260917 00:54:01.335] [WEB] [ERROR] [Error] {
+  "message": "网络连接失败",
+  "stack": "Error: 网络连接失败\n    at D:\\Work_Area\\AI\\API-Agent\\api-platform\\web\\src\\pages\\developer\\RepoDetail.sp
+ec.tsx:186:46\n    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:
+5\n    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:11
+)\n    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:1
+5)\n    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:
+15)\n    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262
+:5)\n    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:12
+71:3)\n    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.
+js:126:11\n    at withEnv (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTe
+sts.3qpJUEJM.js:90:5)\n    at run (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/r
+unBaseTests.3qpJUEJM.js:112:3)"
+} {
+  message: '网络连接失败',
+  status: undefined,
+  code: undefined,
+  url: undefined,
+  method: undefined,
+  stack: 'Error: 网络连接失败\n' +
+    '    at D:\\Work_Area\\AI\\API-Agent\\api-platform\\web\\src\\pages\\developer\\RepoDetail.spec.tsx:186:46\n' +
+    '    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:5\n' +
+    '    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:
+11)\n' +
+    '    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205
+:15)\n' +
+    '    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205
+:15)\n' +
+    '    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262
+:5)\n' +
+    '    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:12
+71:3)\n' +
+    '    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js
+:126:11\n' +
+    '    at withEnv (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3q
+pJUEJM.js:90:5)\n' +
+    '    at run (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUE
+JM.js:112:3)'
+}
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/developer/RepoDetail.spec.tsx (5 tests | 2 failed) 1349ms
+   × 基本信息与 SLA（TC-FE-REPODETAIL-001） > TC-FE-REPODETAIL-001: 面包屑/标题/状态/协议/文档入口/描述/SLA 均按数据渲染 710ms
+     → Found multiple elements with the text: HTTP
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+[36m>[39m
+  [0mHTTP[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-descriptions-item-content"[39m
+[36m>[39m
+  [0mHTTP[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_7296d7 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<nav[39m
+        [33mclass[39m=[32m"ant-breadcrumb css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-bottom: 16px;"[39m
+      [36m>[39m
+        [36m<ol>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mhref[39m=[32m"/developer/repos"[39m
+              [36m>[39m
+                [0m仓库市场[0m
+              [36m</a>[39m
+            [36m</span>[39m
+          [36m</li>[39m
+          [36m<li[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ant-breadcrumb-separator"[39m
+          [36m>[39m
+            [0m/[0m
+          [36m</li>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [0m天气查询API[0m
+            [36m</span>[39m
+          [36m</li>[39m
+        [36m</ol>[39m
+      [36m</nav>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _basicInfoCard_7296d7 css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row ant-row-middle css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -12px; margin-right: -12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 0 0 auto;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mstyle[39m=[32m"width: 64px; height: 64px; border-radius: 12.8px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.125), rgba(16, 185, 129, 0.208)); color: rgb(16, 185, 129); font-size: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px #10b98130;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"robot"[39m
+                  [33mclass[39m=[32m"anticon anticon-robot"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"robot"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M300 328a60 60 0 10120 0 60 60 0 10-120 0zM852 64H172c-17.7 0-32 14.3-32 32v660c0 17.7 14.3 32 32 32h680c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-32 660H204V128h616v596zM604 328a60 60 0 10120 0 60 60 0 10-120 0zm250.2 556H169.8c-16.5 0-29.8 14.3-29.8 32v36c0 4.4 3.3 8 7.4 8h729.1c4.1 0 7.4-3.6 7.4-8v-36c.1-17.7-13.2-32-29.7-32zM664 508H360c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h304c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 1 1 auto;"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+                [33mstyle[39m=[32m"margin-bottom: 8px;"[39m
+              [36m>[39m
+                [0m天气查询API[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-large ant-space-gap-col-large"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag ant-tag-green css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0m已上线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0mai[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0mHTTP[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-link ant-btn-color-link ant-btn-variant-link"[39m
+                    [33mhref[39m=[32m"https://docs.example.com"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                    [33mtarget[39m=[32m"_blank"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-btn-icon"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33maria-label[39m=[32m"api"[39m
+                        [33mclass[39m=[32m"anticon anticon-api"[39m
+                        [33mrole[39m=[32m"img"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mdata-icon[39m=[32m"api"[39m
+                          [33mfill[39m=[32m"currentColor"[39m
+                          [33...
+   × 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无端点给空态；单端点时指南自动展开 127ms
+     → Found multiple elements with the text: /v1/chat/completions
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<code>[39m
+  [0m/v1/chat/completions[0m
+[36m</code>[39m
+
+Ignored nodes: comments, script, style
+[36m<code>[39m
+  [0m/v1/chat/completions[0m
+[36m</code>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_7296d7 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<nav[39m
+        [33mclass[39m=[32m"ant-breadcrumb css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-bottom: 16px;"[39m
+      [36m>[39m
+        [36m<ol>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mhref[39m=[32m"/developer/repos"[39m
+              [36m>[39m
+                [0m仓库市场[0m
+              [36m</a>[39m
+            [36m</span>[39m
+          [36m</li>[39m
+          [36m<li[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ant-breadcrumb-separator"[39m
+          [36m>[39m
+            [0m/[0m
+          [36m</li>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [0m天气查询API[0m
+            [36m</span>[39m
+          [36m</li>[39m
+        [36m</ol>[39m
+      [36m</nav>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _basicInfoCard_7296d7 css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row ant-row-middle css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -12px; margin-right: -12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 0 0 auto;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mstyle[39m=[32m"width: 64px; height: 64px; border-radius: 12.8px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.125), rgba(16, 185, 129, 0.208)); color: rgb(16, 185, 129); font-size: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px #10b98130;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"robot"[39m
+                  [33mclass[39m=[32m"anticon anticon-robot"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"robot"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M300 328a60 60 0 10120 0 60 60 0 10-120 0zM852 64H172c-17.7 0-32 14.3-32 32v660c0 17.7 14.3 32 32 32h680c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-32 660H204V128h616v596zM604 328a60 60 0 10120 0 60 60 0 10-120 0zm250.2 556H169.8c-16.5 0-29.8 14.3-29.8 32v36c0 4.4 3.3 8 7.4 8h729.1c4.1 0 7.4-3.6 7.4-8v-36c.1-17.7-13.2-32-29.7-32zM664 508H360c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h304c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 1 1 auto;"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+                [33mstyle[39m=[32m"margin-bottom: 8px;"[39m
+              [36m>[39m
+                [0m天气查询API[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-large ant-space-gap-col-large"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag ant-tag-green css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0m已上线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0mai[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0mHTTP[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-link ant-btn-color-link ant-btn-variant-link"[39m
+                    [33mhref[39m=[32m"https://docs.example.com"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                    [33mtarget[39m=[32m"_blank"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-btn-icon"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33maria-label[39m=[32m"api"[39m
+                        [33mclass[39m=[32m"anticon anticon-api"[39m
+                        [33mrole[39m=[32m"img"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mdata-icon[39m=[32m"api"[39m
+                          [33mfill[39m=[32m"currentColor"[39m
+                          [33...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/developer/RepoDetail.spec.tsx > 基本信息与 SLA（TC-FE-REPODETAIL-001） > TC-FE-REPODETAIL-001: 面包屑/标题/状态/协议/文
+档入口/描述/SLA 均按数据渲染
+TestingLibraryElementError: Found multiple elements with the text: HTTP
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"[39m
+[36m>[39m
+  [0mHTTP[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-descriptions-item-content"[39m
+[36m>[39m
+  [0mHTTP[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_7296d7 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<nav[39m
+        [33mclass[39m=[32m"ant-breadcrumb css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-bottom: 16px;"[39m
+      [36m>[39m
+        [36m<ol>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mhref[39m=[32m"/developer/repos"[39m
+              [36m>[39m
+                [0m仓库市场[0m
+              [36m</a>[39m
+            [36m</span>[39m
+          [36m</li>[39m
+          [36m<li[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ant-breadcrumb-separator"[39m
+          [36m>[39m
+            [0m/[0m
+          [36m</li>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [0m天气查询API[0m
+            [36m</span>[39m
+          [36m</li>[39m
+        [36m</ol>[39m
+      [36m</nav>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _basicInfoCard_7296d7 css-dev-only-do-not-override-7zmxdp"[39
+m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row ant-row-middle css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -12px; margin-right: -12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 0 0 auto;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mstyle[39m=[32m"width: 64px; height: 64px; border-radius: 12.8px; background: linear-gradient(135
+deg, rgba(16, 185, 129, 0.125), rgba(16, 185, 129, 0.208)); color: rgb(16, 185, 129); font-size: 32px; display: flex; a
+lign-items: center; justify-content: center; box-shadow: 0 2px 8px #10b98130;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"robot"[39m
+                  [33mclass[39m=[32m"anticon anticon-robot"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"robot"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M300 328a60 60 0 10120 0 60 60 0 10-120 0zM852 64H172c-17.7 0-32 14.3-32 32v660
+c0 17.7 14.3 32 32 32h680c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-32 660H204V128h616v596zM604 328a60 60 0 10120 
+0 60 60 0 10-120 0zm250.2 556H169.8c-16.5 0-29.8 14.3-29.8 32v36c0 4.4 3.3 8 7.4 8h729.1c4.1 0 7.4-3.6 7.4-8v-36c.1-17.
+7-13.2-32-29.7-32zM664 508H360c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h304c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 1 1 auto;"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+                [33mstyle[39m=[32m"margin-bottom: 8px;"[39m
+              [36m>[39m
+                [0m天气查询API[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-alig
+n-center ant-space-gap-row-large ant-space-gap-col-large"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag ant-tag-green css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0m已上线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"
+[39m
+                  [36m>[39m
+                    [0mai[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"
+[39m
+                  [36m>[39m
+                    [0mHTTP[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-link ant-btn-color-link a
+nt-btn-variant-link"[39m
+                    [33mhref[39m=[32m"https://docs.example.com"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                    [33mtarget[39m=[32m"_blank"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-btn-icon"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33maria-label[39m=[32m"api"[39m
+                        [33mclass[39m=[32m"anticon anticon-api"[39m
+                        [33mrole[39m=[32m"img"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mdata-icon[39m=[32m"api"[39m
+                          [33mfill[39m=[32m"currentColor"[39m
+                          [33...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/developer/RepoDetail.spec.tsx:89:19
+     87|     // 状态与协议
+     88|     expect(screen.getByText('已上线')).toBeInTheDocument()
+     89|     expect(screen.getByText('HTTP')).toBeInTheDocument()
+       |                   ^
+     90|     // 文档入口（有 docs_url 才出现）
+     91|     const docs = screen.getByRole('link', { name: /查看API文档/ })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/developer/RepoDetail.spec.tsx > 端点列表与调用指南（TC-FE-REPODETAIL-004） > TC-FE-REPODETAIL-004: 端点表空值降级为 -；无端点
+给空态；单端点时指南自动展开
+TestingLibraryElementError: Found multiple elements with the text: /v1/chat/completions
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<code>[39m
+  [0m/v1/chat/completions[0m
+[36m</code>[39m
+
+Ignored nodes: comments, script, style
+[36m<code>[39m
+  [0m/v1/chat/completions[0m
+[36m</code>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_7296d7 bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<nav[39m
+        [33mclass[39m=[32m"ant-breadcrumb css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-bottom: 16px;"[39m
+      [36m>[39m
+        [36m<ol>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mhref[39m=[32m"/developer/repos"[39m
+              [36m>[39m
+                [0m仓库市场[0m
+              [36m</a>[39m
+            [36m</span>[39m
+          [36m</li>[39m
+          [36m<li[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"ant-breadcrumb-separator"[39m
+          [36m>[39m
+            [0m/[0m
+          [36m</li>[39m
+          [36m<li[39m
+            [33mclass[39m=[32m"ant-breadcrumb-item"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-breadcrumb-link"[39m
+            [36m>[39m
+              [0m天气查询API[0m
+            [36m</span>[39m
+          [36m</li>[39m
+        [36m</ol>[39m
+      [36m</nav>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-card ant-card-bordered _basicInfoCard_7296d7 css-dev-only-do-not-override-7zmxdp"[39
+m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card-body"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row ant-row-middle css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -12px; margin-right: -12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 0 0 auto;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mstyle[39m=[32m"width: 64px; height: 64px; border-radius: 12.8px; background: linear-gradient(135
+deg, rgba(16, 185, 129, 0.125), rgba(16, 185, 129, 0.208)); color: rgb(16, 185, 129); font-size: 32px; display: flex; a
+lign-items: center; justify-content: center; box-shadow: 0 2px 8px #10b98130;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"robot"[39m
+                  [33mclass[39m=[32m"anticon anticon-robot"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"robot"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M300 328a60 60 0 10120 0 60 60 0 10-120 0zM852 64H172c-17.7 0-32 14.3-32 32v660
+c0 17.7 14.3 32 32 32h680c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-32 660H204V128h616v596zM604 328a60 60 0 10120 
+0 60 60 0 10-120 0zm250.2 556H169.8c-16.5 0-29.8 14.3-29.8 32v36c0 4.4 3.3 8 7.4 8h729.1c4.1 0 7.4-3.6 7.4-8v-36c.1-17.
+7-13.2-32-29.7-32zM664 508H360c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h304c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 12px; padding-right: 12px; flex: 1 1 auto;"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+                [33mstyle[39m=[32m"margin-bottom: 8px;"[39m
+              [36m>[39m
+                [0m天气查询API[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-alig
+n-center ant-space-gap-row-large ant-space-gap-col-large"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag ant-tag-green css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [0m已上线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"
+[39m
+                  [36m>[39m
+                    [0mai[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-typography ant-typography-secondary css-dev-only-do-not-override-7zmxdp"
+[39m
+                  [36m>[39m
+                    [0mHTTP[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-space-item"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-7zmxdp ant-btn-link ant-btn-color-link a
+nt-btn-variant-link"[39m
+                    [33mhref[39m=[32m"https://docs.example.com"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                    [33mtarget[39m=[32m"_blank"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-btn-icon"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33maria-label[39m=[32m"api"[39m
+                        [33mclass[39m=[32m"anticon anticon-api"[39m
+                        [33mrole[39m=[32m"img"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mdata-icon[39m=[32m"api"[39m
+                          [33mfill[39m=[32m"currentColor"[39m
+                          [33...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/developer/RepoDetail.spec.tsx:145:19
+    143|     const first = renderPage()
+    144|     await screen.findByText('API端点列表')
+    145|     expect(screen.getByText('/v1/chat/completions')).toBeInTheDocument…
+       |                   ^
+    146|     expect(screen.getByText('/v1/models')).toBeInTheDocument()
+    147|     expect(screen.getByText('对话补全')).toBeInTheDocument()
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  00:53:54
+   Duration  6.73s (transform 218ms, setup 185ms, collect 3.60s, tests 1.35s, environment 965ms, prepare 116ms)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
