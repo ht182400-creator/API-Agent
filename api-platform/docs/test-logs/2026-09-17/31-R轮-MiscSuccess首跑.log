@@ -1,0 +1,1435 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx
+[20260917 01:07:29.734] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789578449733_p91cqm558"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789578449733_p91cqm558'
+}
+
+node.exe : stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） 
+> 'admin/Users'：渲染出内容
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...in/Users'：渲染出内容:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/RechargeRecords'：渲染出内容
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z'
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Re
+chargeRecords'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/RechargeRecords'：渲染出内容
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z'
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Da
+shboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Ad
+minMonthlyBills'：渲染出内容
+TypeError: __vite_ssr_import_3__.message.useMessage is not a function or its return value is not iterable
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:64:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at mountIndeterminateComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:20103:13)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21626:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: __vite_ssr_import_3__.message.useMessage is not a function or its return value is not iterable
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:64:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at mountIndeterminateComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:20103:13)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21626:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <AdminMonthlyBills> component:
+
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:38:46)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/De
+vTools（纯前端工具页）'：渲染出内容
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as
+ expected.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as
+ expected.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'develope
+r/Dashboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processTimers (node:internal/timers:538:9)
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+TypeError: quotaOverview.reduce is not a function
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:93:36)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: quotaOverview.reduce is not a function
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:93:36)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <DeveloperDashboard> component:
+
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:27:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Da
+shboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/An
+alytics'：渲染出内容
+TypeError: (weeklyData || []).map is not a function
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:132:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: (weeklyData || []).map is not a function
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:132:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <OwnerAnalytics> component:
+
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:76:55)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Se
+ttlement'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminDashboard'：渲染出内容
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+The above error occurred in the <ForwardRef(InternalTable)> component:
+
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at SuperAdminDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminDashboard.tsx:19:
+42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminUsers'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminRoles'：渲染出内容
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+The above error occurred in the <ForwardRef(InternalTable)> component:
+
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at SuperAdminRoles (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminRoles.tsx:30:51)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminSystem'：渲染出内容
+加载配置失败: TypeError: data.forEach is not a function
+    at loadConfigs (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminSystem.tsx:37:12)
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Users'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个数据源接口
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z'
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个
+数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个数据源接口
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z'
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Dashboard'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/AdminMonthlyBills'：至少调用了
+一个数据源接口
+TypeError: __vite_ssr_import_3__.message.useMessage is not a function or its return value is not iterable
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:64:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at mountIndeterminateComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:20103:13)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21626:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: __vite_ssr_import_3__.message.useMessage is not a function or its return value is not iterable
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:64:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at mountIndeterminateComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:20103:13)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21626:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <AdminMonthlyBills> component:
+
+    at AdminMonthlyBills (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\AdminMonthlyBills.tsx:38:46)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'developer/Dashboard'：至少调用了一个数据
+源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+TypeError: quotaOverview.reduce is not a function
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:93:36)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: quotaOverview.reduce is not a function
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:93:36)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <DeveloperDashboard> component:
+
+    at DeveloperDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.tsx:27:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'owner/Dashboard'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'owner/Analytics'：至少调用了一个数据源接口
+TypeError: (weeklyData || []).map is not a function
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:132:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+TypeError: (weeklyData || []).map is not a function
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:132:47)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateFunctionComponent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:19617:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21640:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+    at innerInvokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events
+\EventTarget-impl.js:360:16)
+    at invokeEventListeners (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living\events\Even
+tTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\living
+\events\EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\li
+ving\events\EventTarget-impl.js:114:17)
+The above error occurred in the <OwnerAnalytics> component:
+
+    at OwnerAnalytics (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\owner\Analytics.tsx:76:55)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'owner/Settlement'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminDashboard
+'：至少调用了一个数据源接口
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+The above error occurred in the <ForwardRef(InternalTable)> component:
+
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at SuperAdminDashboard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminDashboard.tsx:19:
+42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminUsers'：至少
+调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminRoles'：至少
+调用了一个数据源接口
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+TypeError: rawData.some is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:112:17
+    at mountMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:16406:
+19)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:1
+6851:16)
+    at Object.useMemo (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react\cjs\react.development.js:1650:21)
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:111:28)
+    at renderWithHooks (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:
+15486:18)
+    at updateForwardRef (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js
+:19245:20)
+    at beginWork (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:21675:
+16)
+    at HTMLUnknownElement.callCallback (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\li
+b\generated\idl\EventListener.js:26:30)
+The above error occurred in the <ForwardRef(InternalTable)> component:
+
+    at InternalTable (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\InternalTable.js:43:16)
+    at Table (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\table\Table.js:17:32)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at SuperAdminRoles (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminRoles.tsx:30:51)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminSystem'：至
+少调用了一个数据源接口
+加载配置失败: TypeError: data.forEach is not a function
+    at loadConfigs (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\superadmin\SuperAdminSystem.tsx:37:12)
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at listOnTimeout (node:internal/timers:567:9)
+    at processTimers (node:internal/timers:541:7)
+
+ ❯ src/pages/misc/MiscPagesSuccess.spec.tsx (40 tests | 5 failed) 6702ms
+   ✓ 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Users'：渲染出内容 436ms
+   ✓ 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Settings'：渲染出内容 364ms
+   × 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/AdminMonthlyBills'：渲染出内容 21ms
+     → message.useMessage is not a function or its return value is not iterable
+   × 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Analytics'：渲染出内容 1018ms
+     → expected 0 to be greater than 20
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m...
+   × 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadmin/SuperAdminRoles'：渲染出内容 1031ms
+     → expected 0 to be greater than 20
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m...
+   × 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Settings'：至少调用了一个数据源接口 1181ms
+     → expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_e1c879 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m系统设置[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-head-wrapper"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-head-title"[39m
+              [36m>[39m
+                [0m基础设置[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台名称"[39m
+                    [36m>[39m
+                      [0m平台名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"API Platform"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台Logo URL"[39m
+                    [36m>[39m
+                      [0m平台Logo URL[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mplaceholder[39m=[32m"https://example.com/logo.png"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"联系邮箱"[39m
+                    [36m>[39m
+                      [0m联系邮箱[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"support@platform.com"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+   ...
+   × 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/AdminMonthlyBills'：至少调用了一个数据源接口 11ms
+     → message.useMessage is not a function or its return value is not iterable
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Admi
+nMonthlyBills'：渲染出内容
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/AdminMonthlyBills'：至少调用了一个
+数据源接口
+TypeError: message.useMessage is not a function or its return value is not iterable
+ ❯ AdminMonthlyBills src/pages/admin/AdminMonthlyBills.tsx:64:47
+     62| 
+     63|   const { showError, closeError, ErrorModal: ErrorModalComponent } = u…
+     64|   const [messageApi, contextHolder] = message.useMessage()
+       |                                               ^
+     65| 
+     66|   useEffect(() => {
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Anal
+ytics'：渲染出内容
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadmin
+/SuperAdminRoles'：渲染出内容
+AssertionError: expected 0 to be greater than 20
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m...
+ ❯ src/pages/misc/MiscPagesSuccess.spec.tsx:220:71
+    218|     const { container } = renderWithProviders(el, { route })
+    219|     await waitFor(() =>
+    220|       expect((container.textContent || '').replace(/\s/g, '').length).…
+       |                                                                       ^
+    221|     )
+    222|   })
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Settings'：至少调用了一个数据源接口
+AssertionError: expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_e1c879 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m系统设置[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-head-wrapper"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-head-title"[39m
+              [36m>[39m
+                [0m基础设置[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台名称"[39m
+                    [36m>[39m
+                      [0m平台名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"API Platform"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台Logo URL"[39m
+                    [36m>[39m
+                      [0m平台Logo URL[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mplaceholder[39m=[32m"https://example.com/logo.png"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"联系邮箱"[39m
+                    [36m>[39m
+                      [0m联系邮箱[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"support@platform.com"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 8 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+   ...
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/pages/misc/MiscPagesSuccess.spec.tsx:230:49
+    228|     async ({ el, route }) => {
+    229|       renderWithProviders(el, { route })
+    230|       await waitFor(() => expect(H.anyCalled()).toBe(true))
+       |                                                 ^
+    231|     }
+    232|   )
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: quotaOverview.reduce is not a function
+ ❯ DeveloperDashboard src/pages/developer/Dashboard.tsx:93:36
+     91| 
+     92|   // 计算统计数据
+     93|   const totalQuota = quotaOverview.reduce((acc, q) => {
+       |                                    ^
+     94|     const dailyUsed = q.daily.used || 0
+     95|     const monthlyUsed = q.monthly.used || 0
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'developer/Dashboard'：渲染出内容". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: (weeklyData || []).map is not a function
+ ❯ OwnerAnalytics src/pages/owner/Analytics.tsx:132:47
+    130| 
+    131|   // 格式化周数据
+    132|   const formatWeeklyData = (weeklyData || []).map(item => ({
+       |                                               ^
+    133|     ...item,
+    134|     dateLabel: item.date.split('-').slice(1).join('/'),
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'owner/Analytics'：渲染出内容". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: rawData.some is not a function
+ ❯ node_modules/antd/lib/table/InternalTable.js:112:17
+ ❯ mountMemo node_modules/react-dom/cjs/react-dom.development.js:16406:19
+ ❯ Object.useMemo node_modules/react-dom/cjs/react-dom.development.js:16851:16
+ ❯ Object.useMemo node_modules/react/cjs/react.development.js:1650:21
+ ❯ InternalTable node_modules/antd/lib/table/InternalTable.js:111:28
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateForwardRef node_modules/react-dom/cjs/react-dom.development.js:19245:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21675:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'superadmin/SuperAdminDashboard'：渲染出内容". It might mean one of the fo
+llowing:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: rawData.some is not a function
+ ❯ node_modules/antd/lib/table/InternalTable.js:112:17
+ ❯ mountMemo node_modules/react-dom/cjs/react-dom.development.js:16406:19
+ ❯ Object.useMemo node_modules/react-dom/cjs/react-dom.development.js:16851:16
+ ❯ Object.useMemo node_modules/react/cjs/react.development.js:1650:21
+ ❯ InternalTable node_modules/antd/lib/table/InternalTable.js:111:28
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateForwardRef node_modules/react-dom/cjs/react-dom.development.js:19245:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21675:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'superadmin/SuperAdminRoles'：渲染出内容". It might mean one of the follow
+ing:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: quotaOverview.reduce is not a function
+ ❯ DeveloperDashboard src/pages/developer/Dashboard.tsx:93:36
+     91| 
+     92|   // 计算统计数据
+     93|   const totalQuota = quotaOverview.reduce((acc, q) => {
+       |                                    ^
+     94|     const dailyUsed = q.daily.used || 0
+     95|     const monthlyUsed = q.monthly.used || 0
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'developer/Dashboard'：至少调用了一个数据源接口". It might mean one of the follow
+ing:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: (weeklyData || []).map is not a function
+ ❯ OwnerAnalytics src/pages/owner/Analytics.tsx:132:47
+    130| 
+    131|   // 格式化周数据
+    132|   const formatWeeklyData = (weeklyData || []).map(item => ({
+       |                                               ^
+    133|     ...item,
+    134|     dateLabel: item.date.split('-').slice(1).join('/'),
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'owner/Analytics'：至少调用了一个数据源接口". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: rawData.some is not a function
+ ❯ node_modules/antd/lib/table/InternalTable.js:112:17
+ ❯ mountMemo node_modules/react-dom/cjs/react-dom.development.js:16406:19
+ ❯ Object.useMemo node_modules/react-dom/cjs/react-dom.development.js:16851:16
+ ❯ Object.useMemo node_modules/react/cjs/react.development.js:1650:21
+ ❯ InternalTable node_modules/antd/lib/table/InternalTable.js:111:28
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateForwardRef node_modules/react-dom/cjs/react-dom.development.js:19245:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21675:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'superadmin/SuperAdminDashboard'：至少调用了一个数据源接口". It might mean one of
+ the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+TypeError: rawData.some is not a function
+ ❯ node_modules/antd/lib/table/InternalTable.js:112:17
+ ❯ mountMemo node_modules/react-dom/cjs/react-dom.development.js:16406:19
+ ❯ Object.useMemo node_modules/react-dom/cjs/react-dom.development.js:16851:16
+ ❯ Object.useMemo node_modules/react/cjs/react.development.js:1650:21
+ ❯ InternalTable node_modules/antd/lib/table/InternalTable.js:111:28
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ updateForwardRef node_modules/react-dom/cjs/react-dom.development.js:19245:20
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21675:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+
+This error originated in "src/pages/misc/MiscPagesSuccess.spec.tsx" test file. It doesn't mean the error was thrown ins
+ide the file itself, but while it was running.
+The latest test that might've caused the error is "'superadmin/SuperAdminRoles'：至少调用了一个数据源接口". It might mean one of the
+ following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 35 passed (40)
+     Errors  8 errors
+   Start at  01:07:24
+   Duration  13.15s (transform 523ms, setup 225ms, collect 4.47s, tests 6.70s, environment 994ms, prepare 255ms)
+

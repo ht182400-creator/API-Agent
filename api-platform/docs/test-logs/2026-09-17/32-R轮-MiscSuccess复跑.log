@@ -1,0 +1,639 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx
+[20260917 01:08:40.505] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789578520505_jqek66bzm"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789578520505_jqek66bzm'
+}
+
+node.exe : stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） 
+> 'admin/Users'：渲染出内容
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...in/Users'：渲染出内容:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/RechargeRecords'：渲染出内容
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  members: [],
+  tasks: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z',
+  length: 0,
+  map: [Function: map],
+  filter: [Function: filter],
+  slice: [Function: slice],
+  concat: [Function: concat],
+  flat: [Function: flat],
+  flatMap: [Function: flatMap],
+  sort: [Function: sort],
+  reverse: [Function: reverse],
+  join: [Function: join],
+  some: [Function: some],
+  every: [Function: every],
+  find: [Function: find],
+  findIndex: [Function: findIndex],
+  indexOf: [Function: indexOf],
+  includes: [Function: includes],
+  forEach: [Function: forEach],
+  reduce: [Function: reduce],
+  reduceRight: [Function: reduceRight]
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Re
+chargeRecords'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/RechargeRecords'：渲染出内容
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  members: [],
+  tasks: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z',
+  length: 0,
+  map: [Function: map],
+  filter: [Function: filter],
+  slice: [Function: slice],
+  concat: [Function: concat],
+  flat: [Function: flat],
+  flatMap: [Function: flatMap],
+  sort: [Function: sort],
+  reverse: [Function: reverse],
+  join: [Function: join],
+  some: [Function: some],
+  every: [Function: every],
+  find: [Function: find],
+  findIndex: [Function: findIndex],
+  indexOf: [Function: indexOf],
+  includes: [Function: includes],
+  forEach: [Function: forEach],
+  reduce: [Function: reduce],
+  reduceRight: [Function: reduceRight]
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Da
+shboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Ad
+minMonthlyBills'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/De
+vTools（纯前端工具页）'：渲染出内容
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as
+ expected.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as
+ expected.
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'develope
+r/Dashboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Da
+shboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'owner/Se
+ttlement'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminDashboard'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminUsers'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminRoles'：渲染出内容
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'superadm
+in/SuperAdminSystem'：渲染出内容
+Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Users'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个数据源接口
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  members: [],
+  tasks: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z',
+  length: 0,
+  map: [Function: map],
+  filter: [Function: filter],
+  slice: [Function: slice],
+  concat: [Function: concat],
+  flat: [Function: flat],
+  flatMap: [Function: flatMap],
+  sort: [Function: sort],
+  reverse: [Function: reverse],
+  join: [Function: join],
+  some: [Function: some],
+  every: [Function: every],
+  find: [Function: find],
+  findIndex: [Function: findIndex],
+  indexOf: [Function: indexOf],
+  includes: [Function: includes],
+  forEach: [Function: forEach],
+  reduce: [Function: reduce],
+  reduceRight: [Function: reduceRight]
+}
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个
+数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+
+stdout | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/RechargeRecords'：至少调用了一个数据源接口
+API Response: {
+  items: [],
+  total: 0,
+  users: [],
+  roles: [],
+  configs: [],
+  accounts: [],
+  channels: [],
+  repos: [],
+  files: [],
+  backups: [],
+  lines: [],
+  notifications: [],
+  logs: [],
+  members: [],
+  tasks: [],
+  pagination: { page: 1, page_size: 10, total: 0, total_pages: 0 },
+  generated_at: '2026-09-17T00:00:00.000Z',
+  length: 0,
+  map: [Function: map],
+  filter: [Function: filter],
+  slice: [Function: slice],
+  concat: [Function: concat],
+  flat: [Function: flat],
+  flatMap: [Function: flatMap],
+  sort: [Function: sort],
+  reverse: [Function: reverse],
+  join: [Function: join],
+  some: [Function: some],
+  every: [Function: every],
+  find: [Function: find],
+  findIndex: [Function: findIndex],
+  indexOf: [Function: indexOf],
+  includes: [Function: includes],
+  forEach: [Function: forEach],
+  reduce: [Function: reduce],
+  reduceRight: [Function: reduceRight]
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Dashboard'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/AdminMonthlyBills'：至少调用了
+一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'developer/Dashboard'：至少调用了一个数据
+源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'owner/Dashboard'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'owner/Settlement'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminDashboard
+'：至少调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminUsers'：至少
+调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'superadmin/SuperAdminRoles'：至少
+调用了一个数据源接口
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/misc/MiscPagesSuccess.spec.tsx (40 tests | 1 failed) 5189ms
+   ✓ 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Users'：渲染出内容 441ms
+   ✓ 接口全部成功返回时的首屏渲染（TC-FE-ADMINMISC-001 / TC-FE-DEVMISC-001） > 'admin/Settings'：渲染出内容 367ms
+   × 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Settings'：至少调用了一个数据源接口 1184ms
+     → expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_e1c879 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m系统设置[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-head-wrapper"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-head-title"[39m
+              [36m>[39m
+                [0m基础设置[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台名称"[39m
+                    [36m>[39m
+                      [0m平台名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"API Platform"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台Logo URL"[39m
+                    [36m>[39m
+                      [0m平台Logo URL[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mplaceholder[39m=[32m"https://example.com/logo.png"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"联系邮箱"[39m
+                    [36m>[39m
+                      [0m联系邮箱[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"support@platform.com"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+   ...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/misc/MiscPagesSuccess.spec.tsx > 关键操作会调用预期数据源（TC-FE-ADMINMISC-003） > 'admin/Settings'：至少调用了一个数据源接口
+AssertionError: expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_e1c879 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m系统设置[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-head-wrapper"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-head-title"[39m
+              [36m>[39m
+                [0m基础设置[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台名称"[39m
+                    [36m>[39m
+                      [0m平台名称[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"API Platform"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"平台Logo URL"[39m
+                    [36m>[39m
+                      [0m平台Logo URL[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mplaceholder[39m=[32m"https://example.com/logo.png"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mtitle[39m=[32m"联系邮箱"[39m
+                    [36m>[39m
+                      [0m联系邮箱[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m"support@platform.com"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered _card_e1c879 css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-head"[39m
+          [36m>[39m
+   ...
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/pages/misc/MiscPagesSuccess.spec.tsx:267:49
+    265|     async ({ el, route }) => {
+    266|       renderWithProviders(el, { route })
+    267|       await waitFor(() => expect(H.anyCalled()).toBe(true))
+       |                                                 ^
+    268|     }
+    269|   )
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 39 passed (40)
+   Start at  01:08:35
+   Duration  11.18s (transform 516ms, setup 181ms, collect 4.20s, tests 5.19s, environment 935ms, prepare 178ms)
+

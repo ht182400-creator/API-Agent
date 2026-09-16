@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 28,
-      "cases": 236,
+      "specFiles": 29,
+      "cases": 276,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 243 tests − 7 条用例库自检 = **236 条组件用例**；specFiles=28 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 29 个文件）。剩：FE-ADMIN-MISC-001,003 / FE-DEV-MISC-001 / UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 283 tests − 7 条用例库自检 = **276 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -451,13 +451,13 @@
         "src/pages/admin/AdminMonthlyBills.tsx (481)",
         "src/pages/admin/DevTools.tsx (133)"
       ],
-      "why": "一般业务页面：数据加载 + 表单/表格，模式相近，可复用同一套测试骨架",
-      "status": "partial",
-      "specFile": "src/pages/misc/MiscPages.spec.tsx",
+      "why": "一般业务页面：数据加载 + 表单/表格，模式相近，可复用同一套测试骨架。分成两个 spec：MiscPages.spec（接口全挂不白屏）+ MiscPagesSuccess.spec（接口全部成功时渲染出内容并确实调了数据源）",
+      "status": "covered",
+      "specFile": "src/pages/misc/MiscPages.spec.tsx, src/pages/misc/MiscPagesSuccess.spec.tsx",
       "cases": [
-        { "id": "TC-FE-ADMINMISC-001", "name": "页面首屏加载成功（列表/统计渲染）", "status": "planned" },
+        { "id": "TC-FE-ADMINMISC-001", "name": "页面首屏加载成功（8 页参数化，接口全部成功返回时渲染出内容）", "status": "done" },
         { "id": "TC-FE-ADMINMISC-002", "name": "接口报错不白屏（8 页参数化，api 全挂骨架仍在）", "status": "done" },
-        { "id": "TC-FE-ADMINMISC-003", "name": "关键操作调用预期接口", "status": "planned" }
+        { "id": "TC-FE-ADMINMISC-003", "name": "关键操作调用预期接口（8 页参数化：至少调用了一个数据源接口）", "status": "done" }
       ]
     },
     {
@@ -479,10 +479,10 @@
         "src/pages/superadmin/SuperAdminRoles.tsx (237)"
       ],
       "why": "其余角色页面：数据加载与展示为主",
-      "status": "partial",
-      "specFile": "src/pages/misc/MiscPages.spec.tsx",
+      "status": "covered",
+      "specFile": "src/pages/misc/MiscPages.spec.tsx, src/pages/misc/MiscPagesSuccess.spec.tsx",
       "cases": [
-        { "id": "TC-FE-DEVMISC-001", "name": "首屏渲染不崩 + 数据源被调用", "status": "planned" },
+        { "id": "TC-FE-DEVMISC-001", "name": "首屏渲染不崩 + 数据源被调用（13 页参数化，接口全部成功返回）", "status": "done" },
         { "id": "TC-FE-DEVMISC-002", "name": "报错不白屏（13 页参数化，api 全挂骨架仍在）", "status": "done" }
       ]
     },
