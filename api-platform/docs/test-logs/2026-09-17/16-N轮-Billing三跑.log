@@ -1,0 +1,69 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Billing.spec.tsx
+[20260917 00:37:25.938] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789576645938_q2epaenct"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789576645938_q2epaenct'
+}
+
+node.exe : stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=f
+alse）必须显示「测试环境/模拟账户」，不得显示「生产环境」
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...拟账户」，不得显示「生产环境」:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-002: production 环境显示「生产环境/真实账户」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-001: 账单列表派生文案（类型/正负金额/余额/时间）且首
+屏只请求一次
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-002: 切换每页条数后带新 page_size 重新查询
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-003: 月度汇总卡片与当前月份回显
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-004: 日期筛选带参重查，且「导出」沿用同一区间
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/developer/Billing.spec.tsx (6 tests | 1 failed) 3053ms
+   ✓ 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测试环境/模拟账户」，不得显示「生产环境」 839ms
+   × 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-001: 账单列表派生文案（类型/正负金额/余额/时间）且首屏只请求一次 208ms
+     → expected "spy" to be called 1 times, but got 2 times
+   ✓ 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-003: 月度汇总卡片与当前月份回显 326ms
+   ✓ 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-004: 日期筛选带参重查，且「导出」沿用同一区间 1235ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-001: 账单列表派生文案（类型/正负金额/余额/时间）且首屏只
+请求一次
+AssertionError: expected "spy" to be called 1 times, but got 2 times
+ ❯ src/pages/developer/Billing.spec.tsx:193:33
+    191|     //      `useEffect(fetchBills, [page,pageSize,dateRange])` —— 挂载…
+    192|     //      会重复请求（本用例首跑即暴露，见轮次 N 日志）。
+    193|     expect(billingApi.getBills).toHaveBeenCalledTimes(1)
+       |                                 ^
+    194|   })
+    195| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  00:37:24
+   Duration  8.80s (transform 211ms, setup 190ms, collect 3.98s, tests 3.05s, environment 928ms, prepare 142ms)
+

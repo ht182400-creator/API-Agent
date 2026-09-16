@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 23,
-      "cases": 208,
+      "cases": 212,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 215 tests − 7 条用例库自检 = **208 条组件用例**；specFiles=23 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 24 个文件）。剩 P2/P3 与 UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 219 tests − 7 条用例库自检 = **212 条组件用例**；specFiles=23 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 24 个文件）。剩 P2/P3 与 UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -330,12 +330,14 @@
       "level": "P2",
       "file": "src/pages/developer/Billing.tsx",
       "lines": 484,
-      "why": "账单列表/统计；金额与周期文案。⚠️ 环境标签必须与顶栏徽标同源（/health billing_environment），不得用 account.mock_mode（支付模拟模式）—— 二者是不同概念，曾导致页面显示「生产环境/真实账户」而顶栏显示 SIMULATION",
+      "why": "账单列表/统计；金额与周期文案。⚠️ 环境标签必须与顶栏徽标同源（/health billing_environment），不得用 account.mock_mode（支付模拟模式）—— 二者是不同概念，曾导致页面显示「生产环境/真实账户」而顶栏显示 SIMULATION。补测另修两处：① 首屏账单被两个 effect 各拉一次（重复请求）；② 负数金额渲染成 ¥-12.50（符号在货币符号之后）应为 -¥12.50。仍未覆盖：图表绘制（recharts 在 jsdom 不实际绘制）、普通用户升级引导分支",
       "status": "partial",
       "specFile": "src/pages/developer/Billing.spec.tsx",
       "cases": [
-        { "id": "TC-FE-BILLING-001", "name": "账单列表与金额格式化", "status": "planned" },
-        { "id": "TC-FE-BILLING-002", "name": "月度周期选择回显", "status": "planned" },
+        { "id": "TC-FE-BILLING-001", "name": "账单列表派生文案（类型 Tag/正负金额/变动后余额/时间到秒/两处合计）；⚠️ 首屏只请求一次账单（曾重复请求，已修）", "status": "done" },
+        { "id": "TC-FE-BILLING-002", "name": "切换每页条数后带新 page_size 重新查询", "status": "done" },
+        { "id": "TC-FE-BILLING-003", "name": "月度汇总卡片（本月充值/消费/调用）与当前月份回显；无记录时给空态与引导", "status": "done" },
+        { "id": "TC-FE-BILLING-004", "name": "日期筛选带 start_date/end_date 重查；「导出」沿用同一区间", "status": "done" },
         { "id": "TC-FE-BILL-001", "name": "simulation 环境显示「测试环境（模拟账本）/模拟账户」，不得出现「生产环境/真实账户」", "status": "done" },
         { "id": "TC-FE-BILL-002", "name": "production 环境显示「生产环境/真实账户」", "status": "done" }
       ]

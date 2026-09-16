@@ -77,12 +77,20 @@ export default function DeveloperBilling() {
       setAccount(accountData)
       setSummary(summaryData)
       setBalanceHistory(historyData)
-      fetchBills()
     } catch (error: any) {
       showError(error, () => fetchData())
     } finally {
       setLoading(false)
     }
+  }
+
+  // ⚠️ 手动刷新必须把「概览 + 账单」都重拉：账单由下方 effect 按 [page,pageSize,dateRange]
+  //    驱动，点刷新时这些依赖没变、effect 不会重跑 → 必须显式再拉一次账单。
+  //    （原先把 fetchBills() 写在 fetchData 里 → 挂载时它与 effect 各拉一次，
+  //      首屏**重复请求账单**，实测 2 次；补测时由用例断言抓出）
+  const handleRefresh = () => {
+    fetchData()
+    fetchBills()
   }
 
   const fetchBills = async (params?: { page?: number; page_size?: number }) => {
@@ -154,7 +162,9 @@ export default function DeveloperBilling() {
       width: 120,
       render: (amount: number) => (
         <Text type={amount >= 0 ? 'success' : 'danger'} strong>
-          {amount >= 0 ? '+' : ''}¥{amount.toFixed(2)}
+          {/* ⚠️ 符号要在货币符号**之前**：原先写 `{amount>=0?'+':''}¥{amount.toFixed(2)}`，
+              负数会渲染成 `¥-12.50`（符号夹在中间）—— 补测时发现，改为 `-¥12.50` */}
+          {amount >= 0 ? '+' : '-'}¥{Math.abs(amount).toFixed(2)}
         </Text>
       ),
     },
@@ -225,7 +235,7 @@ export default function DeveloperBilling() {
           <Button icon={<PlusOutlined />} type="primary" onClick={() => navigate('/developer/recharge')}>
             充值
           </Button>
-          <Button icon={<ReloadOutlined />} onClick={fetchData}>刷新</Button>
+          <Button icon={<ReloadOutlined />} onClick={handleRefresh}>刷新</Button>
         </Space>
       </div>
 
@@ -446,11 +456,12 @@ export default function DeveloperBilling() {
           // 移动端：卡片列表
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {bills.map((bill) => (
-              <Card key={bill.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+              <Card key={bill.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   {getBillTypeTag(bill.bill_type)}
                   <Text type={bill.amount >= 0 ? 'success' : 'danger'} strong style={{ marginLeft: 'auto' }}>
-                    {bill.amount >= 0 ? '+' : ''}¥{bill.amount.toFixed(2)}
+                    {/* 同表格列：符号在前（负数显示 -¥12.50 而不是 ¥-12.50） */}
+                    {bill.amount >= 0 ? '+' : '-'}¥{Math.abs(bill.amount).toFixed(2)}
                   </Text>
                 </div>
                 <div style={{ fontSize: 12, color: '#666' }}>

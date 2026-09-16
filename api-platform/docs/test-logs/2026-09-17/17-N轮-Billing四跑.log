@@ -1,0 +1,53 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Billing.spec.tsx
+[20260917 00:38:19.437] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789576699437_w0f5qtthh"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789576699437_w0f5qtthh'
+}
+
+node.exe : stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=f
+alse）必须显示「测试环境/模拟账户」，不得显示「生产环境」
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...拟账户」，不得显示「生产环境」:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-002: production 环境显示「生产环境/真实账户」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-001: 账单列表派生文案（类型/正负金额/余额/时间）且首
+屏只请求一次
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-002: 切换每页条数后带新 page_size 重新查询
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-003: 月度汇总卡片与当前月份回显
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-004: 日期筛选带参重查，且「导出」沿用同一区间
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Billing.spec.tsx (6 tests) 3396ms
+   ✓ 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测试环境/模拟账户」，不得显示「生产环境」 907ms
+   ✓ 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-002: 切换每页条数后带新 page_size 重新查询 358ms
+   ✓ 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-003: 月度汇总卡片与当前月份回显 380ms
+   ✓ 账单明细与月度汇总（TC-FE-BILLING） > TC-FE-BILLING-004: 日期筛选带参重查，且「导出」沿用同一区间 1218ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:38:17
+   Duration  9.76s (transform 223ms, setup 218ms, collect 4.38s, tests 3.40s, environment 1.02s, prepare 138ms)
+
