@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 27,
-      "cases": 231,
+      "specFiles": 28,
+      "cases": 236,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 238 tests − 7 条用例库自检 = **231 条组件用例**；specFiles=27 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 28 个文件）。剩：FE-ADMIN-ADMINLOGS / FE-ADMIN-MISC-001,003 / FE-DEV-MISC-001 / UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 243 tests − 7 条用例库自检 = **236 条组件用例**；specFiles=28 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 29 个文件）。剩：FE-ADMIN-MISC-001,003 / FE-DEV-MISC-001 / UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -397,12 +397,15 @@
       "level": "P2",
       "file": "src/pages/admin/AdminLogs.tsx",
       "lines": 904,
-      "why": "日志管理（列表/备份配置/文件列表）",
-      "status": "planned",
+      "why": "日志管理（列表/备份配置/文件列表）。🔑 日志内容按 startLine = 当前页×500 分页拉取并带 level/keyword（参数错会「看起来没有这条日志」而误判）；备份配置是回显+就地改 state 的模式，保存时整体提交；删除备份不可恢复、清理是批量删除，两者都必须二次确认。⚠️ 该模块是**具名函数导出**（不是对象），mock 时要逐个替换；断言日志行需等待内容加载完成（弹窗先渲染「加载中...」）",
+      "status": "covered",
       "specFile": "src/pages/admin/AdminLogs.spec.tsx",
       "cases": [
-        { "id": "TC-FE-ADMINLOGS-001", "name": "日志列表分页与筛选", "status": "planned" },
-        { "id": "TC-FE-ADMINLOGS-002", "name": "备份配置回显与保存", "status": "planned" }
+        { "id": "TC-FE-ADMINLOGS-001", "name": "首屏三个数据源各拉一次；统计卡（含格式化体积）与日志/备份两个列表按数据渲染；自动备份徽标", "status": "done" },
+        { "id": "TC-FE-ADMINLOGS-002", "name": "查看日志按 startLine/maxLines=500 拉取；切级别与输入关键字后带 level/keyword 重拉；日志行与行数文案渲染", "status": "done" },
+        { "id": "TC-FE-ADMINLOGS-003", "name": "备份配置回显四项（启用/文件大小/最大数量/自动清理/清理阈值）；保存整体提交并提示、关弹窗、重读统计", "status": "done" },
+        { "id": "TC-FE-ADMINLOGS-004", "name": "手动备份按文件 module 调用；清理备份需二次确认（未确认不发请求）", "status": "done" },
+        { "id": "TC-FE-ADMINLOGS-005", "name": "删除备份取消不发请求、确认才删除并重新拉取备份列表", "status": "done" }
       ]
     },
     {

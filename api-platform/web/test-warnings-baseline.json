@@ -31,11 +31,12 @@
     "  - 2026-09-17：act 102 / jsdom 106（215 passed / 24 spec；新增 Keys spec）",
     "  - 2026-09-17：act 102 / jsdom 110（219 passed / 24 spec；扩写 Billing spec）",
     "  - 2026-09-17：act 102 / jsdom 121（224 passed / 25 spec；新增 Quota spec）",
-    "  - 2026-09-17：act 102 / jsdom 133（238 passed / 28 spec；新增 Logs / CreateRepo / RepoDetail spec）"
+    "  - 2026-09-17：act 102 / jsdom 133（238 passed / 28 spec；新增 Logs / CreateRepo / RepoDetail spec）",
+    "  - 2026-09-17：act 102 / jsdom 147（243 passed / 29 spec；新增 AdminLogs spec）"
   ],
   "updatedAt": "2026-09-16T16:15:05.600Z",
   "counts": {
     "act: update not wrapped in act": 102,
-    "jsdom: getComputedStyle pseudo-elements": 133
+    "jsdom: getComputedStyle pseudo-elements": 147
   }
 }

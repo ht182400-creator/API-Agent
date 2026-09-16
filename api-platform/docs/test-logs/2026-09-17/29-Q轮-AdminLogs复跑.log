@@ -1,0 +1,70 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/AdminLogs.spec.tsx
+[20260917 01:01:12.777] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789578072776_8uz0wc69x"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789578072776_8uz0wc69x'
+}
+
+node.exe : stderr | src/pages/admin/AdminLogs.spec.tsx > 首屏数据与列表（TC-FE-ADMINLOGS-001） > TC-FE-ADMINLOGS-001: 三个数据源各拉一次；
+统计与两个列表按数据渲染
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...一次；统计与两个列表按数据渲染:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键
+字后带参重拉
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键
+字后带参重拉
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体
+提交并提示
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体
+提交并提示
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-004: 手动备份按模块调用；清理需二次确认后
+才执行
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重
+新拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重
+新拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/admin/AdminLogs.spec.tsx (5 tests) 4241ms
+   ✓ 首屏数据与列表（TC-FE-ADMINLOGS-001） > TC-FE-ADMINLOGS-001: 三个数据源各拉一次；统计与两个列表按数据渲染 840ms
+   ✓ 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键字后带参重拉 686ms
+   ✓ 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体提交并提示 843ms
+   ✓ 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-004: 手动备份按模块调用；清理需二次确认后才执行 785ms
+   ✓ 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重新拉取列表 1084ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  01:01:07
+   Duration  9.61s (transform 231ms, setup 196ms, collect 3.53s, tests 4.24s, environment 947ms, prepare 234ms)
+

@@ -1,0 +1,435 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/AdminLogs.spec.tsx
+[20260917 01:00:24.245] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789578024245_u2igzdhxg"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789578024245_u2igzdhxg'
+}
+
+node.exe : stderr | src/pages/admin/AdminLogs.spec.tsx > 首屏数据与列表（TC-FE-ADMINLOGS-001） > TC-FE-ADMINLOGS-001: 三个数据源各拉一次；
+统计与两个列表按数据渲染
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...一次；统计与两个列表按数据渲染:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键
+字后带参重拉
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键
+字后带参重拉
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体
+提交并提示
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体
+提交并提示
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-004: 手动备份按模块调用；清理需二次确认后
+才执行
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重
+新拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/AdminLogs.spec.tsx > 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重
+新拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/admin/AdminLogs.spec.tsx (5 tests | 2 failed) 3757ms
+   × 首屏数据与列表（TC-FE-ADMINLOGS-001） > TC-FE-ADMINLOGS-001: 三个数据源各拉一次；统计与两个列表按数据渲染 809ms
+     → Found multiple elements with the text: 1.0 KB
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<td[39m
+  [33mclass[39m=[32m"ant-table-cell"[39m
+[36m>[39m
+  [0m1.0 KB[0m
+[36m</td>[39m
+
+Ignored nodes: comments, script, style
+[36m<td[39m
+  [33mclass[39m=[32m"ant-table-cell"[39m
+[36m>[39m
+  [0m1.0 KB[0m
+[36m</td>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_d1e2aa bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [0m日志管理[0m
+      [36m</h4>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-row _statsRow_d1e2aa css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-left: -4px; margin-right: -4px; row-gap: 8px;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+              [33mstyle[39m=[32m"padding: 12px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-statistic css-dev-only-do-not-override-7zmxdp"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-title"[39m
+                [36m>[39m
+                  [0m日志文件[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-content"[39m
+                  [33mstyle[39m=[32m"font-size: 20px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-prefix"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-label[39m=[32m"file-text"[39m
+                      [33mclass[39m=[32m"anticon anticon-file-text"[39m
+                      [33mrole[39m=[32m"img"[39m
+                      [33mstyle[39m=[32m"color: rgb(24, 144, 255);"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mdata-icon[39m=[32m"file-text"[39m
+                        [33mfill[39m=[32m"currentColor"[39m
+                        [33mfocusable[39m=[32m"false"[39m
+                        [33mheight[39m=[32m"1em"[39m
+                        [33mviewBox[39m=[32m"64 64 896 896"[39m
+                        [33mwidth[39m=[32m"1em"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M854.6 288.6L639.4 73.4c-6-6-14.1-9.4-22.6-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.7-9.4-22.7zM790.2 326H602V137.8L790.2 326zm1.8 562H232V136h302v216a42 42 0 0042 42h216v494zM504 618H320c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zM312 490v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H320c-4.4 0-8 3.6-8 8z"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-value"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-statistic-content-value-int"[39m
+                    [36m>[39m
+                      [0m2[0m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+              [33mstyle[39m=[32m"padding: 12px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-statistic css-dev-only-do-not-override-7zmxdp"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-title"[39m
+                [36m>[39m
+                  [0m日志总大小[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-content"[39m
+                  [33mstyle[39m=[32m"font-size: 18px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-prefix"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-label[39m=[32m"folder"[39m
+                      [33mclass[39m=[32m"anticon anticon-folder"[39m
+                      [33mrole[39m=[32m"img"[39m
+                      [33mstyle[39m=[32m"color: rgb(250, 140, 22);"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mdata-icon[39m=[32m"folder"[39m
+                        [33mfill[39m=[32m"currentColor"[39m
+                        [33mfocusable[39m=[32m"false"[39m
+                        [33mheight[39m=[32m"1em"[39m
+                        [33mviewBox[39m=[32m"64 64 896 896"[39m
+                        [33mwidth[39m=[32m"1em"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M880 298.4H521L403.7 186.2a8.15 8.15 0 00-5.5-2.2H144c-17.7 0-32 14.3-32 32v592c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V330.4c0-17.7-14.3-32-32-32zM840 768H184V256h188.5l119.6 114.4H840V768z"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-value"[39m
+                  [36m>[39m
+                    [0m3.0 KB[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-ca...
+   × 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键字后带参重拉 443ms
+     → expected '日志管理日志文件2日志总大小3.0KB备份文件1备份总大小512B备份设置…' to contain 'connection timeout'
+   ✓ 备份配置回显与保存（TC-FE-ADMINLOGS-003） > TC-FE-ADMINLOGS-003: 打开时回显四项配置；保存把当前配置整体提交并提示 808ms
+   ✓ 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-004: 手动备份按模块调用；清理需二次确认后才执行 635ms
+   ✓ 备份操作（TC-FE-ADMINLOGS-004 / 005） > TC-FE-ADMINLOGS-005: 删除备份取消不发请求、确认才删除并重新拉取列表 1057ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/AdminLogs.spec.tsx > 首屏数据与列表（TC-FE-ADMINLOGS-001） > TC-FE-ADMINLOGS-001: 三个数据源各拉一次；统计与两个列表按数据渲染
+TestingLibraryElementError: Found multiple elements with the text: 1.0 KB
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<td[39m
+  [33mclass[39m=[32m"ant-table-cell"[39m
+[36m>[39m
+  [0m1.0 KB[0m
+[36m</td>[39m
+
+Ignored nodes: comments, script, style
+[36m<td[39m
+  [33mclass[39m=[32m"ant-table-cell"[39m
+[36m>[39m
+  [0m1.0 KB[0m
+[36m</td>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_d1e2aa bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [0m日志管理[0m
+      [36m</h4>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-row _statsRow_d1e2aa css-dev-only-do-not-override-7zmxdp"[39m
+        [33mstyle[39m=[32m"margin-left: -4px; margin-right: -4px; row-gap: 8px;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[
+39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+              [33mstyle[39m=[32m"padding: 12px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-statistic css-dev-only-do-not-override-7zmxdp"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-title"[39m
+                [36m>[39m
+                  [0m日志文件[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-content"[39m
+                  [33mstyle[39m=[32m"font-size: 20px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-prefix"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-label[39m=[32m"file-text"[39m
+                      [33mclass[39m=[32m"anticon anticon-file-text"[39m
+                      [33mrole[39m=[32m"img"[39m
+                      [33mstyle[39m=[32m"color: rgb(24, 144, 255);"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mdata-icon[39m=[32m"file-text"[39m
+                        [33mfill[39m=[32m"currentColor"[39m
+                        [33mfocusable[39m=[32m"false"[39m
+                        [33mheight[39m=[32m"1em"[39m
+                        [33mviewBox[39m=[32m"64 64 896 896"[39m
+                        [33mwidth[39m=[32m"1em"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M854.6 288.6L639.4 73.4c-6-6-14.1-9.4-22.6-9.4H192c-17.7 0-32 14.3-32 32v83
+2c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.7-9.4-22.7zM790.2 326H602V137.8L790.2 326zm1.8 562H2
+32V136h302v216a42 42 0 0042 42h216v494zM504 618H320c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3
+.6-8-8-8zM312 490v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H320c-4.4 0-8 3.6-8 8z"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-value"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-statistic-content-value-int"[39m
+                    [36m>[39m
+                      [0m2[0m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[
+39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+              [33mstyle[39m=[32m"padding: 12px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-statistic css-dev-only-do-not-override-7zmxdp"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-title"[39m
+                [36m>[39m
+                  [0m日志总大小[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-statistic-content"[39m
+                  [33mstyle[39m=[32m"font-size: 18px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-prefix"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33maria-label[39m=[32m"folder"[39m
+                      [33mclass[39m=[32m"anticon anticon-folder"[39m
+                      [33mrole[39m=[32m"img"[39m
+                      [33mstyle[39m=[32m"color: rgb(250, 140, 22);"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mdata-icon[39m=[32m"folder"[39m
+                        [33mfill[39m=[32m"currentColor"[39m
+                        [33mfocusable[39m=[32m"false"[39m
+                        [33mheight[39m=[32m"1em"[39m
+                        [33mviewBox[39m=[32m"64 64 896 896"[39m
+                        [33mwidth[39m=[32m"1em"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M880 298.4H521L403.7 186.2a8.15 8.15 0 00-5.5-2.2H144c-17.7 0-32 14.3-32 32
+v592c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V330.4c0-17.7-14.3-32-32-32zM840 768H184V256h188.5l119.6 114.4H840V76
+8z"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-statistic-content-value"[39m
+                  [36m>[39m
+                    [0m3.0 KB[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-sm-12 ant-col-md-6 css-dev-only-do-not-override-7zmxdp"[
+39m
+          [33mstyle[39m=[32m"padding-left: 4px; padding-right: 4px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-ca...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/admin/AdminLogs.spec.tsx:165:19
+    163|     expect(screen.getByText('app.log')).toBeInTheDocument()
+    164|     expect(screen.getByText('error.log')).toBeInTheDocument()
+    165|     expect(screen.getByText('1.0 KB')).toBeInTheDocument()
+       |                   ^
+    166|     expect(screen.getByText('2.0 KB')).toBeInTheDocument()
+    167| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/admin/AdminLogs.spec.tsx > 查看日志与筛选（TC-FE-ADMINLOGS-002） > TC-FE-ADMINLOGS-002: 首次按 500 行分页拉取；切换级别/关键字后
+带参重拉
+AssertionError: expected '日志管理日志文件2日志总大小3.0KB备份文件1备份总大小512B备份设置…' to contain 'connection timeout'
+
+Expected: "connection timeout"
+Received: "日志管理日志文件2日志总大小3.0KB备份文件1备份总大小512B备份设置清理备份刷新日志文件自动备份已启用文件名模块大小修改时间操作app.logapp1.0KB2026-09-16T10:00:00Z导出查看备份
+error.logerror2.0KB2026-09-16T11:00:00Z导出查看备份备份文件文件名大小创建时间操作app_20260916.log1.0KB2026-09-16T10:00:00Z查看下载删除1查看日志-app日志级
+别搜索共1行，当前1行12026-09-1610:00:00ERRORappconnectiontimeout关闭"
+
+ ❯ src/pages/admin/AdminLogs.spec.tsx:189:24
+    187|     )
+    188|     expect(await screen.findByPlaceholderText('搜索关键词')).toBeInThe…
+    189|     expect(flatText()).toContain('connection timeout')
+       |                        ^
+    190| 
+    191|     // ② 切级别为「错误」→ 自动带 level 重拉（effect 依赖 loadLogConte…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  01:00:19
+   Duration  8.94s (transform 288ms, setup 260ms, collect 3.44s, tests 3.76s, environment 922ms, prepare 123ms)
+
