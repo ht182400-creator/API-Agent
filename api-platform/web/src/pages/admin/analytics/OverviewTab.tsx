@@ -13,7 +13,7 @@
  *    概览页的周期选择与「趋势分析」Tab **共用同一份状态**（切换 Tab 后选择保持一致），
  *    这是既有行为，不能改成组件内部 state。
  */
-import { Card, Col, Row, Select, Space, Spin, Statistic, Tag, Typography } from 'antd'
+import { Card, Col, Row, Spin, Statistic, Tag, Typography } from 'antd'
 import {
   ApiOutlined,
   ThunderboltOutlined,
@@ -35,6 +35,7 @@ import {
 } from 'recharts'
 import type { AdminOverview, TrendData } from '../../../api/adminAnalytics'
 import { buildTrendChartData } from './chartData'
+import { TrendControls } from './TrendControls'
 // ⚠️ 样式在 admin/ 下，本文件在 admin/analytics/ → 回退一级
 import styles from '../Analytics.module.css'
 
@@ -169,29 +170,16 @@ export function OverviewTab({
         title="调用与收入趋势"
         className={styles.chartCard}
         extra={
-          <Space wrap size="small">
-            <Select
-              value={trendPeriod}
-              onChange={onPeriodChange}
-              style={{ width: 90 }}
-              options={[
-                { label: '按小时', value: 'hour' },
-                { label: '按天', value: 'day' },
-              ]}
-            />
-            {trendPeriod === 'day' && (
-              <Select
-                value={trendDays}
-                onChange={onDaysChange}
-                style={{ width: 90 }}
-                options={[
-                  { label: '近7天', value: 7 },
-                  { label: '近30天', value: 30 },
-                  { label: '近90天', value: 90 },
-                ]}
-              />
-            )}
-          </Space>
+          // ⚠️ 与「趋势分析」Tab 共用同一个受控控件：原先两处各写了一份 options，
+          //    文案还不一致（这里是「按天」，那边是「按天统计」）—— 见用例库
+          //    FE-BUG-ANALYTICS-DUP-TREND-CARD，现已统一到 TrendControls
+          <TrendControls
+            period={trendPeriod}
+            days={trendDays}
+            onPeriodChange={onPeriodChange}
+            onDaysChange={onDaysChange}
+            compact
+          />
         }
       >
         <Spin spinning={trendLoading}>

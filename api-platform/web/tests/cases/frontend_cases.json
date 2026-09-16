@@ -16,7 +16,7 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 51,
+      "sourceFiles": 54,
       "specFiles": 29,
       "cases": 285,
       "covered": [
@@ -27,13 +27,18 @@
         "src/contexts/ErrorContext.tsx",
         "src/pages/auth/Login.tsx",
         "src/pages/auth/Register.tsx",
-        "src/pages/admin/Analytics.tsx (partial)",
+        "src/pages/admin/Analytics.tsx",
+        "src/pages/admin/analytics/OverviewTab.tsx",
+        "src/pages/admin/analytics/TrendTab.tsx",
+        "src/pages/admin/analytics/RepoDetailsTab.tsx",
+        "src/pages/admin/analytics/RepoDetailModal.tsx",
+        "src/pages/admin/analytics/TrendControls.tsx",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查））。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54））。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -145,9 +150,9 @@
       "id": "FE-ADMIN-ANALYTICS",
       "level": "P1",
       "file": "src/pages/admin/Analytics.tsx",
-      "lines": 964,
-      "why": "P1-4 待拆巨型页（后端同源 analytics 已拆分；子组件 OverviewTab / RepoDetailModal / repoDetailColumns / chartData 已抽出）。⚠️ 页面本体不只\"冒烟\"：C 轮补上三条**改条件 → 带参重查**链路（周期/分页/弹窗天数）。⚠️ 同页两处「调用与收入趋势」卡共用同一份状态却用两套周期文案（见 knownDefects FE-BUG-ANALYTICS-DUP-TREND-CARD）",
-      "status": "partial",
+      "lines": 309,
+      "why": "⚠️ 原 964 行的 P1-4 巨型页，**B 轮已拆完**：三个 Tab 的内容分别抽为 OverviewTab / TrendTab / RepoDetailsTab，明细弹窗为 RepoDetailModal，周期与天数控件抽为共享的 TrendControls，纯逻辑在 chartData / repoDetailColumns / constants —— 本文件只剩状态、数据加载与 Tab 组合（964 → 309 行）。拆分是纯搬运、零行为改变（全量 292 passed 复验）。C 轮另补三条「改条件 → 带参重查」链路（周期/分页/弹窗天数）",
+      "status": "covered",
       "specFile": "src/pages/admin/Analytics.spec.tsx",
       "cases": [
         { "id": "TC-FE-ANA-001", "name": "首屏渲染不崩且三个数据源被调用", "status": "done" },
@@ -640,9 +645,11 @@
       "evidence": "写 TC-FE-ANA-009 时按标题取卡片，命中了概览那张：其选项是「按天」/「按小时」，而趋势 Tab 的是「按天统计」/「按小时统计」；两处 onPeriodChange/onDaysChange 都接到 setTrendPeriod/setTrendDays（同一状态）",
       "impact": "同一页同一语义的控件两套文案（用户看到的措辞不一致）；且概览页与趋势页各有一份控件，后续改动容易只改一处",
       "suggestion": "文案统一（建议都用「按天 / 按小时」或都带「统计」后缀）；进一步可把该控件抽成一个共享组件（如 analytics/TrendControls.tsx），两处复用同一 options 常量",
-      "status": "open",
+      "status": "fixed",
       "foundAt": "2026-09-17",
-      "note": "不影响功能正确性，故未即改；写用例时必须用激活 Tab 面板限定作用域，否则会取到另一张同名卡（ANA-009 首跑即因此失败）"
+      "fixedAt": "2026-09-17",
+      "fix": "B 轮拆分时按建议一次做两件事：① 抽出共享组件 analytics/TrendControls.tsx（概览卡传 compact，趋势卡用默认宽度），两处共用同一份受控状态；② option 常量上移到 analytics/constants.ts 的 TREND_PERIOD_OPTIONS / TREND_DAYS_OPTIONS，周期文案统一取更明确的「按小时统计」/「按天统计」（明细弹窗的天数选项也复用 TREND_DAYS_OPTIONS）。⚠️ 回归副作用已处理：文案统一后「按天统计」在页面上出现两处，ANA-005 的 getByText 改为 getAllByText（该用例注释已说明原因）",
+      "note": "写用例时必须用激活 Tab 面板限定作用域，否则会取到另一张同名卡（ANA-009 首跑即因此失败）"
     }
   ]
 }

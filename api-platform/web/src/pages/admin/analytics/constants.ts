@@ -23,3 +23,23 @@ export const statusText: Record<string, string> = {
   rejected: '已拒绝',
   offline: '已下线',
 }
+
+/**
+ * 趋势「周期」/「天数」选择器的 option 常量（P1-4 拆分 B 轮新增）。
+ *
+ * ⚠️ 为什么要有这组常量：同一页原先**三处**各写了一份 options
+ *    （概览卡片 / 趋势 Tab / 明细弹窗），而且前两处的周期文案并不一致 ——
+ *    概览是「按天」/「按小时」，趋势 Tab 是「按天统计」/「按小时统计」。
+ *    现统一为同一份数据源（取更明确的「按小时统计」/「按天统计」）。
+ *    对应用例库缺陷条目：`FE-BUG-ANALYTICS-DUP-TREND-CARD`。
+ */
+export const TREND_PERIOD_OPTIONS: Array<{ label: string; value: 'hour' | 'day' }> = [
+  { label: '按小时统计', value: 'hour' },
+  { label: '按天统计', value: 'day' },
+]
+
+export const TREND_DAYS_OPTIONS: Array<{ label: string; value: number }> = [
+  { label: '近7天', value: 7 },
+  { label: '近30天', value: 30 },
+  { label: '近90天', value: 90 },
+]

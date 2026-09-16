@@ -2,57 +2,31 @@
  * 管理员分析报表页面
  * 功能：全局统计概览、调用/收入趋势图、仓库明细排行榜
  * V1.0 - 初始版本
+ *
+ * 【P1-4 拆分 · B 轮收尾】本文件原 964 行，现按 Tab 拆成子组件（同目录 `analytics/`）：
+ *   · OverviewTab / TrendTab / RepoDetailsTab —— 三个 Tab 的内容
+ *   · RepoDetailModal  —— 单个仓库明细弹窗
+ *   · TrendControls    —— 概览与趋势共用的周期/天数控件（本轮抽出；原先两处各写一份、
+ *                          文案还不一致「按天」vs「按天统计」，见用例库 FE-BUG-ANALYTICS-DUP-TREND-CARD）
+ *   · chartData / repoDetailColumns / constants —— 纯函数与常量（均已单测）
+ * 本文件只保留：状态、数据加载、Tab 组合。**拆分是纯搬运，零行为改变**。
  */
 
 import { useState, useEffect } from 'react'
 import '../../styles/cyber-theme.css'
-import {
-  Card,
-  Row,
-  Col,
-  Statistic,
-  Table,
-  Select,
-  Button,
-  Space,
-  Spin,
-  Tabs,
-  Typography,
-  message
-} from 'antd'
-import {
-  ApiOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  UserOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  TableOutlined,
-  SyncOutlined,
-  ThunderboltOutlined
-} from '@ant-design/icons'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  Legend
-} from 'recharts'
+import { Button, Tabs, Typography, message } from 'antd'
+import { ApiOutlined, LineChartOutlined, SyncOutlined, TableOutlined } from '@ant-design/icons'
 import { adminAnalyticsApi, AdminOverview, TrendData, RepoDetailItem, RepoTrendData } from '../../api/adminAnalytics'
 import { useNavigate } from 'react-router-dom'
 import styles from './Analytics.module.css'
-// 【P1-4 拆分】状态映射与图表数据整形已抽到同目录 `analytics/`（纯数据 / 纯函数，均已单测）
-import { statusColors, statusText } from './analytics/constants'
+// 【P1-4 拆分】子组件与纯逻辑均在 ./analytics/ 下
 import { createRepoDetailColumns } from './analytics/repoDetailColumns'
 import { OverviewTab } from './analytics/OverviewTab'
+import { TrendTab } from './analytics/TrendTab'
+import { RepoDetailsTab } from './analytics/RepoDetailsTab'
 import { RepoDetailModal } from './analytics/RepoDetailModal'
-import { buildRepoTrendChartData, buildTrendChartData } from './analytics/chartData'
 
 const { Title, Text } = Typography
-const { TabPane } = Tabs
 
 export default function AdminAnalytics() {
   const navigate = useNavigate()
@@ -213,8 +187,6 @@ export default function AdminAnalytics() {
     }
   }, [activeTab, repoPagination.page, detailStatus, detailSortBy, detailSortOrder])
 
-  // 趋势图表数据改由 `analytics/chartData.ts` 的 buildTrendChartData(trendData) 生成（纯函数，已单测）
-
   // 仓库明细表格列
   // 「仓库明细」表格列定义已抽至 ./analytics/repoDetailColumns（工厂函数，需传入两个动作回调）
   const repoDetailColumns = createRepoDetailColumns({
@@ -273,109 +245,15 @@ export default function AdminAnalytics() {
               <span><LineChartOutlined />趋势分析</span>
             ),
             children: (
-              <Spin spinning={trendLoading}>
-                <Card 
-                  title="调用与收入趋势"
-                  extra={
-                    <Space>
-                      <Select 
-                        value={trendPeriod} 
-                        onChange={setTrendPeriod}
-                        style={{ width: 120 }}
-                        options={[
-                          { label: '按小时统计', value: 'hour' },
-                          { label: '按天统计', value: 'day' }
-                        ]}
-                      />
-                      {trendPeriod === 'day' && (
-                        <Select 
-                          value={trendDays} 
-                          onChange={setTrendDays}
-                          style={{ width: 120 }}
-                          options={[
-                            { label: '近7天', value: 7 },
-                            { label: '近30天', value: 30 },
-                            { label: '近90天', value: 90 }
-                          ]}
-                        />
-                      )}
-                    </Space>
-                  }
-                >
-                  <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={buildTrendChartData(trendData)}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="time" tick={{ fontSize: 12 }} />
-                      <YAxis 
-                        yAxisId="left" 
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
-                      />
-                      <YAxis 
-                        yAxisId="right" 
-                        orientation="right" 
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => `¥${v.toFixed(0)}`}
-                      />
-                      <RechartsTooltip 
-                        formatter={(value: number, name: string) => [
-                          name === 'calls' ? `${value.toLocaleString()} 次` : `¥${value.toFixed(2)}`,
-                          name === 'calls' ? '调用次数' : '收入'
-                        ]}
-                      />
-                      <Legend />
-                      <Line 
-                        yAxisId="left"
-                        type="monotone" 
-                        dataKey="calls" 
-                        stroke="#10b981" 
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        activeDot={{ r: 6 }}
-                        name="调用次数"
-                      />
-                      <Line 
-                        yAxisId="right"
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#faad14" 
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        activeDot={{ r: 6 }}
-                        name="收入金额"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </Card>
-
-                {/* 数据统计表 */}
-                <Card title="趋势数据明细" className={styles.dataTable}>
-                  <Table
-                    dataSource={buildTrendChartData(trendData)}
-                    rowKey="time"
-                    pagination={false}
-                    size="small"
-                    tableLayout="fixed"
-                    columns={[
-                      { title: '时间', dataIndex: 'time', key: 'time', width: 150 },
-                      { 
-                        title: '调用次数', 
-                        dataIndex: 'calls', 
-                        key: 'calls',
-                        width: 120,
-                        render: (v) => v.toLocaleString()
-                      },
-                      { 
-                        title: '收入', 
-                        dataIndex: 'revenue', 
-                        key: 'revenue',
-                        width: 100,
-                        render: (v) => `¥${v.toFixed(2)}`
-                      }
-                    ]}
-                  />
-                </Card>
-              </Spin>
+              // B 轮抽出：图表 + 趋势明细表（周期/天数用共享的 TrendControls）
+              <TrendTab
+                trendData={trendData}
+                trendLoading={trendLoading}
+                trendPeriod={trendPeriod}
+                trendDays={trendDays}
+                onPeriodChange={setTrendPeriod}
+                onDaysChange={setTrendDays}
+              />
             )
           },
           
@@ -386,68 +264,22 @@ export default function AdminAnalytics() {
               <span><TableOutlined />仓库明细</span>
             ),
             children: (
-              <Spin spinning={detailsLoading}>
-                <Card 
-                  title="仓库调用与收入明细"
-                  extra={
-                    <Space wrap>
-                      <Select
-                        placeholder="状态筛选"
-                        allowClear
-                        value={detailStatus}
-                        onChange={(v) => setDetailStatus(v)}
-                        style={{ width: 120 }}
-                        options={[
-                          { label: '全部状态', value: undefined },
-                          { label: '已上线', value: 'online' },
-                          { label: '待审核', value: 'pending' },
-                          { label: '已下线', value: 'offline' },
-                          { label: '已拒绝', value: 'rejected' }
-                        ]}
-                      />
-                      <Select
-                        value={detailSortBy}
-                        onChange={setDetailSortBy}
-                        style={{ width: 130 }}
-                        options={[
-                          { label: '按调用量排序', value: 'total_calls' },
-                          { label: '按收入排序', value: 'total_cost' },
-                          { label: '按名称排序', value: 'name' }
-                        ]}
-                      />
-                      <Select
-                        value={detailSortOrder}
-                        onChange={setDetailSortOrder}
-                        style={{ width: 100 }}
-                        options={[
-                          { label: '降序', value: 'desc' },
-                          { label: '升序', value: 'asc' }
-                        ]}
-                      />
-                    </Space>
-                  }
-                >
-                  <Table
-                    dataSource={repoDetails}
-                    columns={repoDetailColumns}
-                    rowKey="repo_id"
-                    pagination={{
-                      current: repoPagination.page,
-                      pageSize: repoPagination.page_size,
-                      total: repoPagination.total,
-                      showSizeChanger: true,
-                      showQuickJumper: true,
-                      showTotal: (total) => `共 ${total} 条`,
-                      onChange: (page, pageSize) => {
-                        setRepoPagination(prev => ({ ...prev, page, page_size: pageSize }))
-                      }
-                    }}
-                    scroll={{ x: 'max-content' }}
-                    size="small"
-                    tableLayout="fixed"
-                  />
-                </Card>
-              </Spin>
+              // B 轮抽出：筛选 + 表格 + 服务端分页
+              <RepoDetailsTab
+                loading={detailsLoading}
+                items={repoDetails}
+                columns={repoDetailColumns}
+                pagination={repoPagination}
+                onPageChange={(page, pageSize) =>
+                  setRepoPagination(prev => ({ ...prev, page, page_size: pageSize }))
+                }
+                status={detailStatus}
+                onStatusChange={setDetailStatus}
+                sortBy={detailSortBy}
+                onSortByChange={(v) => setDetailSortBy(v as 'total_calls' | 'total_cost' | 'name')}
+                sortOrder={detailSortOrder}
+                onSortOrderChange={(v) => setDetailSortOrder(v as 'asc' | 'desc')}
+              />
             )
           }
         ]}

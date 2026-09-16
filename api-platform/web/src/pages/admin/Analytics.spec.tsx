@@ -173,8 +173,11 @@ describe('Tab 切换与仓库明细弹窗', () => {
 
     // ⚠️ 用 findAll：antd Tabs 会保留已渲染 Tab 的 DOM，且标题可能与表格/卡片重复
     expect((await screen.findAllByText('调用与收入趋势')).length).toBeGreaterThan(0)
-    // 周期选择器当前值（默认「按天统计」）—— 该文本唯一，可证明趋势 Tab 内容已挂载
-    expect(screen.getByText('按天统计')).toBeInTheDocument()
+    // 周期选择器当前值（默认「按天统计」）—— 能证明趋势 Tab 内容已挂载。
+    // ⚠️ 用 getAllByText：B 轮把周期控件抽成共享的 `TrendControls` 并**统一了文案**后
+    //    （缺陷 FE-BUG-ANALYTICS-DUP-TREND-CARD），概览卡里那个控件现在也是「按天统计」，
+    //    同一文本在页面上出现两处 → `getByText` 会报 multiple elements。
+    expect(screen.getAllByText('按天统计').length).toBeGreaterThan(0)
   })
 
   it('TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数', async () => {

@@ -42,7 +42,7 @@ import {
   Legend,
 } from 'recharts'
 import type { RepoDetailItem, RepoTrendData } from '../../../api/adminAnalytics'
-import { statusColors, statusText } from './constants'
+import { TREND_DAYS_OPTIONS, statusColors, statusText } from './constants'
 import { buildRepoTrendChartData } from './chartData'
 
 const { Text } = Typography
@@ -181,11 +181,7 @@ export function RepoDetailModal({
               value={days}
               onChange={onDaysChange}
               style={{ width: 120 }}
-              options={[
-                { label: '近7天', value: 7 },
-                { label: '近30天', value: 30 },
-                { label: '近90天', value: 90 },
-              ]}
+              options={TREND_DAYS_OPTIONS}
             />
           }
         >
