@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 19,
-      "cases": 144,
+      "specFiles": 20,
+      "cases": 195,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -26,10 +26,11 @@
         "src/components/Layout.tsx (partial: 菜单可见性)",
         "src/contexts/ErrorContext.tsx",
         "src/pages/auth/Login.tsx",
+        "src/pages/auth/Register.tsx",
         "src/pages/admin/Analytics.tsx (partial)",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖 → 149 条登记用例，vitest 151（144 组件 + 7 用例库自检）；specFiles=14 为 src 下口径，自检 spec 在 tests/ 不计入；ANA-008 / LAYOUT-007~008 已转 done，剩 P2/P3 与 UI-001~002）"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 202 tests − 7 条用例库自检 = **195 条组件用例**；specFiles=20 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 21 个文件）。剩 P2/P3 与 UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -63,14 +64,14 @@
       "level": "P0",
       "file": "src/pages/auth/Register.tsx",
       "lines": 215,
-      "why": "入口页；含注册表单校验与 user_type 选择",
-      "status": "planned",
+      "why": "入口页；含注册表单校验与 user_type 选择。🔐 账号类型仅 user/developer —— 服务端由 UserCreate.SELF_REGISTER_ROLES 白名单封堵自我提权（提交 9ce24fb4），前端这一层是「不给入口 + 不带越权类型」的第二道防线",
+      "status": "covered",
       "specFile": "src/pages/auth/Register.spec.tsx",
       "cases": [
-        { "id": "TC-FE-REG-001", "name": "渲染注册表单关键字段", "status": "planned" },
-        { "id": "TC-FE-REG-002", "name": "密码不一致/长度不足被拦截", "status": "planned" },
-        { "id": "TC-FE-REG-003", "name": "注册成功后跳登录页", "status": "planned" },
-        { "id": "TC-FE-REG-004", "name": "后端报错经统一错误处理呈现", "status": "planned" }
+        { "id": "TC-FE-REG-001", "name": "渲染关键字段 + 账号类型仅 user/developer 且提示随选择切换", "status": "done" },
+        { "id": "TC-FE-REG-002", "name": "密码不一致/长度不足/用户名非法被拦截，不发请求", "status": "done" },
+        { "id": "TC-FE-REG-003", "name": "以所选 user_type 提交并跳登录页（注册不直接登录）", "status": "done" },
+        { "id": "TC-FE-REG-004", "name": "后端报错原样提示、留在注册页且可重试", "status": "done" }
       ]
     },
     {

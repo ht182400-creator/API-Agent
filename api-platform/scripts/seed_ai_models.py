@@ -173,6 +173,9 @@ async def main(dry_run: bool = False) -> None:
                 repo.description = m["description"]
                 repo.repo_type = m["type"]
                 repo.endpoint_url = GATEWAY
+                # ⚠️ api_docs_url 也必须一起更新：否则改了 GATEWAY 后重跑，
+                #    endpoint_url 变成新网关，而文档链接仍指向旧地址（曾遗漏，实测确认）
+                repo.api_docs_url = f"{GATEWAY}/docs"
                 repo.status = "online"
                 updated += 1
             else:
