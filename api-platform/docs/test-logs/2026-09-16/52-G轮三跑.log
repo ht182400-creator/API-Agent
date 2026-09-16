@@ -1,0 +1,111 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Dashboard.spec.tsx
+[20260916 09:46:39.094] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789523199094_clsxqd9wl"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789523199094_clsxqd9wl'
+}
+
+stdout | src/pages/developer/Billing.spec.tsx
+[20260916 09:46:39.095] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789523199094_b3xp6i9yq"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789523199094_b3xp6i9yq'
+}
+
+node.exe : stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-001: 单一数据源失败（quota 挂了）不影响账
+户余额显示
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...ta 挂了）不影响账户余额显示:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[Dashboard] getQuotaOverview 失败: Error: quota 服务不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:54:60
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-002: 全部数据源失败不白屏（余额卡片仍渲染）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[Dashboard] getAccount 失败（该卡片降级为空）: Error: billing 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:63:56
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+[Dashboard] getQuotaOverview 失败: Error: quota 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:64:60
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+[Dashboard] getConsumptionTrend 失败: Error: trend 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:65:63
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-003: 正常路径渲染余额与标签
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Dashboard.spec.tsx (3 tests) 1005ms
+   ✓ 开发者工作台（TC-FE-DASH） > TC-FE-DASH-001: 单一数据源失败（quota 挂了）不影响账户余额显示 709ms
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测
+试环境/模拟账户」，不得显示「生产环境」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-002: production 环境显示「生产环境/真实账户」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Billing.spec.tsx (2 tests) 1359ms
+   ✓ 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测试环境/模拟账户」，不得显示「生产环境」 1130ms
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  09:46:37
+   Duration  7.38s (transform 322ms, setup 446ms, collect 8.38s, tests 2.36s, environment 1.96s, prepare 349ms)
+

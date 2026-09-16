@@ -1,0 +1,30 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+node.exe : stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-R
+T-001: 桌面端按表格渲染 dataSource
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/co...表格渲染 dataSource:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-002: 空数据显
+示 emptyText（默认"暂无数据"）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-003: 空数据可
+用 emptyText 自定义
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/components/shared/SharedComponents.spec.tsx (12 tests) 887ms
+   ✓ ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-001: 桌面端按表格渲染 dataSource 375ms
+   ✓ ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端（innerWidth=375）切为卡片模式并渲染 cardConfig 352ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  07:07:55
+   Duration  7.29s (transform 167ms, setup 302ms, collect 4.17s, tests 887ms, environment 1.11s, prepare 152ms)
+

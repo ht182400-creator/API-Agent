@@ -1,0 +1,19 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/ApiTester.spec.tsx
+[20260916 21:17:04.847] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789564624846_p5qj3k5s3"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789564624846_p5qj3k5s3'
+}
+
+ ✓ src/api/client.spec.ts (22 tests) 26ms

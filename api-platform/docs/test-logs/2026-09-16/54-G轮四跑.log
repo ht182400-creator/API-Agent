@@ -1,0 +1,3189 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Billing.spec.tsx
+[20260916 21:20:34.287] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789564834287_oc5wjel3k"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789564834287_oc5wjel3k'
+}
+
+stdout | src/pages/developer/Dashboard.spec.tsx
+[20260916 21:20:34.289] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789564834288_erslq2nd1"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789564834288_erslq2nd1'
+}
+
+stdout | src/pages/developer/Recharge.spec.tsx
+[20260916 21:20:57.808] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789564857808_tocsl0afw"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789564857808_tocsl0afw'
+}
+
+stdout | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-003: 选中套餐后下单，参数含 package_id/payment_method/payment_type
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:20:59.028Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:20:59.042Z',
+  payment_no: 'PAY-NEW',
+  qr_code_exists: false,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[Recharge] 启动支付结果轮询（每3秒一次）
+
+node.exe : stderr | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-003: 选中套餐后下单，参数含 package_id/payment_met
+hod/payment_type
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...od/payment_type:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-005: 自定义金额下单成功 —— createCustomRecharge 带金额与支付参数
+[PaymentFlow] handleCreateCustomOrder 开始创建自定义充值订单 {
+  step: 'handleCreateCustomOrder 开始创建自定义充值订单',
+  timestamp: '2026-09-16T13:20:59.541Z',
+  amount: 200,
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateCustomOrder 订单创建成功 {
+  step: 'handleCreateCustomOrder 订单创建成功',
+  timestamp: '2026-09-16T13:20:59.552Z',
+  payment_no: 'PAY-CUSTOM',
+  qr_code_exists: false
+}
+[倒计时] expires_in: 600
+[DEBUG] 准备启动扫码轮询: { paymentType: 'qrcode', hasQrCode: false, payment_no: 'PAY-CUSTOM' }
+[Recharge] 启动支付结果轮询（每3秒一次）
+
+stderr | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-005: 自定义金额下单成功 —— createCustomRecharge 带金额与支付参数
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at PackageCard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PackageCard.tsx:
+12:24)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at PackageCard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PackageCard.tsx:
+12:24)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at PackageCard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PackageCard.tsx:
+12:24)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at PackageCard (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PackageCard.tsx:
+12:24)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\col.js:40:13
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\grid\row.js:57:18
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Portal inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Portal inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-007: 下单失败不白屏（页面骨架保留，用户可重试）
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:20:59.762Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+
+stderr | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-007: 下单失败不白屏（页面骨架保留，用户可重试）
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-009: 日志上报异常不得拦截下单（回归防线）
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:21:00.044Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:21:00.052Z',
+  payment_no: 'PAY-NEW',
+  qr_code_exists: false,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[Recharge] 启动支付结果轮询（每3秒一次）
+
+stderr | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-009: 日志上报异常不得拦截下单（回归防线）
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-016: 日志接口返回非 Promise（undefined）时也不得中断下单
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:21:00.246Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:21:00.254Z',
+  payment_no: 'PAY-NEW',
+  qr_code_exists: false,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[Recharge] 启动支付结果轮询（每3秒一次）
+
+stderr | src/pages/developer/Recharge.spec.tsx > 下单 > TC-FE-RECHARGE-016: 日志接口返回非 Promise（undefined）时也不得中断下单
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 待支付订单暂存（不丢单） > TC-FE-RECHARGE-010: 下单成功后写入 sessionStorage（含单号与金额）
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:21:00.472Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:21:00.486Z',
+  payment_no: 'PAY-NEW',
+  qr_code_exists: false,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[Recharge] 启动支付结果轮询（每3秒一次）
+
+stderr | src/pages/developer/Recharge.spec.tsx > 待支付订单暂存（不丢单） > TC-FE-RECHARGE-010: 下单成功后写入 sessionStorage（含单号与金额）
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 待支付订单暂存（不丢单） > TC-FE-RECHARGE-011: 页面挂载时恢复暂存的未完成支付并向后端确认
+[Recharge] 从 sessionStorage 恢复支付信息: {
+  payment_no: 'PAY-OLD',
+  order_no: 'ORD-OLD',
+  amount: 100,
+  pay_url: '',
+  savedAt: 1789564860526
+}
+[倒计时] expires_in: 600
+
+stderr | src/pages/developer/Recharge.spec.tsx > 待支付订单暂存（不丢单） > TC-FE-RECHARGE-011: 页面挂载时恢复暂存的未完成支付并向后端确认
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询）
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:21:00.988Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:21:00.995Z',
+  payment_no: 'PAY-QR',
+  qr_code_exists: true,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[DEBUG] startQrcodePolling 函数被调用, paymentNo: PAY-QR
+[QRCode Poll] 第 1 次: {
+  status: 'pending',
+  payment_no: 'PAY-QR',
+  created_at: '2026-09-16T13:21:00.800Z',
+  expires_in: 600
+}
+
+stderr | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询）
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询）
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+
+stderr | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询）
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+
+stdout | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-014: 组件卸载后定时器必须清理（不得继续轮询）
+[PaymentFlow] handleCreateOrder 开始创建订单 {
+  step: 'handleCreateOrder 开始创建订单',
+  timestamp: '2026-09-16T13:21:03.875Z',
+  package_id: 'p1',
+  paymentMethod: 'alipay',
+  paymentType: 'qrcode'
+}
+[PaymentFlow] handleCreateOrder 订单创建成功 {
+  step: 'handleCreateOrder 订单创建成功',
+  timestamp: '2026-09-16T13:21:03.881Z',
+  payment_no: 'PAY-QR2',
+  qr_code_exists: true,
+  pay_url_exists: false
+}
+[倒计时] expires_in: 600
+[DEBUG] startQrcodePolling 函数被调用, paymentNo: PAY-QR2
+[QRCode Poll] 第 1 次: {
+  status: 'pending',
+  payment_no: 'PAY-QR2',
+  created_at: '2026-09-16T13:21:03.693Z',
+  expires_in: 600
+}
+
+stderr | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-014: 组件卸载后定时器必须清理（不得继续轮询）
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to EllipsisMeasure inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at span
+    at td
+    at Cell (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Cell.js:18:5)
+    at tr
+    at Row (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\Row.js:82:29)
+    at tbody
+    at table
+    at div
+    at div
+    at Descriptions (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\descriptions\index.js:42:18)
+    at PaymentSummary (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentSummar
+y.tsx:11:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to Button inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to ForwardRef inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to DeveloperRecharge inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:41:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Recharge.spec.tsx > 扫码轮询的停止 > TC-FE-RECHARGE-014: 组件卸载后定时器必须清理（不得继续轮询）
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-001: 单一数据源失败（quota 挂了）不影响账户余额显示
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+[Dashboard] getQuotaOverview 失败: Error: quota 服务不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:69:60
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+ ✓ src/pages/developer/Recharge.spec.tsx (16 tests) 10505ms
+   ✓ 初始化 > TC-FE-RECHARGE-001: 并行加载套餐/配置/余额，并过滤掉未启用的套餐 415ms
+   ✓ 下单 > TC-FE-RECHARGE-005: 自定义金额下单成功 —— createCustomRecharge 带金额与支付参数 305ms
+   ✓ 扫码轮询的停止 > TC-FE-RECHARGE-013: 取消订单后扫码轮询必须停止（不得再向后端查询） 2892ms
+   ✓ 扫码轮询的停止 > TC-FE-RECHARGE-014: 组件卸载后定时器必须清理（不得继续轮询） 4435ms
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-002: 全部数据源失败不白屏（余额卡片仍渲染）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+[Dashboard] getAccount 失败（该卡片降级为空）: Error: billing 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:78:56
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+[Dashboard] getQuotaOverview 失败: Error: quota 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:79:60
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+[Dashboard] getConsumptionTrend 失败: Error: trend 不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Dashboard.spec.tsx:80:63
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-003: 正常路径渲染余额与标签
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+[useEnvInfo] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:28:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\hooks\useEnvInfo.ts:42:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测
+试环境/模拟账户」，不得显示「生产环境」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Dashboard.spec.tsx > 开发者工作台（TC-FE-DASH） > TC-FE-DASH-004: simulation 环境下余额标签显示「模拟」（mock_mo
+de=false 不得影响）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Dashboard.spec.tsx (4 tests) 991ms
+   ✓ 开发者工作台（TC-FE-DASH） > TC-FE-DASH-001: 单一数据源失败（quota 挂了）不影响账户余额显示 528ms
+stderr | src/pages/developer/Billing.spec.tsx > 账单中心（TC-FE-BILL） > TC-FE-BILL-002: production 环境显示「生产环境/真实账户」
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Billing.spec.tsx (2 tests) 1177ms
+   ✓ 账单中心（TC-FE-BILL） > TC-FE-BILL-001: simulation 环境（mock_mode=false）必须显示「测试环境/模拟账户」，不得显示「生产环境」 989ms
+
+ Test Files  3 passed (3)
+      Tests  22 passed (22)
+   Start at  21:20:32
+   Duration  36.53s (transform 486ms, setup 646ms, collect 90.90s, tests 12.67s, environment 2.99s, prepare 495ms)
+

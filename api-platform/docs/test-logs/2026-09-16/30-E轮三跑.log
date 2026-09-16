@@ -1,0 +1,42 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/App.spec.tsx
+[20260916 04:46:44.172] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789505204172_jnh4c1g03"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789505204172_jnh4c1g03'
+}
+
+node.exe : node:events:486
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (node:events:486:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: Worker exited unexpectedly
+    at ChildProcess.onUnexpectedExit (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/tinypool/dist/ind
+ex.js:118:30)
+    at ChildProcess.emit (node:events:520:35)
+    at ChildProcess._handle.onexit (node:internal/child_process:294:12)
+Emitted 'error' event on Tinypool instance at:
+    at EventEmitterReferencingAsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at Tinypool.emit (node:events:168:18)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/tinypool/dist/index.js:594:30
+    at ChildProcess.<anonymous> (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/tinypool/dist/index.js
+:162:34)
+    at ChildProcess.emit (node:events:508:28)
+    at ChildProcess.onUnexpectedExit (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/tinypool/dist/ind
+ex.js:118:16)
+    at ChildProcess.emit (node:events:520:35)
+    at ChildProcess._handle.onexit (node:internal/child_process:294:12)
+
+Node.js v24.13.0

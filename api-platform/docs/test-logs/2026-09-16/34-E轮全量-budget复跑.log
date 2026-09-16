@@ -1,0 +1,11 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+node.exe : [warn-budget] ❌ 单元测试未通过（先修测试）
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([warn-budget] ❌ 单元测试未通过（先修测试）:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

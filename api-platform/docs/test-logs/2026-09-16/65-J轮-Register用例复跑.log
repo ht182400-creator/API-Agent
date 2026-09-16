@@ -1,0 +1,33 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/auth/Register.spec.tsx
+[20260916 23:49:58.750] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789573798750_a9cy8hcpd"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789573798750_a9cy8hcpd'
+}
+
+node.exe : stderr | src/pages/auth/Register.spec.tsx > 注册页渲染（TC-FE-REG-001） > TC-FE-REG-001: 渲染关键字段；账号类型只有 user/develop
+er 且随选择切换提示
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...eloper 且随选择切换提示:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?
+
+ ✓ src/pages/auth/Register.spec.tsx (4 tests) 1520ms
+   ✓ 注册页渲染（TC-FE-REG-001） > TC-FE-REG-001: 渲染关键字段；账号类型只有 user/developer 且随选择切换提示 661ms
+   ✓ 表单校验拦截（TC-FE-REG-002） > TC-FE-REG-002: 密码不一致 / 长度不足 / 用户名非法均被拦截，不发请求 468ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:49:53
+   Duration  6.59s (transform 178ms, setup 183ms, collect 3.52s, tests 1.52s, environment 816ms, prepare 129ms)
+

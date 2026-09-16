@@ -1,0 +1,66 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/App.spec.tsx
+[20260916 04:43:40.235] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789505020235_j25jdv3do"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789505020235_j25jdv3do'
+}
+
+ ❯ src/pages/misc/MiscPages.spec.tsx (0 test)
+ ❯ src/App.spec.tsx (0 test)
+
+node.exe : ⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ FAIL  src/App.spec.tsx [ src/App.spec.tsx ]
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no to
+p level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-m
+ock
+ ❯ src/components/Layout.tsx:8:31
+      9|  */
+     10| 
+     11| import { useState, useEffect, useCallback } from 'react'
+       |         ^
+     12| import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+     13| import { Layout as AntLayout, Menu, Avatar, Dropdown, Badge, Space, Ty…
+
+Caused by: ReferenceError: Cannot access 'rejectedModule' before initialization
+ ❯ src/App.spec.tsx:7:71
+ ❯ src/components/Layout.tsx:8:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/misc/MiscPages.spec.tsx [ src/pages/misc/MiscPages.spec.tsx ]
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no to
+p level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-m
+ock
+ ❯ src/pages/admin/Users.tsx:7:31
+      5| import { useState, useEffect } from 'react'
+      6| import '../../styles/cyber-theme.css'
+      7| import { Table, Button, Input, Select, Tag, Space, Modal, message, Typ…
+       |                               ^
+      8| import { SearchOutlined, LockOutlined, DeleteOutlined, UserOutlined } …
+      9| import dayjs from 'dayjs'
+
+Caused by: ReferenceError: Cannot access 'rejectedModule' before initialization
+ ❯ src/pages/misc/MiscPages.spec.tsx:3:68
+ ❯ src/pages/admin/Users.tsx:7:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  04:43:34
+   Duration  8.26s (transform 360ms, setup 552ms, collect 0ms, tests 0ms, environment 3.14s, prepare 675ms)
+

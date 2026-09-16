@@ -1,0 +1,7 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+[warn-budget] ✅ 警告在预算内
+    102  act: update not wrapped in act
+     79  jsdom: getComputedStyle pseudo-elements

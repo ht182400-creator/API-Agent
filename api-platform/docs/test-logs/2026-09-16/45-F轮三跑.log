@@ -1,0 +1,240 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+node.exe : stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-R
+T-001: 桌面端按表格渲染 dataSource
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/co...表格渲染 dataSource:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-002: 空数据显
+示 emptyText（默认"暂无数据"）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-003: 空数据可
+用 emptyText 自定义
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/components/shared/SharedComponents.spec.tsx (12 tests | 1 failed) 1218ms
+   ✓ ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-001: 桌面端按表格渲染 dataSource 448ms
+   × ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端（innerWidth=375）切为卡片模式并渲染 cardConfig 510ms
+     → Unable to find an accessible element with the role "button" and name `/查看/`
+
+Here are the accessible roles:
+
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "查 看":
+  [36m<button[39m
+    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-primary ant-btn-color-primary ant-btn-variant-solid ant-btn-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; flex-direction: column; gap: 12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-mncuj7"[39m
+              [33mstyle[39m=[32m"border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-body"[39m
+                [33mstyle[39m=[32m"padding: 12px;"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mstyle[39m=[32m"display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-avatar ant-avatar-circle css-dev-only-do-not-override-mncuj7"[39m
+                    [33mstyle[39m=[32m"width: 40px; height: 40px; font-size: 18px; background: var(--gradient-cyber); flex-shrink: 0;"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-avatar-string"[39m
+                      [33mstyle[39m=[32m"-webkit-transform: scale(1); transform: scale(1);"[39m
+                    [36m>[39m
+                      [0m天[0m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<div[39m
+                    [33mstyle[39m=[32m"flex: 1 1 0%; min-width: 0px;"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                      [33mstyle[39m=[32m"display: block; font-size: 15px; line-height: 1.3;"[39m
+                    [36m>[39m
+                      [36m<strong>[39m
+                        [0m天气服务[0m
+                      [36m</strong>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag css-dev-only-do-not-override-mncuj7"[39m
+                    [33mstyle[39m=[32m"margin-inline-end: 0px;"[39m
+                  [36m>[39m
+                    [0m在线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mstyle[39m=[32m"margin-top: 12px; border-top: 1px solid rgb(240, 240, 240); padding-top: 12px;"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-primary ant-btn-color-primary ant-btn-variant-solid ant-btn-sm"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0m查 看[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端（in
+nerWidth=375）切为卡片模式并渲染 cardConfig
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/查看/`
+
+Here are the accessible roles:
+
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "查 看":
+  [36m<button[39m
+    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-primary ant-btn-color-primary ant-btn-var
+iant-solid ant-btn-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; flex-direction: column; gap: 12px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-mncuj7"[39m
+              [33mstyle[39m=[32m"border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-card-body"[39m
+                [33mstyle[39m=[32m"padding: 12px;"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mstyle[39m=[32m"display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-avatar ant-avatar-circle css-dev-only-do-not-override-mncuj7"[39m
+                    [33mstyle[39m=[32m"width: 40px; height: 40px; font-size: 18px; background: var(--gradient-cyber)
+; flex-shrink: 0;"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-avatar-string"[39m
+                      [33mstyle[39m=[32m"-webkit-transform: scale(1); transform: scale(1);"[39m
+                    [36m>[39m
+                      [0m天[0m
+                    [36m</span>[39m
+                  [36m</span>[39m
+                  [36m<div[39m
+                    [33mstyle[39m=[32m"flex: 1 1 0%; min-width: 0px;"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                      [33mstyle[39m=[32m"display: block; font-size: 15px; line-height: 1.3;"[39m
+                    [36m>[39m
+                      [36m<strong>[39m
+                        [0m天气服务[0m
+                      [36m</strong>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-tag css-dev-only-do-not-override-mncuj7"[39m
+                    [33mstyle[39m=[32m"margin-inline-end: 0px;"[39m
+                  [36m>[39m
+                    [0m在线[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mstyle[39m=[32m"margin-top: 12px; border-top: 1px solid rgb(240, 240, 240); padding-top: 12px;"
+[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-primary ant-btn-color-pri
+mary ant-btn-variant-solid ant-btn-sm"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0m查 看[0m
+                    [36m</span>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  07:03:29
+   Duration  8.16s (transform 181ms, setup 248ms, collect 4.60s, tests 1.22s, environment 1.26s, prepare 251ms)
+
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/shared/SharedComponents.spec.tsx:79:28
+     77|     expect(screen.getByText('在线')).toBeInTheDocument()
+     78| 
+     79|     fireEvent.click(screen.getByRole('button', { name: /查看/ }))
+       |                            ^
+     80|     expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ id…
+     81|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

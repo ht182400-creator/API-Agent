@@ -1,0 +1,6 @@
+﻿[vitest] Test Files  20 passed (20)
+[vitest] Tests  198 passed (198)
+[vitest] Duration  133.17s (transform 5.20s, setup 63.80s, collect 809.10s, tests 137.22s, environment 316.12s, prepare 12.66s)
+[warn-budget] ✅ 警告在预算内
+    102  act: update not wrapped in act
+     90  jsdom: getComputedStyle pseudo-elements

@@ -1,0 +1,10 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+ ✓ tests/cases/frontend_cases.spec.ts (7 tests) 18ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  04:35:58
+   Duration  2.87s (transform 84ms, setup 390ms, collect 30ms, tests 18ms, environment 1.40s, prepare 155ms)
+

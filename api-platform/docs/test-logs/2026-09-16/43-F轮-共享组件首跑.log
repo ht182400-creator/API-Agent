@@ -1,0 +1,925 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+node.exe : stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-R
+T-001: 桌面端按表格渲染 dataSource
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/co...表格渲染 dataSource:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-002: 空数据显
+示 emptyText（默认"暂无数据"）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-003: 空数据可
+用 emptyText 自定义
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端切
+为卡片模式并渲染 cardConfig
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/components/shared/SharedComponents.spec.tsx (12 tests | 6 failed) 559ms
+   ✓ ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-001: 桌面端按表格渲染 dataSource 327ms
+   × ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端切为卡片模式并渲染 cardConfig 60ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <table
+  style="width: 800px; min-width: 100%; table-layout: auto;"
+>
+  <thead
+    class="ant-table-thead"
+  >
+    <tr>
+      <th
+        class="ant-table-cell"
+        scope="col"
+      >
+        名称
+      </th>
+      <th
+        class="ant-table-cell"
+        scope="col"
+      >
+        状态
+      </th>
+    </tr>
+  </thead>
+  <tbody
+    class="ant-table-tbody"
+  >
+    <tr
+      aria-hidden="true"
+      class="ant-table-measure-row"
+      tabindex="-1"
+    >
+      <th
+        class="ant-table-measure-cell"
+      >
+        <div
+          class="ant-table-measure-cell-content"
+        >
+          名称
+        </div>
+      </th>
+      <th
+        class="ant-table-measure-cell"
+      >
+        <div
+          class="ant-table-measure-cell-content"
+        >
+          状态
+        </div>
+      </th>
+    </tr>
+    <tr
+      class="ant-table-row ant-table-row-level-0"
+      data-row-key="r1"
+    >
+      <td
+        class="ant-table-cell"
+      >
+        天气服务
+      </td>
+      <td
+        class="ant-table-cell"
+      >
+        在线
+      </td>
+    </tr>
+  </tbody>
+</table> instead
+   × RepoLogo（TC-FE-SHARED-LOGO） > TC-FE-SHARED-LOGO-002: 无 logoUrl 时按 repoType 渲染默认图标与背景色 18ms
+     → expected 'linear-gradient(135deg, rgba(16, 185,…' to contain 'rgb(16, 185, 129)'
+   × RepoLogo（TC-FE-SHARED-LOGO） > TC-FE-SHARED-LOGO-003: 未知 repoType 兜底 custom 图标 7ms
+     → expected null not to be null
+   × DynamicForm（TC-FE-SHARED-FORM） > TC-FE-SHARED-FORM-001: 按 schema 渲染输入与下拉控件 15ms
+     → Unable to find a label with the text of: city
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5c8057"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_paramGroup_5c8057"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"_groupTitle_5c8057"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m🔍[0m
+          [36m</span>[39m
+          [36m<span>[39m
+            [0m查询参数[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"_groupCount_5c8057"[39m
+          [36m>[39m
+            [0m([0m
+            [0m2[0m
+            [0m)[0m
+          [36m</span>[39m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupContent_5c8057"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mcity[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_required_5c8057"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"_input_5c8057  _inputError_5c8057"[39m
+              [33mplaceholder[39m=[32m"城市"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m城市[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mdays[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"_input_5c8057  "[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m请选择[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"7"[39m
+              [36m>[39m
+                [0m近7天[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"30"[39m
+              [36m>[39m
+                [0m近30天[0m
+              [36m</option>[39m
+            [36m</select>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m天数[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × DynamicForm（TC-FE-SHARED-FORM） > TC-FE-SHARED-FORM-002: 输入变化回调 onChange(name, value) 3ms
+     → Unable to find a label with the text of: city
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5c8057"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_paramGroup_5c8057"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"_groupTitle_5c8057"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m🔍[0m
+          [36m</span>[39m
+          [36m<span>[39m
+            [0m查询参数[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"_groupCount_5c8057"[39m
+          [36m>[39m
+            [0m([0m
+            [0m2[0m
+            [0m)[0m
+          [36m</span>[39m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupContent_5c8057"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mcity[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_required_5c8057"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"_input_5c8057  _inputError_5c8057"[39m
+              [33mplaceholder[39m=[32m"城市"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m城市[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mdays[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"_input_5c8057  "[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m请选择[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"7"[39m
+              [36m>[39m
+                [0m近7天[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"30"[39m
+              [36m>[39m
+                [0m近30天[0m
+              [36m</option>[39m
+            [36m</select>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m天数[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × EndpointList（TC-FE-SHARED-EP） > TC-FE-SHARED-EP-002: 渲染端点（按 tag 分组）并支持选中回调 16ms
+     → Found multiple elements with the text: 订阅天气
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"_itemName_5ea011"[39m
+[36m>[39m
+  [0m订阅天气[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"_itemName_5ea011"[39m
+[36m>[39m
+  [0m订阅天气[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5ea011"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_group_5ea011"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupTitle_5ea011"[39m
+        [36m>[39m
+          [0m天气[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_list_5ea011"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-emerald-100 text-emerald-700"[39m
+              [36m>[39m
+                [0mGET[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m查询天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather[0m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-blue-100 text-blue-700"[39m
+              [36m>[39m
+                [0mPOST[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m订阅天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather/subscribe[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_group_5ea011"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupTitle_5ea011"[39m
+        [36m>[39m
+          [0m订阅[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_list_5ea011"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-blue-100 text-blue-700"[39m
+              [36m>[39m
+                [0mPOST[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m订阅天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather/subscribe[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端切为卡
+片模式并渲染 cardConfig
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <table
+  style="width: 800px; min-width: 100%; table-layout: auto;"
+>
+  <thead
+    class="ant-table-thead"
+  >
+    <tr>
+      <th
+        class="ant-table-cell"
+        scope="col"
+      >
+        名称
+      </th>
+      <th
+        class="ant-table-cell"
+        scope="col"
+      >
+        状态
+      </th>
+    </tr>
+  </thead>
+  <tbody
+    class="ant-table-tbody"
+  >
+    <tr
+      aria-hidden="true"
+      class="ant-table-measure-row"
+      tabindex="-1"
+    >
+      <th
+        class="ant-table-measure-cell"
+      >
+        <div
+          class="ant-table-measure-cell-content"
+        >
+          名称
+        </div>
+      </th>
+      <th
+        class="ant-table-measure-cell"
+      >
+        <div
+          class="ant-table-measure-cell-content"
+        >
+          状态
+        </div>
+      </th>
+    </tr>
+    <tr
+      class="ant-table-row ant-table-row-level-0"
+      data-row-key="r1"
+    >
+      <td
+        class="ant-table-cell"
+      >
+        天气服务
+      </td>
+      <td
+        class="ant-table-cell"
+      >
+        在线
+      </td>
+    </tr>
+  </tbody>
+</table> instead
+ ❯ src/components/shared/SharedComponents.spec.tsx:66:45
+     64|     )
+     65|     // 表格消失、卡片出现
+     66|     expect(screen.queryByRole('table')).not.toBeInTheDocument()
+       |                                             ^
+     67|     expect(screen.getByText('天气服务')).toBeInTheDocument()
+     68|     expect(screen.getByText('在线')).toBeInTheDocument()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > RepoLogo（TC-FE-SHARED-LOGO） > TC-FE-SHARED-LOGO-002: 无 logoUrl
+ 时按 repoType 渲染默认图标与背景色
+AssertionError: expected 'linear-gradient(135deg, rgba(16, 185,…' to contain 'rgb(16, 185, 129)'
+
+Expected: "rgb(16, 185, 129)"
+Received: "linear-gradient(135deg, rgba(16, 185, 129, 0.125), rgba(16, 185, 129, 0.208))"
+
+ ❯ src/components/shared/SharedComponents.spec.tsx:88:34
+     86|     // 背景色来自 typeColorMap.ai
+     87|     const el = container.firstElementChild as HTMLElement
+     88|     expect(el?.style.background).toContain('rgb(16, 185, 129)')
+       |                                  ^
+     89|     // ai → RobotOutlined（aria-label 为 "robot"）
+     90|     expect(container.querySelector('[aria-label="robot"]')).not.toBeNu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > RepoLogo（TC-FE-SHARED-LOGO） > TC-FE-SHARED-LOGO-003: 未知 repoTy
+pe 兜底 custom 图标
+AssertionError: expected null not to be null
+ ❯ src/components/shared/SharedComponents.spec.tsx:95:63
+     93|   it('TC-FE-SHARED-LOGO-003: 未知 repoType 兜底 custom 图标', () => {
+     94|     const { container } = render(<RepoLogo repoType="mystery" />)
+     95|     expect(container.querySelector('[aria-label="api"]')).not.toBeNull…
+       |                                                               ^
+     96|   })
+     97| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > DynamicForm（TC-FE-SHARED-FORM） > TC-FE-SHARED-FORM-001: 按 sche
+ma 渲染输入与下拉控件
+TestingLibraryElementError: Unable to find a label with the text of: city
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5c8057"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_paramGroup_5c8057"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"_groupTitle_5c8057"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m🔍[0m
+          [36m</span>[39m
+          [36m<span>[39m
+            [0m查询参数[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"_groupCount_5c8057"[39m
+          [36m>[39m
+            [0m([0m
+            [0m2[0m
+            [0m)[0m
+          [36m</span>[39m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupContent_5c8057"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mcity[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_required_5c8057"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"_input_5c8057  _inputError_5c8057"[39m
+              [33mplaceholder[39m=[32m"城市"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m城市[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mdays[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"_input_5c8057  "[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m请选择[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"7"[39m
+              [36m>[39m
+                [0m近7天[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"30"[39m
+              [36m>[39m
+                [0m近30天[0m
+              [36m</option>[39m
+            [36m</select>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m天数[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/shared/SharedComponents.spec.tsx:117:19
+    115|   it('TC-FE-SHARED-FORM-001: 按 schema 渲染输入与下拉控件', () => {
+    116|     render(<DynamicForm params={params} values={{}} onChange={vi.fn()}…
+    117|     expect(screen.getByLabelText('city')).toBeInTheDocument()
+       |                   ^
+    118|     expect(screen.getByLabelText('days')).toBeInTheDocument()
+    119|     // select 的 options 渲染
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > DynamicForm（TC-FE-SHARED-FORM） > TC-FE-SHARED-FORM-002: 输入变化回调
+ onChange(name, value)
+TestingLibraryElementError: Unable to find a label with the text of: city
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5c8057"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_paramGroup_5c8057"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"_groupTitle_5c8057"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m🔍[0m
+          [36m</span>[39m
+          [36m<span>[39m
+            [0m查询参数[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"_groupCount_5c8057"[39m
+          [36m>[39m
+            [0m([0m
+            [0m2[0m
+            [0m)[0m
+          [36m</span>[39m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupContent_5c8057"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mcity[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_required_5c8057"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"_input_5c8057  _inputError_5c8057"[39m
+              [33mplaceholder[39m=[32m"城市"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m城市[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_fieldWrapper_5c8057"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"_fieldLabel_5c8057"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_fieldName_5c8057"[39m
+              [36m>[39m
+                [0mdays[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"_input_5c8057  "[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m请选择[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"7"[39m
+              [36m>[39m
+                [0m近7天[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"30"[39m
+              [36m>[39m
+                [0m近30天[0m
+              [36m</option>[39m
+            [36m</select>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_fieldDesc_5c8057"[39m
+            [36m>[39m
+              [0m天数[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/shared/SharedComponents.spec.tsx:126:29
+    124|     const onChange = vi.fn()
+    125|     render(<DynamicForm params={params} values={{}} onChange={onChange…
+    126|     fireEvent.change(screen.getByLabelText('city'), { target: { value:…
+       |                             ^
+    127|     expect(onChange).toHaveBeenCalledWith('city', '北京')
+    128|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > EndpointList（TC-FE-SHARED-EP） > TC-FE-SHARED-EP-002: 渲染端点（按 ta
+g 分组）并支持选中回调
+TestingLibraryElementError: Found multiple elements with the text: 订阅天气
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"_itemName_5ea011"[39m
+[36m>[39m
+  [0m订阅天气[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"_itemName_5ea011"[39m
+[36m>[39m
+  [0m订阅天气[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_5ea011"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_group_5ea011"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupTitle_5ea011"[39m
+        [36m>[39m
+          [0m天气[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_list_5ea011"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-emerald-100 text-emerald-700"[39m
+ Test Files  1 failed (1)
+      Tests  6 failed | 6 passed (12)
+   Start at  06:59:59
+   Duration  6.36s (transform 167ms, setup 225ms, collect 3.63s, tests 559ms, environment 1.17s, prepare 157ms)
+
+              [36m>[39m
+                [0mGET[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m查询天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather[0m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-blue-100 text-blue-700"[39m
+              [36m>[39m
+                [0mPOST[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m订阅天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather/subscribe[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_group_5ea011"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_groupTitle_5ea011"[39m
+        [36m>[39m
+          [0m订阅[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_list_5ea011"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_item_5ea011 "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemHeader_5ea011"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_methodBadge_5ea011 bg-blue-100 text-blue-700"[39m
+              [36m>[39m
+                [0mPOST[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_itemName_5ea011"[39m
+              [36m>[39m
+                [0m订阅天气[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_itemPath_5ea011"[39m
+            [36m>[39m
+              [0m/weather/subscribe[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/shared/SharedComponents.spec.tsx:163:19
+    161|     render(<EndpointList endpoints={eps} selected={null} onSelect={onS…
+    162|     expect(screen.getByText('查询天气')).toBeInTheDocument()
+    163|     expect(screen.getByText('订阅天气')).toBeInTheDocument()
+       |                   ^
+    164|     // 分组标题
+    165|     expect(screen.getByText('天气')).toBeInTheDocument()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+

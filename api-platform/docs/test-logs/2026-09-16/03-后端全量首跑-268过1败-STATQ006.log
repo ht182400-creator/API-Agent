@@ -1,0 +1,38 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: D:\Work_Area\AI\API-Agent\api-platform
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.11.0, asyncio-1.3.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 269 items
+
+tests\test_alembic_infra.py ...                                          [  1%]
+tests\test_auth.py .............                                         [  5%]
+tests\test_backend_proxy.py ....                                         [  7%]
+tests\test_cache.py ............                                         [ 11%]
+tests\test_environment_guard.py ........................................ [ 26%]
+.                                                                        [ 27%]
+tests\test_payment.py ....                                               [ 28%]
+tests\test_payment_callback_allowlist.py .........                       [ 31%]
+tests\test_payment_config_source.py ......                               [ 34%]
+tests\test_quota_api.py ..........................                       [ 43%]
+tests\test_rate_limit.py ...                                             [ 44%]
+tests\test_rate_limit_redis.py ..................                        [ 51%]
+tests\test_redis_cooldown.py ...                                         [ 52%]
+tests\test_repo_endpoint_guard.py ...............                        [ 58%]
+tests\test_repositories.py .....                                         [ 60%]
+tests\test_sanitize.py .........................................         [ 75%]
+tests\test_stats_aggregation.py ......                                   [ 77%]
+tests\test_stats_query_service.py .....F.......                          [ 82%]
+tests\test_time_range.py ........                                        [ 85%]
+tests\test_url_safety.py .......................................         [100%]
+
+================================== FAILURES ===================================
+___________ TestStatsQueryService.test_group_by_day_merges_segments ___________
+tests\test_stats_query_service.py:286: in test_group_by_day_merges_segments
+    assert len(rows) == 2
+E   AssertionError: assert 3 == 2
+E    +  where 3 = len([{'calls': 1, 'cost': Decimal('0.10'), 'key': datetime.date(2026, 9, 15)}, {'calls': 1, 'cost': Decimal('0.20'), 'key': datetime.date(2026, 9, 16)}, {'calls': 1, 'cost': Decimal('0.30'), 'key': datetime.date(2026, 9, 17)}])
+=========================== short test summary info ===========================
+FAILED tests/test_stats_query_service.py::TestStatsQueryService::test_group_by_day_merges_segments
+================== 1 failed, 268 passed in 132.49s (0:02:12) ==================

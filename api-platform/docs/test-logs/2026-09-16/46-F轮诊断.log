@@ -1,0 +1,46 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+node.exe : stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-R
+T-001: 桌面端按表格渲染 dataSource
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/co...表格渲染 dataSource:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-002: 空数据显
+示 emptyText（默认"暂无数据"）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-003: 空数据可
+用 emptyText 自定义
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/components/shared/SharedComponents.spec.tsx (12 tests | 1 failed) 1040ms
+   ✓ ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-001: 桌面端按表格渲染 dataSource 418ms
+   × ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端（innerWidth=375）切为卡片模式并渲染 cardConfig 360ms
+     → container is not defined
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/shared/SharedComponents.spec.tsx > ResponsiveTable（TC-FE-SHARED-RT） > TC-FE-SHARED-RT-004: 移动端（in
+nerWidth=375）切为卡片模式并渲染 cardConfig
+ReferenceError: container is not defined
+ ❯ src/components/shared/SharedComponents.spec.tsx:80:37
+     78| 
+     79|     // 【临时诊断】dump 卡片结构，定位按钮缺失原因（查完即删）
+     80|     console.log('[DBG] card html:', container.querySelector('[class*="…
+       |                                     ^
+     81| 
+     82|     fireEvent.click(screen.getByRole('button', { name: /查看/ }))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  07:04:37
+   Duration  7.92s (transform 199ms, setup 313ms, collect 4.47s, tests 1.04s, environment 1.18s, prepare 141ms)
+

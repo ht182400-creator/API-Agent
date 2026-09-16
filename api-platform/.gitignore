@@ -94,6 +94,12 @@ Thumbs.db
 *.log
 logs/
 
+# ⚠️ 例外：测试留痕日志必须入库。
+#    docs/test-logs/YYYY-MM-DD/NN-<轮次>-<描述>.log 是**交付证据**（案例 / 命令与参数 /
+#    原始输出 / 失败原文），不是运行期日志 —— 用户明确要求"燕过留痕"。
+#    若被 `*.log` 一并忽略，`docs/test-log-*.md` 引用的原始日志在 clone 后就不存在了。
+!docs/test-logs/**/*.log
+
 # Local configuration
 config/.env
 

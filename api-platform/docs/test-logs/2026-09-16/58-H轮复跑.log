@@ -1,0 +1,22 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: D:\Work_Area\AI\API-Agent\api-platform
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.11.0, asyncio-1.3.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 16 items
+
+tests\test_auth.py .........F......                                      [100%]
+
+================================== FAILURES ===================================
+___________ TestAuthAPI.test_register_cannot_self_grant_super_admin ___________
+tests\test_auth.py:131: in test_register_cannot_self_grant_super_admin
+    assert "super_admin" not in response.text
+E   assert 'super_admin' not in '{"detail":[...rror":{}}}]}'
+E     
+E     'super_admin' is contained here:
+E       ͨ��ע������ý�ɫ��super_admin����ѡ��developer, owner, user��","input":"super_admin","ctx":{"error":{}}}]}
+E     ?           +++++++++++
+=========================== short test summary info ===========================
+FAILED tests/test_auth.py::TestAuthAPI::test_register_cannot_self_grant_super_admin
+======================== 1 failed, 15 passed in 11.51s ========================

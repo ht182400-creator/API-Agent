@@ -1,0 +1,775 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+ ✓ tests/cases/frontend_cases.spec.ts (7 tests) 27ms
+stdout | src/components/Layout.spec.tsx
+[20260916 04:21:16.106] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789503676105_b293vknkf"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789503676105_b293vknkf'
+}
+
+node.exe : stderr | src/components/Layout.spec.tsx > Layout 组件渲染与登出 > TC-FE-LAYOUT-007: 登录用户进入布局后渲染出菜单入口与用户信息
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/co...布局后渲染出菜单入口与用户信息:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. Y
+ou can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/u
+pgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `
+v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/futur
+e#v7_relativesplatpath.
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+[Layout] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:231:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:231:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:245:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+获取用户信息失败: TypeError: Failed to parse URL from /api/v1/auth/me
+    at node:internal/deps/undici/undici:16416:13
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at Object.forceRefreshUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\stores\auth.ts:120:26)
+    at fetchUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:277:26) {
+  [cause]: TypeError: Invalid URL: /api/v1/auth/me
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at Object.forceRefreshUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\stores\auth.ts:120:32)
+      at fetchUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:277:56)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:292:5
+}
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+获取最近通知失败: TypeError: __vite_ssr_import_7__.notificationApi.getRecent is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:265:42
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:304:7
+    at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:23189:26)
+    at commitPassiveMountOnFiber (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:24970:11)
+    at commitPassiveMountEffects_complete (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-
+dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:24917:7)
+    at commitPassiveMountEffects (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:24905:3)
+    at flushPassiveEffectsImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:27078:3)
+    at flushPassiveEffects (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development
+.js:27023:14)
+    at performSyncWorkOnRoot (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.developme
+nt.js:26115:3)
+获取未读数量失败: TypeError: Cannot read properties of undefined (reading 'unread_count')
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:256:27
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at listOnTimeout (node:internal/timers:567:9)
+    at processTimers (node:internal/timers:541:7)
+
+stderr | src/components/Layout.spec.tsx > Layout 组件渲染与登出 > TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+[Layout] 获取环境信息失败（不影响使用）: TypeError: Failed to parse URL from /health
+    at node:internal/deps/undici/undici:16416:13
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at listOnTimeout (node:internal/timers:567:9)
+    at processTimers (node:internal/timers:541:7)
+    at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:231:22) {
+  [cause]: TypeError: Invalid URL: /health
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at fetchEnvironment (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:231:28)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:245:5
+      at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.dev
+elopment.js:23189:26)
+}
+获取用户信息失败: TypeError: Failed to parse URL from /api/v1/auth/me
+    at node:internal/deps/undici/undici:16416:13
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at listOnTimeout (node:internal/timers:567:9)
+    at processTimers (node:internal/timers:541:7)
+    at Object.forceRefreshUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\stores\auth.ts:120:26)
+    at fetchUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:277:26) {
+  [cause]: TypeError: Invalid URL: /api/v1/auth/me
+      at new URLImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL-impl.js:21:13)
+      at Object.exports.setup (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:10971:25)
+      at fetch (node:internal/deps/undici/undici:11891:25)
+      at fetch (node:internal/deps/undici/undici:16414:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at Object.forceRefreshUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\stores\auth.ts:120:32)
+      at fetchUser (D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:277:56)
+      at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:292:5
+}
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+
+stderr | src/components/Layout.spec.tsx > Layout 组件渲染与登出 > TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态
+获取最近通知失败: TypeError: __vite_ssr_import_7__.notificationApi.getRecent is not a function
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:265:42
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:304:7
+    at commitHookEffectListMount (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:23189:26)
+    at commitPassiveMountOnFiber (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:24970:11)
+    at commitPassiveMountEffects_complete (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-
+dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom
+.development.js:24917:7)
+    at commitPassiveMountEffects (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.devel
+opment.js:24905:3)
+    at flushPassiveEffectsImpl (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.develop
+ment.js:27078:3)
+    at flushPassiveEffects (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development
+.js:27023:14)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-dom\cjs\react-dom.development.js:26808:9
+获取未读数量失败: TypeError: Cannot read properties of undefined (reading 'unread_count')
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\components\Layout.tsx:256:27
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+stdout | src/components/Layout.spec.tsx > Layout 组件渲染与登出 > TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态
+[20260916 04:21:18.957] [WEB] [DEBUG] { userId: undefined }
+[20260916 04:21:18.958] [WEB] [INFO] [Auth] User logged out {
+  "userId": "u1"
+} { userId: 'u1' }
+
+stderr | src/components/Layout.spec.tsx > Layout 组件渲染与登出 > TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态
+Warning: [antd: Dropdown] `overlay` is deprecated. Please use `menu` instead.
+
+ ✓ src/components/Layout.spec.tsx (8 tests) 2654ms
+   ✓ Layout 组件渲染与登出 > TC-FE-LAYOUT-007: 登录用户进入布局后渲染出菜单入口与用户信息 1742ms
+   ✓ Layout 组件渲染与登出 > TC-FE-LAYOUT-008: 「退出登录」调用后端登出并清空本地登录态 902ms
+stderr | src/pages/admin/Analytics.spec.tsx > 管理员分析报表页 > TC-FE-ANA-004: 接口报错时页面不白屏（仍渲染骨架文案）
+加载概览失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:149:64
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+加载仓库明细失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:151:67
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+加载趋势数据失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:150:61
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-005: 切到「趋势分析」展示趋势卡片与周期控件
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/admin/Analytics.spec.tsx (8 tests | 1 failed) 7401ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-001: 首屏渲染不崩，三个数据源均被调用 2321ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-002: 概览数据落到统计卡片与状态标签上 314ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-003: 点击「刷新数据」每个数据源各追加一次请求 452ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-005: 切到「趋势分析」展示趋势卡片与周期控件 526ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数 609ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势 1061ms
+   × Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询 1834ms
+     → Unable to find role="option" and name "待审核"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询
+TestingLibraryElementError: Unable to find role="option" and name "待审核"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ pick src/pages/admin/Analytics.spec.tsx:217:37
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 22 passed (23)
+   Start at  04:21:05
+   Duration  19.16s (transform 561ms, setup 1.27s, collect 15.62s, tests 10.08s, environment 6.62s, prepare 663ms)
+
+    215|     const pick = async (selector: HTMLElement, optionText: string) => {
+    216|       await user.click(selector)
+    217|       await user.click(await screen.findByRole('option', { name: optio…
+       |                                     ^
+    218|     }
+    219|     // 用"当前可见文本"定位 Select（placeholder 或当前选中值的文案在页…
+ ❯ src/pages/admin/Analytics.spec.tsx:229:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

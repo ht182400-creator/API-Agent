@@ -1,0 +1,89 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/App.spec.tsx
+[20260916 04:45:18.898] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789505118897_zerk9pp6z"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789505118897_zerk9pp6z'
+}
+
+stdout | src/pages/misc/MiscPages.spec.tsx
+[20260916 04:45:22.484] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789505122483_tie4j59mq"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789505122483_tie4j59mq'
+}
+
+ ❯ src/pages/misc/MiscPages.spec.tsx (0 test)
+ ❯ src/App.spec.tsx (0 test)
+
+node.exe : ⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ FAIL  src/App.spec.tsx [ src/App.spec.tsx ]
+Error: [vitest] No "PERMISSION_DEFINITIONS" export is defined on the "./api/superadmin" mock. Did you forget to return 
+it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("./api/superadmin"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ src/pages/superadmin/SuperAdminRoles.tsx:30:16
+     28| // 权限中文名映射
+     29| const permissionLabels: Record<string, string> = {}
+     30| Object.entries(PERMISSION_DEFINITIONS).forEach(([key, def]) => {
+       |                ^
+     31|   permissionLabels[key] = def.name
+     32| })
+ ❯ src/App.tsx:39:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/misc/MiscPages.spec.tsx [ src/pages/misc/MiscPages.spec.tsx ]
+Error: [vitest] No "PERMISSION_DEFINITIONS" export is defined on the "../../api/superadmin" mock. Did you forget to ret
+urn it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("../../api/superadmin"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ src/pages/superadmin/SuperAdminRoles.tsx:30:16
+     28| // 权限中文名映射
+     29| const permissionLabels: Record<string, string> = {}
+     30| Object.entries(PERMISSION_DEFINITIONS).forEach(([key, def]) => {
+       |                ^
+     31|   permissionLabels[key] = def.name
+     32| })
+ ❯ src/pages/misc/MiscPages.spec.tsx:46:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  04:45:11
+   Duration  13.42s (transform 1.90s, setup 798ms, collect 0ms, tests 0ms, environment 3.86s, prepare 617ms)
+

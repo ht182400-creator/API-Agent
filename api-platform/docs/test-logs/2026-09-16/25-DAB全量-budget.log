@@ -1,0 +1,14 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+node.exe : [warn-budget] ❌ 警告预算超标：
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([warn-budget] ❌ 警告预算超标：:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  - 新增警告种类：react-router: future flag（2 次）—— 基线中已不存在，说明修复被回退或引入了新问题
+
+如确有修复、需下调基线：npm run test:budget -- --update-baseline

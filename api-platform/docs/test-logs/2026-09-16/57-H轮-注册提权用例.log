@@ -1,0 +1,341 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: D:\Work_Area\AI\API-Agent\api-platform
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.11.0, asyncio-1.3.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 16 items
+
+tests\test_auth.py ........EEEEEEEE                                      [100%]
+
+=================================== ERRORS ====================================
+_________________ ERROR at setup of TestAuthAPI.test_register _________________
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+__ ERROR at setup of TestAuthAPI.test_register_cannot_self_grant_super_admin __
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+_____ ERROR at setup of TestAuthAPI.test_register_cannot_self_grant_admin _____
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+_______ ERROR at setup of TestAuthAPI.test_register_role_is_not_trusted _______
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+_________ ERROR at setup of TestAuthAPI.test_register_duplicate_email _________
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+_____________ ERROR at setup of TestAuthAPI.test_login_with_email _____________
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+___________ ERROR at setup of TestAuthAPI.test_login_with_username ____________
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+___________ ERROR at setup of TestAuthAPI.test_login_wrong_password ___________
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py:719: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\conftest.py:123: in client
+    from src.main import app
+src\main.py:34: in <module>
+    from src.api import api_router
+src\api\__init__.py:21: in <module>
+    from .v1 import api_router as v1_router
+src\api\v1\__init__.py:5: in <module>
+    from .auth import router as auth_router
+src\api\v1\auth.py:9: in <module>
+    from src.schemas.response import BaseResponse, TokenResponse, SignatureResponse
+src\schemas\__init__.py:3: in <module>
+    from .request import (
+src\schemas\request.py:9: in <module>
+    class UserCreate(BaseModel):
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:132: in __new__
+    private_attributes = inspect_namespace(
+C:\Users\ht182\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_model_construction.py:481: in inspect_namespace
+    raise PydanticUserError(
+E   pydantic.errors.PydanticUserError: A non-annotated attribute was detected: `SELF_REGISTER_ROLES = {'developer', 'owner', 'user'}`. All model fields require a type annotation; if `SELF_REGISTER_ROLES` is not meant to be a field, you may be able to resolve this error by annotating it as a `ClassVar` or updating `model_config['ignored_types']`.
+E   
+E   For further information visit https://errors.pydantic.dev/2.12/u/model-field-missing-annotation
+=========================== short test summary info ===========================
+ERROR tests/test_auth.py::TestAuthAPI::test_register - pydantic.errors.Pydant...
+ERROR tests/test_auth.py::TestAuthAPI::test_register_cannot_self_grant_super_admin
+ERROR tests/test_auth.py::TestAuthAPI::test_register_cannot_self_grant_admin
+ERROR tests/test_auth.py::TestAuthAPI::test_register_role_is_not_trusted - py...
+ERROR tests/test_auth.py::TestAuthAPI::test_register_duplicate_email - pydant...
+ERROR tests/test_auth.py::TestAuthAPI::test_login_with_email - pydantic.error...
+ERROR tests/test_auth.py::TestAuthAPI::test_login_with_username - pydantic.er...
+ERROR tests/test_auth.py::TestAuthAPI::test_login_wrong_password - pydantic.e...
+======================== 8 passed, 8 errors in 10.56s =========================

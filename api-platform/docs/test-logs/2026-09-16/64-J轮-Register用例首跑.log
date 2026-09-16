@@ -1,0 +1,316 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/auth/Register.spec.tsx
+[20260916 23:49:26.094] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789573766093_u4zj70yf4"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789573766093_u4zj70yf4'
+}
+
+node.exe : stderr | src/pages/auth/Register.spec.tsx > 注册页渲染（TC-FE-REG-001） > TC-FE-REG-001: 渲染关键字段；账号类型只有 user/develop
+er 且随选择切换提示
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...eloper 且随选择切换提示:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?
+
+ ❯ src/pages/auth/Register.spec.tsx (4 tests | 1 failed) 2294ms
+   ✓ 注册页渲染（TC-FE-REG-001） > TC-FE-REG-001: 渲染关键字段；账号类型只有 user/developer 且随选择切换提示 742ms
+   × 表单校验拦截（TC-FE-REG-002） > TC-FE-REG-002: 密码不一致 / 长度不足 / 用户名非法均被拦截，不发请求 1142ms
+     → expected "spy" to be called with arguments: [ '两次输入的密码不一致' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_446174 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_content_446174"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered _card_446174 css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"_header_446174"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"_title_446174"[39m
+                [36m>[39m
+                  [0m注册账号[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"_subtitle_446174"[39m
+                [36m>[39m
+                  [0m加入API Platform[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<form[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33mclass[39m=[32m"ant-form ant-form-horizontal ant-form-large css-dev-only-do-not-override-7zmxdp"[39m
+                [33mid[39m=[32m"register"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-has-success ant-form-item-horizontal"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"ant-input-affix-wrapper ant-input-affix-wrapper-lg css-dev-only-do-not-override-7zmxdp ant-input-outlined ant-input-status-success"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33mclass[39m=[32m"ant-input-prefix"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33maria-label[39m=[32m"user"[39m
+                                [33mclass[39m=[32m"anticon anticon-user"[39m
+                                [33mrole[39m=[32m"img"[39m
+                              [36m>[39m
+                                [36m<svg[39m
+                                  [33maria-hidden[39m=[32m"true"[39m
+                                  [33mdata-icon[39m=[32m"user"[39m
+                                  [33mfill[39m=[32m"currentColor"[39m
+                                  [33mfocusable[39m=[32m"false"[39m
+                                  [33mheight[39m=[32m"1em"[39m
+                                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                  [33mwidth[39m=[32m"1em"[39m
+                                [36m>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"[39m
+                                  [36m/>[39m
+                                [36m</svg>[39m
+                              [36m</span>[39m
+                            [36m</span>[39m
+                            [36m<input[39m
+                              [33maria-required[39m=[32m"true"[39m
+                              [33mautocomplete[39m=[32m"off"[39m
+                              [33mclass[39m=[32m"ant-input ant-input-lg css-dev-only-do-not-override-7zmxdp"[39m
+                              [33mid[39m=[32m"register_username"[39m
+                              [33mplaceholder[39m=[32m"用户名（用于登录）"[39m
+                              [33mtype[39m=[32m"text"[39m
+                              [33mvalue[39m=[32m"newuser01"[39m
+                            [36m/>[39m
+                          [36m</span>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-has-success ant-form-item-horizontal"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"ant-input-affix-wrapper ant-input-affix-wrapper-lg css-dev-only-do-not-override-7zmxdp ant-input-outlined ant-input-status-success"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33mclass[39m=[32m"ant-input-prefix"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33maria-label[39m=[32m"mail"[39m
+                                [33mclass[39m=[32m"anticon anticon-mail"[39m
+                                [33mrole[39m=[32m"img"[39m
+                              [36m>[39m
+          ...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/auth/Register.spec.tsx > 表单校验拦截（TC-FE-REG-002） > TC-FE-REG-002: 密码不一致 / 长度不足 / 用户名非法均被拦截，不发请求
+AssertionError: expected "spy" to be called with arguments: [ '两次输入的密码不一致' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_container_446174 bamboo-bg-pattern"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_content_446174"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card ant-card-bordered _card_446174 css-dev-only-do-not-override-7zmxdp"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-card-body"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"_header_446174"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"_title_446174"[39m
+                [36m>[39m
+                  [0m注册账号[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"_subtitle_446174"[39m
+                [36m>[39m
+                  [0m加入API Platform[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<form[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33mclass[39m=[32m"ant-form ant-form-horizontal ant-form-large css-dev-only-do-not-override-7zmxdp"
+[39m
+                [33mid[39m=[32m"register"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-has-success ant
+-form-item-horizontal"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"ant-input-affix-wrapper ant-input-affix-wrapper-lg css-dev-only-do-no
+t-override-7zmxdp ant-input-outlined ant-input-status-success"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33mclass[39m=[32m"ant-input-prefix"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33maria-label[39m=[32m"user"[39m
+                                [33mclass[39m=[32m"anticon anticon-user"[39m
+                                [33mrole[39m=[32m"img"[39m
+                              [36m>[39m
+                                [36m<svg[39m
+                                  [33maria-hidden[39m=[32m"true"[39m
+                                  [33mdata-icon[39m=[32m"user"[39m
+                                  [33mfill[39m=[32m"currentColor"[39m
+                                  [33mfocusable[39m=[32m"false"[39m
+                                  [33mheight[39m=[32m"1em"[39m
+                                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                  [33mwidth[39m=[32m"1em"[39m
+                                [36m>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.
+6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.
+2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 
+7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.
+2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 34
+0 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S
+557.9 534 512 534z"[39m
+                                  [36m/>[39m
+                                [36m</svg>[39m
+                              [36m</span>[39m
+                            [36m</span>[39m
+                            [36m<input[39m
+                              [33maria-required[39m=[32m"true"[39m
+                              [33mautocomplete[39m=[32m"off"[39m
+                              [33mclass[39m=[32m"ant-input ant-input-lg css-dev-only-do-not-override-7zmxdp"[39m
+                              [33mid[39m=[32m"register_username"[39m
+                              [33mplaceholder[39m=[32m"用户名（用于登录）"[39m
+                              [33mtype[39m=[32m"text"[39m
+                              [33mvalue[39m=[32m"newuser01"[39m
+                            [36m/>[39m
+                          [36m</span>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-has-success ant
+-form-item-horizontal"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"ant-input-affix-wrapper ant-input-affix-wrapper-lg css-dev-only-do-no
+t-override-7zmxdp ant-input-outlined ant-input-status-success"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33mclass[39m=[32m"ant-input-prefix"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33maria-label[39m=[32m"mail"[39m
+                                [33mclass[39m=[32m"anticon anticon-mail"[39m
+                                [33mrole[39m=[32m"img"[39m
+                              [36m>[39m
+          ...
+ ❯ src/pages/auth/Register.spec.tsx:149:34
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  23:49:20
+   Duration  7.48s (transform 187ms, setup 181ms, collect 3.63s, tests 2.29s, environment 807ms, prepare 136ms)
+
+    147| 
+    148|     await waitFor(() =>
+    149|       expect(messageSpies.error).toHaveBeenCalledWith('两次输入的密码…
+       |                                  ^
+    150|     )
+    151|     expect(authApi.register).not.toHaveBeenCalled()
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

@@ -1,0 +1,3 @@
+[warn-budget] ✅ 警告在预算内
+    102  act: update not wrapped in act
+     79  jsdom: getComputedStyle pseudo-elements

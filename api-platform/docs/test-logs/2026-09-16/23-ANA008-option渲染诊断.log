@@ -1,0 +1,625 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+node.exe : stderr | src/pages/admin/Analytics.spec.tsx > 管理员分析报表页 > TC-FE-ANA-004: 接口报错时页面不白屏（仍渲染骨架文案）
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...时页面不白屏（仍渲染骨架文案）:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+加载概览失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:154:64
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+加载仓库明细失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:156:67
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+加载趋势数据失败 Error: 后端不可用
+    at D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\admin\Analytics.spec.tsx:155:61
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:39:
+7)
+    at runTest (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:
+11
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-005: 切到「趋势分析」展示趋势卡片与周期控件
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stdout | src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询
+[DBG] dropdown count: 1 | visible class: ant-select-dropdown ant-slide-up-appear ant-slide-up-appear-prepare ant-slide-up css-dev-only-do-not-override-7zmxdp ant-select-dropdown-placement-bottomLeft | option count: 5 | texts: [ '全部状态', '已上线', '待审核', '已下线', '已拒绝' ]
+
+ ❯ src/pages/admin/Analytics.spec.tsx (8 tests | 1 failed) 6567ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-001: 首屏渲染不崩，三个数据源均被调用 1144ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-003: 点击「刷新数据」每个数据源各追加一次请求 342ms
+   ✓ 管理员分析报表页 > TC-FE-ANA-004: 接口报错时页面不白屏（仍渲染骨架文案） 311ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-005: 切到「趋势分析」展示趋势卡片与周期控件 725ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-006: 切到「仓库明细」展示表格、数据与分页总数 883ms
+   ✓ Tab 切换与仓库明细弹窗 > TC-FE-ANA-007: 点击「查看明细」按仓库打开弹窗并加载其趋势 1205ms
+   × Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询 1724ms
+     → Unable to find role="option" and name "待审核"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-message-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/Analytics.spec.tsx > Tab 切换与仓库明细弹窗 > TC-FE-ANA-008: 明细状态筛选与排序变化会带参重新查询
+TestingLibraryElementError: Unable to find role="option" and name "待审核"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-message ant-message-top css-dev-only-do-not-override-mncuj7"[39m
+    [33mstyle[39m=[32m"left: 50%; transform: translateX(-50%); top: 8px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+              [0m后端不可用[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-message-notice-wrapper ant-message-move-up-leave ant-message-move-up-leave-active ant-m
+essage-move-up"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-message-notice ant-message-notice-error"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-message-notice-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-message-custom-content ant-message-error"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64
+zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-
+45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.1
+2 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87
+c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00
+-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.
+09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [36m<span>[39m
+          ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ pick src/pages/admin/Analytics.spec.tsx:239:37
+    237|         opts.map((o) => o.textContent)
+    238|       )
+    239|       await user.click(await screen.findByRole('option', { name: optio…
+       |                                     ^
+    240|     }
+    241|     // 用"当前可见文本"定位 Select（placeholder 或当前选中值的文案在页…
+ ❯ src/pages/admin/Analytics.spec.tsx:251:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  04:28:12
+   Duration  15.27s (transform 292ms, setup 288ms, collect 6.06s, tests 6.57s, environment 1.37s, prepare 164ms)
+

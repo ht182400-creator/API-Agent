@@ -1,0 +1,39 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+ ❯ tests/cases/frontend_cases.spec.ts (7 tests | 1 failed) 21ms
+   × 用例库 frontend_cases.json 自检 > TC-FE-CASES-003: 每个 suite 的必填字段齐全、status 合法 6ms
+     → suite FE-ADMIN-MISC 缺被测文件 file: expected undefined to be truthy
+
+node.exe : ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ FAIL  tests/cases/frontend_cases.spec.ts > 用例库 frontend_cases.json 自检 > TC-FE-CASES-003: 每个 suite 的必填字段齐全、status 合法
+AssertionError: suite FE-ADMIN-MISC 缺被测文件 file: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/cases/frontend_cases.spec.ts:62:50
+     60|     for (const s of suites) {
+     61|       expect(s.id, 'suite 缺 id').toBeTruthy()
+     62|       expect(s.file, `suite ${s.id} 缺被测文件 file`).toBeTruthy()
+       |                                                  ^
+     63|       expect(LEGAL.has(s.status ?? ''), `suite ${s.id} 非法 status: ${…
+     64|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  04:14:29
+   Duration  2.47s (transform 71ms, setup 281ms, collect 25ms, tests 21ms, environment 1.38s, prepare 266ms)
+

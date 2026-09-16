@@ -1,0 +1,29 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: D:\Work_Area\AI\API-Agent\api-platform
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.11.0, asyncio-1.3.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 19 items
+
+tests\test_stats_query_service.py ........FF...                          [ 68%]
+tests\test_stats_aggregation.py ......                                   [100%]
+
+================================== FAILURES ===================================
+_____ TestStatsQueryService.test_watermark_initialized_from_earliest_log ______
+tests\test_stats_query_service.py:365: in test_watermark_initialized_from_earliest_log
+    assert state.aggregated_until == current_hour
+E   assert datetime.datetime(2026, 9, 16, 4, 0, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 9, 15, 19, 0, tzinfo=datetime.timezone.utc)
+E    +  where datetime.datetime(2026, 9, 16, 4, 0, tzinfo=datetime.timezone.utc) = <StatsAggregationState until=2026-09-16 04:00:00+00:00>.aggregated_until
+---------------------------- Captured stdout call -----------------------------
+2026-09-16 03:24:29.631 | [SERVER] | INFO     | api_platform.stats_aggregation:111 | [StatsAggregation] ˮλ��ʼ��: aggregated_until=2026-09-16T04:00:00+00:00��������־=2026-09-16T04:17:00+00:00��
+________________ TestStatsQueryService.test_catchup_is_batched ________________
+tests\test_stats_query_service.py:388: in test_catchup_is_batched
+    assert first["hours"] == 2
+E   assert 0 == 2
+---------------------------- Captured stdout call -----------------------------
+2026-09-16 03:24:30.871 | [SERVER] | INFO     | api_platform.stats_aggregation:111 | [StatsAggregation] ˮλ��ʼ��: aggregated_until=2026-09-16T04:00:00+00:00��������־=2026-09-16T04:17:00+00:00��
+=========================== short test summary info ===========================
+FAILED tests/test_stats_query_service.py::TestStatsQueryService::test_watermark_initialized_from_earliest_log
+FAILED tests/test_stats_query_service.py::TestStatsQueryService::test_catchup_is_batched
+======================== 2 failed, 17 passed in 22.19s ========================
