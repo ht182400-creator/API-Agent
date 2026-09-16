@@ -16,7 +16,7 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 54,
+      "sourceFiles": 56,
       "specFiles": 29,
       "cases": 285,
       "covered": [
@@ -33,12 +33,17 @@
         "src/pages/admin/analytics/RepoDetailsTab.tsx",
         "src/pages/admin/analytics/RepoDetailModal.tsx",
         "src/pages/admin/analytics/TrendControls.tsx",
+        "src/pages/owner/repos/BasicInfoTab.tsx",
+        "src/pages/owner/repos/LimitsTab.tsx",
+        "src/pages/owner/repos/EndpointsTab.tsx",
+        "src/pages/owner/repos/repoColumns.tsx",
+        "src/pages/owner/repos/endpointColumns.tsx",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54））。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -209,8 +214,8 @@
       "id": "FE-OWNER-REPOS",
       "level": "P1",
       "file": "src/pages/owner/Repos.tsx",
-      "lines": 1059,
-      "why": "P1-4 目标；仓库 CRUD + 端点/限流配置提交。重点：图标上传三分支（类型/200KB 边界/base64 回填）；loadRepoConfig 取失败时静默回落默认限流值（可能放大用户原本更严格的限流）；删除必须经 Popconfirm 确认",
+      "lines": 704,
+      "why": "P1-4 目标之一，**已拆完**（1059 → 704 行）：三个 Tab 分别抽为 repos/BasicInfoTab · LimitsTab · EndpointsTab，列表列定义抽为 repos/repoColumns，端点列定义与 HTTP 方法配色抽为 repos/endpointColumns。业务重点：仓库 CRUD + 端点/限流配置提交；图标上传三分支（类型/200KB 边界/base64 回填）；loadRepoConfig 取失败时静默回落默认限流值（可能放大用户原本更严格的限流）；删除必须经 Popconfirm 确认",
       "status": "covered",
       "specFile": "src/pages/owner/Repos.spec.tsx",
       "cases": [

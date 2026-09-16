@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | ✅ 后端 4/4 + 前端 4/4 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端全部完成（§2.25）**：`Analytics.tsx` 964→477、`Recharge.tsx` 2001→1744、`owner/Repos.tsx` 1059→813、`admin/Repos.tsx` 924→589 |
+| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 + 前端 3/4 完成 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端进度见 §2.25（2026-09-17 实测）**：`Analytics.tsx` 964→**309** ✅、`admin/Repos.tsx` 924→**589** ✅、`owner/Repos.tsx` 1059→**704** ✅、`Recharge.tsx` 2001→**1752** 🔄（本项目最大文件，唯一未完）|
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1099,23 +1099,26 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 硬抽会把 props 摊成一张大表、review 成本高、回归面大。
 实测下来**按依赖数量从少到多切，每一步都能稳稳通过测试**。
 
-#### 当前进度
+#### 当前进度（2026-09-17 实测复核，行数一律以磁盘为准）
 
-| 组件 | 拆分前 → 现在 | 抽出模块数 / 行数 |
-|------|--------------|------------------|
-| `developer/Recharge.tsx` | 2001 → **1744** | 7 个 / 566 行 |
-| `admin/Analytics.tsx` | 964 → **477**（**减半**） | 5 个（含复用）/ 652 行 |
-| `owner/Repos.tsx` | 1059 → **813** | 3 个 / 394 行 |
-| `admin/Repos.tsx` | 924 → **589** | 1 个 / 402 行（`repos/repoColumns.tsx`：双表格列定义工厂 + `getStatusTag`） |
+| 组件 | 拆分前 → 现在 | 抽出模块数 / 行数 | 状态 |
+|------|--------------|------------------|------|
+| `admin/Analytics.tsx` | 964 → **309** | 8 个 / 1027 行 | ✅ **已拆完**（2026-09-17 B 轮）|
+| `admin/Repos.tsx` | 924 → **589** | 1 个 / 402 行 | ✅ 已拆完 |
+| `owner/Repos.tsx` | 1059 → **704** | 5 个 / 572 行 | ✅ **已拆完**（2026-09-17 B2 轮）|
+| `developer/Recharge.tsx` | 2001 → **1752** | 7 个 / 566 行 | 🔄 进行中（本项目最大文件）|
 
-**已抽出模块**：
+**已抽出模块**（行数为实测）：
 
+- `admin/analytics/`：`constants.ts`(45) · `chartData.ts`(50，带单测) · `repoDetailColumns.tsx`(119) ·
+  `OverviewTab.tsx`(234) · `RepoDetailModal.tsx`(287) · **`TrendTab.tsx`(134) · `RepoDetailsTab.tsx`(105) ·
+  `TrendControls.tsx`(53)**（后三个为 2026-09-17 B 轮新增）
 - `developer/recharge/`：`constants.tsx`(50) · `rechargeLogger.ts`(48) · `useRechargeData.ts`(77) ·
   `paymentSession.ts`(75) · `components/PackageCard.tsx`(84) · `components/PaymentSummary.tsx`(97) ·
   `components/PaySuccessView.tsx`(135)
-- `admin/analytics/`：`constants.ts`(25) · `chartData.ts`(50，带单测) · `repoDetailColumns.tsx`(119) ·
-  `OverviewTab.tsx`(246) · `RepoDetailModal.tsx`(291)
-- `owner/repos/`：`repoColumns.tsx`(127) · `LimitsTab.tsx`(133) · `BasicInfoTab.tsx`(134)
+- `owner/repos/`：`repoColumns.tsx`(122) · `LimitsTab.tsx`(133) · `BasicInfoTab.tsx`(134) ·
+  **`EndpointsTab.tsx`(92) · `endpointColumns.tsx`(91)**（后两个为 2026-09-17 B2 轮；`getMethodColor`
+  放在 `endpointColumns` 而非 Tab 组件里，因为「仓库详情」抽屉的端点表格也用它）
 
 #### ⚠️ 三条复用经验（都是实际踩出来的）
 
@@ -1176,7 +1179,7 @@ react-router future 16 / `bodyStyle` 8 / 重复 key 4 / rc-collapse 2）。
 
 ## 3. 待办项详细计划
 
-### 3.1 P1-4 巨型文件拆分 🔄（后端 4/4 ✅，前端 4 项中 3 项已启动｜详见 §2.25）
+### 3.1 P1-4 巨型文件拆分 🔄（后端 4/4 ✅；前端 3/4 已完成：`Analytics` · `admin/Repos` · `owner/Repos`，仅剩 `Recharge`｜详见 §2.25）
 
 | 文件 | 现状 | 拆分方案 | 风险 |
 |------|------|----------|------|
@@ -1184,13 +1187,13 @@ react-router future 16 / `bodyStyle` 8 / 重复 key 4 / rc-collapse 2）。
 | ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
 | ~~`src/api/v1/analytics.py`~~（清单外） | ✅ **已拆分** | → `src/api/v1/analytics/` 包（`_shared` + 5 子模块，最大 194 行） | 中 |
 | ~~`src/api/v1/billing.py`~~（清单外） | ✅ **已拆分**（§2.23） | → `src/api/v1/billing/` 包（`_shared` + 5 子模块，最大 246 行） | 中 |
-| `web/src/pages/developer/Recharge.tsx` | 🔄 **拆分中**：2001 → **1739** 行（§2.25） | 已抽 `constants`/`rechargeLogger`/`useRechargeData`/`paymentSession` + `PackageCard`/`PaymentSummary`/`PaySuccessView`；剩余：支付弹窗剩余小块、`usePaymentPolling` | 中 |
-| `web/src/pages/owner/Repos.tsx` | 🔄 **已起步**：1059 → **985** 行（§2.25） | 已抽 `repos/repoColumns.tsx`；剩余：`BasicInfoTab`/`EndpointsTab`/`LimitsTab` 三个 Tab | 中 |
-| `web/src/pages/admin/Analytics.tsx` | ✅ **基本完成**：964 → **477** 行（**减半**，§2.25） | 已抽 `analytics/`（`constants`/`chartData`/`repoDetailColumns`/`OverviewTab`/`RepoDetailModal`）；剩余：趋势 Tab（约 110 行） | 低 |
-| `web/src/pages/admin/Repos.tsx` | 📋 待开始（924 行） | 已有 8 条用例兜底，可随时开拆 | 中 |
+| `web/src/pages/developer/Recharge.tsx` | 🔄 **拆分中**：2001 → **1752** 行（§2.25，剩余最多） | 已抽 `constants`/`rechargeLogger`/`useRechargeData`/`paymentSession` + `PackageCard`/`PaymentSummary`/`PaySuccessView`；剩余：支付弹窗剩余小块、`usePaymentPolling` | 中 |
+| `web/src/pages/owner/Repos.tsx` | ✅ **已完成**：1059 → **704** 行（§2.25，2026-09-17 B2 轮） | 已抽 `repos/` 全部 5 个模块：`repoColumns` + `BasicInfoTab` / `LimitsTab` / `EndpointsTab` + `endpointColumns` | 中 |
+| `web/src/pages/admin/Analytics.tsx` | ✅ **已完成**：964 → **309** 行（§2.25，2026-09-17 B 轮） | 已抽 `analytics/` 全部 8 个模块（`constants`/`chartData`/`repoDetailColumns`/`OverviewTab`/`RepoDetailModal`/`TrendTab`/`RepoDetailsTab`/`TrendControls`）；本文件只剩状态 + 数据加载 + Tab 组合 | 低 |
+| `web/src/pages/admin/Repos.tsx` | ✅ **已完成**：924 → **589** 行（§2.25） | 已抽 `repos/repoColumns.tsx`（双表格列定义工厂 + `getStatusTag`） | 中 |
 
 **建议做法**：每次只拆一个文件（前端则按"依赖数量"切最小的一块，见 §2.25），
-拆分后跑全量测试（后端 269 条 `pytest`；前端 142 条 `npm run test:unit`）
+拆分后跑全量测试（后端 269 条 `pytest`；前端 **292 条** `npm run test:unit`）
 + 前端构建 + 手工回归对应页面。
 
 > 💡 前端拆分**尤其依赖先有测试**：后端 `repositories.py` 与前端 `Recharge`/`Analytics`

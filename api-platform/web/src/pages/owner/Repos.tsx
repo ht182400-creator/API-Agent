@@ -19,6 +19,8 @@ import styles from './Repos.module.css'
 import { createRepoColumns } from './repos/repoColumns'
 import { LimitsTab } from './repos/LimitsTab'
 import { BasicInfoTab } from './repos/BasicInfoTab'
+import { EndpointsTab } from './repos/EndpointsTab'
+import { getMethodColor } from './repos/endpointColumns'
 
 const { Title, Text } = Typography
 
@@ -280,17 +282,8 @@ export default function OwnerRepos() {
     }
   }
 
-  // 获取HTTP方法对应的颜色
-  const getMethodColor = (method: string) => {
-    const colors: Record<string, string> = {
-      GET: 'green',
-      POST: 'blue',
-      PUT: 'orange',
-      DELETE: 'red',
-      PATCH: 'purple'
-    }
-    return colors[method] || 'default'
-  }
+  // HTTP 方法配色 getMethodColor 已随端点列定义抽至 ./repos/endpointColumns
+  // （本页「仓库详情」抽屉里的端点表格也用它，故放在共享模块而不是 Tab 组件里）
 
   // 表格列定义已抽至 ./repos/repoColumns（工厂函数，需传入三个动作回调）
   const columns = createRepoColumns({
@@ -299,117 +292,7 @@ export default function OwnerRepos() {
     onDelete: handleDelete,
   })
 
-  // Tab 内容组件：BasicInfoTab / LimitsTab 已抽至 ./repos/；EndpointsTab 仍在本文件
-
-  const EndpointsTab = () => (
-    <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text type="secondary">配置仓库提供的所有API接口</Text>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAddEndpoint}>
-          添加端点
-        </Button>
-      </div>
-      
-      {endpoints.length === 0 ? (
-        <Alert message="暂无API端点配置" description="点击上方按钮添加您的第一个API端点" type="info" showIcon />
-      ) : isMobile ? (
-        // 移动端：卡片布局
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {endpoints.map((endpoint) => (
-            <Card
-              key={endpoint.id || endpoint.path}
-              size="small"
-              style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-              styles={{ body: { padding: 12 } }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <Tag color={getMethodColor(endpoint.method)}>{endpoint.method}</Tag>
-                <Text code style={{ flex: 1, fontSize: 12, wordBreak: 'break-all' }}>{endpoint.path}</Text>
-              </div>
-              {endpoint.description && (
-                <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
-                  描述：{endpoint.description}
-                </div>
-              )}
-              <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
-                <Space size={16}>
-                  <span>RPM限制：{endpoint.rpm_limit || '-'}</span>
-                  <span>RPH限制：{endpoint.rph_limit || '-'}</span>
-                </Space>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
-                <Tag color={endpoint.enabled !== false ? 'green' : 'default'}>
-                  {endpoint.enabled !== false ? '启用' : '禁用'}
-                </Tag>
-                <Space size="small">
-                  <Button size="small" onClick={() => handleEditEndpoint(endpoint)}>编辑</Button>
-                  <Button size="small" danger onClick={() => handleDeleteEndpoint(endpoint)}>删除</Button>
-                </Space>
-              </div>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        // 桌面端：表格布局
-        <Table
-          dataSource={endpoints}
-          rowKey={(record) => record.id || record.path}
-          pagination={false}
-          size="small"
-          columns={[
-            {
-              title: '方法',
-              dataIndex: 'method',
-              key: 'method',
-              width: 80,
-              render: (method: string) => <Tag color={getMethodColor(method)}>{method}</Tag>
-            },
-            {
-              title: '路径',
-              dataIndex: 'path',
-              key: 'path',
-              render: (path: string) => <Text code>{path}</Text>
-            },
-            {
-              title: '描述',
-              dataIndex: 'description',
-              key: 'description',
-              ellipsis: true
-            },
-            {
-              title: 'RPM限制',
-              dataIndex: 'rpm_limit',
-              key: 'rpm_limit',
-              width: 100,
-              render: (v: number) => v || '-'
-            },
-            {
-              title: '状态',
-              dataIndex: 'enabled',
-              key: 'enabled',
-              width: 80,
-              render: (enabled: boolean) => (
-                <Tag color={enabled !== false ? 'green' : 'default'}>
-                  {enabled !== false ? '启用' : '禁用'}
-                </Tag>
-              )
-            },
-            {
-              title: '操作',
-              key: 'action',
-              width: 120,
-              render: (_: any, record: Endpoint) => (
-                <Space size="small">
-                  <Button size="small" onClick={() => handleEditEndpoint(record)}>编辑</Button>
-                  <Button size="small" danger onClick={() => handleDeleteEndpoint(record)}>删除</Button>
-                </Space>
-              )
-            },
-          ]}
-        />
-      )}
-    </div>
-  )
+  // Tab 内容组件 BasicInfoTab / LimitsTab / EndpointsTab 均已抽至 ./repos/
 
   // LimitsTab 已抽为 ./repos/LimitsTab（必须在 <Form> 内使用）
 
@@ -429,7 +312,15 @@ export default function OwnerRepos() {
     {
       key: 'endpoints',
       label: <span><ApiOutlined /> 端点配置 ({endpoints.length})</span>,
-      children: <EndpointsTab />,
+      children: (
+        <EndpointsTab
+          endpoints={endpoints}
+          isMobile={isMobile}
+          onAdd={handleAddEndpoint}
+          onEdit={handleEditEndpoint}
+          onDelete={handleDeleteEndpoint}
+        />
+      ),
     },
     {
       key: 'limits',
