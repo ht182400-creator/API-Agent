@@ -1,0 +1,74 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Quota.spec.tsx
+[20260917 00:44:36.504] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577076504_q5juf1ra5"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577076504_q5juf1ra5'
+}
+
+node.exe : stderr | src/pages/developer/Quota.spec.tsx > 首屏取 Key 并自动选中第一个（TC-FE-QUOTA-001） > TC-FE-QUOTA-001: 取 Key 列表 
+→ 自动选中首个 → 按该 Key 拉配额/历史/Top 仓库
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...y 拉配额/历史/Top 仓库:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > RPM / RPH 达限与缺省限额（TC-FE-QUOTA-003） > TC-FE-QUOTA-003: 达到上限时标「已达限」；限额缺失时回退
+ 1000/10000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余
+额扣费则不提醒
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余
+额扣费则不提醒
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 趋势合计 / Top 仓库 / 无 Key 空态（TC-FE-QUOTA-005） > TC-FE-QUOTA-005: 总调用合计与 Top 仓
+库占比排名正确；无 Key 时给空态引导
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Quota.spec.tsx (5 tests) 2180ms
+   ✓ 首屏取 Key 并自动选中第一个（TC-FE-QUOTA-001） > TC-FE-QUOTA-001: 取 Key 列表 → 自动选中首个 → 按该 Key 拉配额/历史/Top 仓库 749ms
+   ✓ 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/90/100 边界与超额截断） 781ms
+   ✓ 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余额扣费则不提醒 312ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:44:31
+   Duration  7.51s (transform 223ms, setup 211ms, collect 3.58s, tests 2.18s, environment 852ms, prepare 155ms)
+

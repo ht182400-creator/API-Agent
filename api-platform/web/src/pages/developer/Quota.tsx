@@ -382,7 +382,7 @@ export default function DeveloperQuota() {
                   const total = topRepos.reduce((acc, r) => acc + r.call_count, 0)
                   const percent = total > 0 ? Math.round((repo.call_count / total) * 100) : 0
                   return (
-                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                    <Card key={repo.repo_id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                         <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#1677ff' : '#d9d9d9' }} />
                         <Tag color="blue" style={{ marginInlineEnd: 0 }}>{repo.repo_name || '未知仓库'}</Tag>

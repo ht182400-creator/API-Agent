@@ -1,0 +1,341 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Quota.spec.tsx
+[20260917 00:44:00.029] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789577040029_v6q1qg8ar"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789577040029_v6q1qg8ar'
+}
+
+node.exe : stderr | src/pages/developer/Quota.spec.tsx > 首屏取 Key 并自动选中第一个（TC-FE-QUOTA-001） > TC-FE-QUOTA-001: 取 Key 列表 
+→ 自动选中首个 → 按该 Key 拉配额/历史/Top 仓库
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...y 拉配额/历史/Top 仓库:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/9
+0/100 边界与超额截断）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > RPM / RPH 达限与缺省限额（TC-FE-QUOTA-003） > TC-FE-QUOTA-003: 达到上限时标「已达限」；限额缺失时回退
+ 1000/10000
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余
+额扣费则不提醒
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余
+额扣费则不提醒
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Quota.spec.tsx > 趋势合计 / Top 仓库 / 无 Key 空态（TC-FE-QUOTA-005） > TC-FE-QUOTA-005: 总调用合计与 Top 仓
+库占比排名正确；无 Key 时给空态引导
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/developer/Quota.spec.tsx (5 tests | 1 failed) 2527ms
+   ✓ 首屏取 Key 并自动选中第一个（TC-FE-QUOTA-001） > TC-FE-QUOTA-001: 取 Key 列表 → 自动选中首个 → 按该 Key 拉配额/历史/Top 仓库 826ms
+   × 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/90/100 边界与超额截断） 878ms
+     → Found multiple elements with the text: 无限制
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-tag ant-tag-blue css-dev-only-do-not-override-7zmxdp"[39m
+[36m>[39m
+  [0m无限制[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<strong>[39m
+  [0m无限制[0m
+[36m</strong>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"ant-card ant-card-bordered _quotaCard_773235 css-dev-only-do-not-override-7zmxdp"[39m
+  [33mstyle[39m=[32m"border-top: 3px solid rgb(22, 119, 255);"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-card-body"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardHeader_773235"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_quotaCardIcon_773235"[39m
+        [33mstyle[39m=[32m"background-color: rgb(230, 244, 255);"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"calendar"[39m
+          [33mclass[39m=[32m"anticon anticon-calendar"[39m
+          [33mrole[39m=[32m"img"[39m
+          [33mstyle[39m=[32m"color: rgb(22, 119, 255); font-size: 20px;"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"calendar"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-tag ant-tag-blue css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [0m无限制[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardTitle_773235"[39m
+    [36m>[39m
+      [0m每日配额[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardValue_773235"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaUsed_773235"[39m
+      [36m>[39m
+        [0m5[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaDivider_773235"[39m
+      [36m>[39m
+        [0m/[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaLimit_773235"[39m
+      [36m>[39m
+        [0m∞[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33maria-valuemax[39m=[32m"100"[39m
+      [33maria-valuemin[39m=[32m"0"[39m
+      [33maria-valuenow[39m=[32m"0"[39m
+      [33mclass[39m=[32m"ant-progress ant-progress-status-normal ant-progress-line ant-progress-line-align-end ant-progress-line-position-outer ant-progress-small css-dev-only-do-not-override-7zmxdp"[39m
+      [33mrole[39m=[32m"progressbar"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-progress-outer"[39m
+        [33mstyle[39m=[32m"width: 100%;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-progress-inner"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-progress-bg ant-progress-bg-outer"[39m
+            [33mstyle[39m=[32m"width: 0%; height: 6px; --progress-line-stroke-color: #52c41a; background: rgb(82, 196, 26); --progress-percent: 0;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardFooter_773235"[39m
+    [36m>[39m
+      [36m<span>[39m
+        [0m剩余: [0m
+        [36m<span[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<strong>[39m
+            [0m无限制[0m
+          [36m</strong>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</div>[39m
+   ✓ 余额提醒（TC-FE-QUOTA-004） > TC-FE-QUOTA-004: 余额不足 1 元 → error 级提醒 + 充值引导；未启用余额扣费则不提醒 378ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/developer/Quota.spec.tsx > 配额百分比与状态分档（TC-FE-QUOTA-002） > TC-FE-QUOTA-002: 每日配额的百分比与状态分档逐档正确（含 0/70/90/
+100 边界与超额截断）
+TestingLibraryElementError: Found multiple elements with the text: 无限制
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-tag ant-tag-blue css-dev-only-do-not-override-7zmxdp"[39m
+[36m>[39m
+  [0m无限制[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<strong>[39m
+  [0m无限制[0m
+[36m</strong>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"ant-card ant-card-bordered _quotaCard_773235 css-dev-only-do-not-override-7zmxdp"[39m
+  [33mstyle[39m=[32m"border-top: 3px solid rgb(22, 119, 255);"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"ant-card-body"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardHeader_773235"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_quotaCardIcon_773235"[39m
+        [33mstyle[39m=[32m"background-color: rgb(230, 244, 255);"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"calendar"[39m
+          [33mclass[39m=[32m"anticon anticon-calendar"[39m
+          [33mrole[39m=[32m"img"[39m
+          [33mstyle[39m=[32m"color: rgb(22, 119, 255); font-size: 20px;"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"calendar"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4
+.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32z
+m-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3
+.6 8-8v-48h128v136H184z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-tag ant-tag-blue css-dev-only-do-not-override-7zmxdp"[39m
+      [36m>[39m
+        [0m无限制[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardTitle_773235"[39m
+    [36m>[39m
+      [0m每日配额[0m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardValue_773235"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaUsed_773235"[39m
+      [36m>[39m
+        [0m5[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaDivider_773235"[39m
+      [36m>[39m
+        [0m/[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_quotaLimit_773235"[39m
+      [36m>[39m
+        [0m∞[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33maria-valuemax[39m=[32m"100"[39m
+      [33maria-valuemin[39m=[32m"0"[39m
+      [33maria-valuenow[39m=[32m"0"[39m
+      [33mclass[39m=[32m"ant-progress ant-progress-status-normal ant-progress-line ant-progress-line-align-end ant-p
+rogress-line-position-outer ant-progress-small css-dev-only-do-not-override-7zmxdp"[39m
+      [33mrole[39m=[32m"progressbar"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-progress-outer"[39m
+        [33mstyle[39m=[32m"width: 100%;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-progress-inner"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-progress-bg ant-progress-bg-outer"[39m
+            [33mstyle[39m=[32m"width: 0%; height: 6px; --progress-line-stroke-color: #52c41a; background: rgb(82, 19
+6, 26); --progress-percent: 0;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_quotaCardFooter_773235"[39m
+    [36m>[39m
+      [36m<span>[39m
+        [0m剩余: [0m
+        [36m<span[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<strong>[39m
+            [0m无限制[0m
+          [36m</strong>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</div>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/developer/Quota.spec.tsx:162:27
+    160|       const card = cardOf('每日配额')
+    161|       // 状态 Tag（⚠️ 必须按卡片作用域：「正常」也会出现在 RPM/RPH 的 …
+    162|       expect(within(card).getByText(c.status), `${c.name} 的状态文案`)…
+       |                           ^
+    163|       // 进度条宽度（showInfo=false → 只能读 width）
+    164|       expect(progressWidthIn(card), `${c.name} 的进度宽度`).toBe(c.per…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  00:43:54
+   Duration  8.15s (transform 264ms, setup 202ms, collect 3.63s, tests 2.53s, environment 1.09s, prepare 241ms)
+

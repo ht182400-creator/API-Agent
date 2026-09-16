@@ -29,11 +29,12 @@
     "  - 2026-09-17：act 102 / jsdom 97（206 passed / 22 spec；新增 Register + PricingConfig spec）",
     "  - 2026-09-17：act 102 / jsdom 98（210 passed / 23 spec；新增 Reconciliation spec）",
     "  - 2026-09-17：act 102 / jsdom 106（215 passed / 24 spec；新增 Keys spec）",
-    "  - 2026-09-17：act 102 / jsdom 110（219 passed / 24 spec；扩写 Billing spec）"
+    "  - 2026-09-17：act 102 / jsdom 110（219 passed / 24 spec；扩写 Billing spec）",
+    "  - 2026-09-17：act 102 / jsdom 121（224 passed / 25 spec；新增 Quota spec）"
   ],
   "updatedAt": "2026-09-16T16:15:05.600Z",
   "counts": {
     "act: update not wrapped in act": 102,
-    "jsdom: getComputedStyle pseudo-elements": 110
+    "jsdom: getComputedStyle pseudo-elements": 121
   }
 }

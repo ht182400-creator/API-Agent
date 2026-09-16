@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 23,
-      "cases": 212,
+      "specFiles": 24,
+      "cases": 217,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 219 tests − 7 条用例库自检 = **212 条组件用例**；specFiles=23 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 24 个文件）。剩 P2/P3 与 UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 224 tests − 7 条用例库自检 = **217 条组件用例**；specFiles=24 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 25 个文件）。剩 P2/P3 与 UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -301,12 +301,15 @@
       "level": "P2",
       "file": "src/pages/developer/Quota.tsx",
       "lines": 470,
-      "why": "配额进度与用量历史；图表数据整形可测",
-      "status": "planned",
+      "why": "配额进度与用量历史；图表数据整形可测。已覆盖：百分比换算（含 Math.min(100,…) 超额截断）、状态分档阈值（70/90/100）、RPM/RPH 达限与缺省限额回退（|| 1000 / || 10000）、余额提醒触发条件与级别、Top 仓库占比。⚠️ 断言要点：showInfo=false 的进度条只能读 .ant-progress-bg 的 style.width；「正常」「无限制」等文案会跨卡片/跨元素重复，必须按卡片作用域或 .ant-tag 断言。仍未覆盖：图表实际绘制（recharts 在 jsdom 不绘制）、普通用户升级引导",
+      "status": "covered",
       "specFile": "src/pages/developer/Quota.spec.tsx",
       "cases": [
-        { "id": "TC-FE-QUOTA-001", "name": "配额进度按百分比正确渲染（含 0%/100% 边界）", "status": "planned" },
-        { "id": "TC-FE-QUOTA-002", "name": "用量历史窗口与标签", "status": "planned" }
+        { "id": "TC-FE-QUOTA-001", "name": "首屏取 Key 列表 → 自动选中首个 → 按该 Key 拉配额/历史/Top 仓库（参数正确）", "status": "done" },
+        { "id": "TC-FE-QUOTA-002", "name": "每日配额百分比与状态分档（0%/70%/90%/100% 边界 + 超额 120% 截断为 100 + limit=null 不画进度）", "status": "done" },
+        { "id": "TC-FE-QUOTA-003", "name": "RPM/RPH 达限标「已达限」；限额缺失时回退 1000/10000", "status": "done" },
+        { "id": "TC-FE-QUOTA-004", "name": "余额不足 1 元 → error 级提醒 + 充值引导；未启用余额扣费则不提醒", "status": "done" },
+        { "id": "TC-FE-QUOTA-005", "name": "总调用合计与 Top 仓库占比、排名徽标；无 Key 时给空态与创建引导", "status": "done" }
       ]
     },
     {
