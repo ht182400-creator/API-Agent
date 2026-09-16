@@ -81,6 +81,41 @@ const MUTATIONS = [
     replace: '<Text type="warning">+{(customAmount || 0) * customRatio}%</Text>',
     note: '回到"拿金额冒充百分比"的缺陷形态',
   },
+  {
+    id: 'FIX-5',
+    title: '账单首屏不再重复请求（fetchBills 只由一个 effect 驱动）',
+    caseId: 'TC-FE-BILLING-001',
+    spec: 'src/pages/developer/Billing.spec.tsx',
+    file: 'src/pages/developer/Billing.tsx',
+    find: '      setBalanceHistory(historyData)\n    } catch (error: any) {\n      showError(error, () => fetchData())',
+    replace:
+      '      setBalanceHistory(historyData)\n      fetchBills()\n    } catch (error: any) {\n      showError(error, () => fetchData())',
+    note: '把 fetchBills() 放回 fetchData → 回到"挂载时 fetchData 与 effect 各拉一次账单"的缺陷形态（实测首屏 2 次）',
+  },
+  {
+    id: 'FIX-6',
+    title: '负数金额的符号在货币符号之前（-¥12.50 而不是 ¥-12.50）',
+    caseId: 'TC-FE-BILLING-001',
+    spec: 'src/pages/developer/Billing.spec.tsx',
+    file: 'src/pages/developer/Billing.tsx',
+    // ⚠️ 不带行首缩进，靠 `bill.` 前缀区分：移动端卡片那行是 `{bill.amount >= 0 ? ...}`
+    find: "{amount >= 0 ? '+' : '-'}¥{Math.abs(amount).toFixed(2)}",
+    replace: "{amount >= 0 ? '+' : ''}¥{amount.toFixed(2)}",
+    note: '回到"符号夹在货币符号之后"的缺陷形态（负数渲染成 ¥-12.50）',
+  },
+  {
+    id: 'FIX-7',
+    title: '一次性明文密钥关闭后真正从 DOM 移除（destroyOnHidden）',
+    caseId: 'TC-FE-KEYS-002',
+    spec: 'src/pages/developer/Keys.spec.tsx',
+    file: 'src/pages/developer/Keys.tsx',
+    // ⚠️ `destroyOnHidden` 在文件中出现两次（创建成功弹窗 + 查看弹窗），必须带上注释上下文才能唯一命中；
+    //    只写 `okText="我已保存"` 之后的 prop 也不行 —— 该 prop 所属 Modal 与查看弹窗结构相似。
+    find: '        okText="我已保存"\n        // ⚠️ 一次性密钥（文案自己写着"仅显示一次"）：关闭后必须把内容**从 DOM 中真正移除**。\n        //    antd Modal 默认关闭只做隐藏挂载 → 明文会留在 DOM 里，与"仅显示一次"的语义不符。\n        destroyOnHidden',
+    replace:
+      '        okText="我已保存"\n        // ⚠️ 一次性密钥（文案自己写着"仅显示一次"）：关闭后必须把内容**从 DOM 中真正移除**。\n        //    antd Modal 默认关闭只做隐藏挂载 → 明文会留在 DOM 里，与"仅显示一次"的语义不符。\n        destroyOnHidden={false}',
+    note: '回到"关闭只做隐藏挂载"的缺陷形态 → 点「我已保存」后明文仍留在 DOM 里，与"仅显示一次"冲突',
+  },
 ]
 
 const argv = process.argv.slice(2)
