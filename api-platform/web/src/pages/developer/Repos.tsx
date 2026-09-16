@@ -110,18 +110,21 @@ export default function Repos() {
           <Title level={3} style={{ marginBottom: 4 }}>API仓库市场</Title>
           <Text type="secondary">浏览和发现可用的API服务</Text>
         </div>
-        <Row gutter={[12, 12]} className={styles.statsRow}>
-          <Col xs={12}>
-            <Statistic title="可用仓库" value={repos.length} prefix={<ApiOutlined />} />
-          </Col>
-          <Col xs={12}>
-            <Statistic
-              title="API端点"
-              value={repos.reduce((acc, repo) => acc + (repo.endpoints?.length || 0), 0)}
-              prefix={<ThunderboltOutlined />}
-            />
-          </Col>
-        </Row>
+        {/* 统计：横向紧凑卡片（原 Row/Col 在窄容器下纵向堆叠并贴右溢出） */}
+        <div className={styles.statsRow}>
+          <div className={styles.statItem}>
+            <ApiOutlined className={styles.statIcon} />
+            <span className={styles.statLabel}>可用仓库</span>
+            <span className={styles.statValue}>{repos.length}</span>
+          </div>
+          <div className={styles.statItem}>
+            <ThunderboltOutlined className={styles.statIcon} />
+            <span className={styles.statLabel}>API端点</span>
+            <span className={styles.statValue}>
+              {repos.reduce((acc, repo) => acc + (repo.endpoints?.length || 0), 0)}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* 筛选器 */}
