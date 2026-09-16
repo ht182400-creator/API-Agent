@@ -1,0 +1,56 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Keys.spec.tsx
+[20260917 00:28:11.714] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789576091713_seydrnpa6"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789576091713_seydrnpa6'
+}
+
+node.exe : stderr | src/pages/developer/Keys.spec.tsx > 列表默认不展示明文 Key（TC-FE-KEYS-001） > TC-FE-KEYS-001: 只显示前缀与派生文案；完整 K
+ey 不出现在页面上
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...；完整 Key 不出现在页面上:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 创建 Key：一次性展示（TC-FE-KEYS-002） > TC-FE-KEYS-002: 创建后展示完整 Key 并提示妥善保管；关闭后不再残留
+；列表重新拉取
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 创建 Key：一次性展示（TC-FE-KEYS-002） > TC-FE-KEYS-002: 创建后展示完整 Key 并提示妥善保管；关闭后不再残留
+；列表重新拉取
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 删除需二次确认（TC-FE-KEYS-003） > TC-FE-KEYS-003: 取消不发请求；确认后才删除并重新拉取
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 删除需二次确认（TC-FE-KEYS-003） > TC-FE-KEYS-003: 取消不发请求；确认后才删除并重新拉取
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 禁用 / 启用按状态给出对应操作（TC-FE-KEYS-004） > TC-FE-KEYS-004: active 行禁用、非 active 行启用
+，成功后提示并重新拉取
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/developer/Keys.spec.tsx > 普通用户的升级引导（TC-FE-KEYS-005） > TC-FE-KEYS-005: 普通用户看不到创建入口，只看到升级引导（列表仍只读可见）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/developer/Keys.spec.tsx (5 tests) 3063ms
+   ✓ 列表默认不展示明文 Key（TC-FE-KEYS-001） > TC-FE-KEYS-001: 只显示前缀与派生文案；完整 Key 不出现在页面上 910ms
+   ✓ 创建 Key：一次性展示（TC-FE-KEYS-002） > TC-FE-KEYS-002: 创建后展示完整 Key 并提示妥善保管；关闭后不再残留；列表重新拉取 743ms
+   ✓ 删除需二次确认（TC-FE-KEYS-003） > TC-FE-KEYS-003: 取消不发请求；确认后才删除并重新拉取 852ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:28:05
+   Duration  9.12s (transform 243ms, setup 217ms, collect 4.17s, tests 3.06s, environment 992ms, prepare 149ms)
+

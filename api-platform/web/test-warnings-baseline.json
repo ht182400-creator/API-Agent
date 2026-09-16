@@ -27,11 +27,12 @@
     "    真正的硬门是「**出现新种类即失败**」，那才代表某项修复被回退或引入了新问题。",
     "  - 2026-09-16：act 102 / jsdom 90（198 passed / 20 spec）",
     "  - 2026-09-17：act 102 / jsdom 97（206 passed / 22 spec；新增 Register + PricingConfig spec）",
-    "  - 2026-09-17：act 102 / jsdom 98（210 passed / 23 spec；新增 Reconciliation spec）"
+    "  - 2026-09-17：act 102 / jsdom 98（210 passed / 23 spec；新增 Reconciliation spec）",
+    "  - 2026-09-17：act 102 / jsdom 106（215 passed / 24 spec；新增 Keys spec）"
   ],
   "updatedAt": "2026-09-16T16:15:05.600Z",
   "counts": {
     "act: update not wrapped in act": 102,
-    "jsdom: getComputedStyle pseudo-elements": 98
+    "jsdom: getComputedStyle pseudo-elements": 106
   }
 }

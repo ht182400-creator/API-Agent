@@ -269,7 +269,7 @@ export default function DeveloperKeys() {
                 key={key.id}
                 size="small"
                 style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                bodyStyle={{ padding: 12 }}
+                styles={{ body: { padding: 12 } }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   <KeyOutlined style={{ fontSize: 20, color: '#1890ff' }} />
@@ -415,6 +415,8 @@ export default function DeveloperKeys() {
             我已保存
           </Button>
         ]}
+        // ⚠️ 明文凭据：关闭后必须把内容**从 DOM 中真正移除**（antd Modal 默认只是隐藏挂载）
+        destroyOnHidden
       >
         {revealKeyData && (
           <div className={styles.keyDisplay}>
@@ -434,6 +436,9 @@ export default function DeveloperKeys() {
         onCancel={() => setNewKeyData(null)}
         onOk={() => setNewKeyData(null)}
         okText="我已保存"
+        // ⚠️ 一次性密钥（文案自己写着"仅显示一次"）：关闭后必须把内容**从 DOM 中真正移除**。
+        //    antd Modal 默认关闭只做隐藏挂载 → 明文会留在 DOM 里，与"仅显示一次"的语义不符。
+        destroyOnHidden
       >
         <div className={styles.keyDisplay}>
           <Text type="secondary">请妥善保管以下Key，仅显示一次</Text>
