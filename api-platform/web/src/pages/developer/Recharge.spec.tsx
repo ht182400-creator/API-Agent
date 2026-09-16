@@ -192,6 +192,44 @@ beforeEach(() => {
 
 afterEach(() => {
   sessionStorage.clear()
+  vi.unstubAllGlobals()
+})
+
+/** stub /health（useEnvInfo 用原生 fetch，不走 axios） */
+function stubHealth(billingEnv: string, isProduction: boolean) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        environment: 'development',
+        billing_environment: billingEnv,
+        is_production: isProduction,
+      }),
+    })
+  )
+}
+
+describe('环境与支付通道标签', () => {
+  it('TC-FE-RECHARGE-017: 测试环境显示「测试支付通道」，不得出现「真实支付通道」', async () => {
+    stubHealth('simulation', false)
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    // 与顶栏「测试环境 · SIMULATION」一致（用户实测：原标签读 mock_mode 显示「真实支付通道」）
+    // ⚠️ Tag 文本带 emoji 前缀（🧪）→ 用正则部分匹配
+    expect(await screen.findByText(/测试支付通道/)).toBeInTheDocument()
+    expect(screen.queryByText(/真实支付通道/)).not.toBeInTheDocument()
+  })
+
+  it('TC-FE-RECHARGE-018: 生产环境显示「真实支付通道」', async () => {
+    stubHealth('production', true)
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    expect(await screen.findByText(/真实支付通道/)).toBeInTheDocument()
+    expect(screen.queryByText(/测试支付通道/)).not.toBeInTheDocument()
+  })
 })
 
 describe('初始化', () => {

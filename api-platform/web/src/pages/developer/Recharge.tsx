@@ -28,6 +28,8 @@ import '../../styles/payment-methods.css'
 import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
 import { useRechargeData } from './recharge/useRechargeData'
+import { useEnvInfo } from '../../hooks/useEnvInfo'
+  
 import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
 import { PaySuccessView } from './recharge/components/PaySuccessView'
@@ -174,6 +176,9 @@ export default function DeveloperRecharge() {
   }, [])
 
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
+
+  // 【环境同源】支付通道标签按运行环境区分（/health billing_environment，与顶栏徽标一致）
+  const envInfo = useEnvInfo()
 
   // 【P1-4 拆分】套餐 / 充值配置 / 账户余额的加载与状态。
   // ⚠️ 把 showError 传进去（而非让 hook 自己 useErrorModal）：否则会存在两套独立的
@@ -1442,11 +1447,14 @@ export default function DeveloperRecharge() {
           <Text type="secondary">选择充值套餐，完成支付后立即到账</Text>
         </div>
         <Space>
-          {rechargeConfig?.mock_mode && (
-            <Tag color="orange">⚠️ 开发环境 - 模拟支付</Tag>
-          )}
-          {!rechargeConfig?.mock_mode && (
-            <Tag color="green">🛡️ 生产环境 - 真实支付</Tag>
+          {/* ⚠️ 按**运行环境**（/health 的 billing_environment）区分支付通道性质，与顶栏徽标同源：
+              测试环境 → 测试支付通道；生产环境 → 真实支付通道。
+              （不读 rechargeConfig.mock_mode：那是下单流程的行为分支，不是环境标识 ——
+               曾因此让「真实支付通道」出现在 SIMULATION 环境，与顶栏矛盾，用户实测两轮反馈。） */}
+          {envInfo?.billing_environment === 'production' ? (
+            <Tag color="green">🛡️ 真实支付通道</Tag>
+          ) : (
+            <Tag color="orange">🧪 测试支付通道（模拟）</Tag>
           )}
           <Button icon={<ReloadOutlined />} onClick={fetchPackages}>
             刷新套餐

@@ -24,6 +24,7 @@ import { billingApi, Bill, UserAccount, MonthlySummary } from '../../api/billing
 import { useErrorModal } from '../../components/ErrorModal'
 import { useAuthStore } from '../../stores/auth'
 import { useDevice } from '../../hooks/useDevice'
+import { useEnvInfo } from '../../hooks/useEnvInfo'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Billing.module.css'
@@ -44,7 +45,11 @@ export default function DeveloperBilling() {
   const [pageSize, setPageSize] = useState(20)
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [balanceHistory, setBalanceHistory] = useState<any[]>([])
-  const [mockMode, setMockMode] = useState<boolean>(true)
+  // ⚠️ 环境标签改用 useEnvInfo（/health 的 billing_environment，与顶栏徽标同源）——
+  //    原先用 `account.mock_mode` 判断：mock_mode 是**支付模拟模式**，与账单环境是两个概念
+  //    （9-15 已解耦），simulation 下接真实支付网关沙箱时 mock_mode=false，
+  //    页面却显示「生产环境 / 真实账户」，与顶栏「测试环境 · SIMULATION」自相矛盾（用户实测）。
+  const envInfo = useEnvInfo()
   
   // 日期筛选
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
@@ -69,7 +74,6 @@ export default function DeveloperBilling() {
         billingApi.getBalanceHistory(30),
       ])
 
-      setMockMode(accountData.mock_mode ?? true)
       setAccount(accountData)
       setSummary(summaryData)
       setBalanceHistory(historyData)
@@ -210,10 +214,10 @@ export default function DeveloperBilling() {
         <div>
           <Space align="center">
             <Title level={4}>账单中心</Title>
-            {mockMode ? (
-              <Tag color="orange">模拟环境</Tag>
-            ) : (
+            {envInfo?.billing_environment === 'production' ? (
               <Tag color="green">生产环境</Tag>
+            ) : (
+              <Tag color="orange">测试环境（模拟账本）</Tag>
             )}
           </Space>
         </div>
@@ -240,10 +244,10 @@ export default function DeveloperBilling() {
               valueStyle={{ color: '#1677ff', fontSize: 24 }}
             />
             <div className={styles.statCardFooter}>
-              {mockMode ? (
-                <Tag color="orange">模拟模式</Tag>
-              ) : (
+              {envInfo?.billing_environment === 'production' ? (
                 <Tag color="green">真实账户</Tag>
+              ) : (
+                <Tag color="orange">模拟账户</Tag>
               )}
             </div>
           </Card>

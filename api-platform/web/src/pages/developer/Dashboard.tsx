@@ -22,11 +22,14 @@ import { repoApi, Repository } from '../../api/repo'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import dayjs from 'dayjs'
 import styles from './Dashboard.module.css'
+import { useEnvInfo } from '../../hooks/useEnvInfo'  // 环境标签与顶栏/账单中心同源
 
 const { Title, Text } = Typography
 
 export default function DeveloperDashboard() {
   const navigate = useNavigate()
+  // 【环境标签同源】与顶栏徽标 / 账单中心共用 /health 的 billing_environment
+  const envInfo = useEnvInfo()
   const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState<UserAccount | null>(null)
   const [keys, setKeys] = useState<APIKey[]>([])
@@ -45,10 +48,22 @@ export default function DeveloperDashboard() {
       // 先获取 keys，再并行获取其他数据
       const keysRes = await quotaApi.getKeys({ page_size: 5 })
 
+      // ⚠️ 各数据源独立兜底（.catch → null）：原先裸 Promise.all，任一失败会把
+      //    account 一起清成 null → 余额显示 ¥0 +「模拟」标签，与账单中心的真实余额矛盾
+      //    （用户实测：账单中心 ¥20，工作台 ¥0）。单源失败只降级该卡片，不连坐。
       const [accountRes, quotaRes, consumptionRes] = await Promise.all([
-        billingApi.getAccount(),
-        quotaApi.getQuotaOverview(),
-        quotaApi.getConsumptionTrend(7),  // 使用 quota API 的趋势统计（基于调用记录）
+        billingApi.getAccount().catch((e) => {
+          console.warn('[Dashboard] getAccount 失败（该卡片降级为空）:', e)
+          return null
+        }),
+        quotaApi.getQuotaOverview().catch((e) => {
+          console.warn('[Dashboard] getQuotaOverview 失败:', e)
+          return null
+        }),
+        quotaApi.getConsumptionTrend(7).catch((e) => {
+          console.warn('[Dashboard] getConsumptionTrend 失败:', e)
+          return null
+        }),
       ])
 
       // 获取第一个 key 的 top repos
@@ -140,8 +155,14 @@ export default function DeveloperDashboard() {
               title={
                 <Space>
                   <span>账户余额</span>
-                  <Tag color={account?.mock_mode !== false ? 'orange' : 'green'} style={{ marginLeft: 8 }}>
-                    {account?.mock_mode !== false ? '模拟' : '真实'}
+                  {/* ⚠️ 环境标签必须与顶栏/账单中心同源（/health billing_environment）。
+                      原先读 `account.mock_mode`（支付模拟模式）→ simulation 下接真实支付网关时
+                      mock_mode=false，这里显示「真实」而顶栏是「测试环境 · SIMULATION」（用户实测矛盾）。 */}
+                  <Tag
+                    color={envInfo?.billing_environment === 'production' ? 'green' : 'orange'}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {envInfo?.billing_environment === 'production' ? '真实' : '模拟'}
                   </Tag>
                 </Space>
               }

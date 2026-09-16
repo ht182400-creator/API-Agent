@@ -23,6 +23,6 @@
   ],
   "counts": {
     "act: update not wrapped in act": 102,
-    "jsdom: getComputedStyle pseudo-elements": 82
+    "jsdom: getComputedStyle pseudo-elements": 90
   }
 }

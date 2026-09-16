@@ -17,7 +17,7 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 17,
+      "specFiles": 19,
       "cases": 144,
       "covered": [
         "src/config/permissions.ts",
@@ -182,7 +182,9 @@
         { "id": "TC-FE-RECHARGE-013", "name": "取消订单后扫码轮询必须停止（不再向后端查询）", "status": "done" },
         { "id": "TC-FE-RECHARGE-014", "name": "组件卸载后定时器必须清理（不得继续轮询）", "status": "done" },
         { "id": "TC-FE-RECHARGE-015", "name": "自定义模式赠送比例按百分比显示（不拿金额冒充）", "status": "done" },
-        { "id": "TC-FE-RECHARGE-016", "name": "日志接口返回非 Promise（undefined）时也不得中断下单（原缺陷真实形态）", "status": "done" }
+        { "id": "TC-FE-RECHARGE-016", "name": "日志接口返回非 Promise（undefined）时也不得中断下单（原缺陷真实形态）", "status": "done" },
+        { "id": "TC-FE-RECHARGE-017", "name": "测试环境显示「测试支付通道」，不得出现「真实支付通道」", "status": "done" },
+        { "id": "TC-FE-RECHARGE-018", "name": "生产环境显示「真实支付通道」", "status": "done" }
       ]
     },
     {
@@ -322,14 +324,16 @@
       "level": "P2",
       "file": "src/pages/developer/Billing.tsx",
       "lines": 484,
-      "why": "账单列表/统计；金额与周期文案",
-      "status": "planned",
+      "why": "账单列表/统计；金额与周期文案。⚠️ 环境标签必须与顶栏徽标同源（/health billing_environment），不得用 account.mock_mode（支付模拟模式）—— 二者是不同概念，曾导致页面显示「生产环境/真实账户」而顶栏显示 SIMULATION",
+      "status": "partial",
       "specFile": "src/pages/developer/Billing.spec.tsx",
       "cases": [
         { "id": "TC-FE-BILLING-001", "name": "账单列表与金额格式化", "status": "planned" },
-        { "id": "TC-FE-BILLING-002", "name": "月度周期选择回显", "status": "planned" }
+        { "id": "TC-FE-BILLING-002", "name": "月度周期选择回显", "status": "planned" },
+        { "id": "TC-FE-BILL-001", "name": "simulation 环境显示「测试环境（模拟账本）/模拟账户」，不得出现「生产环境/真实账户」", "status": "done" },
+        { "id": "TC-FE-BILL-002", "name": "production 环境显示「生产环境/真实账户」", "status": "done" }
       ]
-    },
+      },
     {
       "id": "FE-DEV-LOGS",
       "level": "P2",
@@ -507,6 +511,21 @@
         { "id": "TC-FE-CASES-005", "name": "suite.file 指向的被测文件真实存在", "status": "done" },
         { "id": "TC-FE-CASES-006", "name": "covered/partial 的 specFile 真实存在", "status": "done" },
         { "id": "TC-FE-CASES-007", "name": "meta.stats.specFiles 与磁盘 src 下 spec 数一致", "status": "done" }
+      ]
+    },
+    {
+      "id": "FE-DEVELOPER-DASH",
+      "level": "P1",
+      "file": "src/pages/developer/Dashboard.tsx",
+      "lines": 301,
+      "why": "工作台汇总多数据源。⚠️ 各数据源必须**故障隔离**：裸 Promise.all 会让单一接口失败把 account 一起清成 null → 余额显示 ¥0 +「模拟」标签，与账单中心的真实余额矛盾（用户实测：账单中心 ¥20 / 工作台 ¥0）",
+      "status": "covered",
+      "specFile": "src/pages/developer/Dashboard.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-DASH-001", "name": "quota 数据源失败不影响账户余额显示（故障隔离）", "status": "done" },
+        { "id": "TC-FE-DASH-002", "name": "全部数据源失败不白屏（余额卡片仍渲染，降级为 0）", "status": "done" },
+        { "id": "TC-FE-DASH-003", "name": "正常路径渲染余额与账户标签", "status": "done" },
+        { "id": "TC-FE-DASH-004", "name": "simulation 环境下余额标签显示「模拟」（mock_mode=false 不得影响）", "status": "done" }
       ]
     }
   ],

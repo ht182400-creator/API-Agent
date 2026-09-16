@@ -43,6 +43,7 @@ import { useAuthStore } from '../stores/auth'
 import { authApi } from '../api/auth'
 import { notificationApi, Notification } from '../api/notification'
 import { useDevice } from '../hooks/useDevice'  // 【移动端适配】引入设备检测Hook
+import { useEnvInfo } from '../hooks/useEnvInfo'  // 【L5】运行环境标识（顶栏徽标/警示条与 Billing 页同源）
 import styles from './Layout.module.css'
 
 const { Header, Sider, Content } = AntLayout
@@ -203,12 +204,8 @@ export default function Layout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [notificationOpen, setNotificationOpen] = useState(false)
-  // 【L5 新增】运行环境标识 —— 用于顶栏环境徽标与生产环境警示条
-  const [envInfo, setEnvInfo] = useState<{
-    environment: string
-    billing_environment: string
-    is_production: boolean
-  } | null>(null)
+  // 【L5 新增】运行环境标识 —— 已抽为共享 hook useEnvInfo（Billing 页同源使用，修复标签矛盾）
+  const envInfo = useEnvInfo()
   
   // 【移动端适配】设备检测
   const { isMobile, isTablet, isDesktop, deviceType } = useDevice()
@@ -221,33 +218,6 @@ export default function Layout() {
       setCollapsed(true)
     }
   }, [isMobile])
-
-  // 【L5 新增】获取运行环境标识（用于顶栏环境徽标 / 生产环境警示条）
-  // 说明：环境信息属于非关键路径，获取失败仅不显示徽标，不影响主流程。
-  useEffect(() => {
-    let cancelled = false
-    const fetchEnvironment = async () => {
-      try {
-        const resp = await fetch('/health')
-        if (!resp.ok) return
-        const data = await resp.json()
-        if (!cancelled) {
-          setEnvInfo({
-            environment: data.environment || 'unknown',
-            billing_environment: data.billing_environment || 'unknown',
-            is_production: Boolean(data.is_production),
-          })
-        }
-      } catch (error) {
-        console.warn('[Layout] 获取环境信息失败（不影响使用）:', error)
-      }
-    }
-    fetchEnvironment()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
 
   // 获取未读通知数量
   const fetchUnreadCount = useCallback(async () => {

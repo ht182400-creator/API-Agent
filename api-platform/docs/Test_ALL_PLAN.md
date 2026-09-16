@@ -312,7 +312,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 190 passed / 18 个 spec 文件 = 14 组件 + 自检 + 守卫 + 骨架 + 共享组件）
+npm run test:unit        # 单次运行（当前 198 passed / 20 个 spec 文件 = 14 组件 + 自检 + 守卫 + 骨架 + 共享组件 + 工作台/账单/充值环境回归）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 
