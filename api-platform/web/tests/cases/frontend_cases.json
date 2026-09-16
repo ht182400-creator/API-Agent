@@ -17,7 +17,7 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 16,
+      "specFiles": 17,
       "cases": 144,
       "covered": [
         "src/config/permissions.ts",
@@ -472,11 +472,23 @@
         "src/main.tsx (28)"
       ],
       "why": "展示层/小组件：状态简单，优先级最低；App.tsx 的路由守卫值得单独补",
-      "status": "partial",
-      "specFile": "src/App.spec.tsx",
+      "status": "covered",
+      "specFile": "src/App.spec.tsx, src/components/shared/SharedComponents.spec.tsx",
       "cases": [
         { "id": "TC-FE-UI-001", "name": "未登录访问任意路径 → 兜底重定向 /login（defaultPath 链路）", "status": "done" },
-        { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录 → /login；developer 访问 /admin → 按角色重定向", "status": "done" }
+        { "id": "TC-FE-UI-002", "name": "App 路由守卫：未登录 → /login；developer 访问 /admin → 按角色重定向", "status": "done" },
+        { "id": "TC-FE-SHARED-RT-001", "name": "ResponsiveTable 桌面端按表格渲染 dataSource", "status": "done" },
+        { "id": "TC-FE-SHARED-RT-002", "name": "空数据显示默认「暂无数据」", "status": "done" },
+        { "id": "TC-FE-SHARED-RT-003", "name": "emptyText 自定义空态", "status": "done" },
+        { "id": "TC-FE-SHARED-RT-004", "name": "移动端（innerWidth=375）切卡片模式 + onAction 回调", "status": "done" },
+        { "id": "TC-FE-SHARED-LOGO-001", "name": "RepoLogo 有 logoUrl 渲染 img", "status": "done" },
+        { "id": "TC-FE-SHARED-LOGO-002", "name": "无 logoUrl 按 repoType 渲染默认图标与主题色", "status": "done" },
+        { "id": "TC-FE-SHARED-LOGO-003", "name": "未知 repoType 不崩溃", "status": "done" },
+        { "id": "TC-FE-SHARED-FORM-001", "name": "DynamicForm 按 schema 渲染 input/select", "status": "done" },
+        { "id": "TC-FE-SHARED-FORM-002", "name": "输入变化回调 onChange(name, value)", "status": "done" },
+        { "id": "TC-FE-SHARED-FORM-003", "name": "空参数不渲染控件", "status": "done" },
+        { "id": "TC-FE-SHARED-EP-001", "name": "EndpointList 空列表空态", "status": "done" },
+        { "id": "TC-FE-SHARED-EP-002", "name": "按 tag 分组渲染 + onSelect 回调（同端点多组 getAllByText）", "status": "done" }
       ]
     },
     {

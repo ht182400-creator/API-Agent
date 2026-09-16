@@ -83,11 +83,16 @@ describe('用例库 frontend_cases.json 自检', () => {
     expect(missing, `清单中不存在于磁盘的被测文件: ${missing.join(', ')}`).toEqual([])
   })
 
-  it('TC-FE-CASES-006: covered/partial 的 specFile 必须存在', () => {
-    const missing = suites
-      .filter((s) => (s.status === 'covered' || s.status === 'partial') && s.specFile)
-      .filter((s) => !existsSync(join(webRoot, s.specFile as string)))
-      .map((s) => `${s.id}: ${s.specFile}`)
+  it('TC-FE-CASES-006: covered/partial 的 specFile 必须存在（支持逗号分隔多个）', () => {
+    const missing: string[] = []
+    for (const s of suites) {
+      if ((s.status === 'covered' || s.status === 'partial') && s.specFile) {
+        // ⚠️ 一个 suite 可由多个 spec 覆盖（如 FE-SHARED-UI：App.spec + SharedComponents.spec）
+        for (const f of s.specFile.split(',').map((x) => x.trim())) {
+          if (f && !existsSync(join(webRoot, f))) missing.push(`${s.id}: ${f}`)
+        }
+      }
+    }
     expect(missing, `登记了 specFile 但文件不存在: ${missing.join(', ')}`).toEqual([])
   })
 
