@@ -10,6 +10,7 @@
 
 import asyncio
 import sys
+import os
 import hashlib
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
@@ -787,6 +788,18 @@ async def main(drop: bool = False, sample_data: bool = True):
     """主函数"""
     print("\n[Database Setup Script]")
     print("=" * 50)
+
+    # ⚠️ 生产环境守卫：本脚本会写入**明文默认口令**的种子账号
+    #    （super123456 / admin123 / owner123 / dev123456 / test123），
+    #    在生产库上执行等于把已知口令写进系统。
+    from src.config.settings import settings as _settings
+
+    if _settings.is_production():
+        print("[BLOCKED] 当前 environment=production：禁止用本脚本写入默认账号。")
+        print("          请改用：python scripts/create_admin.py")
+        if not os.getenv("I_KNOW_THIS_IS_NOT_PRODUCTION"):
+            raise SystemExit(1)
+        print("[WARN] 检测到 I_KNOW_THIS_IS_NOT_PRODUCTION，按非生产环境继续（后果自负）。")
     
     # 1. 创建扩展
     await create_extensions()

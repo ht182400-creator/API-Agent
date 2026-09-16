@@ -1,6 +1,6 @@
 """Request schemas - 请求模型"""
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, ClassVar, Set
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
@@ -15,6 +15,21 @@ class UserCreate(BaseModel):
     user_type: str = Field(default="developer")
     role: str = Field(default="user")  # 角色
     nickname: Optional[str] = None
+
+    # ⚠️ 自助注册**允许申请的角色**：管理员/超级管理员**不得**通过注册获得
+    #    （原实现无白名单：客户端传 user_type=super_admin 即可自我提权为超管，P0 漏洞）。
+    #    admin / super_admin 只能由现有超级管理员通过 PUT /api/v1/superadmin/users/{id} 授予。
+    #    ⚠️ 必须 ClassVar：否则 pydantic 会把它当成待校验的模型字段。
+    SELF_REGISTER_ROLES: ClassVar[Set[str]] = {"user", "developer", "owner"}
+
+    @field_validator("user_type")
+    @classmethod
+    def validate_user_type(cls, v: str) -> str:
+        if v not in cls.SELF_REGISTER_ROLES:
+            raise ValueError(
+                f"不允许通过注册申请该角色：{v}（可选：{', '.join(sorted(cls.SELF_REGISTER_ROLES))}）"
+            )
+        return v
 
     @field_validator("password")
     @classmethod

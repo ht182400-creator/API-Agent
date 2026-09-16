@@ -201,3 +201,68 @@ python -m pytest tests/ -v      # 全量：127 passed
 ---
 
 **文档结束**
+
+## 生产环境管理员账号管理（2026-09-16 补充）
+
+### 1. 默认账号（仅用于本地 / 测试）
+
+`scripts/init_db_with_data.py` 会写入固定口令的账号：
+
+| 角色 | 用户名 | 口令 |
+|---|---|---|
+| 超级管理员 | superadmin | super123456 |
+| 管理员 | admin | admin123 |
+| 仓库所有者 | owner | owner123 |
+| 开发者 | developer | dev123456 |
+| 普通用户 | test | test123 |
+
+⚠️ **这些口令不得出现在生产环境**。该脚本已加生产守卫：
+`environment=production` 时直接拒绝写入默认账号（可用 `I_KNOW_THIS_IS_NOT_PRODUCTION=1` 显式放行，后果自负）。
+
+### 2. 生产环境创建管理员（正规途径）
+
+```bash
+# 交互式创建超级管理员（口令不回显 + 强度校验）
+python scripts/create_admin.py
+
+# 创建普通管理员
+python scripts/create_admin.py --user-type admin
+
+# 生成强随机口令（仅打印一次）
+python scripts/create_admin.py --email ops@example.com --random-password
+
+# 重置已有账号口令
+python scripts/create_admin.py --email ops@example.com --reset-password
+```
+
+脚本行为：
+- 口令不回显 + 二次确认；生产环境要求 ≥12 位且含大小写与数字；
+- 拒绝已知默认口令 / 弱口令黑名单；
+- 幂等（账号已存在时报错，`--reset-password` 才允许重置）；
+- 支持 `ADMIN_PASSWORD` 环境变量（便于容器首次初始化）。
+
+### 3. 日常管理
+
+- **用户与角色**：`/superadmin/users`（改类型 / 角色 / 状态 / 权限），`/superadmin/roles` 查看角色与权限；
+- **管理员视角**：`/admin/users`；
+- **审计**：`/superadmin/audit-logs`，用户变更会记录旧值 / 新值与操作人；
+- ⚠️ **admin / super_admin 不可通过注册申请**，只能由本脚本或现有超管授予。
+
+### 4. 已实施的防护
+
+| 防护 | 实现 |
+|---|---|
+| 注册不得自我提权 | `UserCreate.SELF_REGISTER_ROLES` 白名单（仅 user/developer/owner），端点二次校验并回退越权 role |
+| 生产禁止种子账号 | `init_db_with_data.py` 生产守卫 |
+| 不能降级 / 停用自己 | `PUT /superadmin/users/{id}` 自锁校验 |
+| 不能降级 / 停用最后一个超管 | 同上，活跃超管计数 ≤1 时拒绝 |
+| 不能删除超级管理员 | 已有校验 |
+
+回归用例：`tests/test_auth.py`（TC-SEC-REG-001~003）、`tests/test_superadmin_guard.py`（TC-SEC-ADMIN-001~004）。
+
+### 5. 上线检查清单
+
+- [ ] 未在生产库执行过 `init_db_with_data.py`（或已确认默认账号已删除 / 改密）
+- [ ] 已用 `create_admin.py` 创建超管并把随机口令存入密码管理器
+- [ ] 注册接口传 `user_type=super_admin` 返回 4xx（提权封堵生效）
+- [ ] 审计日志可检索到管理员变更记录

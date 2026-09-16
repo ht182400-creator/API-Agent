@@ -258,6 +258,35 @@ async def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在")
     
+    # ==================== 自锁防护（防止系统失去可用管理员） ====================
+    will_lose_admin = (
+        (update_data.user_type is not None and update_data.user_type != "super_admin")
+        or (update_data.user_status is not None and update_data.user_status != "active")
+    )
+
+    # 1) 不能把自己降级 / 停用（否则可能把自己关在门外，只能改库恢复）
+    if str(user.id) == str(current_user["id"]) and will_lose_admin:
+        raise HTTPException(
+            status_code=400,
+            detail="不能降级或停用当前登录的超级管理员（请由其他超级管理员操作）",
+        )
+
+    # 2) 不能降级 / 停用最后一个活跃的超级管理员
+    if user.user_type == "super_admin" and will_lose_admin:
+        active_admin_count = (
+            await db.execute(
+                select(func.count(User.id)).where(
+                    User.user_type == "super_admin",
+                    User.user_status == "active",
+                )
+            )
+        ).scalar() or 0
+        if active_admin_count <= 1:
+            raise HTTPException(
+                status_code=400,
+                detail="不能降级或停用最后一个活跃的超级管理员",
+            )
+
     # 记录旧数据
     old_data = {
         "user_type": user.user_type,

@@ -110,6 +110,58 @@ class TestAuthAPI:
         assert data["data"]["username"] == "newuser"
         assert data["data"]["role"] == "user"
 
+    async def test_register_cannot_self_grant_super_admin(self, client: AsyncClient):
+        """TC-SEC-REG-001: 注册不得自我提权为 super_admin（P0 越权防线）
+
+        原实现 `valid_roles` 含 admin/super_admin 且直接采信 user_type ——
+        任何人传 user_type=super_admin 即可成为超管。现在必须在 schema 层被拒。
+        """
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": "sneaky",
+                "email": "sneaky@example.com",
+                "password": "password123",
+                "user_type": "super_admin",
+            },
+        )
+
+        # schema 层白名单拦截（pydantic 校验失败 → 422；业务异常则 400/401）
+        assert response.status_code in (400, 401, 422)
+
+    async def test_register_cannot_self_grant_admin(self, client: AsyncClient):
+        """TC-SEC-REG-002: 注册不得自我提权为 admin"""
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": "sneaky2",
+                "email": "sneaky2@example.com",
+                "password": "password123",
+                "user_type": "admin",
+            },
+        )
+
+        assert response.status_code in (400, 401, 422)
+
+    async def test_register_role_is_not_trusted(self, client: AsyncClient):
+        """TC-SEC-REG-003: role 传越权值被回退为已校验的 user_type（权限以 user_type 为准）"""
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": "sneaky3",
+                "email": "sneaky3@example.com",
+                "password": "password123",
+                "user_type": "developer",
+                "role": "super_admin",
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["data"]["user_type"] == "developer"
+        # 越权 role 不得被采信
+        assert data["data"]["role"] != "super_admin"
+
     async def test_register_duplicate_email(self, client: AsyncClient, test_user):
         """Test registration with duplicate email"""
         response = await client.post(

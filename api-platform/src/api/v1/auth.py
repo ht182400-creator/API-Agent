@@ -128,10 +128,16 @@ async def register(
         raise AuthenticationError("邮箱已被注册")
     
     # 【V4.0 重构】统一使用 user_type，role 保留兼容
-    # Validate role
-    valid_roles = ["user", "developer", "admin", "super_admin"]
-    if user_data.role not in valid_roles:
-        raise AuthenticationError(f"无效的角色，可选值: {', '.join(valid_roles)}")
+    # ⚠️ 安全：自助注册**只能申请普通业务角色** —— admin / super_admin 必须由超管授予。
+    #    原实现允许通过注册直接申请超管（任何人可自我提权，P0）；
+    #    现在由 UserCreate.SELF_REGISTER_ROLES 白名单在 schema 层拦截，此处做二次防御。
+    valid_roles = sorted(UserCreate.SELF_REGISTER_ROLES)
+    if user_data.user_type not in UserCreate.SELF_REGISTER_ROLES:
+        raise AuthenticationError(f"不允许通过注册申请该角色，可选值: {', '.join(valid_roles)}")
+    # role 为历史兼容字段：权限判定以 user_type 为准，但**不得**让客户端借 role 声称高权限
+    # （正常值原样保留，越权值回退为已校验通过的 user_type）
+    if user_data.role not in UserCreate.SELF_REGISTER_ROLES:
+        user_data.role = user_data.user_type
     
     # 【V4.0 重构】使用统一的权限配置
     from src.services.permission_service import DEFAULT_PERMISSIONS

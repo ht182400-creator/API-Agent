@@ -180,11 +180,41 @@ async def test_admin(db_session: AsyncSession):
 
 
 @pytest.fixture
+async def test_super_admin(db_session: AsyncSession):
+    """Create test super admin user（用于超管接口的权限守卫测试）"""
+    from src.models.user import User
+    from src.core.security import hash_password
+
+    super_admin = User(
+        username="testsuperadmin",
+        email="superadmin@test.com",
+        password_hash=hash_password("super123456"),
+        user_type="super_admin",
+        user_status="active",
+        role="super_admin",
+        permissions=["*"],
+    )
+    db_session.add(super_admin)
+    await db_session.commit()
+    await db_session.refresh(super_admin)
+    return super_admin
+
+
+@pytest.fixture
 def auth_headers(test_user):
     """Create authentication headers"""
     from src.core.security import create_access_token
     
     token = create_access_token({"sub": str(test_user.id)})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def super_admin_headers(test_super_admin):
+    """Create super admin authentication headers"""
+    from src.core.security import create_access_token
+
+    token = create_access_token({"sub": str(test_super_admin.id)})
     return {"Authorization": f"Bearer {token}"}
 
 
