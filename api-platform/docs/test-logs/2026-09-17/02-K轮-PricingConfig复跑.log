@@ -1,0 +1,99 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/PricingConfig.spec.tsx
+[20260917 00:06:24.174] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789574784174_pyhg00cy2"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789574784174_pyhg00cy2'
+}
+
+node.exe : stderr | src/pages/admin/PricingConfig.spec.tsx > 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免
+费额度/VIP 折扣派生文案正确
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...额度/VIP 折扣派生文案正确:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+ ❯ src/pages/admin/PricingConfig.spec.tsx (4 tests | 1 failed) 3364ms
+   ✓ 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免费额度/VIP 折扣派生文案正确 1025ms
+   × 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌回表单 562ms
+     → expected '0.0200' to be '0.02' // Object.is equality
+   ✓ 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序列化为 JSON 文本回显 519ms
+   ✓ 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新拉取列表 1255ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌回表
+单
+AssertionError: expected '0.0200' to be '0.02' // Object.is equality
+
+Expected: "0.02"
+Received: "0.0200"
+
+ ❯ src/pages/admin/PricingConfig.spec.tsx:212:61
+    210|     // 数值字段回显（优先级 100 / 每次调用 0.02 / 免费 100 次）
+    211|     expect(valueOf(within(modal).getByLabelText('优先级'))).toBe('100')
+    212|     expect(valueOf(within(modal).getByLabelText('每次调用价格'))).toBe…
+       |                                                             ^
+    213|     expect(valueOf(within(modal).getByLabelText('免费调用次数'))).toBe…
+    214| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  00:06:19
+   Duration  8.14s (transform 211ms, setup 168ms, collect 3.26s, tests 3.36s, environment 822ms, prepare 155ms)
+

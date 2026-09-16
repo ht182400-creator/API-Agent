@@ -1,0 +1,388 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/PricingConfig.spec.tsx
+[20260917 00:05:49.865] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789574749865_4qfwdqa5l"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789574749865_4qfwdqa5l'
+}
+
+node.exe : stderr | src/pages/admin/PricingConfig.spec.tsx > 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免
+费额度/VIP 折扣派生文案正确
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...额度/VIP 折扣派生文案正确:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+ ❯ src/pages/admin/PricingConfig.spec.tsx (4 tests | 1 failed) 3751ms
+   ✓ 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免费额度/VIP 折扣派生文案正确 1135ms
+   × 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌回表单 568ms
+     → Unable to find an element with the text: 按调用. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-labelledby[39m=[32m"test-id"[39m
+  [33maria-modal[39m=[32m"true"[39m
+  [33mclass[39m=[32m"ant-modal css-dev-only-do-not-override-7zmxdp ant-zoom-appear ant-zoom-appear-prepare ant-zoom"[39m
+  [33mrole[39m=[32m"dialog"[39m
+  [33mstyle[39m=[32m"max-width: 700px; width: 90%;"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mstyle[39m=[32m"outline: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-modal-content"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Close"[39m
+        [33mclass[39m=[32m"ant-modal-close"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"关闭"[39m
+          [33mclass[39m=[32m"ant-modal-close-x"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"close"[39m
+            [33mclass[39m=[32m"anticon anticon-close ant-modal-close-icon"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mdata-icon[39m=[32m"close"[39m
+              [33mfill[39m=[32m"currentColor"[39m
+              [33mfill-rule[39m=[32m"evenodd"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"1em"[39m
+              [33mviewBox[39m=[32m"64 64 896 896"[39m
+              [33mwidth[39m=[32m"1em"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-modal-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-modal-title"[39m
+          [33mid[39m=[32m"test-id"[39m
+        [36m>[39m
+          [0m编辑价格配置[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-modal-body"[39m
+      [36m>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -8px; margin-right: -8px; row-gap: 8px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-md-12 css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 8px; padding-right: 8px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mfor[39m=[32m"repo_id"[39m
+                      [33mtitle[39m=[32m"仓库ID（留空=全局）"[39m
+                    [36m>[39m
+                      [0m仓库ID（留空=全局）[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mid[39m=[32m"repo_id"[39m
+                          [33mplaceholder[39m=[32m"留空为全局配置"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-md-12 css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 8px; padding-right: 8px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mfor[39m=[32m"priority"[39m
+                      [33mtitle[39m=[32m"优先级"[39m
+                    [36m>[39m
+                      [0m优先级[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                     ...
+   ✓ 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序列化为 JSON 文本回显 548ms
+   ✓ 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新拉取列表 1499ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌回表
+单
+TestingLibraryElementError: Unable to find an element with the text: 按调用. This could be because the text is broken up b
+y multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-labelledby[39m=[32m"test-id"[39m
+  [33maria-modal[39m=[32m"true"[39m
+  [33mclass[39m=[32m"ant-modal css-dev-only-do-not-override-7zmxdp ant-zoom-appear ant-zoom-appear-prepare ant-zoom"
+[39m
+  [33mrole[39m=[32m"dialog"[39m
+  [33mstyle[39m=[32m"max-width: 700px; width: 90%;"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mstyle[39m=[32m"outline: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-modal-content"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Close"[39m
+        [33mclass[39m=[32m"ant-modal-close"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"关闭"[39m
+          [33mclass[39m=[32m"ant-modal-close-x"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"close"[39m
+            [33mclass[39m=[32m"anticon anticon-close ant-modal-close-icon"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mdata-icon[39m=[32m"close"[39m
+              [33mfill[39m=[32m"currentColor"[39m
+              [33mfill-rule[39m=[32m"evenodd"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"1em"[39m
+              [33mviewBox[39m=[32m"64 64 896 896"[39m
+              [33mwidth[39m=[32m"1em"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .0
+3-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.
+05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02
+ 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.
+04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05
+.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+        [36m</span>[39m
+      [36m</button>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-modal-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-modal-title"[39m
+          [33mid[39m=[32m"test-id"[39m
+        [36m>[39m
+          [0m编辑价格配置[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-modal-body"[39m
+      [36m>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"ant-form ant-form-vertical css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-row css-dev-only-do-not-override-7zmxdp"[39m
+            [33mstyle[39m=[32m"margin-left: -8px; margin-right: -8px; row-gap: 8px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-md-12 css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 8px; padding-right: 8px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mfor[39m=[32m"repo_id"[39m
+                      [33mtitle[39m=[32m"仓库ID（留空=全局）"[39m
+                    [36m>[39m
+                      [0m仓库ID（留空=全局）[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<input[39m
+                          [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-7zmxdp ant-input-outlined"[39m
+                          [33mid[39m=[32m"repo_id"[39m
+                          [33mplaceholder[39m=[32m"留空为全局配置"[39m
+                          [33mtype[39m=[32m"text"[39m
+                          [33mvalue[39m=[32m""[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-col ant-col-xs-24 ant-col-md-12 css-dev-only-do-not-override-7zmxdp"[39m
+              [33mstyle[39m=[32m"padding-left: 8px; padding-right: 8px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-dev-only-do-not-override-7zmxdp ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-7zmxdp"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m""[39m
+                      [33mfor[39m=[32m"priority"[39m
+                      [33mtitle[39m=[32m"优先级"[39m
+                    [36m>[39m
+                      [0m优先级[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-7zmxdp"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                     ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/admin/PricingConfig.spec.tsx:206:26
+    204| 
+    205|     // 计费模式下拉回显当前值
+    206|     expect(within(modal).getByText('按调用')).toBeInTheDocument()
+       |                          ^
+    207| 
+    208|     // 数值字段回显（优先级 100 / 每次调用 0.02 / 免费 100 次）
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  00:05:42
+   Duration  11.33s (transform 274ms, setup 236ms, collect 5.49s, tests 3.75s, environment 1.21s, prepare 239ms)
+

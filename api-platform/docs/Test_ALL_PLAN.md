@@ -198,7 +198,7 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **202 passed**（21 个测试文件 = 20 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条）。
+**当前结果**：`npm run test:unit` → **206 passed**（22 个测试文件 = 21 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条）。
 > 上表对应的最初 14 个 spec 口径为：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 16 = 144（其中 TC-FE-API-008 参数化展开为 10 条）；此后按用例库清单持续增补至 195 条组件用例。
 
 > ⚠️ **用例有效性由变异检验保障**：`npm run verify:fixes` 会把每个已修复的缺陷**改回缺陷形态**，
@@ -312,7 +312,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 202 passed / 21 个测试文件 = 20 组件 spec + 用例库自检）
+npm run test:unit        # 单次运行（当前 206 passed / 22 个测试文件 = 21 组件 spec + 用例库自检）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 
@@ -347,6 +347,19 @@ npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEm
 （后端 B1~B8 / 前端 F1~F12）逐条映射到测试，含负向验证与过程留痕。
 结论：后端 269 passed / 前端 144 passed / 契约联测 36 passed，无一回归；
 回归过程另抓出并修复 1 个时区敏感 flaky（TC-STATQ-006）。
+
+### 2.7 测试环境与生产的一致性（2026-09-17 修正）
+
+**问题**：`renderWithProviders` 此前只包了 `ConfigProvider theme={{ motion: false }}`，
+**没带 `locale`** → 测试跑在 antd **默认英文**下（`main.tsx` 生产是 `zhCN`）。
+后果：Modal 按钮是 `OK`/`Cancel`、Table 空态是 `No data` —— 与真实界面的
+`确定`/`取消`/`暂无数据` 不符。若用例断言这些文案，等于"测了一个线上不存在的界面"。
+
+**修正**：`renderWithProviders` 加 `locale={zhCN}`，与 `main.tsx` 对齐；
+既有 200 余条用例**全部照常通过**（此前无任何用例依赖英文文案）。
+
+**约定**：测试渲染助手必须与 `main.tsx` 的全局 Provider 配置保持一致
+（Router future flags / locale / motion）；每加一项就回看一次 `main.tsx`。
 
 ## 三、测试数据准备
 

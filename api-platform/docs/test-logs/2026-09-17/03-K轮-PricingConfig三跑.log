@@ -1,0 +1,79 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/PricingConfig.spec.tsx
+[20260917 00:07:01.599] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789574821598_op0k56ilg"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789574821598_op0k56ilg'
+}
+
+node.exe : stderr | src/pages/admin/PricingConfig.spec.tsx > 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免
+费额度/VIP 折扣派生文案正确
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...额度/VIP 折扣派生文案正确:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌
+回表单
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序
+列化为 JSON 文本回显
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+stderr | src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新
+拉取列表
+Warning: [antd: Form.Item] `defaultValue` will not work on controlled Field. You should use `initialValues` of Form ins
+tead.
+
+ ✓ src/pages/admin/PricingConfig.spec.tsx (4 tests) 3393ms
+   ✓ 配置列表回显（TC-FE-PRICING-001） > TC-FE-PRICING-001: 三种计费模式的价格/免费额度/VIP 折扣派生文案正确 1008ms
+   ✓ 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-002: 按调用配置的数值字段与联动字段正确灌回表单 563ms
+   ✓ 编辑回显（TC-FE-PRICING-002 / 003） > TC-FE-PRICING-003: 套餐类配置的 packages 被序列化为 JSON 文本回显 500ms
+   ✓ 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新拉取列表 1317ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  00:06:56
+   Duration  8.14s (transform 196ms, setup 172ms, collect 3.26s, tests 3.39s, environment 800ms, prepare 123ms)
+

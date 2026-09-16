@@ -563,7 +563,7 @@ const PricingConfigPage: React.FC = () => {
         onOk={() => form.submit()}
         width="90%"
         style={{ maxWidth: 700 }}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={[16, 8]}>

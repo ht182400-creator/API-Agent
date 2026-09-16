@@ -19,6 +19,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { render, type RenderOptions, type RenderResult } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
 import { ErrorProvider } from '../contexts/ErrorContext'
 
 export interface ProviderOptions extends Omit<RenderOptions, 'wrapper'> {
@@ -47,7 +48,11 @@ export function renderWithProviders(
     // ⚠️ 关闭 antd 动画（`motion: false`）：jsdom 下 CSSMotion 的异步状态更新
     //    既无意义又会产生大量 `not wrapped in act(...)` 警告（实测约 90 条，
     //    占全部 act 警告的四成），还干扰对"真实 act 问题"的判断。
-    <ConfigProvider theme={{ token: { motion: false } }}>
+    //
+    // ⚠️ `locale={zhCN}` 必须与 `main.tsx` 一致：此前测试跑的是 antd **默认英文**，
+    //    导致 Modal 按钮是 OK/Cancel、Table 空态是 No data —— 与真实界面（确定/取消、
+    //    暂无数据）不符，用例若断言这些文案就会"测了个线上不存在的界面"。
+    <ConfigProvider locale={zhCN} theme={{ token: { motion: false } }}>
       {/* ⚠️ 与 main.tsx 的 BrowserRouter 保持一致的 future flags：
           否则每次渲染都会刷两条 React Router Future Flag 警告（实测 16 条）。 */}
       <MemoryRouter

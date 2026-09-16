@@ -104,12 +104,19 @@ for (const line of output.split('\n')) {
 const sortedCounts = Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1]))
 
 if (updateBaseline) {
+  // ⚠️ 必须保留 `_note` 等说明字段：此前是**整体重写**，而脚本注释里推荐的正是这条命令
+  //    → 跑一次就会把"已消除种类清单 / 口径说明"悄悄抹掉（文档随命令一起消失）。
+  //    现改为：只替换 updatedAt 与 counts，其余字段原样保留。
+  const prev = existsSync(baselinePath)
+    ? JSON.parse(readFileSync(baselinePath, 'utf8'))
+    : {}
+  const { counts: _prevCounts, updatedAt: _prevUpdatedAt, ...rest } = prev
   writeFileSync(
     baselinePath,
-    `${JSON.stringify({ updatedAt: new Date().toISOString(), counts: sortedCounts }, null, 2)}\n`,
+    `${JSON.stringify({ ...rest, updatedAt: new Date().toISOString(), counts: sortedCounts }, null, 2)}\n`,
     'utf8'
   )
-  console.log(`[warn-budget] 基线已重建 -> ${baselinePath}`)
+  console.log(`[warn-budget] 基线已重建 -> ${baselinePath}（已保留 _note 等说明字段）`)
   for (const [k, v] of Object.entries(sortedCounts)) console.log(`  ${String(v).padStart(5)}  ${k}`)
   process.exit(0)
 }

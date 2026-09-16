@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 20,
-      "cases": 195,
+      "specFiles": 21,
+      "cases": 199,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -28,9 +28,10 @@
         "src/pages/auth/Login.tsx",
         "src/pages/auth/Register.tsx",
         "src/pages/admin/Analytics.tsx (partial)",
+        "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 202 tests − 7 条用例库自检 = **195 条组件用例**；specFiles=20 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 21 个文件）。剩 P2/P3 与 UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 206 tests − 7 条用例库自检 = **199 条组件用例**；specFiles=21 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 22 个文件）。剩 P2/P3 与 UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -405,12 +406,14 @@
       "level": "P2",
       "file": "src/pages/admin/PricingConfig.tsx",
       "lines": 670,
-      "why": "定价配置：直接决定计费金额",
-      "status": "planned",
+      "why": "定价配置：直接决定计费金额（配置错＝资损）。⚠️ 补测时该文件仍带废弃属性 Modal.destroyOnClose —— 因本页此前无任何测试渲染，废弃警告从未出现过，已一并改为 destroyOnHidden",
+      "status": "covered",
       "specFile": "src/pages/admin/PricingConfig.spec.tsx",
       "cases": [
-        { "id": "TC-FE-PRICING-001", "name": "配置回显与必填校验", "status": "planned" },
-        { "id": "TC-FE-PRICING-002", "name": "保存后重新拉取并提示", "status": "planned" }
+        { "id": "TC-FE-PRICING-001", "name": "列表派生文案回显（三种计费模式价格/免费额度；VIP 折扣仅前 2 档；状态→操作按钮映射）", "status": "done" },
+        { "id": "TC-FE-PRICING-002", "name": "编辑回显：数值字段精度与计费模式联动字段（call 不出现 token/package 字段）", "status": "done" },
+        { "id": "TC-FE-PRICING-003", "name": "套餐类配置的 packages 被序列化为可解析的 JSON 文本回显", "status": "done" },
+        { "id": "TC-FE-PRICING-004", "name": "必填校验拦截（计费模式/对应价格）→ 补全后创建成功并重新拉取列表", "status": "done" }
       ]
     },
     {

@@ -1,0 +1,10 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs --update-baseline
+
+[vitest] Test Files  22 passed (22)
+[vitest] Tests  206 passed (206)
+[vitest] Duration  92.18s (transform 5.23s, setup 50.18s, collect 431.46s, tests 113.17s, environment 223.72s, prepare 10.64s)
+[warn-budget] 基线已重建 -> D:\Work_Area\AI\API-Agent\api-platform\web\test-warnings-baseline.json（已保留 _note 等说明字段）
+    102  act: update not wrapped in act
+     97  jsdom: getComputedStyle pseudo-elements
