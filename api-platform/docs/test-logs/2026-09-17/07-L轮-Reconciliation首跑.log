@@ -1,0 +1,961 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/Reconciliation.spec.tsx
+[20260917 00:21:04.596] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789575664595_e92qtodsh"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789575664595_e92qtodsh'
+}
+
+node.exe : stderr | src/pages/admin/Reconciliation.spec.tsx > 差异记录（TC-FE-RECON-004） > TC-FE-RECON-004: 按 reconciliation
+_id 查询；差异金额正负高亮；仅待处理行可操作
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...金额正负高亮；仅待处理行可操作:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/admin/Reconciliation.spec.tsx (4 tests | 2 failed) 2990ms
+   × 对账结果查询与渲染（TC-FE-RECON-001） > TC-FE-RECON-001: 首屏按「日期+渠道」查询，状态经前端映射，差异>0 时告警 762ms
+     → Found multiple elements with the text: 支付宝
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-select-selection-item"[39m
+  [33mtitle[39m=[32m"支付宝"[39m
+[36m>[39m
+  [0m支付宝[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0m支付宝[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-single ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+   × 无数据与错误分类（TC-FE-RECON-002） > TC-FE-RECON-002: 404 视为「该日无对账记录」（不进统一错误弹窗），其它错误才交统一处理 1099ms
+     → Unable to find an element with the text: 暂无对账数据. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-single ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-single ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+   ✓ 执行对账（TC-FE-RECON-003） > TC-FE-RECON-003: 以当前查询条件提交，成功后提示并重新拉取结果 489ms
+   ✓ 差异记录（TC-FE-RECON-004） > TC-FE-RECON-004: 按 reconciliation_id 查询；差异金额正负高亮；仅待处理行可操作 638ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/Reconciliation.spec.tsx > 对账结果查询与渲染（TC-FE-RECON-001） > TC-FE-RECON-001: 首屏按「日期+渠道」查询，状态经前端映射，差异>
+0 时告警
+TestingLibraryElementError: Found multiple elements with the text: 支付宝
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"ant-select-selection-item"[39m
+  [33mtitle[39m=[32m"支付宝"[39m
+[36m>[39m
+  [0m支付宝[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0m支付宝[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAl
+lByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-cent
+er ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-singl
+e ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-
+6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-
+8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3
+-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56
+c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/admin/Reconciliation.spec.tsx:184:19
+    182|     expect(await screen.findByText('对账结果')).toBeInTheDocument()
+    183|     expect(screen.getByText('2026-09-16')).toBeInTheDocument()
+    184|     expect(screen.getByText('支付宝')).toBeInTheDocument()
+       |                   ^
+    185|     expect(screen.getByText('有差异')).toBeInTheDocument()
+    186| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/pages/admin/Reconciliation.spec.tsx > 无数据与错误分类（TC-FE-RECON-002） > TC-FE-RECON-002: 404 视为「该日无对账记录」（不进统一错误弹窗）
+，其它错误才交统一处理
+TestingLibraryElementError: Unable to find an element with the text: 暂无对账数据. This could be because the text is broken u
+p by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexib
+le.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-cent
+er ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-singl
+e ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-
+6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-
+8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3
+-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56
+c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_container_dad1be bamboo-bg-pattern"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_header_dad1be"[39m
+      [36m>[39m
+        [36m<h4[39m
+          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-7zmxdp"[39m
+        [36m>[39m
+          [0m对账管理[0m
+        [36m</h4>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-7zmxdp ant-space-horizontal ant-space-align-cent
+er ant-space-gap-row-small ant-space-gap-col-small"[39m
+          [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-select ant-select-outlined css-dev-only-do-not-override-7zmxdp ant-select-singl
+e ant-select-show-arrow"[39m
+              [33mstyle[39m=[32m"width: 120px;"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-select-selector"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-select-selection-wrap"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-search"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33maria-autocomplete[39m=[32m"list"[39m
+                      [33maria-controls[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-haspopup[39m=[32m"listbox"[39m
+                      [33maria-owns[39m=[32m"rc_select_TEST_OR_SSR_list"[39m
+                      [33mautocomplete[39m=[32m"off"[39m
+                      [33mclass[39m=[32m"ant-select-selection-search-input"[39m
+                      [33mid[39m=[32m"rc_select_TEST_OR_SSR"[39m
+                      [33mreadonly[39m=[32m""[39m
+                      [33mrole[39m=[32m"combobox"[39m
+                      [33mstyle[39m=[32m"opacity: 0;"[39m
+                      [33mtype[39m=[32m"search"[39m
+                      [33munselectable[39m=[32m"on"[39m
+                      [33mvalue[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"ant-select-selection-item"[39m
+                    [33mtitle[39m=[32m"支付宝"[39m
+                  [36m>[39m
+                    [0m支付宝[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"ant-select-arrow"[39m
+                [33mstyle[39m=[32m"user-select: none; -webkit-user-select: none;"[39m
+                [33munselectable[39m=[32m"on"[39m
+              [36m>[39m
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  00:20:57
+   Duration  11.13s (transform 965ms, setup 293ms, collect 5.63s, tests 2.99s, environment 1.46s, prepare 172ms)
+
+                [36m<span[39m
+                  [33maria-label[39m=[32m"down"[39m
+                  [33mclass[39m=[32m"anticon anticon-down ant-select-suffix"[39m
+                  [33mrole[39m=[32m"img"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mdata-icon[39m=[32m"down"[39m
+                    [33mfill[39m=[32m"currentColor"[39m
+                    [33mfocusable[39m=[32m"false"[39m
+                    [33mheight[39m=[32m"1em"[39m
+                    [33mviewBox[39m=[32m"64 64 896 896"[39m
+                    [33mwidth[39m=[32m"1em"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-
+6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space-item"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-picker ant-picker-outlined css-dev-only-do-not-override-7zmxdp"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-picker-input"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33maria-invalid[39m=[32m"false"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mplaceholder[39m=[32m"选择日期"[39m
+                  [33msize[39m=[32m"12"[39m
+                  [33mvalue[39m=[32m"2026-09-17"[39m
+                [36m/>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-suffix"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"calendar"[39m
+                    [33mclass[39m=[32m"anticon anticon-calendar"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32m"calendar"[39m
+                      [33mfill[39m=[32m"currentColor"[39m
+                      [33mfocusable[39m=[32m"false"[39m
+                      [33mheight[39m=[32m"1em"[39m
+                      [33mviewBox[39m=[32m"64 64 896 896"[39m
+                      [33mwidth[39m=[32m"1em"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-
+8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3
+-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56
+c4.4 0 8-3.6 8-8v-48h128v136H184z"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"ant-picker-clear"[39m
+                  [33mrole[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-label[39m=[32m"close-circle"[39m
+                    [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                    [33mrole[39m=[32m"img"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mdata-icon[39m=[32...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/admin/Reconciliation.spec.tsx:204:25
+    202|     // ① 404 → "暂无数据"引导，且**不**触发统一错误处理
+    203|     const { unmount } = renderPage()
+    204|     expect(await screen.findByText('暂无对账数据')).toBeInTheDocument()
+       |                         ^
+    205|     expect(screen.queryByText('对账结果')).not.toBeInTheDocument()
+    206|     expect(showErrorSpy).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 51,
-      "specFiles": 21,
-      "cases": 199,
+      "specFiles": 22,
+      "cases": 203,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -29,9 +29,10 @@
         "src/pages/auth/Register.tsx",
         "src/pages/admin/Analytics.tsx (partial)",
         "src/pages/admin/PricingConfig.tsx",
+        "src/pages/admin/Reconciliation.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 206 tests − 7 条用例库自检 = **199 条组件用例**；specFiles=21 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 22 个文件）。剩 P2/P3 与 UI-001~002"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 210 tests − 7 条用例库自检 = **203 条组件用例**；specFiles=22 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 23 个文件）。剩 P2/P3 与 UI-001~002"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -393,12 +394,14 @@
       "level": "P2",
       "file": "src/pages/admin/Reconciliation.tsx",
       "lines": 751,
-      "why": "对账工作台；金额/差异必须精确",
-      "status": "planned",
+      "why": "对账工作台；金额/差异必须精确。⚠️ 补测时清掉 3 处废弃 Card.bodyStyle + 1 个死导入（useAuthStore）。🔑 关键语义：getReconciliationResult 的 404 被特判为「该日无对账记录」（不进统一错误弹窗），只有其它错误码才 showError",
+      "status": "covered",
       "specFile": "src/pages/admin/Reconciliation.spec.tsx",
       "cases": [
-        { "id": "TC-FE-RECON-001", "name": "按日期查询并渲染差异明细", "status": "planned" },
-        { "id": "TC-FE-RECON-002", "name": "差异金额高亮与合计正确", "status": "planned" }
+        { "id": "TC-FE-RECON-001", "name": "首屏按「日期+渠道」查询；状态经 STATUS_NAMES 前端映射；四项统计；差异>0 时告警", "status": "done" },
+        { "id": "TC-FE-RECON-002", "name": "404 视为「该日无对账记录」不弹统一错误；非 404（500）才交统一错误处理且不白屏", "status": "done" },
+        { "id": "TC-FE-RECON-003", "name": "「执行对账」带当前查询条件（日期+渠道）提交，成功后提示并重新拉取结果", "status": "done" },
+        { "id": "TC-FE-RECON-004", "name": "差异记录按 reconciliation_id 查询；差异金额正负高亮；仅待处理行可操作；分页合计", "status": "done" }
       ]
     },
     {

@@ -1,0 +1,35 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/Reconciliation.spec.tsx
+[20260917 00:21:37.744] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789575697744_ueke5qaei"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789575697744_ueke5qaei'
+}
+
+node.exe : stderr | src/pages/admin/Reconciliation.spec.tsx > 差异记录（TC-FE-RECON-004） > TC-FE-RECON-004: 按 reconciliation
+_id 查询；差异金额正负高亮；仅待处理行可操作
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...金额正负高亮；仅待处理行可操作:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/admin/Reconciliation.spec.tsx (4 tests) 2339ms
+   ✓ 对账结果查询与渲染（TC-FE-RECON-001） > TC-FE-RECON-001: 首屏按「日期+渠道」查询，状态经前端映射，差异>0 时告警 740ms
+   ✓ 无数据与错误分类（TC-FE-RECON-002） > TC-FE-RECON-002: 404 视为「该日无对账记录」（不进统一错误弹窗），其它错误才交统一处理 454ms
+   ✓ 执行对账（TC-FE-RECON-003） > TC-FE-RECON-003: 以当前查询条件提交，成功后提示并重新拉取结果 482ms
+   ✓ 差异记录（TC-FE-RECON-004） > TC-FE-RECON-004: 按 reconciliation_id 查询；差异金额正负高亮；仅待处理行可操作 660ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  00:21:31
+   Duration  8.82s (transform 277ms, setup 231ms, collect 4.33s, tests 2.34s, environment 1.13s, prepare 174ms)
+

@@ -37,7 +37,8 @@ import { adminReconciliationApi,
          ReportResponse,
 } from '../../api/adminReconciliation'
 import { useErrorModal } from '../../components/ErrorModal'
-import { useAuthStore } from '../../stores/auth'
+// 注：原先的 `import { useAuthStore } from '../../stores/auth'` 是**死导入**
+// （全文件无任何使用；因 tsconfig 关了 noUnusedLocals 才一直没暴露）→ 已移除。
 import { useDevice } from '../../hooks/useDevice'
 import styles from './Reconciliation.module.css'
 
@@ -557,7 +558,7 @@ export default function AdminReconciliation() {
                   // 移动端：卡片列表
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {disputes.map((dispute) => (
-                      <Card key={dispute.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <Card key={dispute.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                           <Tag color={dispute.dispute_type === 'long' ? 'blue' : dispute.dispute_type === 'short' ? 'orange' : 'red'} style={{ marginInlineEnd: 0 }}>
                             {dispute.dispute_type_name}
@@ -602,7 +603,7 @@ export default function AdminReconciliation() {
                   // 移动端：卡片列表
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {history.map((item) => (
-                      <Card key={item.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                      <Card key={item.id} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                           <Text strong>{dayjs(item.reconcile_date).format('YYYY-MM-DD')}</Text>
                           <Badge status={STATUS_COLORS[item.status] as any} text={item.status_name} style={{ marginLeft: 'auto' }} />
@@ -709,7 +710,7 @@ export default function AdminReconciliation() {
                     // 移动端：卡片列表
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {reportData.items.map((item) => (
-                        <Card key={`${item.reconcile_date}-${item.channel}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} bodyStyle={{ padding: 12 }}>
+                        <Card key={`${item.reconcile_date}-${item.channel}`} size="small" style={{ borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} styles={{ body: { padding: 12 } }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                             <Text strong>{item.reconcile_date}</Text>
                             <Tag style={{ marginInlineEnd: 0 }}>{item.channel_name}</Tag>
