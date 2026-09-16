@@ -8,6 +8,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, waitFor, fireEvent, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Route, Routes } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { billingApi } from '../../api/billing'
 import { useAuthStore } from '../../stores/auth'
@@ -257,5 +258,94 @@ describe('账单明细与月度汇总（TC-FE-BILLING）', () => {
         end_date: '2026-09-30',
       })
     )
+  })
+})
+
+// ==================== C 轮新增：普通用户引导 + 消费分布两分支（TC-FE-BILLING-005/006）====================
+// 为什么补：上面 4 条用例**全部以 developer 身份**渲染，于是两个真实分支从未跑到 ——
+//   ① `isNormalUser`（user_type === 'user'）的升级引导；
+//   ② 「消费分布」的 `distributionData.length > 0` 两分支（空态 / 渲染图表）。
+
+describe('账单中心 · 未覆盖分支（TC-FE-BILLING-005/006）', () => {
+  beforeEach(() => {
+    stubHealth('simulation', false)
+    vi.mocked(billingApi.getAccount).mockResolvedValue({ balance: 110.5, mock_mode: false } as never)
+    vi.mocked(billingApi.getMonthlySummary).mockResolvedValue(monthlySummary as never)
+    vi.mocked(billingApi.getBalanceHistory).mockResolvedValue([] as never)
+    vi.mocked(billingApi.getBills).mockResolvedValue({
+      items: bills,
+      pagination: { page: 1, page_size: 20, total: 3, total_pages: 1 },
+    } as never)
+    // ⚠️ 登录态必须显式重置（store 是模块级单例，上一个用例把 user_type 改成 'user' 后会**泄漏**到下一个用例
+    //    → 006 会莫名渲染出升级引导条）
+    useAuthStore.setState({
+      user: { id: 'u1', email: 'dev@example.com', user_type: 'developer', role: 'developer', permissions: [] },
+      accessToken: 't',
+      refreshToken: 'r',
+      isAuthenticated: true,
+    } as never)
+  })
+
+  /** 普通用户登录态（developer 之外的另一条身份分支） */
+  function loginAsNormalUser(): void {
+    useAuthStore.setState({
+      user: {
+        id: 'u2',
+        email: 'plain@example.com',
+        user_type: 'user',
+        role: 'user',
+        permissions: [],
+      },
+      accessToken: 't',
+      refreshToken: 'r',
+      isAuthenticated: true,
+    } as never)
+  }
+
+  it('TC-FE-BILLING-005: 普通用户显示「升级为开发者」引导，点击后跳 /user', async () => {
+    loginAsNormalUser()
+    const user = userEvent.setup()
+
+    // ⚠️ renderWithProviders 默认不渲染 <Routes>：要断言"点了按钮真的跳走"必须自己给目标路由
+    renderWithProviders(
+      <Routes>
+        <Route path="/developer/billing" element={<Billing />} />
+        <Route path="/user" element={<div>USER_UPGRADE_STUB</div>} />
+      </Routes>,
+      { route: '/developer/billing' }
+    )
+
+    // 引导条（message + description 两段文案都在）
+    expect(await screen.findByText('升级为开发者，解锁更多功能')).toBeInTheDocument()
+    expect(
+      screen.getByText('成为开发者后，您可以查看完整的消费统计、充值账户、管理账单等功能。')
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: '前往升级' }))
+    expect(await screen.findByText('USER_UPGRADE_STUB')).toBeInTheDocument()
+  })
+
+  it('TC-FE-BILLING-006: 消费分布按 by_repository 渲染；无数据为空态、有数据则不再显示空态', async () => {
+    // ① 无 by_repository（或为空）→ 「暂无消费数据」
+    vi.mocked(billingApi.getMonthlySummary).mockResolvedValue({
+      total_recharge: 0,
+      total_consumption: 0,
+      consumption_count: 0,
+      by_repository: [],
+    } as never)
+    const first = renderWithProviders(<Billing />, { route: '/developer/billing' })
+    expect(await screen.findByText('暂无消费数据')).toBeInTheDocument()
+    // 此时余额图同样是空态（两条空态并存、互不干扰）
+    expect(screen.getByText('暂无余额变化记录')).toBeInTheDocument()
+    first.unmount()
+
+    // ② 有 by_repository → 渲染图表容器（recharts ResponsiveContainer），空态消失
+    //    ⚠️ 必须**重新**给出带 by_repository 的 mock：① 已把实现改成空数据，
+    //       mockResolvedValue 会一直生效（首跑漏了这一步 → ② 拿到的仍是空 summary）
+    vi.mocked(billingApi.getMonthlySummary).mockResolvedValue(monthlySummary as never)
+    const second = renderWithProviders(<Billing />, { route: '/developer/billing' })
+    await waitFor(() => expect(screen.queryByText('暂无消费数据')).not.toBeInTheDocument())
+    // 余额图为空态（未渲染图表）→ 页面上**恰有 1 个**图表容器，即消费分布那张
+    expect(second.container.querySelectorAll('.recharts-responsive-container').length).toBe(1)
   })
 })

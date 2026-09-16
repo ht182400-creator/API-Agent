@@ -259,3 +259,123 @@ describe('Tab 切换与仓库明细弹窗', () => {
     })
   })
 })
+
+// ==================== C 轮新增：条件变更后的带参重查（TC-FE-ANA-009~011）====================
+// 为什么补：005~008 只断言"展示了什么"，未覆盖另外三条"改条件 → 带新参数重查"的链路：
+//   ① 趋势周期（按天/按小时）与天数；② 明细分页翻页；③ 弹窗内切换天数。
+
+describe('Analytics 条件变更重查（TC-FE-ANA-009~011）', () => {
+  // ⚠️ 本页**存在多处同文案的 Select**：「近7天」同时出现在 OverviewTab（概览 Tab）、
+  //    趋势卡的 extra、以及 RepoDetailModal 里；而 antd Tabs 会保留已挂载的 Tab 面板 →
+  //    直接在 body 上按文案找会命中多个（首跑报 "Found multiple elements with the text: 近7天"）。
+  //    因此改为**限定作用域**查找。
+  const comboIn = (scope: ParentNode, visibleText: string): HTMLElement => {
+    const items = [...scope.querySelectorAll('.ant-select-selection-item')].filter(
+      (n) => n.textContent === visibleText
+    )
+    if (items.length !== 1) {
+      throw new Error(`作用域内文案为「${visibleText}」的 Select 命中 ${items.length} 个（应为 1）`)
+    }
+    const selector = items[0].closest('.ant-select')?.querySelector('.ant-select-selector')
+    if (!selector) throw new Error(`未找到 Select 的 selector：${visibleText}`)
+    return selector as HTMLElement
+  }
+
+  /**
+   * 取**当前激活的 Tab 面板**作为作用域。
+   *
+   * ⚠️ 不能只用 `cardByTitle('调用与收入趋势')`：概览 Tab（OverviewTab.tsx）里**也有一张同名卡片**，
+   *    同样带周期 + 天数选择器，而且两者共用同一份状态（`onPeriodChange`/`onDaysChange` 都接到
+   *    `setTrendPeriod`/`setTrendDays`）。按标题取到的是文档里靠前的**概览**那张卡，
+   *    于是"天数"能改（状态共用），但"周期"的文案对不上 ——
+   *    概览卡的选项是「按天」/「按小时」，趋势卡才是「按天统计」/「按小时统计」
+   *    （同一页同一个控件两套文案，属可改进的不一致，已记入用例库 knownDefects）。
+   */
+  const activePane = (): HTMLElement => {
+    const pane = document.querySelector('.ant-tabs-tabpane-active')
+    if (!pane) throw new Error('未找到激活的 Tab 面板')
+    return pane as HTMLElement
+  }
+
+  // ⚠️ antd Select 交互沿用 ANA-008 结论：下拉必须 mouseDown 打开 → 在未 hidden 的弹层里
+  //    按文本找 option → fireEvent.click（弹层停在动画帧，getByRole('option') 永远找不到）。
+  const pick = (selector: HTMLElement, optionText: string) => {
+    fireEvent.mouseDown(selector)
+    const dd = [...document.querySelectorAll('.ant-select-dropdown')].find(
+      (d) => !d.className.includes('hidden')
+    )
+    if (!dd) throw new Error('Select 下拉未打开')
+    const opt = [...dd.querySelectorAll('.ant-select-item-option')].find(
+      (o) => o.textContent === optionText
+    )
+    if (!opt) throw new Error(`下拉中无 option：${optionText}`)
+    fireEvent.click(opt)
+  }
+
+  it('TC-FE-ANA-009: 趋势天数 7→30、周期「按天」→「按小时」均带新参数重查', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /趋势分析/ }))
+    await waitFor(() => expect(adminAnalyticsApi.getTrend).toHaveBeenCalled())
+    const before = vi.mocked(adminAnalyticsApi.getTrend).mock.calls.length
+
+    // 默认「按天统计」+「近7天」→ 改成近 30 天（限定在**趋势 Tab 面板**内）
+    pick(comboIn(activePane(), '近7天'), '近30天')
+    await waitFor(() => {
+      const calls = vi.mocked(adminAnalyticsApi.getTrend).mock.calls
+      expect(calls[calls.length - 1][0]).toEqual({ period: 'day', days: 30 })
+    })
+
+    // 周期改成「按小时统计」→ 天数沿用 30（源码：天数选择器只在 period==='day' 时出现）
+    // ⚠️ 此处文案必须是「按天统计」：概览 Tab 那张同名卡用的是「按天」，
+    //    靠全文查找会命中错的那个（首跑即如此）→ 用激活面板限定
+    pick(comboIn(activePane(), '按天统计'), '按小时统计')
+    await waitFor(() => {
+      const calls = vi.mocked(adminAnalyticsApi.getTrend).mock.calls
+      expect(calls[calls.length - 1][0]).toEqual({ period: 'hour', days: 30 })
+    })
+    expect(vi.mocked(adminAnalyticsApi.getTrend).mock.calls.length).toBeGreaterThan(before)
+  })
+
+  it('TC-FE-ANA-010: 明细分页翻到第 2 页时带 page=2 重查', async () => {
+    // 默认 mock 只有 1 页（total=1）→ 必须给出多页数据才能点到第 2 页
+    vi.mocked(adminAnalyticsApi.getRepoDetails).mockResolvedValue({
+      ...repoDetails,
+      pagination: { page: 1, page_size: 10, total: 25, total_pages: 3 },
+    } as never)
+
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /仓库明细/ }))
+    await waitFor(() => expect(adminAnalyticsApi.getRepoDetails).toHaveBeenCalled())
+
+    const page2 = document.querySelector('.ant-pagination-item-2') as HTMLElement | null
+    expect(page2, '总数 25 / 每页 10 → 应出现第 2 页').toBeTruthy()
+    await user.click(page2 as HTMLElement)
+
+    // repoPagination.page 是 effect 依赖 → 翻页必须带新 page 重查
+    await waitFor(() => {
+      const calls = vi.mocked(adminAnalyticsApi.getRepoDetails).mock.calls
+      const last = calls[calls.length - 1][0] as Record<string, unknown>
+      expect(last.page).toBe(2)
+    })
+  })
+
+  it('TC-FE-ANA-011: 明细弹窗内切换天数按新天数重查该仓库趋势', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /仓库明细/ }))
+    await user.click(await screen.findByText('查看明细'))
+    // 打开弹窗时用的是默认 7 天
+    await waitFor(() => expect(adminAnalyticsApi.getRepoTrend).toHaveBeenCalledWith('r1', 7))
+
+    // 弹窗内「近7天」→「近30天」（限定在弹窗内：页面上另有概览/趋势卡的同文案选择器）
+    const modal = document.querySelector('.ant-modal-wrap')
+    expect(modal, '明细弹窗应已挂载').toBeTruthy()
+    pick(comboIn(modal as HTMLElement, '近7天'), '近30天')
+
+    await waitFor(() =>
+      expect(adminAnalyticsApi.getRepoTrend).toHaveBeenLastCalledWith('r1', 30)
+    )
+  })
+})

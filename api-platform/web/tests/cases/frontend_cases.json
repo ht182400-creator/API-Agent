@@ -18,12 +18,12 @@
     "stats": {
       "sourceFiles": 51,
       "specFiles": 29,
-      "cases": 276,
+      "cases": 285,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
         "src/hooks/useDevice.ts",
-        "src/components/Layout.tsx (partial: 菜单可见性)",
+        "src/components/Layout.tsx",
         "src/contexts/ErrorContext.tsx",
         "src/pages/auth/Login.tsx",
         "src/pages/auth/Register.tsx",
@@ -33,7 +33,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 283 tests − 7 条用例库自检 = **276 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查））。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -82,8 +82,8 @@
       "level": "P0",
       "file": "src/components/Layout.tsx",
       "lines": 707,
-      "why": "全站骨架；菜单按角色/权限渲染 —— 越权菜单可见性属安全问题",
-      "status": "partial",
+      "why": "全站骨架；菜单按角色/权限渲染 —— 越权菜单可见性属安全问题。⚠️ 桌面/移动是**两套骨架**（源码注释：移动端完全不渲染 Sider，改用 Drawer 抽屉），必须分别覆盖，否则\"只在桌面测过\"会漏掉整条移动端链路（C 轮补齐）",
+      "status": "covered",
       "specFile": "src/components/Layout.spec.tsx",
       "cases": [
         { "id": "TC-FE-LAYOUT-001", "name": "super_admin 只见超管入口（无 admin/developer 泄漏）", "status": "done" },
@@ -93,7 +93,11 @@
         { "id": "TC-FE-LAYOUT-005", "name": "owner 含 owner 专属的数据分析/收益结算", "status": "done" },
         { "id": "TC-FE-LAYOUT-006", "name": "未知 user_type 兜底为普通用户菜单", "status": "done" },
         { "id": "TC-FE-LAYOUT-007", "name": "组件渲染：按当前用户渲染菜单入口（非白屏），DOM 无越权入口", "status": "done" },
-        { "id": "TC-FE-LAYOUT-008", "name": "登出调用 authApi.logout 并清空 store", "status": "done" }
+        { "id": "TC-FE-LAYOUT-008", "name": "登出调用 authApi.logout 并清空 store", "status": "done" },
+        { "id": "TC-FE-LAYOUT-009", "name": "移动端改用抽屉：不渲染 Sider、汉堡按钮开抽屉、点菜单项跳转并自动关闭", "status": "done" },
+        { "id": "TC-FE-LAYOUT-010", "name": "桌面端侧边栏折叠/展开（折叠隐藏 logo 文案与类型标签）", "status": "done" },
+        { "id": "TC-FE-LAYOUT-011", "name": "未读数落铃铛徽标；「全部已读」调后端并刷新未读数", "status": "done" },
+        { "id": "TC-FE-LAYOUT-012", "name": "点击通知项按 id 标记已读并跳通知页", "status": "done" }
       ]
     },
     {
@@ -142,7 +146,7 @@
       "level": "P1",
       "file": "src/pages/admin/Analytics.tsx",
       "lines": 964,
-      "why": "P1-4 待拆巨型页（后端同源 analytics 已拆分）；纯逻辑已抽出并单测，页面本体为冒烟",
+      "why": "P1-4 待拆巨型页（后端同源 analytics 已拆分；子组件 OverviewTab / RepoDetailModal / repoDetailColumns / chartData 已抽出）。⚠️ 页面本体不只\"冒烟\"：C 轮补上三条**改条件 → 带参重查**链路（周期/分页/弹窗天数）。⚠️ 同页两处「调用与收入趋势」卡共用同一份状态却用两套周期文案（见 knownDefects FE-BUG-ANALYTICS-DUP-TREND-CARD）",
       "status": "partial",
       "specFile": "src/pages/admin/Analytics.spec.tsx",
       "cases": [
@@ -158,9 +162,14 @@
         { "id": "TC-FE-ANA-DATA-002", "name": "趋势 labels/calls/revenue 逐项对齐", "status": "done" },
         { "id": "TC-FE-ANA-DATA-003", "name": "series 短于 labels 时补 0 保持等长", "status": "done" },
         { "id": "TC-FE-ANA-DATA-004", "name": "buildRepoTrendChartData(null) → 空数组", "status": "done" },
-        { "id": "TC-FE-ANA-DATA-005", "name": "带出 avgLatency（缺失补 0）", "status": "done" }
+        { "id": "TC-FE-ANA-DATA-005", "name": "带出 avgLatency（缺失补 0）", "status": "done" },
+        { "id": "TC-FE-ANA-009", "name": "趋势天数 7→30、周期「按天」→「按小时」均带新参数重查（限定激活 Tab 面板）", "status": "done" },
+        { "id": "TC-FE-ANA-010", "name": "明细分页翻到第 2 页时带 page=2 重查", "status": "done" },
+        { "id": "TC-FE-ANA-011", "name": "明细弹窗内切换天数（7→30）按新天数重查该仓库趋势", "status": "done" }
       ],
-      "knownIssues": []
+      "knownIssues": [
+        "recharts 在 jsdom 下容器宽高为 0、不实际绘制 → 图表内部（坐标轴/图例/曲线）只能靠人工或 e2e 看，用例只锁容器与空态"
+      ]
     },
     {
       "id": "FE-DEV-RECHARGE",
@@ -333,8 +342,8 @@
       "level": "P2",
       "file": "src/pages/developer/Billing.tsx",
       "lines": 484,
-      "why": "账单列表/统计；金额与周期文案。⚠️ 环境标签必须与顶栏徽标同源（/health billing_environment），不得用 account.mock_mode（支付模拟模式）—— 二者是不同概念，曾导致页面显示「生产环境/真实账户」而顶栏显示 SIMULATION。补测另修两处：① 首屏账单被两个 effect 各拉一次（重复请求）；② 负数金额渲染成 ¥-12.50（符号在货币符号之后）应为 -¥12.50。仍未覆盖：图表绘制（recharts 在 jsdom 不实际绘制）、普通用户升级引导分支",
-      "status": "partial",
+      "why": "账单列表/统计；金额与周期文案。⚠️ 环境标签必须与顶栏徽标同源（/health billing_environment），不得用 account.mock_mode（支付模拟模式）—— 二者是不同概念，曾导致页面显示「生产环境/真实账户」而顶栏显示 SIMULATION。补测另修两处：① 首屏账单被两个 effect 各拉一次（重复请求）；② 负数金额渲染成 ¥-12.50（符号在货币符号之后）应为 -¥12.50。C 轮补上普通用户升级引导与「消费分布」两分支；图表内部绘制在 jsdom 不可断言（只锁容器与空态）",
+      "status": "covered",
       "specFile": "src/pages/developer/Billing.spec.tsx",
       "cases": [
         { "id": "TC-FE-BILLING-001", "name": "账单列表派生文案（类型 Tag/正负金额/变动后余额/时间到秒/两处合计）；⚠️ 首屏只请求一次账单（曾重复请求，已修）", "status": "done" },
@@ -342,7 +351,9 @@
         { "id": "TC-FE-BILLING-003", "name": "月度汇总卡片（本月充值/消费/调用）与当前月份回显；无记录时给空态与引导", "status": "done" },
         { "id": "TC-FE-BILLING-004", "name": "日期筛选带 start_date/end_date 重查；「导出」沿用同一区间", "status": "done" },
         { "id": "TC-FE-BILL-001", "name": "simulation 环境显示「测试环境（模拟账本）/模拟账户」，不得出现「生产环境/真实账户」", "status": "done" },
-        { "id": "TC-FE-BILL-002", "name": "production 环境显示「生产环境/真实账户」", "status": "done" }
+        { "id": "TC-FE-BILL-002", "name": "production 环境显示「生产环境/真实账户」", "status": "done" },
+        { "id": "TC-FE-BILLING-005", "name": "普通用户显示「升级为开发者」引导，点击后跳 /user", "status": "done" },
+        { "id": "TC-FE-BILLING-006", "name": "消费分布按 by_repository 渲染：无数据为空态、有数据则渲染图表且不再显示空态", "status": "done" }
       ]
       },
     {
@@ -621,6 +632,17 @@
       "status": "fixed",
       "fixedAt": "2026-09-15",
       "fix": "从 `[]` 的 useEffect 中移除 loadTrend()（挂载时由 [trendPeriod, trendDays] 的 effect 负责，行为等价）。回归断言见 TC-FE-ANA-001（期望 getTrend 调用 1 次）"
+    },
+    {
+      "id": "FE-BUG-ANALYTICS-DUP-TREND-CARD",
+      "title": "分析页两处「调用与收入趋势」卡片共用同一份状态，但周期选项文案不一致（「按天」vs「按天统计」）",
+      "file": "src/pages/admin/Analytics.tsx（趋势 Tab）/ src/pages/admin/analytics/OverviewTab.tsx（概览 Tab）",
+      "evidence": "写 TC-FE-ANA-009 时按标题取卡片，命中了概览那张：其选项是「按天」/「按小时」，而趋势 Tab 的是「按天统计」/「按小时统计」；两处 onPeriodChange/onDaysChange 都接到 setTrendPeriod/setTrendDays（同一状态）",
+      "impact": "同一页同一语义的控件两套文案（用户看到的措辞不一致）；且概览页与趋势页各有一份控件，后续改动容易只改一处",
+      "suggestion": "文案统一（建议都用「按天 / 按小时」或都带「统计」后缀）；进一步可把该控件抽成一个共享组件（如 analytics/TrendControls.tsx），两处复用同一 options 常量",
+      "status": "open",
+      "foundAt": "2026-09-17",
+      "note": "不影响功能正确性，故未即改；写用例时必须用激活 Tab 面板限定作用域，否则会取到另一张同名卡（ANA-009 首跑即因此失败）"
     }
   ]
 }
