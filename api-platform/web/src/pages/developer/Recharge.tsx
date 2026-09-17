@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import '../../styles/cyber-theme.css'
-import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Descriptions, Divider, Result, Alert } from 'antd'
+import { Card, Row, Col, Typography, Button, Tag, Empty, Spin, Modal, Radio, Space, message, Divider, Result, Alert } from 'antd'
 import { 
   CheckCircleOutlined, 
   // ⚠️ AlipayOutlined 仍有本文件内的直接使用（跳转支付 / 二维码弹窗），
@@ -32,7 +32,7 @@ import { useEnvInfo } from '../../hooks/useEnvInfo'
   
 import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
-import { PaySuccessView } from './recharge/components/PaySuccessView'
+import { PaymentModal } from './recharge/components/PaymentModal'
 import { useQrcodePolling } from './recharge/useQrcodePolling'
 import { usePaymentPolling } from './recharge/usePaymentPolling'
 import {
@@ -1146,6 +1146,19 @@ export default function DeveloperRecharge() {
     clearUrlParams()
   }
 
+  /**
+   * 取消当前订单
+   * （B5 轮随支付弹窗抽出而上移：弹窗组件保持纯展示，动作逻辑留在页面）
+   */
+  const handleCancelOrder = async () => {
+    stopQrcodePolling() // 停止扫码轮询
+    if (currentPayment) {
+      await paymentApi.cancelPayment(currentPayment.payment_no)
+      message.success('订单已取消')
+      setPayModalVisible(false)
+    }
+  }
+
   // 支付错误处理函数
   const handlePaymentError = (error: any) => {
     setPayError(error)
@@ -1532,136 +1545,27 @@ export default function DeveloperRecharge() {
         />
       </Modal>
 
-      {/* 支付弹窗 */}
-      <Modal
-        title={isProcessingCallback ? "支付确认中" : (paySuccess ? (isNormalUser ? "升级成功" : "充值成功") : "订单支付")}
+      {/* 支付弹窗 —— B5 轮已抽为 ./recharge/components/PaymentModal
+          （三态：确认中 / 成功大界面 / 下单信息；「取消订单」的动作逻辑见 handleCancelOrder） */}
+      <PaymentModal
         open={payModalVisible}
-        onCancel={handlePayModalClose}
-        footer={null}
-        width={paySuccess ? 480 : 500}
-        maskClosable={!isProcessingCallback && !paySuccess}
-        closable={!isProcessingCallback && !paySuccess}
-      >
-        {isProcessingCallback ? (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            {/* ⚠️ 同上：Spin 的 tip 单独使用不显示 → 自行渲染 */}
-            <Spin size="large" />
-            <div style={{ marginTop: 12, color: '#666' }}>正在确认支付结果，请稍候...</div>
-          </div>
-        ) : paySuccess ? (
-          // 成功界面已抽为展示组件 ./recharge/components/PaySuccessView
-          <PaySuccessView
-            isNormalUser={isNormalUser}
-            currentPayment={currentPayment}
-            currentBalance={currentBalance}
-            onGoToUser={() => navigate('/user')}
-            onRefresh={() => window.location.reload()}
-            onContinueRecharge={handlePayModalClose}
-          />
-        ) : (
-          <>
-            <Descriptions bordered column={1} size="small">
-              <Descriptions.Item label="订单号">{currentPayment?.payment_no}</Descriptions.Item>
-              <Descriptions.Item label="充值金额">
-                <Text strong>¥{currentPayment?.amount.toFixed(2)}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="支付方式">
-                {PAYMENT_METHODS.find(m => m.value === paymentMethod)?.label}
-              </Descriptions.Item>
-              <Descriptions.Item label="剩余有效期">
-                <Text type={countdown < 10 ? 'danger' : 'secondary'}>{countdown} 秒</Text>
-              </Descriptions.Item>
-            </Descriptions>
-
-            <Divider />
-
-            {/* 扫码支付：显示二维码 */}
-            {currentPayment?.qr_code && currentPayment.qr_code.length > 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <Alert 
-                  type="info" 
-                  message="请使用支付宝扫码支付" 
-                  showIcon 
-                  style={{ marginBottom: 16 }}
-                />
-                <img 
-                  src={currentPayment.qr_code} 
-                  alt="支付宝扫码支付" 
-                  style={{ 
-                    width: 200, 
-                    height: 200, 
-                    border: '1px solid #f0f0f0',
-                    borderRadius: 8
-                  }} 
-                />
-                <div style={{ marginTop: 12 }}>
-                  <Button 
-                    size="small" 
-                    icon={<ReloadOutlined />} 
-                    onClick={handleRefreshQrCode}
-                    loading={refreshingQrCode}
-                  >
-                    刷新二维码
-                  </Button>
-                </div>
-                {qrcodePolling && (
-                  <div style={{ marginTop: 16 }}>
-                    <Spin size="small" />
-                    <Text type="secondary" style={{ marginLeft: 8 }}>等待支付结果...</Text>
-                  </div>
-                )}
-              </div>
-            ) : (
-              /* 跳转支付：显示支付按钮 */
-              <div className={styles.payActions}>
-                <Alert 
-                  type="warning" 
-                  message="支付完成后，请手动关闭支付宝窗口" 
-                  showIcon 
-                  style={{ marginBottom: 16 }}
-                />
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  block 
-                  onClick={handleOpenPay}
-                  disabled={countdown <= 0}
-                >
-                  {PAYMENT_METHODS.find(m => m.value === paymentMethod)?.icon} 
-                  {countdown <= 0 ? '订单已过期' : '打开支付页面'}
-                </Button>
-              </div>
-            )}
-
-            <div style={{ marginTop: 16, textAlign: 'center' }}>
-              <Space>
-                <Button onClick={() => handleRefreshStatus()}>
-                  <ReloadOutlined /> 刷新状态
-                </Button>
-                <Button 
-                  danger 
-                  onClick={async () => {
-                    stopQrcodePolling()  // 停止扫码轮询
-                    if (currentPayment) {
-                      await paymentApi.cancelPayment(currentPayment.payment_no)
-                      message.success('订单已取消')
-                      setPayModalVisible(false)
-                    }
-                  }}
-                >
-                  取消订单
-                </Button>
-              </Space>
-            </div>
-
-            <Text type="secondary" className={styles.hint}>
-              {currentPayment?.qr_code && currentPayment.qr_code.length > 0
-                ? '提示：支付完成后请耐心等待，系统将自动确认'
-                : '提示：支付完成后请点击"刷新状态"确认支付结果'}
-            </Text>
-          </>
-        )}
-      </Modal>
+        isProcessingCallback={isProcessingCallback}
+        paySuccess={paySuccess}
+        isNormalUser={isNormalUser}
+        currentPayment={currentPayment}
+        currentBalance={currentBalance}
+        countdown={countdown}
+        paymentMethod={paymentMethod}
+        qrcodePolling={qrcodePolling}
+        refreshingQrCode={refreshingQrCode}
+        onClose={handlePayModalClose}
+        onGoToUser={() => navigate('/user')}
+        onReload={() => window.location.reload()}
+        onRefreshQrCode={handleRefreshQrCode}
+        onOpenPay={handleOpenPay}
+        onRefreshStatus={() => handleRefreshStatus()}
+        onCancelOrder={handleCancelOrder}
+      />
     </div>
   )
 }
