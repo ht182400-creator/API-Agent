@@ -308,10 +308,13 @@ flowchart TD
 > **不能"全部解决"，但可以把 88 条压到接近 0。**
 > 根因**不是"setState 太多"，而是"状态更新发生在测试的 `act` 边界之外"**。
 > 重构带来的 102 → 88 是**减少更新源**的副产品，不是根治。
+>
+> 📌 **2026-09-17 补记（M4-lite 落地后）**：应用层已做完 —— 实测 **88 → 81**，
+> 详见 §7.5（含**归因口径修正**：本章 §7.2 原先给的是"并行跑"的按文件归因，会串台；真值见 §7.5）。
 
 ### 7.2 取证（2026-09-17 全量实测，日志 `70`）
 
-`act: update not wrapped in act` = **88 条**，归因如下：
+`act: update not wrapped in act` = **88 条**（M4-lite 前），归因如下：
 
 | 按 spec 文件 | 条数 | | 按"触发更新的组件" | 条数 |
 |---|---|---|---|---|
@@ -322,17 +325,10 @@ flowchart TD
 | | | | `AdminAnalytics`（业务状态） | 6 |
 | | | | `Portal` / `Root`（React/antd 内部） | 3 |
 
-按用例看，集中在**"下单"类**用例（都在创建订单后、测试结束前）：
+> ⚠️ **上表的按文件数字取自"并行跑"，口径有缺陷**（vitest 多 worker 时 `stderr` 的归属标记会串台）。
+> 已用"串行跑 + 单文件跑"两条路径复核，修正值见 §7.5 —— 结论方向不变，但数字要以 §7.5 为准。
 
-```
-14  TC-FE-RECHARGE-005 自定义金额下单成功
-11  TC-FE-RECHARGE-014 组件卸载后定时器必须清理
-11  TC-FE-RECHARGE-013 取消订单后扫码轮询必须停止
-10  TC-FE-RECHARGE-009 / -010 / -016
- 9  TC-FE-RECHARGE-003
- 7  TC-FE-RECHARGE-007
- 6  TC-FE-ANA-008（切 Tab / 排序重查）
-```
+按用例看，集中在**"下单"类**用例（都在创建订单后、测试结束前）。
 
 **读法**：下单成功后组件会启动**倒计时（每秒 tick）+ 轮询（2~10 秒/次）**，
 而测试在断言完就结束了 —— 那些定时器回调落在 `act` 窗口之外，于是每次都报一条。
@@ -360,6 +356,62 @@ flowchart TD
 
 ---
 
+### 7.5 补记：M4-lite 落地 + 归因口径修正（2026-09-17）
+
+#### 7.5.1 做了什么（应用层，即 §7.3 的 ①）
+
+| 项 | 改造前 | 改造后 |
+|---|---|---|
+| 剩余有效期 | `useState(0)` + 每秒 `setCountdown(c => c - 1)` | **由 `expiresAt` 派生**（每次用 `Date.now()` 重算） |
+| 定时器开关 | 只看"订单 pending" —— **关弹窗后仍每秒 tick** | `flow.isModalOpen && flow.isProbing` —— **关弹窗/进终态即停表** |
+| 缺失 `expires_in` | 页面手工 `setCountdown(600)` | hook 内兜底 600 秒（机器 `expiresAt=null` 的语义被 `TC-FE-PAYMACH-004` 锁住，故兜底留在 hook） |
+| tick 迟到/被节流 | **永久漂移**（只做 `-1`，永不自我纠正） | **自我纠正**（按真实时间重算） |
+
+落地文件：新增 `recharge/useCountdown.ts`（79 行）+ 3 条假定时器用例；
+`Recharge.tsx` 去掉 4 处 `setCountdown` 与那个 effect；`constants.calculateRemainingSeconds` 成为死代码、已删。
+
+#### 7.5.2 复测与归因修正（关键）
+
+**归因**（串行跑与单文件跑相互印证，替代 §7.2 的按文件数字）：
+
+| 按 spec 文件 | 条数 | | 按"触发更新的组件" | 条数 |
+|---|---|---|---|---|
+| `Recharge.spec.tsx` | **75** | | `DeveloperRecharge`（业务状态） | **34** |
+| `Analytics.spec.tsx` | 6 | | `EllipsisMeasure`（antd 内部） | 18 |
+| | | | `ForwardRef`（antd 内部） | 12 |
+| | | | `Button`（antd 内部） | 8 |
+| | | | `AdminAnalytics`（业务状态） | 6 |
+| | | | `Portal` 2 / `Root` 1 | 3 |
+
+**总量**：88 → **81**（`npm run test:budget`，同口径前后对比）。
+
+#### 7.5.3 ⚠️ 比数字更重要的一条：这个指标**不干净**，别读绝对值
+
+实测到一个反直觉现象：同一个 `Recharge.spec.tsx`，
+
+- 与 `useCountdown.spec.ts` **两个文件**一起跑 → **1 条**；
+- **单独一个文件**跑 → **75 条**；
+- 全量 32 个文件并行跑 → **81 条**（其中 75 归它）。
+
+也就是说**同一文件的警告数会随"文件集与线程调度"变化两个数量级**。
+原因trace：`act` 警告产生于"更新落在测试的 `act` 窗口之外"，而这完全取决于
+**定时器回调相对于被测用例的时间竞争**（并发时事件循环更忙、回调更晚、更容易落到窗口外）。
+结论与纪律：
+
+1. **绝对数字只用于"同口径前后对比"**（同一条命令、同样的文件集、同样的并行度）；
+2. **别把"act 警告少了"当成功指标**，它是**副产品**（真正的收益是"少一个空转定时器"）；
+3. 真正可靠的指标是**变异检验**（9/9 有效）与**行为断言**；
+4. 按项目约定"修好一类就下调基线"：本轮已 `--update-baseline` 锁定 **act 81 / jsdom 177**。
+
+#### 7.5.4 剩下的 81 条怎么办
+
+- **测试层（②）**是唯一系统解：给"带真实定时器的两个 spec"（`Recharge.spec` / `Analytics.spec`）
+  上 fake timers，把定时器推进包进 `act` —— 可覆盖含 antd 内部（`EllipsisMeasure` 18 / `ForwardRef` 12 /
+  `Button` 8 / `Portal` 2 / `Root` 1 = **41 条**）在内的全部残留；
+- 代价明确：`userEvent` 需配 `advanceTimers`、`waitFor` 语义要逐个调整，属**较大改造**，
+  且**改造期间可能削弱行为断言** → 必须跑变异检验复验（9/9 不能掉）。
+- 因此本轮**主动停在 ①**，不追这个数字。
+
 ## 8. 术语表 & 文件清单
 
 | 术语 | 含义 |
@@ -375,6 +427,7 @@ flowchart TD
 | `recharge/payment/paymentMachine.ts` | 状态机（纯函数，231 行） |
 | `recharge/payment/paymentMachine.spec.ts` | 21 条纯函数用例（零 jsdom） |
 | `recharge/payment/usePaymentFlow.ts` | 编排 hook：`useReducer` + 语义 action + 派生值 |
+| `recharge/useCountdown.ts` | 剩余有效期倒计时（**派生自 `expiresAt`**，关弹窗即停表） |
 | `recharge/useQrcodePolling.ts` | 扫码轮询（8 段递进间隔） |
 | `recharge/usePaymentPolling.ts` | 跳转支付后备轮询（3 秒） |
 | `recharge/components/PaymentModal.tsx` | 支付弹窗三态 |

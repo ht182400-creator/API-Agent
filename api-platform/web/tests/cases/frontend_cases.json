@@ -16,9 +16,9 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 61,
-      "specFiles": 30,
-      "cases": 306,
+      "sourceFiles": 62,
+      "specFiles": 31,
+      "cases": 309,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -43,12 +43,13 @@
         "src/pages/developer/recharge/components/PaymentModal.tsx",
         "src/pages/developer/recharge/payment/paymentMachine.ts",
         "src/pages/developer/recharge/payment/usePaymentFlow.ts",
+        "src/pages/developer/recharge/useCountdown.ts",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md）；**M2-1：编排 hook 落地 + 状态机细化**（usePaymentFlow.ts + 2 条细化用例，35 处接线的映射表已写入方案 §3.2；sourceFiles 60→61、cases 303→305）；**M2-2：全量接线完成**（35 处写入改 action，Recharge.tsx 1571→1525 行；意外收益：act 警告 102→**88**，**警告基线已按「修好一类就下调」约定重建**；方案 §2.5 新增「与主流支付架构经验的对照」，发现缺口 M5：客户端可写信号不得直接结算）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 313 tests − 7 条用例库自检 = **306 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md）；**M2-1：编排 hook 落地 + 状态机细化**（usePaymentFlow.ts + 2 条细化用例，35 处接线的映射表已写入方案 §3.2；sourceFiles 60→61、cases 303→305）；**M2-2：全量接线完成**（35 处写入改 action，Recharge.tsx 1571→1525 行；意外收益：act 警告 102→**88**，**警告基线已按「修好一类就下调」约定重建**；**M4-lite 轮**：剩余有效期改为由 expiresAt 派生 + 关弹窗即停表（act 88→**81**，并修掉「漂移」与「关弹窗后定时器仍空转」两个真实问题；新套件 FE-DEV-COUNTDOWN 3 条，specFiles 30→31）；方案 §2.5 新增「与主流支付架构经验的对照」，发现缺口 M5：客户端可写信号不得直接结算）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 316 tests − 7 条用例库自检 = **309 条组件用例**；specFiles=31 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 32 个文件）。**用例库已无 planned 项**。⚠️ act 警告的**归因口径**（2026-09-17 重新取证）：串行跑 + 单文件跑两条路径相互印证 = Recharge.spec **75** / Analytics.spec 6（并行跑时按 stderr marker 归因会串台，不可作为依据）；按触发组件 = DeveloperRecharge 34 / EllipsisMeasure 18 / ForwardRef 12 / Button 8 / AdminAnalytics 6 / Portal 2 / Root 1。**该数字受线程调度影响很大（同一文件在不同文件集下的实测值可差两个数量级）→ 只能同口径对比，不要读绝对值**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -214,6 +215,21 @@
         { "id": "TC-FE-RECHARGE-017", "name": "测试环境显示「测试支付通道」，不得出现「真实支付通道」", "status": "done" },
         { "id": "TC-FE-RECHARGE-018", "name": "生产环境显示「真实支付通道」", "status": "done" }
       ]
+    },
+    {
+      "id": "FE-DEV-COUNTDOWN",
+      "level": "P1",
+      "file": "src/pages/developer/recharge/useCountdown.ts",
+      "lines": 79,
+      "why": "M4-lite：剩余有效期从「逐秒自减的 state」改为**由 expiresAt 派生**。两个真实收益：① **不漂移** —— tick 被浏览器节流/迟到时，自减实现会把剩余时间永久显示偏大（用户以为还有 10 分钟，订单其实早已过期），派生实现每次用 Date.now() 重算；② **关弹窗即停表** —— 旧实现的条件只看「订单 pending」，用户关掉弹窗后定时器仍在每秒写一次 state（生产上空耗、测试里制造 act 警告）。⚠️ 600 秒兜底刻意留在本 hook（机器的 expiresAt=null 有既定语义，被 TC-FE-PAYMACH-004 锁住）。用例全用假定时器，并用 vi.getTimerCount() 反证「没有空转的定时器」",
+      "status": "covered",
+      "specFile": "src/pages/developer/recharge/useCountdown.spec.ts",
+      "cases": [
+        { "id": "TC-FE-RECHARGE-019", "name": "关弹窗（active=false）立即停表：无空转定时器、无多余重渲染", "status": "done" },
+        { "id": "TC-FE-RECHARGE-020", "name": "后端未给 expires_in 时按 600 秒兜底；开关弹窗不重置截止时间", "status": "done" },
+        { "id": "TC-FE-RECHARGE-021", "name": "派生而非自减 —— tick 被节流丢失（120 秒只 1 次 tick）也不漂移", "status": "done" }
+      ],
+      "knownIssues": []
     },
     {
       "id": "FE-DEV-PAY-MACHINE",

@@ -86,6 +86,8 @@ export interface PaymentFlow extends PaymentFlowActions {
   canDismiss: boolean
   /** 下一次探测间隔（ms） */
   nextProbeDelay: number
+  /** 订单过期时间戳（ms）；`null` = 后端未给 `expires_in` —— 供 `useCountdown` 派生剩余秒数 */
+  expiresAt: number | null
 }
 
 export function usePaymentFlow(): PaymentFlow {
@@ -126,6 +128,7 @@ export function usePaymentFlow(): PaymentFlow {
       isProbeExhausted: isProbeExhausted(state),
       canDismiss: canDismiss(state),
       nextProbeDelay: nextProbeDelay(state),
+      expiresAt: state.expiresAt,
     }),
     [state, actions]
   )

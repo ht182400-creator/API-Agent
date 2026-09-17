@@ -25,8 +25,10 @@ import { useAuthStore } from '../../stores/auth'
 import styles from './Recharge.module.css'
 import '../../styles/payment-methods.css'
 // 【P1-4 拆分】纯逻辑层已抽出到 ./recharge/（常量与支付日志）
-import { PAYMENT_METHODS, calculateRemainingSeconds } from './recharge/constants'
+import { PAYMENT_METHODS } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
+// 【M4-lite】剩余有效期改为**派生**（不再是被逐秒改写的 state）
+import { useCountdown } from './recharge/useCountdown'
 import { useRechargeData } from './recharge/useRechargeData'
 import { useEnvInfo } from '../../hooks/useEnvInfo'
   
@@ -65,7 +67,16 @@ export default function DeveloperRecharge() {
     isConfirming: isProcessingCallback,
   } = flow
   const [creatingOrder, setCreatingOrder] = useState(false)
-  const [countdown, setCountdown] = useState(0)
+
+  // 【M4-lite】剩余有效期由状态机的 `expiresAt` **派生**，不再是逐秒自减的 state。
+  //   · active 的口径 = 弹窗打开且订单未终结 → **关弹窗/进终态即停表**（旧实现与弹窗无关，会一直空转）；
+  //   · 派生还顺带修掉"漂移"：tick 迟到也不影响（每次都用真实时间重算）。
+  //   详见 ./recharge/useCountdown.ts 顶部说明。
+  const countdown = useCountdown({
+    orderKey: currentPayment?.payment_no ?? null,
+    expiresAt: flow.expiresAt,
+    active: payModalVisible && flow.isProbing,
+  })
   
   // 最新账户余额  —— 已迁至 ./recharge/useRechargeData
   
@@ -357,7 +368,8 @@ export default function DeveloperRecharge() {
               created_at: paymentStatus.created_at || new Date().toISOString(),
               expires_in: paymentStatus.expires_in
             } as Payment)
-            setCountdown(calculateRemainingSeconds(paymentStatus.expires_in)) // 使用后端计算的剩余有效期
+            // 【M4-lite】不再手工 setCountdown：expires_in 已随 restored() 进状态机，
+            //   由 flow.expiresAt 派生（等价于原先的 calculateRemainingSeconds）
           } catch {
             // 如果查询失败，设置为默认值
             // 【M2-2】查询失败也要把订单恢复出来（原行为：回落默认值）
@@ -369,7 +381,8 @@ export default function DeveloperRecharge() {
               status: 'pending',
               created_at: new Date().toISOString(),
             } as Payment)
-            setCountdown(600)
+            // 【M4-lite】查询失败时不带 expires_in → 状态机 expiresAt 为 null，
+            //   由 useCountdown 按兜底 600 秒计（等价于原先手工 setCountdown(600)）
           }
           message.info('已恢复您的支付订单，请点击"刷新状态"确认支付结果')
         }
@@ -379,13 +392,9 @@ export default function DeveloperRecharge() {
     init()
   }, [])
 
-  // 倒计时刷新支付状态
-  useEffect(() => {
-    if (countdown > 0 && currentPayment && currentPayment.status === 'pending') {
-      const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [countdown, currentPayment])
+  // 【M4-lite】原「倒计时刷新支付状态」的逐秒 setCountdown 已移除：
+  //   ① 它靠 `c - 1` 自减 → tick 迟到就永久漂移；② 条件与弹窗无关 → 关弹窗后仍空转。
+  //   现由 ./recharge/useCountdown.ts 承担（派生 + active 开关）。
 
   // 【V7.4 修复】监听来自支付成功页面的通知
   useEffect(() => {
@@ -648,7 +657,7 @@ export default function DeveloperRecharge() {
         // 【M2-2】下单成功 → 状态机进 awaiting（自动推导 mode / 开弹窗 / 算过期时间）
         flow.created(payment)
         setPayError(null) // 清除之前的错误
-        setCountdown(calculateRemainingSeconds(payment.expires_in)) // 使用后端计算的剩余有效期
+        // 【M4-lite】expires_in 已随 created() 进状态机 → 由 flow.expiresAt 派生出剩余秒数
         savePaymentToSession(payment) // 保存到 sessionStorage
         message.success('订单创建成功')
         
@@ -706,7 +715,7 @@ export default function DeveloperRecharge() {
         // 【M2-2】下单成功 → 状态机进 awaiting（自动推导 mode / 开弹窗 / 算过期时间）
         flow.created(payment)
         setPayError(null) // 清除之前的错误
-        setCountdown(calculateRemainingSeconds(payment.expires_in)) // 使用后端计算的剩余有效期
+        // 【M4-lite】expires_in 已随 created() 进状态机 → 由 flow.expiresAt 派生出剩余秒数
         savePaymentToSession(payment) // 保存到 sessionStorage
         message.success('订单创建成功')
         

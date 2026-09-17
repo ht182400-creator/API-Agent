@@ -1,0 +1,10 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs src/pages/developer/recharge/useCountdown.spec.ts src/pages/developer/Recharge.spec.tsx
+
+[vitest] Test Files  2 passed (2)
+[vitest] Tests  21 passed (21)
+[vitest] Duration  17.27s (transform 383ms, setup 529ms, collect 4.05s, tests 11.13s, environment 2.44s, prepare 255ms)
+[warn-budget] ✅ 警告在预算内
+     75  act: update not wrapped in act
+      9  jsdom: getComputedStyle pseudo-elements

@@ -22,22 +22,6 @@ export const calcArrivedAmount = (pkg: RechargePackage): string =>
     (pkg.price || 0) * ((pkg.bonus_ratio || 0) / 100)
   ).toFixed(2)
 
-/**
- * 计算订单剩余有效期（秒）。
- *
- * 后端只把 `expires_in` 算好返回，前端直接用；
- * 缺失时回退 600 秒（10 分钟），负数归零。
- */
-export const calculateRemainingSeconds = (expiresIn: number | undefined): number => {
-  if (expiresIn === undefined || expiresIn === null) {
-    console.warn('[倒计时] expires_in 为空，使用默认值 600')
-    return 600
-  }
-
-  console.log('[倒计时] expires_in:', expiresIn)
-  return Math.max(0, expiresIn)
-}
-
 export const PAYMENT_METHODS: {
   value: PaymentMethodValue
   label: string

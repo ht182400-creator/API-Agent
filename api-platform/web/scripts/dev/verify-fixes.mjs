@@ -119,6 +119,28 @@ const MUTATIONS = [
       '        okText="我已保存"\n        // ⚠️ 一次性密钥（文案自己写着"仅显示一次"）：关闭后必须把内容**从 DOM 中真正移除**。\n        //    antd Modal 默认关闭只做隐藏挂载 → 明文会留在 DOM 里，与"仅显示一次"的语义不符。\n        destroyOnHidden={false}',
     note: '回到"关闭只做隐藏挂载"的缺陷形态 → 点「我已保存」后明文仍留在 DOM 里，与"仅显示一次"冲突',
   },
+  {
+    id: 'FIX-8',
+    title: '倒计时「关弹窗即停表」（active 闸门）',
+    caseId: 'TC-FE-RECHARGE-019',
+    spec: 'src/pages/developer/recharge/useCountdown.spec.ts',
+    file: 'src/pages/developer/recharge/useCountdown.ts',
+    find: '    if (!active) return\n    setNow(Date.now())\n    const timer = setInterval(() => setNow(Date.now()), TICK_MS)',
+    replace: '    setNow(Date.now())\n    const timer = setInterval(() => setNow(Date.now()), TICK_MS)',
+    note: '去掉 active 闸门 → 回到"关弹窗后定时器仍每秒写 state"的缺陷形态（生产上空耗、测试里刷 act 警告）',
+  },
+  {
+    id: 'FIX-9',
+    title: '倒计时由 expiresAt 派生（而非逐秒自减）',
+    caseId: 'TC-FE-RECHARGE-021',
+    spec: 'src/pages/developer/recharge/useCountdown.spec.ts',
+    file: 'src/pages/developer/recharge/useCountdown.ts',
+    // ⚠️ FIX-8 与 FIX-9 都指向 effect ② 里的定时器，但各自是**独立运行**（变异→跑用例→还原），互不干扰。
+    //    这里靠"是否带 `(n) => n + TICK_MS`"区分，find 在文件里各只命中 1 次。
+    find: '    const timer = setInterval(() => setNow(Date.now()), TICK_MS)',
+    replace: '    const timer = setInterval(() => setNow((n) => n + TICK_MS), TICK_MS)',
+    note: '把"每次重算真实时间"改成"每次只加 1 秒" → 回到自减实现的漂移形态（tick 被节流丢掉 120 秒，显示仍只少 1 秒）',
+  },
 ]
 
 const argv = process.argv.slice(2)

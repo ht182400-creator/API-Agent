@@ -5,7 +5,7 @@
 > 「**可独立切出的部分已抽尽**」。继续降行数必须动**行为结构**，故立此议题。
 >
 > 本文是**规划书**：先讲清现状问题（附证据）、目标架构、迁移步骤与风险，
-> 落地按 M1→M4 分步进行，**每一步都必须全量绿灯**（前端 313 条用例 + 警告预算 + 变异检验）。
+> 落地按 M1→M5 分步进行，**每一步都必须全量绿灯**（前端 316 条用例 / 32 个文件 + 警告预算 + 变异检验）。
 >
 > 📊 **配套图文文档**：[`payment-flow-architecture.md`](payment-flow-architecture.md) ——
 > 架构分层图 / 状态机图 / 信号流转图 / 双视角解读（小白 + 专家），
@@ -162,7 +162,7 @@ recharge/payment/
 | **M1** | 新增 `paymentMachine.ts` + 单测（纯函数，零 jsdom） | 无（尚未接线） | 新 spec + 全量 + 预算 |
 | **M2** | `usePaymentFlow` 接管生命周期状态：`paySuccess` / `isProcessingCallback` / `qrcodePolling` / `currentPayment` 由 machine 提供；**保留**旧的两套轮询实现（只换数据来源） | 无 | 18 条 Recharge 用例 |
 | **M3** | 用 `usePaymentProbe` **替换** 4 类监听 + 2 个轮询，删除 `paymentStateRef`；7 处结算收敛为 `dispatch({type:'STATUS_PAID'})` | 无（对外行为等价） | 18 条 + **变异规则 FIX-2 / FIX-3 必须随实现更新并复验** |
-| **M4** | 收编 `useCountdown` / `usePaymentWindow`；页面成为纯组合层；补 hook 级单测 | 无 | 全量 + 预算 + 变异 7/7 |
+| **M4** | 收编 `useCountdown` / `usePaymentWindow`；页面成为纯组合层；补 hook 级单测 | 无 | 全量 + 预算 + 变异 7/7（**M4-lite 已完成：`useCountdown` 收编 + 3 条假定时器用例 + `FIX-8/9`**；`usePaymentWindow` 待做） |
 | **M5** | ⚠️ **安全加固**：`storage` / 挂载读 `localStorage` / `postMessage` 三条路径改为"只触发探测"——进 `confirming` 并向后端求证后才结算（见 §2.5 唯一缺口） | **有**（这几条路径会多一次 `getPaymentStatus`；界面不再抢先说"成功"） | 新增针对性用例（伪造 localStorage 不得直接显示成功）+ 全量 + 预算 |
 
 ### 3.1 风险与对策
@@ -228,5 +228,5 @@ recharge/payment/
 | M1 状态机 + 单测 | ✅ 已完成（231 行 machine + 18 条纯函数用例，全量 310 passed） | 见 `docs/test-log-2026-09-17.md`「轮次 M1」 |
 | M2 flow 接管状态 | ✅ **已完成**（M2-1 编排层 + M2-2 全量接线：35 处写入改 action，`Recharge.tsx` 1571 → 1525 行，act 警告 102 → 88） | 见 test-log「轮次 M2-1 / M2-2」 |
 | M3 探测统一 + 删 ref | ⏳ 待做 | — |
-| M4 收编剩余 hook | ⏳ 待做 | — |
+| M4 收编剩余 hook | 🔶 **M4-lite 已完成**（`useCountdown`：倒计时改为**由 `expiresAt` 派生** + **关弹窗即停表**；新增 3 条假定时器用例，变异规则 `FIX-8/9` 证明其有效；act 警告 88 → **81**）。`usePaymentWindow` 待做 | 见 test-log「轮次 M4-lite」+ [`payment-flow-architecture.md` §7.5](payment-flow-architecture.md) |
 | M5 安全加固（客户端信号不得直接结算） | ⏳ 待做（缺口见 §2.5） | — |
