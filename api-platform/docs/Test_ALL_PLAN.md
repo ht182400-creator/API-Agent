@@ -260,7 +260,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **覆盖优先级（为什么这么排）**：
 1. **P0 入口 / 骨架 / 全局机制** —— 坏了全站不可用：`Login`、`Register`、
    `Layout`（菜单按权限渲染，属**越权可见性**）、`ErrorContext`、`useDevice`；
-2. **P1 巨型页面 + 资金/审核链路** —— 改动频繁、影响面大：`Recharge`(2001→**1752**，拆分中)、
+2. **P1 巨型页面 + 资金/审核链路** —— 改动频繁、影响面大：`Recharge`(2001→**1697**，拆分中)、
    `owner/Repos`(1059→**704**)、`admin/Repos`(924→**589**)、`Analytics`(964→**309**，三者均已拆完)、
    `ApiTester`、`ConsumptionDetails`、`paymentErrors`；
 3. **P2 一般业务页**、**P3 展示型组件**。

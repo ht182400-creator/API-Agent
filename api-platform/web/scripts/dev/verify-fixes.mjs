@@ -53,7 +53,10 @@ const MUTATIONS = [
     title: '取消订单后扫码轮询真正停止（qrcodePollingRef）',
     caseId: 'TC-FE-RECHARGE-013',
     spec: 'src/pages/developer/Recharge.spec.tsx',
-    file: 'src/pages/developer/Recharge.tsx',
+    // ⚠️ P1-4 拆分（B3 轮）后 stopQrcodePolling 已搬到这里 —— 变异规则必须**跟着代码搬**：
+    //    留在旧路径的话 find 命中 0 次，脚本会打印「❌ 跳过」但**退出码仍为 0**，
+    //    很容易让人以为"还在验证"，实际这一条早就没验了。
+    file: 'src/pages/developer/recharge/useQrcodePolling.ts',
     // ⚠️ 必须带函数头上下文唯一定位 stopQrcodePolling：
     //    "ref=false + setQrcodePolling(false)" 的组合在轮询成功/超时分支也各有一份
     //    （后续实现演化所致），不带上下文会命中多次而被安全跳过（实测）。

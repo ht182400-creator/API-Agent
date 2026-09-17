@@ -33,6 +33,7 @@ import { useEnvInfo } from '../../hooks/useEnvInfo'
 import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
 import { PaySuccessView } from './recharge/components/PaySuccessView'
+import { useQrcodePolling } from './recharge/useQrcodePolling'
 import {
   savePaymentToSession,
   restorePaymentFromSession,
@@ -71,8 +72,7 @@ export default function DeveloperRecharge() {
   const [customAmount, setCustomAmount] = useState<number | null>(null)
   // rechargeConfig 已迁至 ./recharge/useRechargeData
   
-  // 扫码支付轮询
-  const [qrcodePolling, setQrcodePolling] = useState(false)
+  // 扫码支付轮询状态 qrcodePolling 已随 ./recharge/useQrcodePolling 抽出（见 closePayWindow 之后）
 
   // 刷新二维码状态
   const [refreshingQrCode, setRefreshingQrCode] = useState(false)
@@ -102,12 +102,12 @@ export default function DeveloperRecharge() {
   // 【新增】轮询定时器 ref，用于检测支付结果
   const paymentPollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // 【P1-4 修复】扫码轮询的"是否继续"标志。
-  // ⚠️ 必须用 ref 而非局部变量：`stopQrcodePolling` 是由「取消订单 / 关闭弹窗」从**外部**调用的，
-  //    局部变量对它不可见。原实现用局部 `isPolling` + stop 里只 setState，
-  //    导致**取消订单后轮询仍会跑满 8 次（约 32 秒）**，期间若后端返回 paid，
-  //    还会把已取消的订单标记成支付成功（代码里"用户关闭弹窗时停止轮询"的注释与实现不符）。
-  const qrcodePollingRef = useRef(false)
+  // 【P1-4 修复】扫码轮询的"是否继续"标志（`qrcodePollingRef`）现由 ./recharge/useQrcodePolling
+  //    提供并从那里解构出来 —— 它必须用 ref 而非局部变量：`stopQrcodePolling` 是由
+  //    「取消订单 / 关闭弹窗」从**外部**调用的，局部变量对它不可见。原实现用局部 `isPolling`
+  //    + stop 里只 setState，导致**取消订单后轮询仍会跑满 8 次（约 32 秒）**，期间若后端返回
+  //    paid，还会把已取消的订单标记成支付成功（"用户关闭弹窗时停止轮询"的注释与实现不符）。
+  //    ⚠️ 下方卸载清理 effect 仍直接写它的 `.current`（同作用域，运行时已初始化）。
   
   // 【新增】启动支付结果轮询
   const startPaymentPoll = () => {
@@ -705,79 +705,9 @@ export default function DeveloperRecharge() {
     setCustomAmount(value)
   }
 
-  // ========== 扫码支付轮询函数（必须在 handleCreateOrder 之前定义）==========
-
-  // 扫码支付轮询
-  const startQrcodePolling = async (paymentNo: string) => {
-    console.log('[DEBUG] startQrcodePolling 函数被调用, paymentNo:', paymentNo)
-    setQrcodePolling(true)
-    qrcodePollingRef.current = true
-    const intervals = [2000, 2000, 2000, 3000, 3000, 5000, 5000, 10000]
-    
-    for (let i = 0; i < intervals.length; i++) {
-      if (!qrcodePollingRef.current) break // 用户取消订单 / 关闭弹窗时立即停止（外部可写）
-      
-      try {
-        const status = await paymentApi.getPaymentStatus(paymentNo)
-        console.log(`[QRCode Poll] 第 ${i + 1} 次:`, status)
-        
-        if (status.status === 'paid' || status.status === 'completed') {
-          qrcodePollingRef.current = false
-          setQrcodePolling(false)
-          // 支付成功
-          handleQrcodePaymentSuccess(status)
-          return
-        }
-      } catch (error) {
-        console.error(`[QRCode Poll] 第 ${i + 1} 次失败:`, error)
-      }
-      
-      if (i < intervals.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, intervals[i]))
-      }
-    }
-    
-    // 轮询结束但未支付成功
-    qrcodePollingRef.current = false
-    setQrcodePolling(false)
-    message.warning({ content: '支付状态查询超时，请点击"刷新状态"按钮确认', key: 'qrcodePoll' })
-  }
-
-  // 扫码支付成功处理
-  const handleQrcodePaymentSuccess = async (status: any) => {
-    setQrcodePolling(false)
-    closePayWindow() // 关闭支付宝支付窗口（如果有）
-    
-    // 更新订单信息
-    setCurrentPayment({
-      ...status,
-      payment_no: status.payment_no || currentPayment?.payment_no,
-      amount: status.amount || currentPayment?.amount,
-    } as Payment)
-    
-    // 刷新余额
-    await fetchBalance()
-    
-    // 显示成功界面（不关闭弹窗）
-    setPaySuccess(true)
-    clearPaymentFromSession()
-    
-    // 5秒后自动刷新（使用 ref 确保正确检测状态）
-    setTimeout(() => {
-      if (paymentStateRef.current.paySuccess) {
-        window.location.reload()
-      }
-    }, 5000)
-  }
-
-  // 停止扫码轮询
-  const stopQrcodePolling = () => {
-    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态
-    qrcodePollingRef.current = false
-    setQrcodePolling(false)
-  }
-
-  // ========== 扫码支付轮询函数结束 ==========
+  // ========== 扫码支付轮询函数已抽至 ./recharge/useQrcodePolling
+  // （startQrcodePolling / handleQrcodePaymentSuccess / stopQrcodePolling 三者原样搬走；
+  //   本文件下方 handleCreateOrder 仍按原名调用它们）==========
 
   const handleCreateOrder = async () => {
     // 套餐充值
@@ -926,6 +856,21 @@ export default function DeveloperRecharge() {
       }
     }
   }
+
+  // 【P1-4 拆分】扫码轮询（start / stop / 成功回调 / 是否继续的 ref）已抽为
+  // ./recharge/useQrcodePolling。
+  // ⚠️ 调用点必须在 closePayWindow **定义之后**：hook 入参在调用时立即求值，
+  //    而 closePayWindow 是本组件内的 const —— 放在它前面会触发 TDZ。
+  // ⚠️ 这里只解构出 4 个成员，其中 qrcodePollingRef 是给上方卸载清理 effect 用的。
+  const { qrcodePolling, qrcodePollingRef, startQrcodePolling, stopQrcodePolling } =
+    useQrcodePolling({
+      currentPayment,
+      setCurrentPayment,
+      setPaySuccess,
+      fetchBalance,
+      closePayWindow,
+      paymentStateRef,
+    })
 
   // 刷新二维码
   const handleRefreshQrCode = async () => {
