@@ -32,7 +32,7 @@ import { useCountdown } from './recharge/useCountdown'
 // 【M3-c₁】结算后的"延迟刷新"统一走一个 hook（原先 3 处各写一份、且都不清理定时器）
 import { useDelayedReload } from './recharge/useDelayedReload'
 // 【M3-a】"是否已支付"的判定统一到纯函数模块（原先这条规则在 10 处各写一遍）
-import { isPaidStatus } from '../../utils/paymentStatus'
+import { isPaidStatus, isTerminalStatus } from '../../utils/paymentStatus'
 import { useRechargeData } from './recharge/useRechargeData'
 import { useEnvInfo } from '../../hooks/useEnvInfo'
   
@@ -109,21 +109,10 @@ export default function DeveloperRecharge() {
   // 轮询支付窗口关闭的 interval ID
   const payWindowIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   
-  // 【新增】用于跟踪最新的支付状态，避免闭包问题
-  const paymentStateRef = useRef<{
-    currentPayment: Payment | null
-    payModalVisible: boolean
-    paySuccess: boolean
-  }>({ currentPayment: null, payModalVisible: false, paySuccess: false })
-  
-  // 同步 state 到 ref
-  useEffect(() => {
-    paymentStateRef.current = {
-      currentPayment,
-      payModalVisible,
-      paySuccess
-    }
-  }, [currentPayment, payModalVisible, paySuccess])
+  // 【M3-c②】原 `paymentStateRef`（每渲染同步一次的状态快照）已删除：
+  //   它是"第二份真相"，只服务于"异步回调里读最新状态"。现在改用两类正交手段替代：
+  //   ① focus / visibility 监听**带依赖重挂**（直接闭包最新渲染值，见 usePaymentPolling 之后的 effect）；
+  //   ② 轮询的继续条件由页面以 `shouldContinue()` 注入（hook 内部用 ref 取最新闭包）。
   
   // 【新增】轮询定时器 ref（paymentPollIntervalRef）现由 ./recharge/usePaymentPolling 提供：
   //    下方「组件卸载清理所有定时器」的 effect 仍直接写它的 `.current`（同作用域）。
@@ -531,53 +520,8 @@ export default function DeveloperRecharge() {
       }
     }
     
-    // 【新增】监听窗口获得焦点事件（支付页面关闭后，当前页面会获得焦点）
-    const handleWindowFocus = () => {
-      const state = paymentStateRef.current
-      console.log('[Recharge] 窗口获得焦点，直接查询支付状态')
-      console.log('[Recharge] 当前状态:', { 
-        hasPayment: !!state.currentPayment, 
-        status: state.currentPayment?.status,
-        modalVisible: state.payModalVisible,
-        paySuccess: state.paySuccess
-      })
-      
-      // 【关键修复】使用 ref 获取最新状态，避免闭包问题
-      // 只在弹窗打开、支付未成功、有支付信息时才查询
-      if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
-        if (state.currentPayment.status !== 'paid') {
-          console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
-          // 【优化】自动刷新时不显示错误提示
-          handleRefreshStatus(false)
-        } else {
-          console.log('[Recharge] 跳过查询：payment 状态已是', state.currentPayment.status)
-        }
-      } else {
-        console.log('[Recharge] 跳过查询：条件不满足', { 
-          payModalVisible: state.payModalVisible, 
-          paySuccess: state.paySuccess,
-          hasPayment: !!state.currentPayment
-        })
-      }
-    }
-    
-    // 【新增】页面可见性变化时检查（从其他标签页返回时）
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        const state = paymentStateRef.current
-        console.log('[Recharge] 页面可见性变为可见，直接查询支付状态')
-        
-        // 【关键修复】使用 ref 获取最新状态
-        if (state.payModalVisible && !state.paySuccess && state.currentPayment) {
-          if (state.currentPayment.status !== 'paid') {
-            console.log('[Recharge] 调用 handleRefreshStatus 查询后端支付状态')
-            // 【优化】自动刷新时不显示错误提示
-            handleRefreshStatus(false)
-          }
-        }
-      }
-    }
-    
+    // 【M3-c②】focus / visibility 两个监听已移出本 effect：它们需要**随状态重挂**（直接闭包最新渲染值），
+    //    见 usePaymentPolling 之后的独立 effect；storage / message 只依赖首次挂载，仍留在此处。
     // 处理 postMessage（兼容同一窗口的情况）
     const handleMessage = async (event: MessageEvent) => {
       const data = event.data
@@ -628,18 +572,13 @@ export default function DeveloperRecharge() {
     }
     
     // 监听 localStorage 变化
+    // 【M3-c②】focus / visibility 已移出本 effect（见 usePaymentPolling 之后的独立 effect）
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('message', handleMessage)
-    // 【新增】监听窗口获得焦点
-    window.addEventListener('focus', handleWindowFocus)
-    // 【新增】监听页面可见性变化
-    document.addEventListener('visibilitychange', handleVisibilityChange)
     
     return () => {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('message', handleMessage)
-      window.removeEventListener('focus', handleWindowFocus)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 
@@ -1312,9 +1251,36 @@ export default function DeveloperRecharge() {
   //       "Rendered fewer hooks than expected"（实测 18 条用例全红）。
   //    ⚠️ 解构出的 paymentPollIntervalRef 是给上方「卸载清理所有定时器」的 effect 用的。
   const { paymentPollIntervalRef, startPaymentPoll, stopPaymentPoll } = usePaymentPolling({
-    paymentStateRef,
+    // 【M3-c②】"要不要继续轮询"由页面用**当前渲染值**判定（hook 内部用 ref 取最新闭包）。
+    //   与原快照判定同口径：弹窗打开、未成功、有订单且未到终态。
+    shouldContinue: () =>
+      payModalVisible && !paySuccess && !!currentPayment && !isTerminalStatus(currentPayment.status),
     refreshStatus: handleRefreshStatus,
   })
+
+  // 【M3-c②】focus / visibility 监听：**带依赖重挂**，直接闭包当前渲染的状态，
+  //   不再经 paymentStateRef 快照（"第二份真相"就此删掉）。
+  //   ⚠️ 必须放在 handleRefreshStatus 定义之后（依赖数组在渲染期求值，放前面会 TDZ），
+  //      且必须在下方 `if (loading) return` 早退之前（hooks 数量必须恒定）。
+  //   ⚠️ 每次渲染先移除再重挂 —— 监听器本身极轻，这点开销换来"永远读到最新状态"。
+  useEffect(() => {
+    const probeIfAwaiting = () => {
+      // 与原实现同口径：弹窗打开、未成功、有订单且未支付 → 向后端问一次（不弹错误提示）
+      if (payModalVisible && !paySuccess && currentPayment && currentPayment.status !== 'paid') {
+        handleRefreshStatus(false)
+      }
+    }
+    const handleWindowFocus = () => probeIfAwaiting()
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') probeIfAwaiting()
+    }
+    window.addEventListener('focus', handleWindowFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [payModalVisible, paySuccess, currentPayment, handleRefreshStatus])
 
   // renderPackageCard 已抽为展示组件 ./recharge/components/PackageCard
 
