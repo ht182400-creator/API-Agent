@@ -50,29 +50,28 @@ const MUTATIONS = [
   },
   {
     id: 'FIX-2',
-    title: '取消订单后扫码轮询真正停止（qrcodePollingRef）',
+    title: '取消订单后探测真正停止（usePaymentProbe.stop）',
     caseId: 'TC-FE-RECHARGE-013',
     spec: 'src/pages/developer/Recharge.spec.tsx',
-    // ⚠️ P1-4 拆分（B3 轮）后 stopQrcodePolling 已搬到这里 —— 变异规则必须**跟着代码搬**：
-    //    留在旧路径的话 find 命中 0 次，脚本会打印「❌ 跳过」但**退出码仍为 0**，
-    //    很容易让人以为"还在验证"，实际这一条早就没验了。
-    file: 'src/pages/developer/recharge/useQrcodePolling.ts',
-    // ⚠️ 必须带函数头上下文唯一定位 stopQrcodePolling：
-    //    "ref=false + setQrcodePolling(false)" 的组合在轮询成功/超时分支也各有一份
-    //    （后续实现演化所致），不带上下文会命中多次而被安全跳过（实测）。
-    find: '  const stopQrcodePolling = () => {\n    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态\n    qrcodePollingRef.current = false\n    setQrcodePolling(false)\n  }',
-    replace: '  const stopQrcodePolling = () => {\n    // ⚠️ 先把 ref 置 false（循环随即退出），再同步 UI 状态\n    setQrcodePolling(false)\n  }',
-    note: 'stopQrcodePolling 不再置 ref → 循环条件恒为 true（回到缺陷形态）',
+    // ⚠️ M3-b 后两套轮询的调度统一到 usePaymentProbe —— 规则随之搬到新文件
+    //    （旧 useQrcodePolling.ts 已删除；规则不搬会命中 0 次且被"安全跳过"）。
+    file: 'src/pages/developer/recharge/payment/usePaymentProbe.ts',
+    // ⚠️ find 覆盖 stop 的**完整函数体**：只改 runningRef 一行的话，clearTimeout 仍会把
+    //    挂起定时器清掉，变异后 013 依旧绿（等于没变异）。
+    find: '  const stop = useCallback(() => {\n    runningRef.current = false\n    setRunning(false)\n    if (timerRef.current) {\n      clearTimeout(timerRef.current)\n      timerRef.current = null\n    }\n  }, [])',
+    replace: '  const stop = useCallback(() => {\n    setRunning(false)\n  }, [])',
+    note: 'stop 退化为只改 UI 状态 → 回到"取消订单后轮询照跑"的缺陷形态（与原 qrcodePollingRef 缺陷同构）',
   },
   {
     id: 'FIX-3',
-    title: '组件卸载时统一清理轮询定时器',
+    title: '组件卸载时统一清理探测定时器（usePaymentProbe 卸载 cleanup）',
     caseId: 'TC-FE-RECHARGE-014',
     spec: 'src/pages/developer/Recharge.spec.tsx',
-    file: 'src/pages/developer/Recharge.tsx',
-    find: '      qrcodePollingRef.current = false\n      if (paymentPollIntervalRef.current) {',
-    replace: '      if (false && paymentPollIntervalRef.current) {',
-    note: 'cleanup 不再置 ref → 卸载后轮询继续请求后端',
+    // ⚠️ M3-b 后清理收敛进 usePaymentProbe 的内部 cleanup —— FIX-3 的新址
+    file: 'src/pages/developer/recharge/payment/usePaymentProbe.ts',
+    find: '  useEffect(\n    () => () => {\n      runningRef.current = false\n      if (timerRef.current) {\n        clearTimeout(timerRef.current)\n        timerRef.current = null\n      }\n    },\n    []\n  )',
+    replace: '  useEffect(() => {}, [])',
+    note: '卸载不清定时器 → 卸载后探测继续请求后端（014 变红）',
   },
   {
     id: 'FIX-4',

@@ -40,8 +40,9 @@ import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
 import { PaymentModal } from './recharge/components/PaymentModal'
 import { usePaymentFlow } from './recharge/payment/usePaymentFlow'
-import { useQrcodePolling } from './recharge/useQrcodePolling'
-import { usePaymentPolling } from './recharge/usePaymentPolling'
+// 【M3-b】两套轮询的调度统一到 usePaymentProbe（探测动作仍按模式分流）
+import { usePaymentProbe } from './recharge/payment/usePaymentProbe'
+import { QR_PROBE_INTERVALS, REDIRECT_PROBE_INTERVAL } from './recharge/payment/paymentMachine'
 import {
   savePaymentToSession,
   restorePaymentFromSession,
@@ -98,7 +99,7 @@ export default function DeveloperRecharge() {
   const [customAmount, setCustomAmount] = useState<number | null>(null)
   // rechargeConfig 已迁至 ./recharge/useRechargeData
   
-  // 扫码支付轮询状态 qrcodePolling 已随 ./recharge/useQrcodePolling 抽出（见 closePayWindow 之后）
+  // 【M3-b】扫码/跳转轮询的调度已统一到 ./recharge/payment/usePaymentProbe（创建处在 handleRefreshStatus 之后）
 
   // 刷新二维码状态
   const [refreshingQrCode, setRefreshingQrCode] = useState(false)
@@ -111,21 +112,11 @@ export default function DeveloperRecharge() {
   
   // 【M3-c②】原 `paymentStateRef`（每渲染同步一次的状态快照）已删除：
   //   它是"第二份真相"，只服务于"异步回调里读最新状态"。现在改用两类正交手段替代：
-  //   ① focus / visibility 监听**带依赖重挂**（直接闭包最新渲染值，见 usePaymentPolling 之后的 effect）；
+  //   ① focus / visibility 监听**带依赖重挂**（直接闭包最新渲染值）；
   //   ② 轮询的继续条件由页面以 `shouldContinue()` 注入（hook 内部用 ref 取最新闭包）。
   
-  // 【新增】轮询定时器 ref（paymentPollIntervalRef）现由 ./recharge/usePaymentPolling 提供：
-  //    下方「组件卸载清理所有定时器」的 effect 仍直接写它的 `.current`（同作用域）。
-
-  // 【P1-4 修复】扫码轮询的"是否继续"标志（`qrcodePollingRef`）现由 ./recharge/useQrcodePolling
-  //    提供并从那里解构出来 —— 它必须用 ref 而非局部变量：`stopQrcodePolling` 是由
-  //    「取消订单 / 关闭弹窗」从**外部**调用的，局部变量对它不可见。原实现用局部 `isPolling`
-  //    + stop 里只 setState，导致**取消订单后轮询仍会跑满 8 次（约 32 秒）**，期间若后端返回
-  //    paid，还会把已取消的订单标记成支付成功（"用户关闭弹窗时停止轮询"的注释与实现不符）。
-  //    ⚠️ 下方卸载清理 effect 仍直接写它的 `.current`（同作用域，运行时已初始化）。
-  
-  // 【P1-4 拆分】支付结果轮询（startPaymentPoll / stopPaymentPoll / 定时器 ref）已抽为
-  // ./recharge/usePaymentPolling —— 见下方 handleRefreshStatus **定义之后**的调用处。
+  // 【历史】"取消订单后轮询照跑"缺陷（原 qrcodePollingRef / 局部 isPolling 变量）的回归锁
+  //    是变异规则 FIX-2，盯 usePaymentProbe.stop；卸载清理的回归锁是 FIX-3，盯其内部 cleanup。
 
   // 【P1-4 修复】组件卸载时清理**所有**轮询定时器。
   // ⚠️ 原实现只在「关闭支付窗口 / 关闭弹窗」时清理；若用户开着支付弹窗直接切走页面
@@ -133,12 +124,8 @@ export default function DeveloperRecharge() {
   //    实测：卸载后仍会多发出数次 getPaymentStatus（用例 TC-FE-RECHARGE-014 先失败后通过）。
   useEffect(() => {
     return () => {
-      // 直接写 ref（不在卸载后 setState）
-      qrcodePollingRef.current = false
-      if (paymentPollIntervalRef.current) {
-        clearInterval(paymentPollIntervalRef.current)
-        paymentPollIntervalRef.current = null
-      }
+      // 【M3-b】轮询定时器的卸载清理已收敛进 usePaymentProbe（内部 cleanup，FIX-3 的新址）；
+      //   这里只剩支付窗口关闭检测的 interval —— 它不属于探测，仍归本页。
       if (payWindowIntervalRef.current) {
         clearInterval(payWindowIntervalRef.current)
         payWindowIntervalRef.current = null
@@ -630,12 +617,12 @@ export default function DeveloperRecharge() {
         savePaymentToSession(payment) // 保存到 sessionStorage
         message.success('订单创建成功')
         
-        // 如果是扫码支付，自动开始轮询
+        // 如果是扫码支付，自动开始轮询（【M3-b】统一调度器，按模式分流）
         if (paymentType === 'qrcode' && payment.qr_code) {
-          startQrcodePolling(payment.payment_no)
+          probe.start({ mode: 'qrcode', paymentNo: payment.payment_no })
         } else {
-          // 【新增】跳转支付模式：启动支付结果轮询作为后备
-          startPaymentPoll()
+          // 跳转支付模式：启动后备探测
+          probe.start({ mode: 'redirect', paymentNo: payment.payment_no })
         }
       } catch (error: any) {
         // 如果是支付相关错误，使用友好的错误提示
@@ -691,11 +678,11 @@ export default function DeveloperRecharge() {
         // 如果是扫码支付，自动开始轮询
         console.log('[DEBUG] 准备启动扫码轮询:', { paymentType, hasQrCode: !!payment.qr_code, payment_no: payment.payment_no })
         if (paymentType === 'qrcode' && payment.qr_code) {
-          console.log('[DEBUG] 调用 startQrcodePolling:', payment.payment_no)
-          startQrcodePolling(payment.payment_no)
+          console.log('[DEBUG] 启动扫码探测:', payment.payment_no)
+          probe.start({ mode: 'qrcode', paymentNo: payment.payment_no })
         } else {
-          // 【新增】跳转支付模式：启动支付结果轮询作为后备
-          startPaymentPoll()
+          // 跳转支付模式：启动后备探测
+          probe.start({ mode: 'redirect', paymentNo: payment.payment_no })
         }
       } catch (error: any) {
         // 如果是支付相关错误，使用友好的错误提示
@@ -754,21 +741,8 @@ export default function DeveloperRecharge() {
     }
   }
 
-  // 【P1-4 拆分】扫码轮询（start / stop / 成功回调 / 是否继续的 ref）已抽为
-  // ./recharge/useQrcodePolling。
-  // ⚠️ 调用点必须在 closePayWindow **定义之后**：hook 入参在调用时立即求值，
-  //    而 closePayWindow 是本组件内的 const —— 放在它前面会触发 TDZ。
-  // ⚠️ 这里只解构出 4 个成员，其中 qrcodePollingRef 是给上方卸载清理 effect 用的。
-  const { qrcodePolling, qrcodePollingRef, startQrcodePolling, stopQrcodePolling } =
-    useQrcodePolling({
-      currentPayment,
-      // 【M2-2】结算改为状态机 action（hook 内部不再直接 setState）
-      onPaid: flow.settlePaid,
-      fetchBalance,
-      closePayWindow,
-      // 【M3-c₁】不再传状态快照：刷新由 useDelayedReload 负责（守卫已多余，见其顶部说明）
-      scheduleReload,
-    })
+  // 【M3-b】扫码/跳转两套轮询的**调度**已统一到 ./recharge/payment/usePaymentProbe
+  //   （probe 创建处在 handleRefreshStatus 之后）；本区域原 useQrcodePolling 已删除。
 
   // 刷新二维码
   const handleRefreshQrCode = async () => {
@@ -1069,13 +1043,12 @@ export default function DeveloperRecharge() {
   }
 
   const handlePayModalClose = () => {
-    // 【修复】关闭弹窗时停止所有轮询
-    stopPaymentPoll() // 停止支付结果轮询
+    // 【修复】关闭弹窗时停止所有轮询（【M3-b】统一为 probe.stop()）
+    probe.stop()
     if (payWindowIntervalRef.current) {
       clearInterval(payWindowIntervalRef.current)
       payWindowIntervalRef.current = null
     }
-    stopQrcodePolling() // 停止扫码轮询
     
     flow.closeModal()
     setPayError(null)
@@ -1087,7 +1060,7 @@ export default function DeveloperRecharge() {
    * （B5 轮随支付弹窗抽出而上移：弹窗组件保持纯展示，动作逻辑留在页面）
    */
   const handleCancelOrder = async () => {
-    stopQrcodePolling() // 停止扫码轮询
+    probe.stop() // 停止扫码轮询（【M3-b】统一调度器）
     if (currentPayment) {
       await paymentApi.cancelPayment(currentPayment.payment_no)
       message.success('订单已取消')
@@ -1204,7 +1177,7 @@ export default function DeveloperRecharge() {
           isQrcode: !!currentPayment?.qr_code
         })
         closePayWindow()  // 关闭支付宝支付窗口
-        stopPaymentPoll()  // 停止支付结果轮询
+        probe.stop()  // 停止支付结果轮询（【M3-b】统一调度器）
         clearPaymentFromSession()
         fetchBalance()  // 获取最新余额
         
@@ -1250,12 +1223,50 @@ export default function DeveloperRecharge() {
   //       挂载首屏 loading=true 会提前 return，hook 若放在其后就会出现
   //       "Rendered fewer hooks than expected"（实测 18 条用例全红）。
   //    ⚠️ 解构出的 paymentPollIntervalRef 是给上方「卸载清理所有定时器」的 effect 用的。
-  const { paymentPollIntervalRef, startPaymentPoll, stopPaymentPoll } = usePaymentPolling({
-    // 【M3-c②】"要不要继续轮询"由页面用**当前渲染值**判定（hook 内部用 ref 取最新闭包）。
-    //   与原快照判定同口径：弹窗打开、未成功、有订单且未到终态。
-    shouldContinue: () =>
-      payModalVisible && !paySuccess && !!currentPayment && !isTerminalStatus(currentPayment.status),
-    refreshStatus: handleRefreshStatus,
+  // 【M3-b】两套轮询的**调度**统一到 usePaymentProbe（一个调度器 + 一次 start/stop + 卸载即停）；
+  //   探测动作保留各自的业务分支（扫码直接查单结算 / 跳转走 handleRefreshStatus）。
+  //   ⚠️ 硬约束同前：必须在 handleRefreshStatus 定义之后（入参立即求值）、早退 return 之前（hooks 恒定）。
+  const probe = usePaymentProbe({
+    probeOnce: async (ctx) => {
+      if (ctx.mode === 'qrcode') {
+        // 扫码：直接查单；成功 → 唯一结算入口 + 收尾（与原 handleQrcodePaymentSuccess 等价）
+        try {
+          const status = await paymentApi.getPaymentStatus(ctx.paymentNo ?? '')
+          if (isPaidStatus(status.status)) {
+            closePayWindow()
+            flow.settlePaid({
+              ...status,
+              payment_no: status.payment_no || ctx.paymentNo,
+              amount: status.amount || currentPayment?.amount,
+            } as Partial<Payment>)
+            await fetchBalance()
+            clearPaymentFromSession()
+            scheduleReload()
+            return false
+          }
+          return true
+        } catch (error) {
+          console.error('[Recharge][probe] 扫码查询失败:', error)
+          return true
+        }
+      }
+      // 跳转：先做同口径的继续判定（与原 usePaymentPolling 一致：弹窗打开、未成功、有订单且未到终态），
+      // 条件不满足直接停（不发请求）；handleRefreshStatus 结算成功后，下一轮预检也会停。
+      if (!(payModalVisible && !paySuccess && currentPayment && !isTerminalStatus(currentPayment.status))) {
+        return false
+      }
+      await handleRefreshStatus(false)
+      return true
+    },
+    intervalOf: (attempt, ctx) =>
+      ctx.mode === 'qrcode'
+        ? attempt === 0
+          ? 0 // 扫码首轮立即探测（与原实现一致）
+          : QR_PROBE_INTERVALS[attempt - 1]
+        : REDIRECT_PROBE_INTERVAL,
+    maxAttempts: (ctx) => (ctx.mode === 'qrcode' ? QR_PROBE_INTERVALS.length : 0),
+    onExhausted: () =>
+      message.warning({ content: '支付状态查询超时，请点击"刷新状态"按钮确认', key: 'qrcodePoll' }),
   })
 
   // 【M3-c②】focus / visibility 监听：**带依赖重挂**，直接闭包当前渲染的状态，
@@ -1513,7 +1524,7 @@ export default function DeveloperRecharge() {
         currentBalance={currentBalance}
         countdown={countdown}
         paymentMethod={paymentMethod}
-        qrcodePolling={qrcodePolling}
+        qrcodePolling={probe.running}
         refreshingQrCode={refreshingQrCode}
         onClose={handlePayModalClose}
         onGoToUser={() => navigate('/user')}

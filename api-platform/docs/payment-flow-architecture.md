@@ -101,8 +101,7 @@ flowchart TB
 
     subgraph HOOK["编排层（副作用集中在这里）"]
       F["usePaymentFlow<br/>useReducer + 语义 action + 派生值"]
-      Q["useQrcodePolling<br/>扫码轮询（8 段递进间隔）"]
-      P["usePaymentPolling<br/>跳转支付后备轮询（3 秒）"]
+      Q["usePaymentProbe<br/>统一探测调度（扫码 8 段递进 / 跳转 3 秒）"]
       D["useRechargeData<br/>套餐 / 配置 / 余额"]
     end
 
@@ -433,8 +432,7 @@ flowchart TD
 | `recharge/payment/usePaymentFlow.ts` | 编排 hook：`useReducer` + 语义 action + 派生值 |
 | `recharge/useCountdown.ts` | 剩余有效期倒计时（**派生自 `expiresAt`**，关弹窗即停表） |
 | `recharge/useDelayedReload.ts` | 结算后延迟刷新（**卸载即取消**、重复调度只留最后一次；M3-c₁） |
-| `recharge/useQrcodePolling.ts` | 扫码轮询（8 段递进间隔） |
-| `recharge/usePaymentPolling.ts` | 跳转支付后备轮询（3 秒） |
+| `recharge/payment/usePaymentProbe.ts` | 统一探测调度（start 捕获 mode/单号；探测动作按模式分流；卸载即停） |
 | `recharge/components/PaymentModal.tsx` | 支付弹窗三态 |
 | `Recharge.tsx` | 页面：渲染 + 数据加载 + I/O（**无生命周期 setState**） |
 

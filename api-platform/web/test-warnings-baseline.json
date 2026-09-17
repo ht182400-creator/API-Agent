@@ -48,9 +48,9 @@
     "  - 2026-09-17：act 81 / jsdom 179（319 passed / 32 spec；M5 客户端信号不再直接结算 —— 行为加固，未主动增删警告）",
     "  - 2026-09-17：act 81 / jsdom 179（322 passed / 33 spec；M3-a 探测策略统一 —— 11 处判定收敛为 1 处，未主动增删警告）"
   ],
-  "updatedAt": "2026-09-17T07:28:58.175Z",
+  "updatedAt": "2026-09-17T14:39:31.660Z",
   "counts": {
-    "jsdom: getComputedStyle pseudo-elements": 179,
-    "act: update not wrapped in act": 81
+    "jsdom: getComputedStyle pseudo-elements": 181,
+    "act: update not wrapped in act": 86
   }
 }
