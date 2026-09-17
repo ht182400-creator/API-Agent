@@ -37,8 +37,10 @@ export default defineConfig({
     // 用例之间互相隔离：自动恢复/清理 mock
     restoreMocks: true,
     clearMocks: true,
-    // 超时（组件渲染在 jsdom 下略慢）
-    testTimeout: 15000,
+    // 超时（组件渲染在 jsdom 下略慢；全量并行时机器被几十个 worker 压满，慢用例会接近 10s）
+    // ⚠️ 配套：`src/test/setup.ts` 里把 Testing Library 的 asyncUtilTimeout 放宽到 3s ——
+    //    两处一起才是"慢用例在满载下不假失败"的完整解，详见那里的注释。
+    testTimeout: 20000,
     reporters: ['default'],
   },
 })

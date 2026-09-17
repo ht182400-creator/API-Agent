@@ -45,7 +45,14 @@ export interface UseQrcodePollingOptions {
   fetchBalance: () => Promise<void> | void
   /** 成功后关闭支付宝支付窗口 */
   closePayWindow: () => void
-  paymentStateRef: { current: PaymentStateSnapshot }
+  /**
+   * 【M3-c₁】延迟刷新页面（由页面的 `useDelayedReload` 提供：卸载即取消、重复调度只留最后一次）。
+   *
+   * ⚠️ 原先这里收的是 `paymentStateRef` 快照，用来在 5 秒后确认"仍是成功态"才刷新 ——
+   *    但调用点只出现在**已确认结算成功之后**，而终态不可逆 → 那个守卫恒为真，
+   *    它存在的唯一后果是逼页面维护一份状态快照（"第二份真相"，M3 要删的东西）。
+   */
+  scheduleReload: (delayMs?: number) => void
 }
 
 export function useQrcodePolling({
@@ -53,7 +60,7 @@ export function useQrcodePolling({
   onPaid,
   fetchBalance,
   closePayWindow,
-  paymentStateRef,
+  scheduleReload,
 }: UseQrcodePollingOptions) {
   // 扫码支付轮询
   const [qrcodePolling, setQrcodePolling] = useState(false)
@@ -121,12 +128,9 @@ export function useQrcodePolling({
     
     clearPaymentFromSession()
 
-    // 5秒后自动刷新（使用 ref 确保正确检测状态）
-    setTimeout(() => {
-      if (paymentStateRef.current.paySuccess) {
-        window.location.reload()
-      }
-    }, 5000)
+    // 【M3-c₁】5 秒后刷新统一走页面的 useDelayedReload
+    //   （原先此处另写一份 setTimeout + 快照守卫，且**从不清理** —— 卸载后仍会触发导航）
+    scheduleReload()
   }
 
   // 停止扫码轮询

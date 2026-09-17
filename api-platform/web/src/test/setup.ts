@@ -8,7 +8,21 @@
  */
 import '@testing-library/jest-dom/vitest'
 import { afterEach, vi } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
+
+// ---------- 放宽"异步断言窗口"（消除全量并行下的假失败）----------
+/**
+ * `findBy*` / `waitFor` 默认只等 **1000ms**。单跑某个 spec 够用，但**全量并行跑**时机器被几十个
+ * worker 压满，antd 表单校验 / 异步渲染的落地时间会翻几倍 —— 于是出现"单跑绿、全量红"的假失败。
+ *
+ * 实测（2026-09-17）：`TC-FE-CREATEREPO-001` 在全量下报
+ * `Unable to find an element with the text: 请输入仓库名称`（11.9s 才失败），而**单跑该 spec 5 passed**；
+ * 同类还有 `TC-FE-OREPO-007`(FileReader) 与 `TC-FE-PRICING-004`，都是"慢用例 + 满载"的组合。
+ *
+ * ⚠️ 放宽**不会掩盖逻辑缺陷**：文案/条件真错的话，3 秒后照样失败，只是等待更从容。
+ *    这是"消除环境抖动"的常规做法，代价仅是失败时多等几秒。
+ */
+configure({ asyncUtilTimeout: 3000 })
 
 // ---------- jsdom 缺失的浏览器 API 补齐（antd 响应式组件依赖 matchMedia）----------
 if (!window.matchMedia) {

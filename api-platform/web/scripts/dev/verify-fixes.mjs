@@ -178,6 +178,16 @@ const MUTATIONS = [
     replace: "      try { window.close() } catch { /* 忽略 */ }",
     note: '把"关闭当前窗口"加回来 → 022 的 window.close 反断言变红（即回到"别家窗口写一条 localStorage 就能关掉用户充值页签"的缺陷形态）',
   },
+  {
+    id: 'FIX-13',
+    title: '结算后延迟刷新：卸载即取消（不留悬空定时器）',
+    caseId: 'TC-FE-RELOAD-002',
+    spec: 'src/pages/developer/recharge/useDelayedReload.spec.ts',
+    file: 'src/pages/developer/recharge/useDelayedReload.ts',
+    find: '  useEffect(\n    () => () => {\n      if (timerRef.current) clearTimeout(timerRef.current)\n      timerRef.current = null\n    },\n    []\n  )',
+    replace: '  useEffect(() => {}, [])',
+    note: '去掉卸载清理 → 回到"定时器发射后不管"的缺陷形态：组件/测试已结束仍会导航（002 的 getTimerCount 与"卸载后不刷新"断言变红）',
+  },
 ]
 
 const argv = process.argv.slice(2)

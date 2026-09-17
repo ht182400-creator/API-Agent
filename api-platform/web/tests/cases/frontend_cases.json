@@ -16,9 +16,9 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 63,
-      "specFiles": 32,
-      "cases": 315,
+      "sourceFiles": 64,
+      "specFiles": 33,
+      "cases": 318,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -246,6 +246,21 @@
         { "id": "TC-FE-PAYSTATUS-001", "name": "paid / completed 都算成功（两个通道两种写法）", "status": "done" },
         { "id": "TC-FE-PAYSTATUS-002", "name": "未支付/失败/未知/空值都不算成功", "status": "done" },
         { "id": "TC-FE-PAYSTATUS-003", "name": "终态用于停止探测，且 cancelled 刻意不算终态", "status": "done" }
+      ],
+      "knownIssues": []
+    },
+    {
+      "id": "FE-DEV-RELOAD",
+      "level": "P2",
+      "file": "src/pages/developer/recharge/useDelayedReload.ts",
+      "lines": 63,
+      "why": "M3-c₁：把「结算成功 → 延迟刷新页面」从 3 处各写一份（支付宝回调 / 扫码轮询成功 / 手动刷新确认）收敛为一个 hook。改造前的写法是 `setTimeout(() => { if (paymentStateRef.current.paySuccess) window.location.reload() }, 5000)`，三个问题：① 重复 3 份；② **从不清理** —— 组件已卸载、甚至整页测试都结束了它仍会触发（这类「卸载后副作用」是 act 警告与 jsdom teardown 报错的来源之一）；③ 那个 paySuccess 守卫**已多余**（调用点只出现在「确认结算成功之后」，而终态不可逆 → 恒为真），它存在的唯一后果是逼页面维护 paymentStateRef 状态快照 —— 正是 M3 要删的「第二份真相」。现在：重复调度只保留最后一次、卸载即取消、reload 可注入以便单测",
+      "status": "covered",
+      "specFile": "src/pages/developer/recharge/useDelayedReload.spec.ts",
+      "cases": [
+        { "id": "TC-FE-RELOAD-001", "name": "到点才刷新一次（默认 5 秒前不得触发）", "status": "done" },
+        { "id": "TC-FE-RELOAD-002", "name": "卸载后不得再刷新，且不留悬空定时器", "status": "done" },
+        { "id": "TC-FE-RELOAD-003", "name": "重复调度只保留最后一次（延迟按最后一次算）", "status": "done" }
       ],
       "knownIssues": []
     },

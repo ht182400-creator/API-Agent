@@ -1,0 +1,30 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run src/pages/developer/CreateRepo.spec.tsx
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/CreateRepo.spec.tsx
+[20260917 16:37:52.173] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789634272173_15sdo2d5e"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789634272173_15sdo2d5e'
+}
+
+ ✓ src/pages/developer/CreateRepo.spec.tsx (5 tests) 4943ms
+   ✓ 必填与格式校验（TC-FE-CREATEREPO-001） > TC-FE-CREATEREPO-001: 空提交被三条必填拦截；名称规则与端点 URL 格式各自拦截 2859ms
+   ✓ 非管理员提交（TC-FE-CREATEREPO-002） > TC-FE-CREATEREPO-002: 提示需审核、按钮为「提交审核」；成功后跳开发者仓库页 674ms
+   ✓ 管理员提交（TC-FE-CREATEREPO-003） > TC-FE-CREATEREPO-003: 提示直上线、按钮为「创建并上线」；成功后跳管理员仓库页 605ms
+   ✓ 创建失败提示（TC-FE-CREATEREPO-004） > TC-FE-CREATEREPO-004: 后端 detail 优先展示，且停留在本页可重试 445ms
+   ✓ 图标上传限制（TC-FE-CREATEREPO-005） > TC-FE-CREATEREPO-005: 非图片与超 200KB 都被当场拒绝 354ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  16:37:46
+   Duration  11.38s (transform 278ms, setup 170ms, collect 4.91s, tests 4.94s, environment 782ms, prepare 156ms)
+

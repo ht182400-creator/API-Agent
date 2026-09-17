@@ -29,6 +29,8 @@ import { PAYMENT_METHODS } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
 // 【M4-lite】剩余有效期改为**派生**（不再是被逐秒改写的 state）
 import { useCountdown } from './recharge/useCountdown'
+// 【M3-c₁】结算后的"延迟刷新"统一走一个 hook（原先 3 处各写一份、且都不清理定时器）
+import { useDelayedReload } from './recharge/useDelayedReload'
 // 【M3-a】"是否已支付"的判定统一到纯函数模块（原先这条规则在 10 处各写一遍）
 import { isPaidStatus } from '../../utils/paymentStatus'
 import { useRechargeData } from './recharge/useRechargeData'
@@ -79,6 +81,9 @@ export default function DeveloperRecharge() {
     expiresAt: flow.expiresAt,
     active: payModalVisible && flow.isProbing,
   })
+
+  // 【M3-c₁】"结算成功 → 延迟刷新页面"统一入口（卸载即取消；重复调度只保留最后一次）
+  const scheduleReload = useDelayedReload()
   
   // 最新账户余额  —— 已迁至 ./recharge/useRechargeData
   
@@ -231,12 +236,9 @@ export default function DeveloperRecharge() {
       
     clearPaymentFromSession()
     
-    // 5秒后自动刷新（使用 ref 确保正确检测状态）
-    setTimeout(() => {
-      if (paymentStateRef.current.paySuccess) {
-        window.location.reload()
-      }
-    }, 5000)
+    // 【M3-c₁】5 秒后刷新（原实现另写了一份 setTimeout + paymentStateRef 守卫；
+    //   那个守卫已多余：这里是"确认结算成功之后"，而终态不可逆 → 恒为真，见 useDelayedReload 顶部）
+    scheduleReload()
   }
     
     // 显示支付超时对话框
@@ -599,9 +601,7 @@ export default function DeveloperRecharge() {
           console.log('[Recharge] postMessage 支付成功信号 → 向后端求证')
           await confirmPaymentWithServer(data.paymentNo)
         } else {
-          setTimeout(() => {
-            window.location.reload()
-          }, 300)
+          scheduleReload(300)
         }
         return
       }
@@ -623,9 +623,7 @@ export default function DeveloperRecharge() {
       if (data.type === 'RETURN_TO_RECHARGE') {
         paymentLogger.info('收到返回充值页面通知', { paymentNo: data.paymentNo })
         closePayWindow()
-        setTimeout(() => {
-          window.location.reload()
-        }, 300)
+        scheduleReload(300)
       }
     }
     
@@ -829,7 +827,8 @@ export default function DeveloperRecharge() {
       onPaid: flow.settlePaid,
       fetchBalance,
       closePayWindow,
-      paymentStateRef,
+      // 【M3-c₁】不再传状态快照：刷新由 useDelayedReload 负责（守卫已多余，见其顶部说明）
+      scheduleReload,
     })
 
   // 刷新二维码
@@ -963,10 +962,8 @@ export default function DeveloperRecharge() {
                 flow.settlePaid(undefined, { closeModal: true })
                 await fetchBalance()
                 message.success({ content: '该订单已支付成功！正在刷新...', key: 'paySuccess' })
-                setTimeout(() => {
-                  paymentLogger.info('handleOpenPay 触发页面刷新')
-                  window.location.reload()
-                }, 1500)
+                paymentLogger.info('handleOpenPay 触发页面刷新')
+                scheduleReload(1500)
                 return
               }
             } catch (error) {
@@ -1278,12 +1275,8 @@ export default function DeveloperRecharge() {
           // 【M2-2】结算走唯一入口（跳转语义：保留弹窗显示大界面）
           flow.settlePaid(undefined, { closeModal: false })
           message.success('支付成功！正在刷新页面...')
-          // 5秒后自动刷新
-          setTimeout(() => {
-            if (paymentStateRef.current.paySuccess) {
-              window.location.reload()
-            }
-          }, 5000)
+          // 【M3-c₁】5 秒后自动刷新（同上：不再各写一份带守卫的 setTimeout）
+          scheduleReload()
         } else {
           // 二维码支付走独立逻辑，这里不应该被调用
           // 但以防万一，还是关闭弹窗刷新
@@ -1291,9 +1284,7 @@ export default function DeveloperRecharge() {
           // 【M2-2】意外路径：显式关弹窗
           flow.settlePaid(undefined, { closeModal: true })
           message.success('支付成功！正在刷新页面...')
-          setTimeout(() => {
-            window.location.reload()
-          }, 800)
+          scheduleReload(800)
         }
       }
       // 不重置倒计时，让订单有效期自然倒数
