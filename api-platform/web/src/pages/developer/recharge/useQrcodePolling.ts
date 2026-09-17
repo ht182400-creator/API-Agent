@@ -19,6 +19,8 @@ import { message } from 'antd'
 import { paymentApi, Payment } from '../../../api/payment'
 // 【M3-a】"是否已支付"的判定统一到纯函数模块
 import { isPaidStatus } from '../../../utils/paymentStatus'
+// 【M3-b₁】间隔表统一取状态机常量（本文件原先另抄了一份 8 段表 —— 那是漂移源）
+import { QR_PROBE_INTERVALS } from './payment/paymentMachine'
 import { clearPaymentFromSession } from './paymentSession'
 
 /** 与父组件 `paymentStateRef` 同构：用于 5 秒后确认"仍是成功态"（避免闭包读到旧值） */
@@ -68,7 +70,10 @@ export function useQrcodePolling({
     console.log('[DEBUG] startQrcodePolling 函数被调用, paymentNo:', paymentNo)
     setQrcodePolling(true)
     qrcodePollingRef.current = true
-    const intervals = [2000, 2000, 2000, 3000, 3000, 5000, 5000, 10000]
+    // 【M3-b₁】不再在本文件另写一份 8 段间隔表（重复即漂移源）：
+    //   统一取状态机常量，其**逐值正确性**由 paymentMachine.spec 的
+    //   TC-FE-PAYMACH-016/017 锁定（改值会先在那里变红）。
+    const intervals = QR_PROBE_INTERVALS
 
     for (let i = 0; i < intervals.length; i++) {
       if (!qrcodePollingRef.current) break // 用户取消订单 / 关闭弹窗时立即停止（外部可写）

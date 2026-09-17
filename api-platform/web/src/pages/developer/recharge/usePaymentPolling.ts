@@ -16,6 +16,8 @@
 import { useRef } from 'react'
 // 【M3-a】终态判定统一到纯函数模块（原先这里手写了一份 `['paid','completed','failed','expired']`）
 import { isTerminalStatus } from '../../../utils/paymentStatus'
+// 【M3-b₁】间隔统一取状态机常量（原先本文件里硬编码 3000）
+import { REDIRECT_PROBE_INTERVAL } from './payment/paymentMachine'
 import type { PaymentStateSnapshot } from './useQrcodePolling'
 
 export interface UsePaymentPollingOptions {
@@ -63,7 +65,7 @@ export function usePaymentPolling({ paymentStateRef, refreshStatus }: UsePayment
         })
         stopPaymentPoll()
       }
-    }, 3000) // 每 3 秒查询一次
+    }, REDIRECT_PROBE_INTERVAL) // 每 3 秒查询一次（间隔取自状态机常量，勿在此另写数字）
   }
 
   // 【新增】停止支付结果轮询

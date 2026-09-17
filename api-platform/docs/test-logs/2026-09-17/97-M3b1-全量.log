@@ -1,0 +1,10 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+[vitest] Test Files  33 passed (33)
+[vitest] Tests  322 passed (322)
+[vitest] Duration  79.67s (transform 8.40s, setup 23.80s, collect 327.80s, tests 311.14s, environment 120.78s, prepare 10.80s)
+[warn-budget] ✅ 警告在预算内
+    179  jsdom: getComputedStyle pseudo-elements
+     81  act: update not wrapped in act
