@@ -34,6 +34,7 @@ import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
 import { PaySuccessView } from './recharge/components/PaySuccessView'
 import { useQrcodePolling } from './recharge/useQrcodePolling'
+import { usePaymentPolling } from './recharge/usePaymentPolling'
 import {
   savePaymentToSession,
   restorePaymentFromSession,
@@ -99,8 +100,8 @@ export default function DeveloperRecharge() {
     }
   }, [currentPayment, payModalVisible, paySuccess])
   
-  // 【新增】轮询定时器 ref，用于检测支付结果
-  const paymentPollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // 【新增】轮询定时器 ref（paymentPollIntervalRef）现由 ./recharge/usePaymentPolling 提供：
+  //    下方「组件卸载清理所有定时器」的 effect 仍直接写它的 `.current`（同作用域）。
 
   // 【P1-4 修复】扫码轮询的"是否继续"标志（`qrcodePollingRef`）现由 ./recharge/useQrcodePolling
   //    提供并从那里解构出来 —— 它必须用 ref 而非局部变量：`stopQrcodePolling` 是由
@@ -109,52 +110,8 @@ export default function DeveloperRecharge() {
   //    paid，还会把已取消的订单标记成支付成功（"用户关闭弹窗时停止轮询"的注释与实现不符）。
   //    ⚠️ 下方卸载清理 effect 仍直接写它的 `.current`（同作用域，运行时已初始化）。
   
-  // 【新增】启动支付结果轮询
-  const startPaymentPoll = () => {
-    // 如果已经有轮询在运行，不再启动
-    if (paymentPollIntervalRef.current) {
-      console.log('[Recharge] 支付结果轮询已在运行，跳过启动')
-      return
-    }
-    
-    console.log('[Recharge] 启动支付结果轮询（每3秒一次）')
-    paymentPollIntervalRef.current = setInterval(() => {
-      const state = paymentStateRef.current
-      
-      // 【关键修复】只要弹窗打开且未成功，就继续轮询
-      // handleRefreshStatus 内部会处理 currentPayment 为空的情况
-      // 它会检查 URL 中的 out_trade_no 参数
-      if (state.payModalVisible && !state.paySuccess) {
-        // 【修复】只有终态才跳过轮询：paid, completed, failed, expired
-        // cancelled 可能是因为超时，但用户可能已经支付，所以继续查询
-        const terminalStatuses = ['paid', 'completed', 'failed', 'expired']
-        if (state.currentPayment && terminalStatuses.includes(state.currentPayment.status)) {
-          console.log('[Recharge] 跳过轮询：订单状态已是终态', state.currentPayment.status)
-          return
-        }
-        
-        console.log('[Recharge] 轮询查询支付状态...（当前状态:', state.currentPayment?.status || '无订单')
-        // 【优化】自动轮询时不显示错误提示，避免干扰用户
-        handleRefreshStatus(false)
-      } else {
-        // 条件不满足，停止轮询
-        console.log('[Recharge] 停止支付结果轮询：条件不满足', {
-          payModalVisible: state.payModalVisible,
-          paySuccess: state.paySuccess
-        })
-        stopPaymentPoll()
-      }
-    }, 3000) // 每 3 秒查询一次
-  }
-  
-  // 【新增】停止支付结果轮询
-  const stopPaymentPoll = () => {
-    if (paymentPollIntervalRef.current) {
-      console.log('[Recharge] 停止支付结果轮询')
-      clearInterval(paymentPollIntervalRef.current)
-      paymentPollIntervalRef.current = null
-    }
-  }
+  // 【P1-4 拆分】支付结果轮询（startPaymentPoll / stopPaymentPoll / 定时器 ref）已抽为
+  // ./recharge/usePaymentPolling —— 见下方 handleRefreshStatus **定义之后**的调用处。
 
   // 【P1-4 修复】组件卸载时清理**所有**轮询定时器。
   // ⚠️ 原实现只在「关闭支付窗口 / 关闭弹窗」时清理；若用户开着支付弹窗直接切走页面
@@ -1341,6 +1298,19 @@ export default function DeveloperRecharge() {
       }
     }
   }
+
+  // 【P1-4 拆分】支付结果轮询（跳转支付的后备查询）已抽为 ./recharge/usePaymentPolling。
+  // ⚠️ 调用点有两个硬约束，缺一即报错：
+  //    ① 必须在 handleRefreshStatus **定义之后**：hook 入参在调用时立即求值，
+  //       而它是本组件内的 const —— 放前面会抛 TDZ（与 useQrcodePolling 同一约束）；
+  //    ② 必须在下方的 `if (loading) return ...` **之前**：那是本组件的早退分支，
+  //       挂载首屏 loading=true 会提前 return，hook 若放在其后就会出现
+  //       "Rendered fewer hooks than expected"（实测 18 条用例全红）。
+  //    ⚠️ 解构出的 paymentPollIntervalRef 是给上方「卸载清理所有定时器」的 effect 用的。
+  const { paymentPollIntervalRef, startPaymentPoll, stopPaymentPoll } = usePaymentPolling({
+    paymentStateRef,
+    refreshStatus: handleRefreshStatus,
+  })
 
   // renderPackageCard 已抽为展示组件 ./recharge/components/PackageCard
 

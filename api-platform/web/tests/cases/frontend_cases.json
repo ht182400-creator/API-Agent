@@ -16,7 +16,7 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 57,
+      "sourceFiles": 58,
       "specFiles": 29,
       "cases": 285,
       "covered": [
@@ -39,12 +39,13 @@
         "src/pages/owner/repos/repoColumns.tsx",
         "src/pages/owner/repos/endpointColumns.tsx",
         "src/pages/developer/recharge/useQrcodePolling.ts",
+        "src/pages/developer/recharge/usePaymentPolling.ts",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -186,8 +187,8 @@
       "id": "FE-DEV-RECHARGE",
       "level": "P1",
       "file": "src/pages/developer/Recharge.tsx",
-      "lines": 1697,
-      "why": "全前端最大文件（P1-4 最后一个目标，**拆分中**：2001 → 1697，已抽 8 个模块到 ./recharge/，剩支付结果轮询与支付弹窗）；充值属资金链路。重点：到账金额 = price + bonus_amount + price×bonus_ratio/100（两种赠送走同一式子）；上下限由 InputNumber 的 min/max 先在 UI 层拦住；⚠️ paymentLogger 里 paymentApi.clientLog(...).catch(...) 若返回非 Promise 会抛 TypeError 把整个下单打断在请求之前。⚠️ 扫码轮询（useQrcodePolling）与卸载清理分别被变异规则 FIX-2 / FIX-3 盯着 —— 搬动这段代码必须同步改规则文件路径，否则脚本会静默跳过",
+      "lines": 1667,
+      "why": "全前端最大文件（P1-4 最后一个目标，**拆分中**：2001 → 1667，已抽 9 个模块到 ./recharge/，剩支付弹窗 JSX 分块）；充值属资金链路。重点：到账金额 = price + bonus_amount + price×bonus_ratio/100（两种赠送走同一式子）；上下限由 InputNumber 的 min/max 先在 UI 层拦住；⚠️ paymentLogger 里 paymentApi.clientLog(...).catch(...) 若返回非 Promise 会抛 TypeError 把整个下单打断在请求之前。⚠️ 扫码轮询（useQrcodePolling）与卸载清理分别被变异规则 FIX-2 / FIX-3 盯着 —— 搬动这段代码必须同步改规则文件路径，否则脚本会静默跳过",
       "status": "covered",
       "specFile": "src/pages/developer/Recharge.spec.tsx",
       "cases": [
