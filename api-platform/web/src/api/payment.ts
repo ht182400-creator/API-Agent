@@ -4,6 +4,8 @@
  */
 
 import { api, PaginatedResponse } from './client'
+// 【M3-a】"是否已支付"的判定统一到纯函数模块（本文件原先只认 'paid'，漏了 'completed'）
+import { isPaidStatus } from '../utils/paymentStatus'
 
 // 充值套餐
 export interface RechargePackage {
@@ -137,10 +139,12 @@ export const paymentApi = {
   },
 
   // 刷新支付状态（轮询）
+  // 【M3-a】原实现只认 `=== 'paid'` —— **漏了 `completed`**，于是后端给 completed 时会白轮询到上限。
+  //   这正是"同一规则多处实现会漂移"的活样本（其它 10 处早就成对处理了），故统一到 isPaidStatus。
   pollPaymentStatus: async (payment_no: string, maxAttempts = 10, interval = 2000): Promise<PaymentStatus> => {
     for (let i = 0; i < maxAttempts; i++) {
       const status = await paymentApi.getPaymentStatus(payment_no)
-      if (status.status === 'paid') {
+      if (isPaidStatus(status.status)) {
         return status
       }
       if (status.status === 'cancelled' || status.status === 'failed') {

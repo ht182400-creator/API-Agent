@@ -1,0 +1,21 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+node.exe : [warn-budget] ❌ 单元测试未通过（vitest exit 1），先修测试再谈警告：
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([warn-budget] ❌...it 1），先修测试再谈警告：:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   × 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新拉取列表 8413ms
+   ✓ 到账金额计算 > TC-FE-RECHARGE-002: 套餐到账 = 价格 + 固定赠送 + 价格×比例 1800ms
+   ✓ 到账金额计算 > TC-FE-RECHARGE-008: 自定义金额到账 = 金额 ×(1 + 默认比例) 1497ms
+   × 用例库 frontend_cases.json 自检 > TC-FE-CASES-007: meta.stats.specFiles 与磁盘上的 spec 数一致（登记与现实同步） 27ms
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-002: 套餐到账 = 价格 + 固定赠送 + 价格×比例
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-008: 自定义金额到账 = 金额 ×(1 + 默认比例)
+ FAIL  src/pages/admin/PricingConfig.spec.tsx > 必填校验与保存（TC-FE-PRICING-004） > TC-FE-PRICING-004: 空提交与缺价格被拦截；补全后创建成功并重新拉取
+列表
+ FAIL  tests/cases/frontend_cases.spec.ts > 用例库 frontend_cases.json 自检 > TC-FE-CASES-007: meta.stats.specFiles 与磁盘上的 sp
+ec 数一致（登记与现实同步）

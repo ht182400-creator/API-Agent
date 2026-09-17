@@ -17,6 +17,8 @@
 import { useRef, useState } from 'react'
 import { message } from 'antd'
 import { paymentApi, Payment } from '../../../api/payment'
+// 【M3-a】"是否已支付"的判定统一到纯函数模块
+import { isPaidStatus } from '../../../utils/paymentStatus'
 import { clearPaymentFromSession } from './paymentSession'
 
 /** 与父组件 `paymentStateRef` 同构：用于 5 秒后确认"仍是成功态"（避免闭包读到旧值） */
@@ -75,7 +77,7 @@ export function useQrcodePolling({
         const status = await paymentApi.getPaymentStatus(paymentNo)
         console.log(`[QRCode Poll] 第 ${i + 1} 次:`, status)
 
-        if (status.status === 'paid' || status.status === 'completed') {
+        if (isPaidStatus(status.status)) {
           qrcodePollingRef.current = false
           setQrcodePolling(false)
           // 支付成功

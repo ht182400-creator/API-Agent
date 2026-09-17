@@ -227,6 +227,6 @@ recharge/payment/
 |---|---|---|
 | M1 状态机 + 单测 | ✅ 已完成（231 行 machine + 18 条纯函数用例，全量 310 passed） | 见 `docs/test-log-2026-09-17.md`「轮次 M1」 |
 | M2 flow 接管状态 | ✅ **已完成**（M2-1 编排层 + M2-2 全量接线：35 处写入改 action，`Recharge.tsx` 1571 → 1525 行，act 警告 102 → 88） | 见 test-log「轮次 M2-1 / M2-2」 |
-| M3 探测统一 + 删 ref | ⏳ 待做 | — |
+| M3 探测统一 + 删 ref | 🔶 **M3-a 已完成**（**探测策略统一**：`isPaidStatus` / `isTerminalStatus` 收敛 11 处散落的"是否已支付/是否终态"判定，并修掉 `api/payment.ts` 只认 `paid` 漏 `completed` 的漂移）。**余下两子步待做**：M3-b 把 `useQrcodePolling` + `usePaymentPolling` 合并为一个 `usePaymentProbe`（**必须同步改 `FIX-2`/`FIX-3` 的规则路径并逐条复验**，否则规则静默失效）；M3-c 把 4 类监听（storage / message / focus / visibility）收进 hook 并删除 `paymentStateRef` | 见 test-log「轮次 M3-a」 |
 | M4 收编剩余 hook | 🔶 **M4-lite 已完成**（`useCountdown`：倒计时改为**由 `expiresAt` 派生** + **关弹窗即停表**；新增 3 条假定时器用例，变异规则 `FIX-8/9` 证明其有效；act 警告 88 → **81**）。`usePaymentWindow` 待做 | 见 test-log「轮次 M4-lite」+ [`payment-flow-architecture.md` §7.5](payment-flow-architecture.md) |
 | M5 安全加固（客户端信号不得直接结算） | ✅ **已完成**（四条路径统一走 `confirmPaymentWithServer()`：`storage` 事件 / `checkPaymentResult` 读 localStorage / `postMessage`×2；进 `confirming` → `getPaymentStatus` 求证 → 仅后端说 paid/completed 才结算。另修掉"挂载恢复时后端已说 paid 却停在等待支付"的反向缺陷。用例 022/023/024 + 变异规则 `FIX-10/11`） | 见 test-log「轮次 M5」+ [`payment-flow-architecture.md` §6](payment-flow-architecture.md) |

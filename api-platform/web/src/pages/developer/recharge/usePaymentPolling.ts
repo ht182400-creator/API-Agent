@@ -14,6 +14,8 @@
  *    （父组件的 `handleRefreshStatus`）是组件内的 const → hook 调用点必须在它**定义之后**。
  */
 import { useRef } from 'react'
+// 【M3-a】终态判定统一到纯函数模块（原先这里手写了一份 `['paid','completed','failed','expired']`）
+import { isTerminalStatus } from '../../../utils/paymentStatus'
 import type { PaymentStateSnapshot } from './useQrcodePolling'
 
 export interface UsePaymentPollingOptions {
@@ -43,10 +45,9 @@ export function usePaymentPolling({ paymentStateRef, refreshStatus }: UsePayment
       // handleRefreshStatus 内部会处理 currentPayment 为空的情况
       // 它会检查 URL 中的 out_trade_no 参数
       if (state.payModalVisible && !state.paySuccess) {
-        // 【修复】只有终态才跳过轮询：paid, completed, failed, expired
+        // 【M3-a】只有终态才跳过轮询（判定统一到 utils/paymentStatus）
         // cancelled 可能是因为超时，但用户可能已经支付，所以继续查询
-        const terminalStatuses = ['paid', 'completed', 'failed', 'expired']
-        if (state.currentPayment && terminalStatuses.includes(state.currentPayment.status)) {
+        if (state.currentPayment && isTerminalStatus(state.currentPayment.status)) {
           console.log('[Recharge] 跳过轮询：订单状态已是终态', state.currentPayment.status)
           return
         }

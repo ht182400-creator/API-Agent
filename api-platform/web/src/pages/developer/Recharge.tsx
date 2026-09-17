@@ -29,6 +29,8 @@ import { PAYMENT_METHODS } from './recharge/constants'
 import { paymentLogger } from './recharge/rechargeLogger'
 // 【M4-lite】剩余有效期改为**派生**（不再是被逐秒改写的 state）
 import { useCountdown } from './recharge/useCountdown'
+// 【M3-a】"是否已支付"的判定统一到纯函数模块（原先这条规则在 10 处各写一遍）
+import { isPaidStatus } from '../../utils/paymentStatus'
 import { useRechargeData } from './recharge/useRechargeData'
 import { useEnvInfo } from '../../hooks/useEnvInfo'
   
@@ -188,7 +190,7 @@ export default function DeveloperRecharge() {
           const status = await paymentApi.getPaymentStatus(outTradeNo)
           console.log(`[AlipayCallback] 轮询第 ${i + 1}/${intervals.length} 次:`, status)
           
-          if (status.status === 'paid' || status.status === 'completed') {
+          if (isPaidStatus(status.status)) {
             return status
           }
         } catch (error) {
@@ -279,7 +281,7 @@ export default function DeveloperRecharge() {
       const initialStatus = await paymentApi.getPaymentStatus(outTradeNo)
       console.log('[AlipayCallback] 首次查询状态:', initialStatus)
       
-      if (initialStatus.status === 'paid' || initialStatus.status === 'completed') {
+      if (isPaidStatus(initialStatus.status)) {
         // 状态已经是成功，直接处理
         await handlePaymentSuccess(initialStatus)
       } else {
@@ -374,7 +376,7 @@ export default function DeveloperRecharge() {
             // 【M4-lite】不再手工 setCountdown：expires_in 已随 restored() 进状态机，
             //   由 flow.expiresAt 派生（等价于原先的 calculateRemainingSeconds）
             // 【M5】后端已确认成功 → 结算（走统一入口，still 由服务端回答决定）
-            if (paymentStatus.status === 'paid' || paymentStatus.status === 'completed') {
+            if (isPaidStatus(paymentStatus.status)) {
               settledAsPaid = await confirmPaymentWithServer(savedPayment.payment_no)
             }
           } catch {
@@ -432,7 +434,7 @@ export default function DeveloperRecharge() {
     flow.startConfirming()
     try {
       const status = await paymentApi.getPaymentStatus(orderNo)
-      if (status.status === 'paid' || status.status === 'completed') {
+      if (isPaidStatus(status.status)) {
         const wasQrcode = !!currentPayment?.qr_code
         flow.settlePaid(
           {
@@ -944,7 +946,7 @@ export default function DeveloperRecharge() {
               })
               
               // 如果订单已完成或已支付，提示用户并关闭支付弹窗
-              if (status.status === 'paid' || status.status === 'completed') {
+              if (isPaidStatus(status.status)) {
                 paymentLogger.info('handleOpenPay 订单已支付，进入成功流程', { 
                   payment_no: currentPayment.payment_no,
                   status: status.status
@@ -1242,7 +1244,7 @@ export default function DeveloperRecharge() {
           queryKey: queryKey,
           status: status.status,
           isPending: status.status === 'pending',
-          isSuccess: status.status === 'paid' || status.status === 'completed'
+          isSuccess: isPaidStatus(status.status)
         })
       }
       // 【V7.4 修复】更新 payment_no（如果之前为空）
@@ -1254,7 +1256,7 @@ export default function DeveloperRecharge() {
       // 【M2-2】订单补丁（更新 payment_no / status，不推进探测节奏）
       flow.patchOrder(updatedPayment)
       // 同时检查 'paid' 和 'completed' 状态
-      if (status.status === 'paid' || status.status === 'completed') {
+      if (isPaidStatus(status.status)) {
         paymentLogger.info('handleRefreshStatus 检测到支付成功', {
           payment_no: updatedPayment.payment_no,
           status: status.status,

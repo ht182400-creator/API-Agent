@@ -16,9 +16,9 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 62,
-      "specFiles": 31,
-      "cases": 312,
+      "sourceFiles": 63,
+      "specFiles": 32,
+      "cases": 315,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -231,6 +231,21 @@
         { "id": "TC-FE-RECHARGE-019", "name": "关弹窗（active=false）立即停表：无空转定时器、无多余重渲染", "status": "done" },
         { "id": "TC-FE-RECHARGE-020", "name": "后端未给 expires_in 时按 600 秒兜底；开关弹窗不重置截止时间", "status": "done" },
         { "id": "TC-FE-RECHARGE-021", "name": "派生而非自减 —— tick 被节流丢失（120 秒只 1 次 tick）也不漂移", "status": "done" }
+      ],
+      "knownIssues": []
+    },
+    {
+      "id": "FE-UTIL-PAYSTATUS",
+      "level": "P1",
+      "file": "src/utils/paymentStatus.ts",
+      "lines": 54,
+      "why": "M3-a（探测策略统一 · 纯函数层）：把「到底算不算支付成功」这条业务规则从 **10 处各写一遍**收敛为一处 —— 改造前 `status === 'paid' || status === 'completed'` 散落在同步回调轮询 / 首次查询 / M5 后端求证 / 挂载恢复 / handleOpenPay / handleRefreshStatus / useQrcodePolling / PaymentSuccess 页（两处）……而「终态」（决定要不要停止探测）又是另一种写法、且只在一处手写数组。多处实现的真实风险是**会漂移**：新增一个成功状态（比如后端将来加 'settled'）要改 10 个地方，漏一处就出现「这里算成功、那里不算」。⚠️ cancelled **刻意不算**终态（可能是超时取消，而用户其实已付款成功 —— 算终态会提前停止探测、把真付款漏掉）。⚠️ 勿与 paymentMachine 的 isPaid(state) 混用：后者判的是 phase（UI 状态），本文件判的是后端状态字符串（业务事实）",
+      "status": "covered",
+      "specFile": "src/utils/paymentStatus.spec.ts",
+      "cases": [
+        { "id": "TC-FE-PAYSTATUS-001", "name": "paid / completed 都算成功（两个通道两种写法）", "status": "done" },
+        { "id": "TC-FE-PAYSTATUS-002", "name": "未支付/失败/未知/空值都不算成功", "status": "done" },
+        { "id": "TC-FE-PAYSTATUS-003", "name": "终态用于停止探测，且 cancelled 刻意不算终态", "status": "done" }
       ],
       "knownIssues": []
     },

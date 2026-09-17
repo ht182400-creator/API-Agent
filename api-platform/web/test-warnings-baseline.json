@@ -45,9 +45,10 @@
     "  - 2026-09-17：act 102 / jsdom 168（283 passed / 30 spec；新增 MiscPagesSuccess 聚合 spec，21 页成功渲染）",
     "  - 2026-09-17：act 88 / jsdom 177（313 passed / 31 spec；M2-2 支付状态收敛 —— act 首次下降）",
     "  - 2026-09-17：act 81 / jsdom 177（316 passed / 32 spec；M4-lite 倒计时改为由 expiresAt 派生 + 关弹窗即停表）",
-    "  - 2026-09-17：act 81 / jsdom 179（319 passed / 32 spec；M5 客户端信号不再直接结算 —— 行为加固，未主动增删警告）"
+    "  - 2026-09-17：act 81 / jsdom 179（319 passed / 32 spec；M5 客户端信号不再直接结算 —— 行为加固，未主动增删警告）",
+    "  - 2026-09-17：act 81 / jsdom 179（322 passed / 33 spec；M3-a 探测策略统一 —— 11 处判定收敛为 1 处，未主动增删警告）"
   ],
-  "updatedAt": "2026-09-17T05:11:31.752Z",
+  "updatedAt": "2026-09-17T07:28:58.175Z",
   "counts": {
     "jsdom: getComputedStyle pseudo-elements": 179,
     "act: update not wrapped in act": 81

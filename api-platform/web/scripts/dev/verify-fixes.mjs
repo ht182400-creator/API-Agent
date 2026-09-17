@@ -148,10 +148,10 @@ const MUTATIONS = [
     spec: 'src/pages/developer/Recharge.spec.tsx',
     file: 'src/pages/developer/Recharge.tsx',
     // ⚠️ find 必须带上前一行 `const status = await paymentApi.getPaymentStatus(orderNo)`：
-    //    handleAlipayCallback 的轮询里有一句**文本完全相同**的 `if (status.status === 'paid' …)`，
+    //    handleAlipayCallback 的轮询里也有一句"若已支付就返回"（M3-a 后是 `isPaidStatus(...)`），
     //    不带前缀会命中 2 处 → 脚本会按"出现次数≠1"安全跳过（静默漏检）。
     find:
-      '      const status = await paymentApi.getPaymentStatus(orderNo)\n      if (status.status === \'paid\' || status.status === \'completed\') {',
+      '      const status = await paymentApi.getPaymentStatus(orderNo)\n      if (isPaidStatus(status.status)) {',
     replace:
       '      const status = await paymentApi.getPaymentStatus(orderNo)\n      if (true) {',
     note:

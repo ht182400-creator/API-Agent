@@ -15,6 +15,8 @@ import { Card, Result, Descriptions, Button, Spin, Alert, Space, Typography } fr
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { paymentApi, PaymentStatus as ApiPaymentStatus } from '../api/payment'
 import { useAuthStore } from '../stores/auth'
+// 【M3-a】"是否已支付"的判定统一到纯函数模块（本页原先也各写了一遍）
+import { isPaidStatus } from '../utils/paymentStatus'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -129,7 +131,7 @@ export default function PaymentSuccess() {
         type: 'PAYMENT_SUCCESS_PAGE_CLOSED',
         paymentNo: outTradeNo,
         paymentStatus: paymentStatus,
-        isSuccess: paymentStatus?.status === 'paid' || paymentStatus?.status === 'completed'
+        isSuccess: isPaidStatus(paymentStatus?.status)
       }, '*')
     } else {
       console.log('[PaymentSuccess] window.opener 不存在，跳过 postMessage')
@@ -235,7 +237,7 @@ export default function PaymentSuccess() {
             )}
             <Descriptions.Item label="支付状态">
               <Text type="success">
-                {paymentStatus.status === 'paid' || paymentStatus.status === 'completed' ? '已支付' : paymentStatus.status}
+                {isPaidStatus(paymentStatus.status) ? '已支付' : paymentStatus.status}
               </Text>
             </Descriptions.Item>
           </Descriptions>
