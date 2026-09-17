@@ -198,9 +198,9 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **316 passed**（32 个测试文件 = 31 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条），
-即 **309 条组件用例**（= 316 − 7），全部登记在 `tests/cases/frontend_cases.json` 的 `meta.stats.cases`，**库中已无 `planned` 项**。
-> 上表对应的最初 14 个 spec 口径为：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 16 = 144（其中 TC-FE-API-008 参数化展开为 10 条）；此后按用例库清单持续增补至 **309** 条（截至 2026-09-17）。
+**当前结果**：`npm run test:unit` → **327 passed**（35 个测试文件 = 34 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条），
+即 **320 条组件用例**（= 327 − 7），全部登记在 `tests/cases/frontend_cases.json` 的 `meta.stats.cases`，**库中已无 `planned` 项**。
+> 上表对应的最初 14 个 spec 口径为：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 16 = 144（其中 TC-FE-API-008 参数化展开为 10 条）；此后按用例库清单持续增补至 **320** 条（截至 2026-09-17）。
 
 > ⚠️ **用例有效性由变异检验保障**：`npm run verify:fixes` 会把每个已修复的缺陷**改回缺陷形态**，
 > 再跑对应用例 —— 用例必须变红，否则判定为"空测试"。详见 `web/scripts/dev/verify-fixes.mjs`。
@@ -260,8 +260,8 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **覆盖优先级（为什么这么排）**：
 1. **P0 入口 / 骨架 / 全局机制** —— 坏了全站不可用：`Login`、`Register`、
    `Layout`（菜单按权限渲染，属**越权可见性**）、`ErrorContext`、`useDevice`；
-2. **P1 巨型页面 + 资金/审核链路** —— 改动频繁、影响面大：`Recharge`(2001→**1571**，拆分中)、
-   `owner/Repos`(1059→**704**)、`admin/Repos`(924→**589**)、`Analytics`(964→**309**，三者均已拆完)、
+2. **P1 巨型页面 + 资金/审核链路** —— 改动频繁、影响面大：`Recharge`(2001→**1528**，拆分+行为重构均已收敛)、
+   `owner/Repos`(1059→**704**)、`admin/Repos`(924→**589**)、`Analytics`(964→**309**)、`AdminLogs`(904→**694**，均已拆完)、
    `ApiTester`、`ConsumptionDetails`、`paymentErrors`；
 3. **P2 一般业务页**、**P3 展示型组件**。
 
@@ -314,7 +314,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 316 passed / 32 个测试文件 = 31 组件 spec + 用例库自检）
+npm run test:unit        # 单次运行（当前 327 passed / 35 个测试文件 = 34 组件 spec + 用例库自检）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 

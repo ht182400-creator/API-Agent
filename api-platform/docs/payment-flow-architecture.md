@@ -432,6 +432,7 @@ flowchart TD
 | `recharge/payment/paymentMachine.spec.ts` | 21 条纯函数用例（零 jsdom） |
 | `recharge/payment/usePaymentFlow.ts` | 编排 hook：`useReducer` + 语义 action + 派生值 |
 | `recharge/useCountdown.ts` | 剩余有效期倒计时（**派生自 `expiresAt`**，关弹窗即停表） |
+| `recharge/useDelayedReload.ts` | 结算后延迟刷新（**卸载即取消**、重复调度只留最后一次；M3-c₁） |
 | `recharge/useQrcodePolling.ts` | 扫码轮询（8 段递进间隔） |
 | `recharge/usePaymentPolling.ts` | 跳转支付后备轮询（3 秒） |
 | `recharge/components/PaymentModal.tsx` | 支付弹窗三态 |
