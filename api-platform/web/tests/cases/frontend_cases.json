@@ -17,8 +17,8 @@
     ],
     "stats": {
       "sourceFiles": 66,
-      "specFiles": 33,
-      "cases": 318,
+      "specFiles": 34,
+      "cases": 320,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -263,6 +263,20 @@
         { "id": "TC-FE-RELOAD-001", "name": "到点才刷新一次（默认 5 秒前不得触发）", "status": "done" },
         { "id": "TC-FE-RELOAD-002", "name": "卸载后不得再刷新，且不留悬空定时器", "status": "done" },
         { "id": "TC-FE-RELOAD-003", "name": "重复调度只保留最后一次（延迟按最后一次算）", "status": "done" }
+      ],
+      "knownIssues": []
+    },
+    {
+      "id": "FE-ADMIN-ALCOL",
+      "level": "P2",
+      "file": "src/pages/admin/adminlogs/columns.tsx",
+      "lines": 145,
+      "why": "AdminLogs 拆分（P1-4-D）后的**列定义契约用例**：纯 UI 工厂 + antd Table 直渲（无需 router/auth），锁定两类此前无回归锁的行为 —— ① 导出/下载链接必须指向 exportLog/downloadBackup 生成的地址；② **删除备份必须经 Popconfirm 二次确认**（先弹框、确认后才带文件名触发）。⚠️ 三条交互经验（都实际踩过）：antd 图标自带 role=img + aria-label 会**参与按钮可访问名**（精确匹配失败 → 用子串正则）；弹层开启动画期处于 aria-hidden，会挡住 role 查询（jsdom 动画不推进）；Popconfirm 主按钮用稳定类名 .ant-popconfirm-buttons .ant-btn-primary 定位最稳",
+      "status": "covered",
+      "specFile": "src/pages/admin/adminlogs/columns.spec.tsx",
+      "cases": [
+        { "id": "TC-FE-ALCOL-001", "name": "文件列四列头齐全；导出链接指向 exportLog；查看/备份动作带对参数", "status": "done" },
+        { "id": "TC-FE-ALCOL-002", "name": "备份列下载链接正确；删除必须经 Popconfirm 二次确认", "status": "done" }
       ],
       "knownIssues": []
     },

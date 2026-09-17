@@ -1,0 +1,40 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run src/pages/admin/adminlogs/columns.spec.tsx
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/adminlogs/columns.spec.tsx
+[20260917 21:41:46.679] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789652506678_qo8pxmwkr"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789652506678_qo8pxmwkr'
+}
+
+node.exe : stderr | src/pages/admin/adminlogs/columns.spec.tsx > 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-001: 文件列四列头齐全
+；导出链接指向 exportLog；查看/备份动作带对参数
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...Log；查看/备份动作带对参数:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/adminlogs/columns.spec.tsx > 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-002: 备份列下载链接正确；删除必须经 Pop
+confirm 二次确认
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ✓ src/pages/admin/adminlogs/columns.spec.tsx (2 tests) 922ms
+   ✓ 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-001: 文件列四列头齐全；导出链接指向 exportLog；查看/备份动作带对参数 648ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  21:41:42
+   Duration  4.95s (transform 106ms, setup 146ms, collect 2.70s, tests 922ms, environment 747ms, prepare 110ms)
+

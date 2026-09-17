@@ -1,0 +1,605 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run src/pages/admin/adminlogs/columns.spec.tsx
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/admin/adminlogs/columns.spec.tsx
+[20260917 21:36:07.961] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789652167961_7mtizcqje"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789652167961_7mtizcqje'
+}
+
+node.exe : stderr | src/pages/admin/adminlogs/columns.spec.tsx > 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-001: 文件列四列头齐全
+；导出链接指向 exportLog；查看/备份动作带对参数
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...Log；查看/备份动作带对参数:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+stderr | src/pages/admin/adminlogs/columns.spec.tsx > 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-002: 备份列下载链接正确；删除必须经 Pop
+confirm 二次确认
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+ ❯ src/pages/admin/adminlogs/columns.spec.tsx (2 tests | 1 failed) 3987ms
+   ✓ 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-001: 文件列四列头齐全；导出链接指向 exportLog；查看/备份动作带对参数 647ms
+   × 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-002: 备份列下载链接正确；删除必须经 Popconfirm 二次确认 3339ms
+     → Unable to find role="button" and name "确认"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-table-wrapper css-dev-only-do-not-override-mncuj7"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-table css-dev-only-do-not-override-mncuj7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-table-container"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-table-content"[39m
+              [36m>[39m
+                [36m<table[39m
+                  [33mstyle[39m=[32m"table-layout: auto;"[39m
+                [36m>[39m
+                  [36m<colgroup>[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col[39m
+                      [33mstyle[39m=[32m"width: 200px;"[39m
+                    [36m/>[39m
+                  [36m</colgroup>[39m
+                  [36m<thead[39m
+                    [33mclass[39m=[32m"ant-table-thead"[39m
+                  [36m>[39m
+                    [36m<tr>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m文件名[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m大小[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m创建时间[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m操作[0m
+                      [36m</th>[39m
+                    [36m</tr>[39m
+                  [36m</thead>[39m
+                  [36m<tbody[39m
+                    [33mclass[39m=[32m"ant-table-tbody"[39m
+                  [36m>[39m
+                    [36m<tr[39m
+                      [33mclass[39m=[32m"ant-table-row ant-table-row-level-0"[39m
+                      [33mdata-row-key[39m=[32m"api-2026-09-17.backup.log"[39m
+                    [36m>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                        [36m>[39m
+                          [0mapi-2026-09-17.backup.log[0m
+                          [36m<button[39m
+                            [33maria-describedby[39m=[32m"test-id"[39m
+                            [33maria-label[39m=[32m"Copy"[39m
+                            [33mclass[39m=[32m"ant-typography-copy"[39m
+                            [33mtype[39m=[32m"button"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33maria-label[39m=[32m"copy"[39m
+                              [33mclass[39m=[32m"anticon anticon-copy"[39m
+                              [33mrole[39m=[32m"img"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33maria-hidden[39m=[32m"true"[39m
+                                [33mdata-icon[39m=[32m"copy"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mfocusable[39m=[32m"false"[39m
+                                [33mheight[39m=[32m"1em"[39m
+                                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                [33mwidth[39m=[32m"1em"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33md[39m=[32m"M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</span>[39m
+                          [36m</button>[39m
+                        [36m</span>[39m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m0.8 MB[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m2026-09-17 10:00:00[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-mncuj7 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"ant-space-item"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-link ant-btn-color-link ant-btn-variant-link ant-btn-sm"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33mclass[39m=[32m"ant-btn-icon"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33maria-label[39m=[32m"file-text"[39m
+                                  [33mclass[39m=[32m"anticon anticon-file...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-table-wrapper css-dev-only-do-not-override-mncuj7"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-table css-dev-only-do-not-override-mncuj7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-table-container"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-table-content"[39m
+              [36m>[39m
+                [36m<table[39m
+                  [33mstyle[39m=[32m"table-layout: auto;"[39m
+                [36m>[39m
+                  [36m<colgroup>[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col[39m
+                      [33mstyle[39m=[32m"width: 200px;"[39m
+                    [36m/>[39m
+                  [36m</colgroup>[39m
+                  [36m<thead[39m
+                    [33mclass[39m=[32m"ant-table-thead"[39m
+                  [36m>[39m
+                    [36m<tr>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m文件名[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m大小[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m创建时间[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m操作[0m
+                      [36m</th>[39m
+                    [36m</tr>[39m
+                  [36m</thead>[39m
+                  [36m<tbody[39m
+                    [33mclass[39m=[32m"ant-table-tbody"[39m
+                  [36m>[39m
+                    [36m<tr[39m
+                      [33mclass[39m=[32m"ant-table-row ant-table-row-level-0"[39m
+                      [33mdata-row-key[39m=[32m"api-2026-09-17.backup.log"[39m
+                    [36m>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                        [36m>[39m
+                          [0mapi-2026-09-17.backup.log[0m
+                          [36m<button[39m
+                            [33maria-describedby[39m=[32m"test-id"[39m
+                            [33maria-label[39m=[32m"Copy"[39m
+                            [33mclass[39m=[32m"ant-typography-copy"[39m
+                            [33mtype[39m=[32m"button"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33maria-label[39m=[32m"copy"[39m
+                              [33mclass[39m=[32m"anticon anticon-copy"[39m
+                              [33mrole[39m=[32m"img"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33maria-hidden[39m=[32m"true"[39m
+                                [33mdata-icon[39m=[32m"copy"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mfocusable[39m=[32m"false"[39m
+                                [33mheight[39m=[32m"1em"[39m
+                                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                [33mwidth[39m=[32m"1em"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33md[39m=[32m"M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</span>[39m
+                          [36m</button>[39m
+                        [36m</span>[39m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m0.8 MB[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m2026-09-17 10:00:00[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-mncuj7 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"ant-space-item"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-link ant-btn-color-link ant-btn-variant-link ant-btn-sm"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33mclass[39m=[32m"ant-btn-icon"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33maria-label[39m=[32m"file-text"[39m
+                                  [33mclass[39m=[32m"anticon anticon-file...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/admin/adminlogs/columns.spec.tsx > 日志管理列定义（adminlogs/columns） > TC-FE-ALCOL-002: 备份列下载链接正确；删除必须经 Popco
+nfirm 二次确认
+TestingLibraryElementError: Unable to find role="button" and name "确认"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-table-wrapper css-dev-only-do-not-override-mncuj7"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-table css-dev-only-do-not-override-mncuj7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-table-container"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-table-content"[39m
+              [36m>[39m
+                [36m<table[39m
+                  [33mstyle[39m=[32m"table-layout: auto;"[39m
+                [36m>[39m
+                  [36m<colgroup>[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col[39m
+                      [33mstyle[39m=[32m"width: 200px;"[39m
+                    [36m/>[39m
+                  [36m</colgroup>[39m
+                  [36m<thead[39m
+                    [33mclass[39m=[32m"ant-table-thead"[39m
+                  [36m>[39m
+                    [36m<tr>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m文件名[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m大小[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m创建时间[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m操作[0m
+                      [36m</th>[39m
+                    [36m</tr>[39m
+                  [36m</thead>[39m
+                  [36m<tbody[39m
+                    [33mclass[39m=[32m"ant-table-tbody"[39m
+                  [36m>[39m
+                    [36m<tr[39m
+                      [33mclass[39m=[32m"ant-table-row ant-table-row-level-0"[39m
+                      [33mdata-row-key[39m=[32m"api-2026-09-17.backup.log"[39m
+                    [36m>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                        [36m>[39m
+                          [0mapi-2026-09-17.backup.log[0m
+                          [36m<button[39m
+                            [33maria-describedby[39m=[32m"test-id"[39m
+                            [33maria-label[39m=[32m"Copy"[39m
+                            [33mclass[39m=[32m"ant-typography-copy"[39m
+                            [33mtype[39m=[32m"button"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33maria-label[39m=[32m"copy"[39m
+                              [33mclass[39m=[32m"anticon anticon-copy"[39m
+                              [33mrole[39m=[32m"img"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33maria-hidden[39m=[32m"true"[39m
+                                [33mdata-icon[39m=[32m"copy"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mfocusable[39m=[32m"false"[39m
+                                [33mheight[39m=[32m"1em"[39m
+                                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                [33mwidth[39m=[32m"1em"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33md[39m=[32m"M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8
+ 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 
+173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263
+.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</span>[39m
+                          [36m</button>[39m
+                        [36m</span>[39m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m0.8 MB[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m2026-09-17 10:00:00[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-mncuj7 ant-space-horizontal ant-
+space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"ant-space-item"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-link ant-btn-co
+lor-link ant-btn-variant-link ant-btn-sm"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33mclass[39m=[32m"ant-btn-icon"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33maria-label[39m=[32m"file-text"[39m
+                                  [33mclass[39m=[32m"anticon anticon-file...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-table-wrapper css-dev-only-do-not-override-mncuj7"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-spin-nested-loading css-dev-only-do-not-override-mncuj7"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-spin-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-table css-dev-only-do-not-override-mncuj7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-table-container"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-table-content"[39m
+              [36m>[39m
+                [36m<table[39m
+                  [33mstyle[39m=[32m"table-layout: auto;"[39m
+                [36m>[39m
+                  [36m<colgroup>[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col />[39m
+                    [36m<col[39m
+                      [33mstyle[39m=[32m"width: 200px;"[39m
+                    [36m/>[39m
+                  [36m</colgroup>[39m
+                  [36m<thead[39m
+                    [33mclass[39m=[32m"ant-table-thead"[39m
+                  [36m>[39m
+                    [36m<tr>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m文件名[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m大小[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m创建时间[0m
+                      [36m</th>[39m
+                      [36m<th[39m
+                        [33mclass[39m=[32m"ant-table-cell"[39m
+                        [33mscope[39m=[32m"col"[39m
+                      [36m>[39m
+                        [0m操作[0m
+                      [36m</th>[39m
+                    [36m</tr>[39m
+                  [36m</thead>[39m
+                  [36m<tbody[39m
+                    [33mclass[39m=[32m"ant-table-tbody"[39m
+                  [36m>[39m
+                    [36m<tr[39m
+                      [33mclass[39m=[32m"ant-table-row ant-table-row-level-0"[39m
+                      [33mdata-row-key[39m=[32m"api-2026-09-17.backup.log"[39m
+                    [36m>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-mncuj7"[39m
+                        [36m>[39m
+                          [0mapi-2026-09-17.backup.log[0m
+                          [36m<button[39m
+                            [33maria-describedby[39m=[32m"test-id"[39m
+                            [33maria-label[39m=[32m"Copy"[39m
+                            [33mclass[39m=[32m"ant-typography-copy"[39m
+                            [33mtype[39m=[32m"button"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33maria-label[39m=[32m"copy"[39m
+                              [33mclass[39m=[32m"anticon anticon-copy"[39m
+                              [33mrole[39m=[32m"img"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33maria-hidden[39m=[32m"true"[39m
+                                [33mdata-icon[39m=[32m"copy"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mfocusable[39m=[32m"false"[39m
+                                [33mheight[39m=[32m"1em"[39m
+                                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                [33mwidth[39m=[32m"1em"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33md[39m=[32m"M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8
+ 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 
+173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263
+.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</span>[39m
+                          [36m</button>[39m
+                        [36m</span>[39m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m0.8 MB[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [0m2026-09-17 10:00:00[0m
+                      [36m</td>[39m
+                      [36m<td[39m
+                        [33mclass[39m=[32m"ant-table-cell ant-table-cell-row-hover"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-mncuj7 ant-space-horizontal ant-
+space-align-center ant-space-gap-row-small ant-space-gap-col-small"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"ant-space-item"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-mncuj7 ant-btn-link ant-btn-co
+lor-link ant-btn-variant-link ant-btn-sm"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<span[39m
+                                [33mclass[39m=[32m"ant-btn-icon"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33maria-label[39m=[32m"file-text"[39m
+                                  [33mclass[39m=[32m"anticon anticon-file...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/admin/adminlogs/columns.spec.tsx:95:35
+     93| 
+     94|     // 确认后才带文件名触发
+     95|     await user.click(await screen.findByRole('button', { name: '确认' …
+       |                                   ^
+     96|     expect(onDeleteBackup).toHaveBeenCalledWith(backup.name)
+     97|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  21:36:03
+   Duration  8.15s (transform 105ms, setup 155ms, collect 2.77s, tests 3.99s, environment 743ms, prepare 90ms)
+
