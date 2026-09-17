@@ -1,0 +1,10 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs src/pages/developer/Recharge.spec.tsx
+
+[vitest] Test Files  1 passed (1)
+[vitest] Tests  21 passed (21)
+[vitest] Duration  14.89s (transform 274ms, setup 187ms, collect 2.84s, tests 10.67s, environment 731ms, prepare 83ms)
+[warn-budget] ✅ 警告在预算内
+     82  act: update not wrapped in act
+     11  jsdom: getComputedStyle pseudo-elements

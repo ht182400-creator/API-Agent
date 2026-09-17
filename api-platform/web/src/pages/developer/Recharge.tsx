@@ -31,6 +31,8 @@ import { paymentLogger } from './recharge/rechargeLogger'
 import { useCountdown } from './recharge/useCountdown'
 // 【M3-c₁】结算后的"延迟刷新"统一走一个 hook（原先 3 处各写一份、且都不清理定时器）
 import { useDelayedReload } from './recharge/useDelayedReload'
+// 【M4】支付窗口的机械操作（打开并监视关闭 / 主动关闭）抽入独立 hook
+import { usePaymentWindow } from './recharge/usePaymentWindow'
 // 【M3-a】"是否已支付"的判定统一到纯函数模块（原先这条规则在 10 处各写一遍）
 import { isPaidStatus, isTerminalStatus } from '../../utils/paymentStatus'
 import { useRechargeData } from './recharge/useRechargeData'
@@ -104,11 +106,8 @@ export default function DeveloperRecharge() {
   // 刷新二维码状态
   const [refreshingQrCode, setRefreshingQrCode] = useState(false)
 
-  // 支付宝支付窗口引用，用于支付成功后主动关闭
-  const payWindowRef = useRef<Window | null>(null)
-
-  // 轮询支付窗口关闭的 interval ID
-  const payWindowIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // 【M4】支付窗口管理已抽入 ./recharge/usePaymentWindow（打开并监视关闭 / 主动关闭 / 停监视）
+  const payWindow = usePaymentWindow({ onWindowClosed: () => handleRefreshStatus(false) })
   
   // 【M3-c②】原 `paymentStateRef`（每渲染同步一次的状态快照）已删除：
   //   它是"第二份真相"，只服务于"异步回调里读最新状态"。现在改用两类正交手段替代：
@@ -118,20 +117,8 @@ export default function DeveloperRecharge() {
   // 【历史】"取消订单后轮询照跑"缺陷（原 qrcodePollingRef / 局部 isPolling 变量）的回归锁
   //    是变异规则 FIX-2，盯 usePaymentProbe.stop；卸载清理的回归锁是 FIX-3，盯其内部 cleanup。
 
-  // 【P1-4 修复】组件卸载时清理**所有**轮询定时器。
-  // ⚠️ 原实现只在「关闭支付窗口 / 关闭弹窗」时清理；若用户开着支付弹窗直接切走页面
-  //    （SPA 路由跳转 / 关标签页），这些定时器会继续跑并持续请求后端。
-  //    实测：卸载后仍会多发出数次 getPaymentStatus（用例 TC-FE-RECHARGE-014 先失败后通过）。
-  useEffect(() => {
-    return () => {
-      // 【M3-b】轮询定时器的卸载清理已收敛进 usePaymentProbe（内部 cleanup，FIX-3 的新址）；
-      //   这里只剩支付窗口关闭检测的 interval —— 它不属于探测，仍归本页。
-      if (payWindowIntervalRef.current) {
-        clearInterval(payWindowIntervalRef.current)
-        payWindowIntervalRef.current = null
-      }
-    }
-  }, [])
+  // 【M4】轮询与支付窗口定时器的卸载清理分别收敛进 usePaymentProbe / usePaymentWindow
+  //   （两者都有内部 cleanup；原「组件卸载时清理所有定时器」effect 因此整体移除）
 
   const { showError, ErrorModal: ErrorModalComponent } = useErrorModal()
 
@@ -187,11 +174,9 @@ export default function DeveloperRecharge() {
     
     // 处理支付成功
     const handlePaymentSuccess = async (status: any) => {
-      paymentLogger.info('handlePaymentSuccess 开始', { 
-        outTradeNo, 
+      paymentLogger.info('handlePaymentSuccess 开始', {
+        outTradeNo,
         status: status.status,
-        payWindowRef_exists: !!payWindowRef.current,
-        payWindowRef_closed: payWindowRef.current?.closed
       })
       
       // 关闭支付宝支付窗口（如果有）
@@ -700,45 +685,9 @@ export default function DeveloperRecharge() {
     message.warning('请选择充值套餐或输入自定义金额')
   }
 
-  // 关闭支付宝支付窗口
+  // 关闭支付窗口（【M4】机制已抽入 usePaymentWindow；close 不再自关当前窗口 —— 见该文件头）
   const closePayWindow = () => {
-    // 【增强】详细记录调用时的窗口句柄状态
-    paymentLogger.info('closePayWindow 被调用')
-    
-    // 停止轮询
-    if (payWindowIntervalRef.current) {
-      clearInterval(payWindowIntervalRef.current)
-      payWindowIntervalRef.current = null
-    }
-    
-    // 关闭窗口
-    if (payWindowRef.current) {
-      const windowRef = payWindowRef.current
-      paymentLogger.info('closePayWindow 准备关闭支付窗口')
-      
-      if (!windowRef.closed) {
-        try {
-          windowRef.close()
-        } catch (e) {
-          // 跨域时可能失败，忽略
-        }
-      }
-      payWindowRef.current = null
-    } else {
-      // 【缺陷修复 · FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF】这里**不再调用 `window.close()`**。
-      //
-      //   原实现的注释是"对于 return_url 跳转模式，尝试关闭当前窗口"，但这个函数会被
-      //   **storage / postMessage 等跨窗口通知路径**调用 —— 于是任何人都能在别的窗口里写一条
-      //   `localStorage.setItem('payment_success_result', …)`，让用户的**充值页签自己被关掉**
-      //   （真实浏览器里 `window.close()` 对非脚本打开的窗口会被拒绝、只刷控制台告警；
-      //   但如果本页恰是脚本打开的窗口，就真的会关 —— 现状是"取决于用户怎么进来的"，
-      //   这种不确定性本身就是缺陷）。
-      //
-      //   职责划分：**关闭窗口只属于"支付返回页"自己**，且它应先判断有没有 opener。
-      //   正确样板见 `src/pages/PaymentSuccess.tsx`（`window.opener` 存在才关窗，否则走路由跳转）。
-      //   充值页（本组件）永远是被关闭的**客体**，不应该替别人关自己的窗口。
-      paymentLogger.info('closePayWindow 没有支付窗口引用 → 只清理定时器，不关闭当前窗口')
-    }
+    payWindow.close()
   }
 
   // 【M3-b】扫码/跳转两套轮询的**调度**已统一到 ./recharge/payment/usePaymentProbe
@@ -891,44 +840,11 @@ export default function DeveloperRecharge() {
             paymentLogger.info('handleOpenPay 准备打开支付窗口', { 
               pay_url: currentPayment.pay_url 
             })
-            const payWindow = window.open(currentPayment.pay_url, '_blank', 'width=900,height=700,scrollbars=yes')
-            
-            // 【新增】详细记录窗口句柄信息
-            paymentLogger.info('handleOpenPay 支付窗口已打开', { 
-              pay_window_object_type: payWindow ? 'Window' : 'null',
-              pay_window_closed: payWindow?.closed,
-              pay_window_ref_before: !!payWindowRef.current,
-              pay_window_ref_closed_before: payWindowRef.current?.closed
-            })
-            
-            if (payWindow) {
-              // 保存支付窗口引用到 ref，用于支付成功后主动关闭
-              payWindowRef.current = payWindow
-              
-              // 【新增】详细记录 ref 保存后的状态
-              paymentLogger.info('handleOpenPay 窗口引用已保存到 payWindowRef', {
-                pay_window_ref_after: !!payWindowRef.current,
-                pay_window_ref_closed_after: payWindowRef.current?.closed,
-                pay_window_ref_same: payWindowRef.current === payWindow
-              })
-              
+            const opened = payWindow.openAndWatch(currentPayment.pay_url)
+            if (opened) {
               // 保存支付信息到 sessionStorage
               savePaymentToSession(currentPayment)
               message.success({ content: '支付页面已在新窗口打开', key: 'payUrl' })
-              
-              // 监听支付窗口状态
-              payWindowIntervalRef.current = setInterval(() => {
-                // 只在窗口关闭时记录，避免刷屏
-                if (payWindow.closed) {
-                  paymentLogger.info('handleOpenPay 检测到支付窗口已关闭，清除轮询')
-                  if (payWindowIntervalRef.current) {
-                    clearInterval(payWindowIntervalRef.current)
-                    payWindowIntervalRef.current = null
-                  }
-                  // 用户关闭了支付窗口，自动刷新支付状态（不显示错误提示）
-                  handleRefreshStatus(false)
-                }
-              }, 1000)
             } else {
               paymentLogger.warn('handleOpenPay 支付窗口打开失败（可能被阻止）')
               message.warning({
@@ -982,42 +898,9 @@ export default function DeveloperRecharge() {
               cancelText: '取消',
               onOk: () => {
                 // 在新窗口打开支付宝
-                const payWindow = window.open(status.pay_url, '_blank', 'width=900,height=700,scrollbars=yes')
-                
-                // 【新增】详细记录窗口句柄信息
-                paymentLogger.info('handleOpenPay(else分支) 支付窗口已打开', { 
-                  pay_window_object_type: payWindow ? 'Window' : 'null',
-                  pay_window_closed: payWindow?.closed,
-                  pay_window_ref_before: !!payWindowRef.current,
-                  pay_window_ref_closed_before: payWindowRef.current?.closed
-                })
-                
-                if (payWindow) {
-                  // 保存支付窗口引用到 ref
-                  payWindowRef.current = payWindow
-                  
-                  // 【新增】详细记录 ref 保存后的状态
-                  paymentLogger.info('handleOpenPay(else分支) 窗口引用已保存到 payWindowRef', {
-                    pay_window_ref_after: !!payWindowRef.current,
-                    pay_window_ref_closed_after: payWindowRef.current?.closed,
-                    pay_window_ref_same: payWindowRef.current === payWindow
-                  })
-                  
+                const opened = payWindow.openAndWatch(status.pay_url)
+                if (opened) {
                   message.success({ content: '支付页面已在新窗口打开', key: 'payUrl' })
-                  
-                  // 监听支付窗口状态
-                  payWindowIntervalRef.current = setInterval(() => {
-                    // 只在窗口关闭时记录，避免刷屏
-                    if (payWindow.closed) {
-                      paymentLogger.info('handleOpenPay(else分支) 检测到窗口关闭，清除轮询')
-                      if (payWindowIntervalRef.current) {
-                        clearInterval(payWindowIntervalRef.current)
-                        payWindowIntervalRef.current = null
-                      }
-                      // 窗口关闭时自动刷新（不显示错误提示）
-                      handleRefreshStatus(false)
-                    }
-                  }, 1000)
                 } else {
                   paymentLogger.warn('handleOpenPay(else分支) 支付窗口打开失败（可能被阻止）')
                   message.warning({
@@ -1045,11 +928,8 @@ export default function DeveloperRecharge() {
   const handlePayModalClose = () => {
     // 【修复】关闭弹窗时停止所有轮询（【M3-b】统一为 probe.stop()）
     probe.stop()
-    if (payWindowIntervalRef.current) {
-      clearInterval(payWindowIntervalRef.current)
-      payWindowIntervalRef.current = null
-    }
-    
+    payWindow.stopWatching() // 停止监视支付窗口（不关窗，用户可能还在支付）
+
     flow.closeModal()
     setPayError(null)
     clearUrlParams()
