@@ -293,11 +293,15 @@ flowchart TD
 | webhook 才是入账真相，前端只呈现 | 余额一律 `fetchBalance()` | ✅ |
 | 前端要能对账 | 结算后强制刷新余额 + 手动「刷新状态」 | ✅ |
 | 副作用与状态迁移分离 | 纯函数 machine + 编排 hook | ✅ |
-| **绝不以客户端信号判定支付成功** | ⚠️ 三条路径（storage / 挂载读取 / postMessage）仍**直接结算** | ❌ **待补（M5）** |
+| **绝不以客户端信号判定支付成功** | 四条路径（`storage` 事件 / `checkPaymentResult` 读 localStorage / `postMessage`×2）统一走 `confirmPaymentWithServer()`：只把客户端信号当**触发**，一律 `getPaymentStatus` 向后端求证，**仅后端说 paid/completed 才结算** | ✅ **已补（M5）** |
 
-> M5 的详细说明与修法见 [`payment-flow-refactor.md` §2.5](payment-flow-refactor.md)。
-> 一句话：这三条路径要改为"**只作为触发探测的信号**"——先进 `confirming`，再向后端求证，
-> 由服务端回答决定是否结算。
+> M5 已落地（2026-09-17）：四条"客户端可写"路径都改为**只作为触发信号**——先进 `confirming`，
+> 再 `getPaymentStatus` 向后端求证，由服务端回答决定是否结算；后端说未支付或请求失败一律**不结算**。
+> 防的正是这个场景：在控制台执行
+> `localStorage.setItem('payment_success_result','{"outTradeNo":"x","status":"paid"}')`
+> 就能让页面显示「充值成功」（改造前如此，一分钱没付）。用例 `TC-FE-RECHARGE-022/023` 成对锁住该性质，
+> 变异规则 `FIX-10/11` 证明其有效；顺带修掉"挂载恢复时后端已说 paid 却停在等待支付"的反向缺陷（024）。
+> 详见 [`payment-flow-refactor.md` §2.5](payment-flow-refactor.md) 与 test-log「轮次 M5」。
 
 ---
 
@@ -435,4 +439,5 @@ flowchart TD
 
 ---
 
-*本文随 `M2-2` 提交生成；后续 M3（探测统一）/ M4（倒计时与窗口收编）/ M5（客户端信号不得直接结算）落地时应同步更新第 2、4、6、7 章。*
+*本文随 `M2-2` 提交生成；`M4-lite`（倒计时派生 + 关弹窗即停表）见 §7.5，`M5`（客户端信号不得直接结算）已落地（§6 最后一行）。
+后续 M3（探测统一、删 `paymentStateRef`）/ M4 余项（`usePaymentWindow`）落地时应同步更新第 2、4、6、7 章。*

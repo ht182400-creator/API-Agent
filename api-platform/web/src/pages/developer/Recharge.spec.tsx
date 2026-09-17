@@ -605,3 +605,109 @@ describe('自定义模式赠送比例的显示', () => {
     expect(screen.queryByText('+25%')).not.toBeInTheDocument()
   })
 })
+
+/**
+ * 【M5 · 资金链路安全加固】客户端可写信号**不得直接结算**。
+ *
+ * 背景：`localStorage` / `postMessage` / `storage` 事件都是**客户端完全可写**的 ——
+ * 改造前只要在控制台执行
+ * `localStorage.setItem('payment_success_result', '{"outTradeNo":"x","status":"paid"}')`
+ * 页面就会自己走到结算并显示「充值成功！」（一分钱没付）。
+ * 现在这些信号只作为"去问后端"的触发，**由后端回答决定是否结算**。
+ *
+ * ⚠️ 这对用例必须**成对**：只证明"伪造不结算"，那么"永远不结算"也能通过 ——
+ * 所以 023 反过来证明"后端说成功时必须结算"（否则就是另一个方向的缺陷）。
+ */
+describe('客户端信号不得直接结算（M5）', () => {
+  beforeEach(() => {
+    // ⚠️ 必须 stub `/health`：`useEnvInfo` 用的是**原生 fetch**（不走 axios mock），
+    //    不 stub 就会发出真实请求、并在**测试结束后**才 reject → 组件在 jsdom 已销毁后 setState
+    //    → React 抛 "The `document` global was defined when React was initialized, but is not
+    //    defined anymore"，把环境搞坏、后续用例集体报 `sessionStorage` 的 `_origin` 为 null。
+    //    （首跑正是这样连挂 3 条的：失败点看着是 waitFor，真凶在这条未 stub 的请求。）
+    stubHealth('simulation', false)
+
+    // ⚠️⚠️ 必须 stub `window.close`：这几条路径都会先调 `closePayWindow()`，而它**在没有支付窗口
+    //    引用时（return_url 跳转模式）会执行 `window.close()` 关闭当前窗口** —— jsdom 会真的把
+    //    window 销毁（`document` 变 undefined、`localStorage` 抛 `_origin` 为 null），
+    //    于是不仅本用例失败，**后续所有用例都会跟着挂**（首跑 3 条全挂的真凶）。
+    //    真实浏览器里的对应风险已登记为缺陷：FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF。
+    vi.spyOn(window, 'close').mockImplementation(() => {})
+  })
+
+  /** 伪造一条"支付成功"的跨窗口信号 —— 现实中任何人在控制台都能造出来 */
+  const forgePaymentSuccessSignal = async () => {
+    await act(async () => {
+      window.dispatchEvent(
+        new StorageEvent('storage', {
+          key: 'payment_success_result',
+          newValue: JSON.stringify({ outTradeNo: 'ORD-FAKE', status: 'paid', amount: 9999 }),
+        })
+      )
+      // ⚠️ 必须让处理器里的 **await 链**（startConfirming → getPaymentStatus → settlePaid →
+      //    fetchBalance）在 act 内跑完：M5 之后这条链变长了（这是有意为之 —— 求证需要一次往返），
+      //    只 `act(() => dispatch())` 的话这些更新会落在 act 之外**且落在测试结束之后** ——
+      //    React 会抛 "The `document` global was defined when React was initialized,
+      //    but is not defined anymore"，连环境一起搞坏（首跑连挂 3 条的真凶）。
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+  }
+
+  it('TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功', async () => {
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue({
+      status: 'pending',
+      payment_no: 'ORD-FAKE',
+    } as never)
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    forgePaymentSuccessSignal()
+
+    // ① 信号被"当真"了 —— 触发了一次**后端求证**（而不是被静默丢弃）
+    await waitFor(() => expect(paymentApi.getPaymentStatus).toHaveBeenCalledWith('ORD-FAKE'))
+    // ② 但后端说未支付 → 成功界面**不得**出现（改造前这里会显示「充值成功！」）
+    expect(screen.queryByText('已支付')).not.toBeInTheDocument()
+    // ③ 给用户的提示是"尚未确认"，而不是"充值成功"
+    expect(await screen.findByText('支付结果尚未确认，请稍后点「刷新状态」')).toBeInTheDocument()
+  })
+
+  it('TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）', async () => {
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue({
+      status: 'paid',
+      payment_no: 'ORD-FAKE',
+      amount: 9999,
+    } as never)
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    forgePaymentSuccessSignal()
+
+    // 后端回答 paid → 走唯一结算入口 → 弹窗内出现成功大界面（跳转语义：不关弹窗）
+    expect(await screen.findByText('已支付')).toBeInTheDocument()
+  })
+
+  it('TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」）', async () => {
+    sessionStorage.setItem(
+      'pending_payment',
+      JSON.stringify({
+        payment_no: 'PAY-OLD',
+        order_no: 'ORD-OLD',
+        amount: 100,
+        pay_url: '',
+        savedAt: Date.now(),
+      })
+    )
+    vi.mocked(paymentApi.getPaymentStatus).mockResolvedValue({
+      status: 'paid',
+      payment_no: 'PAY-OLD',
+      amount: 100,
+      expires_in: 600,
+    } as never)
+
+    renderWithProviders(<DeveloperRecharge />, { route: '/developer/recharge' })
+    await screen.findByText('入门包')
+
+    // 后端说已支付 → 必须当场显示成功（改造前只进 awaiting：用户付了钱、刷新后看到"等待支付"）
+    expect(await screen.findByText('已支付')).toBeInTheDocument()
+  })
+})

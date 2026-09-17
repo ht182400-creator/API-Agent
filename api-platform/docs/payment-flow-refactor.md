@@ -229,4 +229,4 @@ recharge/payment/
 | M2 flow 接管状态 | ✅ **已完成**（M2-1 编排层 + M2-2 全量接线：35 处写入改 action，`Recharge.tsx` 1571 → 1525 行，act 警告 102 → 88） | 见 test-log「轮次 M2-1 / M2-2」 |
 | M3 探测统一 + 删 ref | ⏳ 待做 | — |
 | M4 收编剩余 hook | 🔶 **M4-lite 已完成**（`useCountdown`：倒计时改为**由 `expiresAt` 派生** + **关弹窗即停表**；新增 3 条假定时器用例，变异规则 `FIX-8/9` 证明其有效；act 警告 88 → **81**）。`usePaymentWindow` 待做 | 见 test-log「轮次 M4-lite」+ [`payment-flow-architecture.md` §7.5](payment-flow-architecture.md) |
-| M5 安全加固（客户端信号不得直接结算） | ⏳ 待做（缺口见 §2.5） | — |
+| M5 安全加固（客户端信号不得直接结算） | ✅ **已完成**（四条路径统一走 `confirmPaymentWithServer()`：`storage` 事件 / `checkPaymentResult` 读 localStorage / `postMessage`×2；进 `confirming` → `getPaymentStatus` 求证 → 仅后端说 paid/completed 才结算。另修掉"挂载恢复时后端已说 paid 却停在等待支付"的反向缺陷。用例 022/023/024 + 变异规则 `FIX-10/11`） | 见 test-log「轮次 M5」+ [`payment-flow-architecture.md` §6](payment-flow-architecture.md) |

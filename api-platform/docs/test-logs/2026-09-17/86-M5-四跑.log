@@ -1,0 +1,1174 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run src/pages/developer/Recharge.spec.tsx -t 客户端信号不得直接结算
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Recharge.spec.tsx
+[20260917 12:57:55.890] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789621075890_ittktc7md"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789621075890_ittktc7md'
+}
+
+stdout | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+[Recharge] storage 事件触发: {
+  key: 'payment_success_result',
+  newValue: '{"outTradeNo":"ORD-FAKE","status":"paid","amount":9999}',
+  url: 'http://localhost:3000/'
+}
+[Recharge] 解析 payment_success_result 成功: { outTradeNo: 'ORD-FAKE', status: 'paid', amount: 9999 }
+[PaymentFlow] 收到支付成功页面关闭通知 {
+  step: '收到支付成功页面关闭通知',
+  timestamp: '2026-09-17T04:57:56.582Z',
+  outTradeNo: 'ORD-FAKE',
+  status: 'paid',
+  source: 'localStorage'
+}
+[Recharge] 调用 closePayWindow()
+[PaymentFlow] closePayWindow 被调用 { step: 'closePayWindow 被调用', timestamp: '2026-09-17T04:57:56.583Z' }
+[PaymentFlow] closePayWindow 没有支付窗口引用（可能是return_url跳转模式） {
+  step: 'closePayWindow 没有支付窗口引用（可能是return_url跳转模式）',
+  timestamp: '2026-09-17T04:57:56.583Z'
+}
+[Recharge] 清除 localStorage
+
+node.exe : stderr | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不
+得显示成功
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...后端说未支付 → 不得显示成功:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: The current testing environment is not configured to support act(...)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+Warning: The current testing environment is not configured to support act(...)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+Warning: The current testing environment is not configured to support act(...)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+
+stdout | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+[Recharge] storage 事件触发: {
+  key: 'payment_success_result',
+  newValue: '{"outTradeNo":"ORD-FAKE","status":"paid","amount":9999}',
+  url: 'http://localhost:3000/'
+}
+[Recharge] 解析 payment_success_result 成功: { outTradeNo: 'ORD-FAKE', status: 'paid', amount: 9999 }
+[PaymentFlow] 收到支付成功页面关闭通知 {
+  step: '收到支付成功页面关闭通知',
+  timestamp: '2026-09-17T04:57:56.777Z',
+  outTradeNo: 'ORD-FAKE',
+  status: 'paid',
+  source: 'localStorage'
+}
+[Recharge] 调用 closePayWindow()
+[PaymentFlow] closePayWindow 被调用 { step: 'closePayWindow 被调用', timestamp: '2026-09-17T04:57:56.777Z' }
+[PaymentFlow] closePayWindow 没有支付窗口引用（可能是return_url跳转模式） {
+  step: 'closePayWindow 没有支付窗口引用（可能是return_url跳转模式）',
+  timestamp: '2026-09-17T04:57:56.777Z'
+}
+[Recharge] 清除 localStorage
+
+stderr | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+Warning: The current testing environment is not configured to support act(...)
+Warning: The current testing environment is not configured to support act(...)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at Mask (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Mask.js:17:25)
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at Mask (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Mask.js:17:25)
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at CopyBtn (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\CopyBtn.js:18:3)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\alert\Alert.js:74:7
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\alert\Alert.js:74:7
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at DefaultLoadingIcon (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\DefaultLoadingIcon.j
+s:44:5)
+    at button
+    at Wave (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\wave\index.js:19:5)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at Item (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Item.js:12:3)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\index.js:44:39
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at DefaultLoadingIcon (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\DefaultLoadingIcon.j
+s:44:5)
+    at button
+    at Wave (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\wave\index.js:19:5)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at Item (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Item.js:12:3)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\index.js:44:39
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at DefaultLoadingIcon (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\DefaultLoadingIcon.j
+s:44:5)
+    at button
+    at Wave (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\wave\index.js:19:5)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at Item (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Item.js:12:3)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\index.js:44:39
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at DefaultLoadingIcon (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\DefaultLoadingIcon.j
+s:44:5)
+    at button
+    at Wave (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\wave\index.js:19:5)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\button\button.js:60:7
+    at div
+    at Item (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Item.js:12:3)
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\index.js:44:39
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at CopyBtn (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\CopyBtn.js:18:3)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at CopyBtn (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\CopyBtn.js:18:3)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at CopyBtn (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\CopyBtn.js:18:3)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\trigger\lib\index.js:41:34
+    at Tooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-tooltip\lib\Tooltip.js:23:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\tooltip\index.js:37:18
+    at CopyBtn (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\CopyBtn.js:18:3)
+    at EllipsisMeasure (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\Ellipsis.js:78
+:5)
+    at span
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Typography.js:26:18
+    at EllipsisTooltip (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\EllipsisToolti
+p.js:13:3)
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\DomWra
+pper.js:21:34)
+    at SingleObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\SingleObserver\in
+dex.js:18:24)
+    at ResizeObserver (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-resize-observer\lib\index.js:24:24)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Base\index.js:72:18
+    at Text (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\typography\Text.js:24:7)
+    at div
+    at div
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\card\Card.js:53:18
+    at div
+    at PaySuccessView (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaySuccessVie
+w.tsx:9:3)
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\MemoChildren.js:12:23
+    at div
+    at div
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\Panel.js:30:25
+    at DomWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\DomWrapper.js:20:34)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Warning: The current testing environment is not configured to support act(...)
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\Content\index.js:21:25
+    at div
+    at div
+    at Dialog (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\Dialog\index.js:26:32)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: The current testing environment is not configured to support act(...)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\@rc-component\portal\lib\Portal.js:35:20
+    at DialogWrap (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-dialog\lib\DialogWrap.js:27:23)
+    at NoFormStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\form\context.js:32:3)
+    at NoCompactStyle (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\space\Compact.js:52:5)
+    at ContextIsolator (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\_util\ContextIsolator.js:14:5)
+    at Modal (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\modal\Modal.js:55:18)
+    at PaymentModal (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\recharge\components\PaymentModal.ts
+x:15:3)
+    at div
+    at DeveloperRecharge (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:51:42)
+    at ErrorProvider (D:\Work_Area\AI\API-Agent\api-platform\web\src\contexts\ErrorContext.tsx:212:26)
+    at Router (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.development.j
+s:1207:17)
+    at MemoryRouter (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\react-router\dist\umd\react-router.develop
+ment.js:1101:7)
+    at LocaleProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\locale\index.js:24:5)
+    at MotionProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\context.js:17:23)
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+stdout | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」）
+[Recharge] 从 sessionStorage 恢复支付信息: {
+  payment_no: 'PAY-OLD',
+  order_no: 'ORD-OLD',
+  amount: 100,
+  pay_url: '',
+  savedAt: 1789621076929
+}
+
+ ✓ src/pages/developer/Recharge.spec.tsx (21 tests | 18 skipped) 1047ms
+   ✓ 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功 541ms
+   ✓ 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现） 305ms
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+Warning: An update to CSSMotion inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link
+/wrap-tests-with-act
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotion.js:42:32
+    at div
+    at CSSMotionList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-motion\lib\CSSMotionList.js:41:36)
+    at NoticeList (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NoticeList.js:25:26)
+    at NotificationProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\NotificationPr
+ovider.js:11:23)
+    at Wrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:32:3)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\rc-notification\lib\Notifications.js:19:32
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\useMessage.js:52:5
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:41:5
+    at MotionWrapper (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\MotionWrapper.js
+:17:30)
+    at ProviderChildren (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:142:
+5)
+    at ConfigProvider (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\config-provider\index.js:444:25
+)
+    at D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\antd\lib\message\index.js:68:60
+
+stderr | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支
+付」）
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 18 skipped (21)
+   Start at  12:57:50
+   Duration  6.37s (transform 291ms, setup 171ms, collect 3.55s, tests 1.05s, environment 874ms, prepare 145ms)
+

@@ -1,0 +1,25 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs src/pages/developer/Recharge.spec.tsx
+
+node.exe : [warn-budget] ❌ 单元测试未通过（vitest exit 1），先修测试再谈警告：
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([warn-budget] ❌...it 1），先修测试再谈警告：:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功 142ms
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现） 0ms
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」） 0ms
+ Test Files  1 failed (1)
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-002: 套餐到账 = 价格 + 固定赠送 + 价格×比例
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-008: 自定义金额到账 = 金额 ×(1 + 默认比例)
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」
+）
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」
+）

@@ -141,6 +141,33 @@ const MUTATIONS = [
     replace: '    const timer = setInterval(() => setNow((n) => n + TICK_MS), TICK_MS)',
     note: '把"每次重算真实时间"改成"每次只加 1 秒" → 回到自减实现的漂移形态（tick 被节流丢掉 120 秒，显示仍只少 1 秒）',
   },
+  {
+    id: 'FIX-10',
+    title: '客户端信号必须经后端求证（不能只信本地 JSON 里的 status）',
+    caseId: 'TC-FE-RECHARGE-022',
+    spec: 'src/pages/developer/Recharge.spec.tsx',
+    file: 'src/pages/developer/Recharge.tsx',
+    // ⚠️ find 必须带上前一行 `const status = await paymentApi.getPaymentStatus(orderNo)`：
+    //    handleAlipayCallback 的轮询里有一句**文本完全相同**的 `if (status.status === 'paid' …)`，
+    //    不带前缀会命中 2 处 → 脚本会按"出现次数≠1"安全跳过（静默漏检）。
+    find:
+      '      const status = await paymentApi.getPaymentStatus(orderNo)\n      if (status.status === \'paid\' || status.status === \'completed\') {',
+    replace:
+      '      const status = await paymentApi.getPaymentStatus(orderNo)\n      if (true) {',
+    note:
+      '回到"只信客户端信号"的缺陷形态：伪造一条 localStorage 记录（后端其实说未支付）也会结算 → 022 必须变红',
+  },
+  {
+    id: 'FIX-11',
+    title: '客户端信号必须真的去问后端（不能跳过求证）',
+    caseId: 'TC-FE-RECHARGE-022',
+    spec: 'src/pages/developer/Recharge.spec.tsx',
+    file: 'src/pages/developer/Recharge.tsx',
+    find: '      const status = await paymentApi.getPaymentStatus(orderNo)',
+    replace:
+      "      const status = { status: 'paid', amount: undefined } as { status: string; amount?: number; expires_in?: number }",
+    note: '去掉那次 getPaymentStatus 往返（直接假定成功）→ 022 的"必须调用过后端"断言变红',
+  },
 ]
 
 const argv = process.argv.slice(2)

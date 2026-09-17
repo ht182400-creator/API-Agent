@@ -1,0 +1,131 @@
+﻿
+> api-platform-web@1.0.0 test:unit
+> vitest run src/pages/developer/Recharge.spec.tsx -t 客户端信号不得直接结算
+
+
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+stdout | src/pages/developer/Recharge.spec.tsx
+[20260917 12:56:46.050] [WEB] [INFO] Logger initialized {
+  "level": "DEBUG",
+  "env": "test",
+  "sessionId": "sess_1789621006050_jkw652256"
+} {
+  level: 'DEBUG',
+  env: 'test',
+  sessionId: 'sess_1789621006050_jkw652256'
+}
+
+stdout | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+[Recharge] storage 事件触发: {
+  key: 'payment_success_result',
+  newValue: '{"outTradeNo":"ORD-FAKE","status":"paid","amount":9999}',
+  url: 'http://localhost:3000/'
+}
+[Recharge] 解析 payment_success_result 成功: { outTradeNo: 'ORD-FAKE', status: 'paid', amount: 9999 }
+[PaymentFlow] 收到支付成功页面关闭通知 {
+  step: '收到支付成功页面关闭通知',
+  timestamp: '2026-09-17T04:56:46.718Z',
+  outTradeNo: 'ORD-FAKE',
+  status: 'paid',
+  source: 'localStorage'
+}
+[Recharge] 调用 closePayWindow()
+[PaymentFlow] closePayWindow 被调用 { step: 'closePayWindow 被调用', timestamp: '2026-09-17T04:56:46.718Z' }
+[PaymentFlow] closePayWindow 没有支付窗口引用（可能是return_url跳转模式） {
+  step: 'closePayWindow 没有支付窗口引用（可能是return_url跳转模式）',
+  timestamp: '2026-09-17T04:56:46.718Z'
+}
+[Recharge] 清除 localStorage
+
+node.exe : stderr | src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不
+得显示成功
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | src/pa...后端说未支付 → 不得显示成功:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: The current testing environment is not configured to support act(...)
+Warning: [antd: message] Static function can not consume context like dynamic theme. Please use 'App' component instead
+.
+[PaymentFlow] ERROR - 确认支付结果失败，保持未支付 {
+  step: '确认支付结果失败，保持未支付',
+  timestamp: '2026-09-17T04:56:46.720Z',
+  error: "TypeError: Cannot read properties of undefined (reading 'createDocumentFragment')"
+}
+Warning: The current testing environment is not configured to support act(...)
+[Recharge] 解析 payment_success_result 失败: TypeError: Cannot read properties of null (reading '_origin')
+    at get localStorage (D:\Work_Area\AI\API-Agent\api-platform\web\node_modules\jsdom\lib\jsdom\browser\Window.js:423:
+52)
+    at get (file:///D:/Work_Area/AI/API-Agent/api-platform/web/node_modules/vitest/dist/chunks/index.K90BXFOx.js:285:19
+)
+    at handleStorageChange (D:\Work_Area\AI\API-Agent\api-platform\web\src\pages\developer\Recharge.tsx:488:11)
+
+ ❯ src/pages/developer/Recharge.spec.tsx (21 tests | 3 failed | 18 skipped) 486ms
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功 484ms
+     → Expected container to be an Element, a Document or a DocumentFragment but got undefined.
+     → Cannot read properties of null (reading '_origin')
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现） 0ms
+     → Cannot read properties of null (reading '_origin')
+     → Cannot read properties of null (reading '_origin')
+   × 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」） 0ms
+     → Cannot read properties of null (reading '_origin')
+     → Cannot read properties of null (reading '_origin')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+ Test Files  1 failed (1)
+TypeError: Expected container to be an Element, a Document or a DocumentFragment but got undefined.
+ ❯ checkContainerType node_modules/@testing-library/dom/dist/helpers.js:61:11
+ ❯ node_modules/@testing-library/dom/dist/wait-for.js:86:41
+ ❯ waitFor node_modules/@testing-library/dom/dist/wait-for.js:36:10
+ ❯ node_modules/@testing-library/dom/dist/wait-for.js:164:54
+ ❯ Object.asyncWrapper node_modules/@testing-library/react/dist/pure.js:88:28
+ ❯ Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:164:35
+ ❯ src/pages/developer/Recharge.spec.tsx:660:11
+    658| 
+    659|     // ① 信号被"当真"了 —— 触发了一次**后端求证**（而不是被静默丢弃）
+    660|     await waitFor(() => expect(paymentApi.getPaymentStatus).toHaveBeen…
+       |           ^
+    661|     // ② 但后端说未支付 → 成功界面**不得**出现（改造前这里会显示「充值…
+    662|     expect(screen.queryByText('已支付')).not.toBeInTheDocument()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-022: 伪造「支付成功」信号、后端说未支付 → 不得显示成功
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」
+）
+TypeError: Cannot read properties of null (reading '_origin')
+ ❯ get sessionStorage node_modules/jsdom/lib/jsdom/browser/Window.js:433:52
+ ❯ src/pages/developer/Recharge.spec.tsx:194:3
+    192| 
+    193| afterEach(() => {
+    194|   sessionStorage.clear()
+       |   ^
+    195|   vi.unstubAllGlobals()
+    196| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）
+ FAIL  src/pages/developer/Recharge.spec.tsx > 客户端信号不得直接结算（M5） > TC-FE-RECHARGE-024: 挂载恢复订单时后端已确认 paid → 当场结算（不停在「等待支付」
+）
+TypeError: Cannot read properties of null (reading '_origin')
+ ❯ get sessionStorage node_modules/jsdom/lib/jsdom/browser/Window.js:433:52
+ ❯ src/pages/developer/Recharge.spec.tsx:140:3
+    138| 
+    139| beforeEach(() => {
+    140|   sessionStorage.clear()
+       |   ^
+    141|   // ⚠️ 必须在这里**重新**给 clientLog 装上实现：vitest 的 mock 重置策…
+    142|   //    在 `vi.mock` 工厂里写的 `mockResolvedValue`。而 Recharge 的 `p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+      Tests  3 failed | 18 skipped (21)
+   Start at  12:56:41
+   Duration  5.69s (transform 292ms, setup 177ms, collect 3.50s, tests 486ms, environment 874ms, prepare 185ms)
+

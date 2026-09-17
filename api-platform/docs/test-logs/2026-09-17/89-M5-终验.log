@@ -1,0 +1,19 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs
+
+node.exe : [warn-budget] ❌ 单元测试未通过（vitest exit 1），先修测试再谈警告：
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([warn-budget] ❌...it 1），先修测试再谈警告：:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   ✓ 到账金额计算 > TC-FE-RECHARGE-002: 套餐到账 = 价格 + 固定赠送 + 价格×比例 1659ms
+   ✓ 到账金额计算 > TC-FE-RECHARGE-008: 自定义金额到账 = 金额 ×(1 + 默认比例) 1629ms
+   × 必填与格式校验（TC-FE-CREATEREPO-001） > TC-FE-CREATEREPO-001: 空提交被三条必填拦截；名称规则与端点 URL 格式各自拦截 10731ms
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-002: 套餐到账 = 价格 + 固定赠送 + 价格×比例
+stderr | src/pages/developer/Recharge.spec.tsx > 到账金额计算 > TC-FE-RECHARGE-008: 自定义金额到账 = 金额 ×(1 + 默认比例)
+ FAIL  tests/cases/frontend_cases.spec.ts [ tests/cases/frontend_cases.spec.ts ]
+ FAIL  src/pages/developer/CreateRepo.spec.tsx > 必填与格式校验（TC-FE-CREATEREPO-001） > TC-FE-CREATEREPO-001: 空提交被三条必填拦截；名称规则与
+端点 URL 格式各自拦截

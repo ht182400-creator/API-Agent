@@ -351,6 +351,9 @@ export default function DeveloperRecharge() {
         const savedPayment = restorePaymentFromSession()
         if (savedPayment) {
           console.log('[Recharge] 从 sessionStorage 恢复支付信息:', savedPayment)
+          // 【M5】恢复路径的方向也要对：后端若已确认支付成功，**当场结算**
+          //   （改造前后端说 paid 也只进 awaiting → 用户付了钱、刷新页面却看到"等待支付"）
+          let settledAsPaid = false
           // 从后端获取最新的订单信息（包括 created_at_timestamp）
           try {
             const paymentStatus = await paymentApi.getPaymentStatus(savedPayment.payment_no)
@@ -370,6 +373,10 @@ export default function DeveloperRecharge() {
             } as Payment)
             // 【M4-lite】不再手工 setCountdown：expires_in 已随 restored() 进状态机，
             //   由 flow.expiresAt 派生（等价于原先的 calculateRemainingSeconds）
+            // 【M5】后端已确认成功 → 结算（走统一入口，still 由服务端回答决定）
+            if (paymentStatus.status === 'paid' || paymentStatus.status === 'completed') {
+              settledAsPaid = await confirmPaymentWithServer(savedPayment.payment_no)
+            }
           } catch {
             // 如果查询失败，设置为默认值
             // 【M2-2】查询失败也要把订单恢复出来（原行为：回落默认值）
@@ -384,7 +391,10 @@ export default function DeveloperRecharge() {
             // 【M4-lite】查询失败时不带 expires_in → 状态机 expiresAt 为 null，
             //   由 useCountdown 按兜底 600 秒计（等价于原先手工 setCountdown(600)）
           }
-          message.info('已恢复您的支付订单，请点击"刷新状态"确认支付结果')
+          // 【M5】已按后端答案结算的，不必再提示"请点刷新状态"
+          if (!settledAsPaid) {
+            message.info('已恢复您的支付订单，请点击"刷新状态"确认支付结果')
+          }
         }
       }
     }
@@ -396,10 +406,63 @@ export default function DeveloperRecharge() {
   //   ① 它靠 `c - 1` 自减 → tick 迟到就永久漂移；② 条件与弹窗无关 → 关弹窗后仍空转。
   //   现由 ./recharge/useCountdown.ts 承担（派生 + active 开关）。
 
+  /**
+   * 【M5 · 资金链路安全加固】客户端信号**不得直接结算** —— 只作为"可能有结果"的触发，
+   * 由**后端**回答真相。
+   *
+   * 为什么这是硬要求：`localStorage` / `postMessage` / `storage` 事件都是**客户端完全可写**的。
+   * 改造前只要在控制台执行：
+   * ```js
+   * localStorage.setItem('payment_success_result', '{"outTradeNo":"x","status":"paid"}')
+   * ```
+   * 页面就会自己走到 `flow.settlePaid(...)` 并显示「充值成功！」—— 一分钱没付。
+   * （`postMessage` 更宽松：同源页面/任意脚本都能 `window.postMessage({type:'PAYMENT_SUCCESS'})`。）
+   *
+   * 现在的规则（与主流支付架构共识一致：**服务端才是入账真相**）：
+   * 进 `confirming`（挡住重复信号与关闭操作）→ `getPaymentStatus` 向后端求证 →
+   * **只有后端说 paid / completed 才结算**；后端说未支付或请求失败 → 一律**不结算**，退回 `awaiting`。
+   *
+   * @returns 是否真的完成结算（调用方据此决定文案；本函数内部已负责成功提示）
+   */
+  const confirmPaymentWithServer = async (
+    orderNo?: string,
+    options?: { closeModal?: boolean }
+  ): Promise<boolean> => {
+    if (!orderNo) return false
+    flow.startConfirming()
+    try {
+      const status = await paymentApi.getPaymentStatus(orderNo)
+      if (status.status === 'paid' || status.status === 'completed') {
+        const wasQrcode = !!currentPayment?.qr_code
+        flow.settlePaid(
+          {
+            ...status,
+            payment_no: orderNo,
+            amount: status.amount ?? currentPayment?.amount,
+          } as Partial<Payment>,
+          { closeModal: options?.closeModal }
+        )
+        clearPaymentFromSession()
+        await fetchBalance()
+        if (wasQrcode) message.success('充值成功！')
+        return true
+      }
+      // ⚠️ 后端说仍未支付 → 只更新订单信息，**绝不能结算**
+      //    （改造前这几条路径正是走到这里就显示"充值成功"）
+      flow.settlePending({ payment_no: orderNo, status: status.status } as Partial<Payment>)
+      message.info('支付结果尚未确认，请稍后点「刷新状态」')
+      return false
+    } catch (error) {
+      paymentLogger.error('确认支付结果失败，保持未支付', error)
+      flow.settlePending()
+      return false
+    }
+  }
+
   // 【V7.4 修复】监听来自支付成功页面的通知
   useEffect(() => {
     // 处理 localStorage 变化（跨窗口通信，解决 postMessage 无法触达的问题）
-    const handleStorageChange = (event: StorageEvent) => {
+    const handleStorageChange = async (event: StorageEvent) => {
       console.log('[Recharge] storage 事件触发:', { key: event.key, newValue: event.newValue, url: window.location.href })
       
       if (event.key === 'payment_success_result' && event.newValue) {
@@ -417,21 +480,8 @@ export default function DeveloperRecharge() {
           console.log('[Recharge] 调用 closePayWindow()')
           closePayWindow()
           
-          // 设置支付成功状态
-          if (result.status === 'paid' || result.status === 'completed') {
-            // 【M2-2】结算走唯一入口：弹窗去留由状态机**按支付方式推导**（扫码关、跳转留）。
-            // 原来这段 if/else 两个分支各写一遍结算 —— 正是"同一规则抄 7 遍"的源头。
-            const wasQrcode = !!currentPayment?.qr_code
-            flow.settlePaid({
-              payment_no: result.outTradeNo,
-              amount: result.amount,
-            } as Partial<Payment>)
-            clearPaymentFromSession()
-            fetchBalance()
-            if (wasQrcode) message.success('充值成功！')
-          } else {
-            console.log('[Recharge] 支付状态不是成功:', result.status)
-          }
+          // 【M5】不再凭本地 JSON 直接结算 —— 它只是"去问后端"的信号（防伪造见 helper 注释）
+          await confirmPaymentWithServer(result.outTradeNo)
           
           // 清除 localStorage 中的记录
           console.log('[Recharge] 清除 localStorage')
@@ -444,7 +494,7 @@ export default function DeveloperRecharge() {
     
     // 【新增】检查支付结果的函数（仅处理跳转支付的回调）
     // 注意：二维码支付使用轮询机制，不需要也不应该处理 localStorage 中的跳转支付结果
-    const checkPaymentResult = () => {
+    const checkPaymentResult = async () => {
       // 【关键修复】只有在跳转支付模式下（没有二维码）才处理 localStorage 结果
       // 二维码支付有独立的轮询机制（startQrcodePolling），不受此影响
       if (currentPayment?.qr_code) {
@@ -466,17 +516,8 @@ export default function DeveloperRecharge() {
           // 关闭支付宝支付窗口
           closePayWindow()
           
-          // 设置支付成功状态
-          if (result.status === 'paid' || result.status === 'completed') {
-            // 【M2-2】这条路径原实现是"关弹窗 + 提示"（跳转语义但显式关掉）→ closeModal: true
-            flow.settlePaid(
-              { payment_no: result.outTradeNo, amount: result.amount } as Partial<Payment>,
-              { closeModal: true }
-            )
-            clearPaymentFromSession()
-            fetchBalance()
-            message.success('充值成功！')
-          }
+          // 【M5】不得凭本地 JSON 结算（这条路径原实现是"关弹窗 + 提示" → 保留 closeModal: true）
+          await confirmPaymentWithServer(result.outTradeNo, { closeModal: true })
           
           // 清除 localStorage
           localStorage.removeItem('payment_success_result')
@@ -534,7 +575,7 @@ export default function DeveloperRecharge() {
     }
     
     // 处理 postMessage（兼容同一窗口的情况）
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       const data = event.data
       if (!data || typeof data !== 'object') return
       
@@ -551,16 +592,10 @@ export default function DeveloperRecharge() {
         closePayWindow()
         
         if (data.isSuccess && data.paymentStatus) {
-          // 【M2-2】合并两分支为一次结算（弹窗去留由状态机按支付方式推导）
-          const wasQrcode = !!paymentStateRef.current.currentPayment?.qr_code
-          console.log('[Recharge] postMessage 支付成功，结算')
-          flow.settlePaid({
-            payment_no: data.paymentNo,
-            amount: data.paymentStatus.amount,
-          } as Partial<Payment>)
-          clearPaymentFromSession()
-          fetchBalance()
-          if (wasQrcode) message.success('充值成功！')
+          // 【M5】postMessage 是**客户端可伪造**的（任意脚本/其它窗口都能 post）→
+          //   只当触发信号，由后端求证后才结算
+          console.log('[Recharge] postMessage 支付成功信号 → 向后端求证')
+          await confirmPaymentWithServer(data.paymentNo)
         } else {
           setTimeout(() => {
             window.location.reload()
@@ -577,13 +612,8 @@ export default function DeveloperRecharge() {
         })
         
         closePayWindow()
-        // 【M2-2】同 PAGE_CLOSED：合并两分支为一次结算
-        const wasQrcode = !!paymentStateRef.current.currentPayment?.qr_code
-        console.log('[Recharge] postMessage PAYMENT_SUCCESS 支付成功，结算')
-        flow.settlePaid({ payment_no: data.paymentNo, amount: data.amount } as Partial<Payment>)
-        clearPaymentFromSession()
-        fetchBalance()
-        if (wasQrcode) message.success('充值成功！')
+        // 【M5】同上：客户端信号不结算，交后端求证
+        await confirmPaymentWithServer(data.paymentNo)
         return
       }
       
