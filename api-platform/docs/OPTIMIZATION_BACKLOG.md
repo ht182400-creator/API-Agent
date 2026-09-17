@@ -33,7 +33,7 @@
 | P1-1 | 路由重复挂载/无前缀暴露 | P1 | ✅ 已完成 | 单一注册入口 |
 | P1-2 | 模型字段与 Service 漂移 | P1 | ✅ 已完成（部分） | 已修正 RepoService 字段 + 死代码可用化 |
 | P1-3 | 权限判断分散 | P1 | ✅ 已完成 | 收敛 `auth_service.check_admin_permission` |
-| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 + 前端 3/4 完成 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端进度见 §2.25（2026-09-17 实测）**：`Analytics.tsx` 964→**309** ✅、`admin/Repos.tsx` 924→**589** ✅、`owner/Repos.tsx` 1059→**704** ✅、`Recharge.tsx` 2001→**1571** 🔶（本项目最大文件；**可独立切出的部分已抽尽**，余下需行为重构）|
+| P1-4 | 巨型文件 | P1 | 🔄 后端 4/4 + 前端 3/4 完成 | 后端 `payment_service.py`/`analytics.py`/`billing.py`/`repositories.py` 已拆包（§2.20/§2.23/§2.24）；**前端进度见 §2.25（2026-09-17 实测）**：`Analytics.tsx` 964→**309** ✅、`admin/Repos.tsx` 924→**589** ✅、`owner/Repos.tsx` 1059→**704** ✅、`Recharge.tsx` 2001→**1525** 🔶（本项目最大文件；搬运式拆分已抽尽，**行为重构 M1/M2 已完成**：状态机 + 35 处写入收敛）|
 | P1-5 | 缓存层未落地 | P1 | ✅ 已完成（示范） | 缓存基建 + 套餐列表接入，见 §2 |
 | P1-6 | 统计实时聚合 | P1 | ✅ 已完成 | 三步全落地：落库聚合（§2.17）+ 读切换 + 结果缓存（§2.19）；与实时查询逐值一致 |
 | P1-7 | 根目录脚本污染 | P1 | ✅ 已完成 | 脚本归档 + **node_modules 去跟踪**，见 §2.5 |
@@ -1106,7 +1106,7 @@ git remote add origin https://github.com/ht182400-creator/API-Agent.git
 | `admin/Analytics.tsx` | 964 → **309** | 8 个 / 1027 行 | ✅ **已拆完**（2026-09-17 B 轮）|
 | `admin/Repos.tsx` | 924 → **589** | 1 个 / 402 行 | ✅ 已拆完 |
 | `owner/Repos.tsx` | 1059 → **704** | 5 个 / 572 行 | ✅ **已拆完**（2026-09-17 B2 轮）|
-| `developer/Recharge.tsx` | 2001 → **1571** | 10 个 / 963 行 | 🔄 进行中（本项目最大文件；已抽两个轮询 hook + 支付弹窗，剩页面骨架与各事件处理器）|
+| `developer/Recharge.tsx` | 2001 → **1525** | 10 个 / 963 行 | 🔄 搬运式拆分已抽尽；**行为重构 M1/M2 已完成**（见 `payment-flow-refactor.md`）|
 
 **已抽出模块**（行数为实测）：
 
@@ -1196,8 +1196,8 @@ react-router future 16 / `bodyStyle` 8 / 重复 key 4 / rc-collapse 2）。
 | ~~`src/services/payment_service.py`~~ | ✅ **已拆分**（§2.20） | → `src/services/payment/` 包（组合入口 + 5 个 Mixin，最大 414 行） | 中 |
 | ~~`src/api/v1/analytics.py`~~（清单外） | ✅ **已拆分** | → `src/api/v1/analytics/` 包（`_shared` + 5 子模块，最大 194 行） | 中 |
 | ~~`src/api/v1/billing.py`~~（清单外） | ✅ **已拆分**（§2.23） | → `src/api/v1/billing/` 包（`_shared` + 5 子模块，最大 246 行） | 中 |
-| `web/src/pages/developer/Recharge.tsx` | 🔶 **可独立部分已抽尽**：2001 → **1571** 行（§2.25） | 已抽 2 个纯逻辑模块（`constants`/`rechargeLogger`）+ 3 个 hook（`useRechargeData`/`useQrcodePolling`/`usePaymentPolling`）+ 1 个会话模块（`paymentSession`）+ 4 个展示组件（`PackageCard`/`PaymentSummary`/`PaySuccessView`/`PaymentModal`），合计外置 963 行。**余下 1571 行是页面骨架 + 十余个事件处理器 + 状态编排，继续搬运式拆分收益递减** → 若要再降行数应走行为重构（支付流程收敛为状态机/更细 hook 组合），另立议题 | 高 |
-| **`Recharge` 支付流程行为重构** | 🔄 **已立项并落地 M1** | 方案见 [`docs/payment-flow-refactor.md`](payment-flow-refactor.md)（显式状态机 + 探测统一 + 派生值不落库；**不引入 XState/TanStack Query** 的理由见该文档 §2.1）。M1 已完成：`recharge/payment/paymentMachine.ts`（231 行纯函数）+ 18 条单测，锁住**终态不可逆 / 单结算入口 / 探测开关派生**等不变式 | 高 |
+| `web/src/pages/developer/Recharge.tsx` | 🔶 **可独立部分已抽尽**：2001 → **1525** 行（§2.25；另见行为重构） | 已抽 2 个纯逻辑模块（`constants`/`rechargeLogger`）+ 3 个 hook（`useRechargeData`/`useQrcodePolling`/`usePaymentPolling`）+ 1 个会话模块（`paymentSession`）+ 4 个展示组件（`PackageCard`/`PaymentSummary`/`PaySuccessView`/`PaymentModal`），合计外置 963 行。**余下 1571 行是页面骨架 + 十余个事件处理器 + 状态编排，继续搬运式拆分收益递减** → 若要再降行数应走行为重构（支付流程收敛为状态机/更细 hook 组合），另立议题 | 高 |
+| **`Recharge` 支付流程行为重构** | 🔄 **M1 / M2 已完成**（M3~M5 待做） | 方案见 [`docs/payment-flow-refactor.md`](payment-flow-refactor.md)（显式状态机 + 探测统一 + 派生值不落库；**不引入 XState/TanStack Query** 的理由见 §2.1；**与主流支付架构经验的对照**见 §2.5）。M1：`paymentMachine.ts` + 21 条纯函数用例，锁住**终态不可逆 / 单结算入口 / 探测开关派生**等不变式；M2：`usePaymentFlow.ts` + **35 处生命周期写入全部收敛为 action**（`Recharge.tsx` 1571→1525 行，act 警告 102→88）。⚠️ §2.5 查出缺口 **M5**：三条客户端可写信号（storage / 挂载读 localStorage / postMessage）目前**直接结算**，应改为"只触发探测、由服务端求证" | 高 |
 | `web/src/pages/owner/Repos.tsx` | ✅ **已完成**：1059 → **704** 行（§2.25，2026-09-17 B2 轮） | 已抽 `repos/` 全部 5 个模块：`repoColumns` + `BasicInfoTab` / `LimitsTab` / `EndpointsTab` + `endpointColumns` | 中 |
 | `web/src/pages/admin/Analytics.tsx` | ✅ **已完成**：964 → **309** 行（§2.25，2026-09-17 B 轮） | 已抽 `analytics/` 全部 8 个模块（`constants`/`chartData`/`repoDetailColumns`/`OverviewTab`/`RepoDetailModal`/`TrendTab`/`RepoDetailsTab`/`TrendControls`）；本文件只剩状态 + 数据加载 + Tab 组合 | 低 |
 | `web/src/pages/admin/Repos.tsx` | ✅ **已完成**：924 → **589** 行（§2.25） | 已抽 `repos/repoColumns.tsx`（双表格列定义工厂 + `getStatusTag`） | 中 |

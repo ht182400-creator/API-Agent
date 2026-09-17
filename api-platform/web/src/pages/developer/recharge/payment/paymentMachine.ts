@@ -57,6 +57,8 @@ export type PaymentEvent =
   | { type: 'STATUS_PAID'; payment?: Partial<Payment>; closeModal?: boolean }
   /** 探测完成但后端仍是未支付 → 推进 probeCount；可带订单补丁（如刷新后 payment_no 才拿到） */
   | { type: 'STATUS_PENDING'; payment?: Partial<Payment> }
+  /** 仅更新订单字段（如二维码刷新），**不推进探测计数、不改阶段** */
+  | { type: 'ORDER_PATCH'; payment: Partial<Payment> }
   | { type: 'STATUS_FAILED'; error?: string }
   | { type: 'CONFIRM_START' }
   | { type: 'CANCEL' }
@@ -214,6 +216,11 @@ export function paymentReducer(state: PaymentState, event: PaymentEvent): Paymen
           ? ({ ...(state.payment ?? {}), ...event.payment } as Payment)
           : state.payment,
       }
+
+    case 'ORDER_PATCH':
+      // 只改订单字段：不碰 phase / probeCount（"二维码刷新"这类动作与探测节奏无关）
+      if (!state.payment) return state
+      return { ...state, payment: { ...state.payment, ...event.payment } as Payment }
 
     case 'STATUS_FAILED':
       if (isTerminal(state.phase)) return state

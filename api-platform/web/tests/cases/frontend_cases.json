@@ -18,7 +18,7 @@
     "stats": {
       "sourceFiles": 61,
       "specFiles": 30,
-      "cases": 305,
+      "cases": 306,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -48,7 +48,7 @@
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md）；**M2-1：编排 hook 落地 + 状态机细化**（usePaymentFlow.ts + 2 条细化用例，35 处接线的映射表已写入方案 §3.2；sourceFiles 60→61、cases 303→305）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 312 tests − 7 条用例库自检 = **305 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md）；**M2-1：编排 hook 落地 + 状态机细化**（usePaymentFlow.ts + 2 条细化用例，35 处接线的映射表已写入方案 §3.2；sourceFiles 60→61、cases 303→305）；**M2-2：全量接线完成**（35 处写入改 action，Recharge.tsx 1571→1525 行；意外收益：act 警告 102→**88**，**警告基线已按"修好一类就下调"约定重建**；方案 §2.5 新增"与主流支付架构经验的对照"，发现缺口 M5：客户端可写信号不得直接结算）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 313 tests − 7 条用例库自检 = **306 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -190,8 +190,8 @@
       "id": "FE-DEV-RECHARGE",
       "level": "P1",
       "file": "src/pages/developer/Recharge.tsx",
-      "lines": 1571,
-      "why": "全前端最大文件（P1-4 最后一个目标，**拆分中**：2001 → 1571，已抽 10 个模块到 ./recharge/；剩余为页面骨架、支付方式卡片与各事件处理器）；充值属资金链路。重点：到账金额 = price + bonus_amount + price×bonus_ratio/100（两种赠送走同一式子）；上下限由 InputNumber 的 min/max 先在 UI 层拦住；⚠️ paymentLogger 里 paymentApi.clientLog(...).catch(...) 若返回非 Promise 会抛 TypeError 把整个下单打断在请求之前。⚠️ 扫码轮询（useQrcodePolling）与卸载清理分别被变异规则 FIX-2 / FIX-3 盯着 —— 搬动这段代码必须同步改规则文件路径，否则脚本会静默跳过",
+      "lines": 1525,
+      "why": "全前端最大文件（P1-4 最后一个目标，**拆分中**：2001 → 1525，已抽 10 个模块到 ./recharge/；M2-2 接线后**页面内 35 处生命周期写入已全部收敛为状态机 action**，剩余为页面骨架、支付方式卡片与各事件处理器）；充值属资金链路。重点：到账金额 = price + bonus_amount + price×bonus_ratio/100（两种赠送走同一式子）；上下限由 InputNumber 的 min/max 先在 UI 层拦住；⚠️ paymentLogger 里 paymentApi.clientLog(...).catch(...) 若返回非 Promise 会抛 TypeError 把整个下单打断在请求之前。⚠️ 扫码轮询（useQrcodePolling）与卸载清理分别被变异规则 FIX-2 / FIX-3 盯着 —— 搬动这段代码必须同步改规则文件路径，否则脚本会静默跳过",
       "status": "covered",
       "specFile": "src/pages/developer/Recharge.spec.tsx",
       "cases": [
@@ -243,7 +243,8 @@
         { "id": "TC-FE-PAYMACH-017", "name": "nextProbeDelay：扫码 8 段递进、跑满沿用最后一段；跳转固定 3 秒", "status": "done" },
         { "id": "TC-FE-PAYMACH-018", "name": "modeOf 只认非空二维码字符串为扫码", "status": "done" },
         { "id": "TC-FE-PAYMACH-019", "name": "STATUS_PAID 弹窗去留按支付方式推导（扫码关、跳转留），可被 closeModal 覆盖", "status": "done" },
-        { "id": "TC-FE-PAYMACH-020", "name": "STATUS_PENDING 可带订单补丁（刷新后才拿到的 payment_no 要并进去）", "status": "done" }
+        { "id": "TC-FE-PAYMACH-020", "name": "STATUS_PENDING 可带订单补丁（刷新后才拿到的 payment_no 要并进去）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-021", "name": "ORDER_PATCH 只更新订单字段（如二维码刷新），不动阶段与探测计数", "status": "done" }
       ]
     },
     {

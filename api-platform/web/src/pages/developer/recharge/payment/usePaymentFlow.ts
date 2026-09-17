@@ -46,6 +46,8 @@ export interface PaymentFlowActions {
   settlePaid: (payment?: Partial<Payment>, options?: { closeModal?: boolean }) => void
   /** 探测完成但仍未支付（可带订单补丁，如刷新后才拿到的 payment_no） */
   settlePending: (payment?: Partial<Payment>) => void
+  /** 只更新订单字段（如二维码刷新）—— 不推进探测计数、不改阶段 */
+  patchOrder: (payment: Partial<Payment>) => void
   /** 进入"确认中"（收到同步回调 / postMessage 这类强信号时） */
   startConfirming: () => void
   /** 用户取消订单 */
@@ -58,9 +60,14 @@ export interface PaymentFlowActions {
   reset: () => void
 }
 
-export interface PaymentFlow {
+/**
+ * 对外 API：**扁平**（action 与派生值同层）——
+ * 调用方写 `flow.settlePaid(...)` / `flow.isPaid` / `flow.state`。
+ * 参照主流 hook 的用法（如 `useQuery()` 直接暴露 `refetch` / `isLoading`），
+ * 少一层 `flow.actions.xxx` 的心智负担。
+ */
+export interface PaymentFlow extends PaymentFlowActions {
   state: PaymentState
-  actions: PaymentFlowActions
   /** 当前订单 */
   payment: Payment | null
   /** 已支付成功（替代页面里散落的 `paySuccess`） */
@@ -94,6 +101,7 @@ export function usePaymentFlow(): PaymentFlow {
       settlePaid: (payment, options) =>
         dispatch({ type: 'STATUS_PAID', payment, closeModal: options?.closeModal }),
       settlePending: (payment) => dispatch({ type: 'STATUS_PENDING', payment }),
+      patchOrder: (payment) => dispatch({ type: 'ORDER_PATCH', payment }),
       startConfirming: () => dispatch({ type: 'CONFIRM_START' }),
       cancelOrder: () => dispatch({ type: 'CANCEL' }),
       closeModal: () => dispatch({ type: 'CLOSE' }),
@@ -104,10 +112,11 @@ export function usePaymentFlow(): PaymentFlow {
     []
   )
 
-  return useMemo(
+  return useMemo<PaymentFlow>(
     () => ({
       state,
-      actions,
+      // action 平铺（与派生值同层）—— 调用方无需知道 hook 内部把它们放在 actions 下
+      ...actions,
       payment: state.payment,
       isPaid: isPaid(state),
       isConfirming: isConfirming(state),

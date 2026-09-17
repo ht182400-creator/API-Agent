@@ -33,6 +33,7 @@ import { useEnvInfo } from '../../hooks/useEnvInfo'
 import { PackageCard } from './recharge/components/PackageCard'
 import { PaymentSummary } from './recharge/components/PaymentSummary'
 import { PaymentModal } from './recharge/components/PaymentModal'
+import { usePaymentFlow } from './recharge/payment/usePaymentFlow'
 import { useQrcodePolling } from './recharge/useQrcodePolling'
 import { usePaymentPolling } from './recharge/usePaymentPolling'
 import {
@@ -53,10 +54,17 @@ export default function DeveloperRecharge() {
   // payment_method 取值受后端约束（详见 api/payment.ts 的 createPayment 参数类型），故收窄为联合类型
   const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay' | 'bankcard'>('alipay')
   const [paymentType, setPaymentType] = useState<'page' | 'qrcode'>('qrcode')  // 默认扫码支付
-  const [payModalVisible, setPayModalVisible] = useState(false)
+  // 【M2-2 接线】生命周期状态（订单 / 弹窗 / 已支付 / 确认中）收敛进支付流程状态机，
+  // 由 usePaymentFlow 提供**只读派生值 + 语义化 action** —— 页面内不再有这些 setState。
+  // 方案与逐处映射见 docs/payment-flow-refactor.md。
+  const flow = usePaymentFlow()
+  const {
+    payment: currentPayment,
+    isModalOpen: payModalVisible,
+    isPaid: paySuccess,
+    isConfirming: isProcessingCallback,
+  } = flow
   const [creatingOrder, setCreatingOrder] = useState(false)
-  const [currentPayment, setCurrentPayment] = useState<Payment | null>(null)
-  const [paySuccess, setPaySuccess] = useState(false)
   const [countdown, setCountdown] = useState(0)
   
   // 最新账户余额  —— 已迁至 ./recharge/useRechargeData
@@ -65,8 +73,7 @@ export default function DeveloperRecharge() {
   const [payError, setPayError] = useState<any>(null)
   const [payErrorVisible, setPayErrorVisible] = useState(false)
   
-  // 支付宝同步回调处理
-  const [isProcessingCallback, setIsProcessingCallback] = useState(false)
+  // 支付宝同步回调处理（isProcessingCallback）→ 现为 flow.isConfirming（见上）
   
   // 自定义金额
   const [showCustomAmount, setShowCustomAmount] = useState(false)
@@ -154,8 +161,10 @@ export default function DeveloperRecharge() {
     // 只要有 out_trade_no 就查询支付状态（支付宝回跳时可能不带 trade_status）
     if (!outTradeNo) return false
     
-    setIsProcessingCallback(true)
-    setPayModalVisible(true)
+    // 【M2-2】先落一个"仅知 order_no"的占位订单（原实现在下方 catch 分支也这么做），
+    // 再进入"确认中" —— confirming 会挡住重复信号与用户的关闭操作
+    flow.restored({ payment_no: '', order_no: outTradeNo, status: 'pending' } as Payment)
+    flow.startConfirming()
     message.loading({ content: '正在确认支付结果...', key: 'alipayCallback' })
     
     // 【优化轮询策略】前6次快速轮询(500ms)，后6次慢速(1s)，最后3次(2s)
@@ -194,21 +203,20 @@ export default function DeveloperRecharge() {
       // 关闭支付宝支付窗口（如果有）
       closePayWindow()
       
-      // 更新订单信息
-      setCurrentPayment({
-        ...status,
-        payment_no: outTradeNo,
-        status: 'paid',
-        amount: status.amount || currentPayment?.amount
-      } as Payment)
+      // 【M2-2】结算走状态机唯一入口；这条路径是"跳转支付成功 → 保留弹窗显示大界面"
+      flow.settlePaid(
+        {
+          ...status,
+          payment_no: outTradeNo,
+          amount: status.amount || currentPayment?.amount,
+        } as Partial<Payment>,
+        { closeModal: false }
+      )
       
       // 刷新余额
       await fetchBalance()
       
-    // 显示成功界面（不关闭弹窗）
-    setPaySuccess(true)
     clearPaymentFromSession()
-    setIsProcessingCallback(false)
     
     // 5秒后自动刷新（使用 ref 确保正确检测状态）
     setTimeout(() => {
@@ -220,10 +228,8 @@ export default function DeveloperRecharge() {
     
     // 显示支付超时对话框
     const showTimeoutDialog = () => {
-      setCurrentPayment({
-        payment_no: outTradeNo,
-        status: 'pending'
-      } as Payment)
+      // 【M2-2】仍是未支付 → 订单补丁
+      flow.settlePending({ payment_no: outTradeNo })
       
       Modal.confirm({
         title: '支付状态确认超时',
@@ -252,7 +258,7 @@ export default function DeveloperRecharge() {
         onCancel: () => {
           // 清除 URL 参数，关闭弹窗
           clearUrlParams()
-          setPayModalVisible(false)
+          flow.closeModal()
         }
       })
     }
@@ -284,15 +290,16 @@ export default function DeveloperRecharge() {
       // 【V7.4 修复】不要使用 outTradeNo 作为 payment_no，因为它们是不同的字段
       // outTradeNo 是 order_no（支付宝商户订单号），不是 payment_no（系统支付单号）
       // 保存 order_no，让 handleRefreshStatus 可以使用它
-      setCurrentPayment({
+      // 【M2-2】占位订单（orderRestored 内含"开弹窗"）
+      flow.restored({
         payment_no: '',  // 暂时为空，等刷新时再查询
         order_no: outTradeNo,  // 保存 order_no
-        status: 'pending'
+        status: 'pending',
       } as Payment)
-      setPayModalVisible(true)
       message.warning({ content: '查询失败，请点击"刷新状态"按钮确认', key: 'alipayCallback' })
     } finally {
-      setIsProcessingCallback(false)
+      // 【M2-2】退出"确认中"：若最终仍未成功，机器退回 awaiting（终态下该事件被忽略）
+      flow.settlePending()
     }
     
     return true
@@ -340,7 +347,8 @@ export default function DeveloperRecharge() {
             const createdAtTimestamp = paymentStatus.created_at
               ? new Date(paymentStatus.created_at).getTime()
               : Date.now()
-            setCurrentPayment({
+            // 【M2-2】恢复订单（内含"开弹窗"；过期时间由 expires_in 推算）
+            flow.restored({
               payment_no: savedPayment.payment_no,
               order_no: savedPayment.order_no,
               amount: savedPayment.amount,
@@ -352,7 +360,8 @@ export default function DeveloperRecharge() {
             setCountdown(calculateRemainingSeconds(paymentStatus.expires_in)) // 使用后端计算的剩余有效期
           } catch {
             // 如果查询失败，设置为默认值
-            setCurrentPayment({
+            // 【M2-2】查询失败也要把订单恢复出来（原行为：回落默认值）
+            flow.restored({
               payment_no: savedPayment.payment_no,
               order_no: savedPayment.order_no,
               amount: savedPayment.amount,
@@ -362,7 +371,6 @@ export default function DeveloperRecharge() {
             } as Payment)
             setCountdown(600)
           }
-          setPayModalVisible(true)
           message.info('已恢复您的支付订单，请点击"刷新状态"确认支付结果')
         }
       }
@@ -402,30 +410,16 @@ export default function DeveloperRecharge() {
           
           // 设置支付成功状态
           if (result.status === 'paid' || result.status === 'completed') {
-            // 二维码支付模式：显示小消息并关闭弹窗
-            if (currentPayment?.qr_code) {
-              console.log('[Recharge] 二维码支付成功，显示小消息')
-              setCurrentPayment({
-                payment_no: result.outTradeNo,
-                status: 'paid',
-                amount: result.amount,
-              } as Payment)
-              clearPaymentFromSession()
-              fetchBalance()
-              setPayModalVisible(false)
-              message.success('充值成功！')
-            } else {
-              // 跳转支付模式：显示大界面（不关闭弹窗）
-              console.log('[Recharge] 跳转支付成功，显示大界面')
-              setCurrentPayment({
-                payment_no: result.outTradeNo,
-                status: 'paid',
-                amount: result.amount,
-              } as Payment)
-              setPaySuccess(true)  // 显示大界面
-              clearPaymentFromSession()
-              fetchBalance()
-            }
+            // 【M2-2】结算走唯一入口：弹窗去留由状态机**按支付方式推导**（扫码关、跳转留）。
+            // 原来这段 if/else 两个分支各写一遍结算 —— 正是"同一规则抄 7 遍"的源头。
+            const wasQrcode = !!currentPayment?.qr_code
+            flow.settlePaid({
+              payment_no: result.outTradeNo,
+              amount: result.amount,
+            } as Partial<Payment>)
+            clearPaymentFromSession()
+            fetchBalance()
+            if (wasQrcode) message.success('充值成功！')
           } else {
             console.log('[Recharge] 支付状态不是成功:', result.status)
           }
@@ -465,15 +459,13 @@ export default function DeveloperRecharge() {
           
           // 设置支付成功状态
           if (result.status === 'paid' || result.status === 'completed') {
-            setCurrentPayment({
-              payment_no: result.outTradeNo,
-              status: 'paid',
-              amount: result.amount,
-            } as Payment)
-            setPaySuccess(true)
+            // 【M2-2】这条路径原实现是"关弹窗 + 提示"（跳转语义但显式关掉）→ closeModal: true
+            flow.settlePaid(
+              { payment_no: result.outTradeNo, amount: result.amount } as Partial<Payment>,
+              { closeModal: true }
+            )
             clearPaymentFromSession()
             fetchBalance()
-            setPayModalVisible(false)
             message.success('充值成功！')
           }
           
@@ -550,31 +542,16 @@ export default function DeveloperRecharge() {
         closePayWindow()
         
         if (data.isSuccess && data.paymentStatus) {
-          const state = paymentStateRef.current
-          // 二维码支付模式：显示小消息并关闭弹窗
-          if (state.currentPayment?.qr_code) {
-            console.log('[Recharge] postMessage 二维码支付成功，显示小消息')
-            setCurrentPayment({
-              payment_no: data.paymentNo,
-              status: 'paid',
-              amount: data.paymentStatus.amount,
-            } as Payment)
-            clearPaymentFromSession()
-            fetchBalance()
-            setPayModalVisible(false)
-            message.success('充值成功！')
-          } else {
-            // 跳转支付模式：显示大界面（不关闭弹窗）
-            console.log('[Recharge] postMessage 跳转支付成功，显示大界面')
-            setCurrentPayment({
-              payment_no: data.paymentNo,
-              status: 'paid',
-              amount: data.paymentStatus.amount,
-            } as Payment)
-            setPaySuccess(true)
-            clearPaymentFromSession()
-            fetchBalance()
-          }
+          // 【M2-2】合并两分支为一次结算（弹窗去留由状态机按支付方式推导）
+          const wasQrcode = !!paymentStateRef.current.currentPayment?.qr_code
+          console.log('[Recharge] postMessage 支付成功，结算')
+          flow.settlePaid({
+            payment_no: data.paymentNo,
+            amount: data.paymentStatus.amount,
+          } as Partial<Payment>)
+          clearPaymentFromSession()
+          fetchBalance()
+          if (wasQrcode) message.success('充值成功！')
         } else {
           setTimeout(() => {
             window.location.reload()
@@ -591,31 +568,13 @@ export default function DeveloperRecharge() {
         })
         
         closePayWindow()
-        const state = paymentStateRef.current
-        // 二维码支付模式：显示小消息并关闭弹窗
-        if (state.currentPayment?.qr_code) {
-          console.log('[Recharge] postMessage PAYMENT_SUCCESS 二维码支付成功，显示小消息')
-          setCurrentPayment({
-            payment_no: data.paymentNo,
-            status: 'paid',
-            amount: data.amount,
-          } as Payment)
-          clearPaymentFromSession()
-          fetchBalance()
-          setPayModalVisible(false)
-          message.success('充值成功！')
-        } else {
-          // 跳转支付模式：显示大界面（不关闭弹窗）
-          console.log('[Recharge] postMessage PAYMENT_SUCCESS 跳转支付成功，显示大界面')
-          setCurrentPayment({
-            payment_no: data.paymentNo,
-            status: 'paid',
-            amount: data.amount,
-          } as Payment)
-          setPaySuccess(true)
-          clearPaymentFromSession()
-          fetchBalance()
-        }
+        // 【M2-2】同 PAGE_CLOSED：合并两分支为一次结算
+        const wasQrcode = !!paymentStateRef.current.currentPayment?.qr_code
+        console.log('[Recharge] postMessage PAYMENT_SUCCESS 支付成功，结算')
+        flow.settlePaid({ payment_no: data.paymentNo, amount: data.amount } as Partial<Payment>)
+        clearPaymentFromSession()
+        fetchBalance()
+        if (wasQrcode) message.success('充值成功！')
         return
       }
       
@@ -686,9 +645,8 @@ export default function DeveloperRecharge() {
           qr_code_exists: !!payment.qr_code,
           pay_url_exists: !!payment.pay_url
         })
-        setCurrentPayment(payment)
-        setPayModalVisible(true)
-        setPaySuccess(false)
+        // 【M2-2】下单成功 → 状态机进 awaiting（自动推导 mode / 开弹窗 / 算过期时间）
+        flow.created(payment)
         setPayError(null) // 清除之前的错误
         setCountdown(calculateRemainingSeconds(payment.expires_in)) // 使用后端计算的剩余有效期
         savePaymentToSession(payment) // 保存到 sessionStorage
@@ -745,9 +703,8 @@ export default function DeveloperRecharge() {
           payment_no: payment.payment_no,
           qr_code_exists: !!payment.qr_code,
         })
-        setCurrentPayment(payment)
-        setPayModalVisible(true)
-        setPaySuccess(false)
+        // 【M2-2】下单成功 → 状态机进 awaiting（自动推导 mode / 开弹窗 / 算过期时间）
+        flow.created(payment)
         setPayError(null) // 清除之前的错误
         setCountdown(calculateRemainingSeconds(payment.expires_in)) // 使用后端计算的剩余有效期
         savePaymentToSession(payment) // 保存到 sessionStorage
@@ -822,8 +779,8 @@ export default function DeveloperRecharge() {
   const { qrcodePolling, qrcodePollingRef, startQrcodePolling, stopQrcodePolling } =
     useQrcodePolling({
       currentPayment,
-      setCurrentPayment,
-      setPaySuccess,
+      // 【M2-2】结算改为状态机 action（hook 内部不再直接 setState）
+      onPaid: flow.settlePaid,
       fetchBalance,
       closePayWindow,
       paymentStateRef,
@@ -836,10 +793,8 @@ export default function DeveloperRecharge() {
     setRefreshingQrCode(true)
     try {
       const result = await paymentApi.refreshQrCode(currentPayment.payment_no)
-      setCurrentPayment({
-        ...currentPayment,
-        qr_code: result.qr_code
-      })
+      // 【M2-2】订单补丁（二维码变了，订单与探测节奏都不变）
+      flow.patchOrder({ qr_code: result.qr_code })
       message.success('二维码已刷新，请重新扫描')
     } catch (error: any) {
       // 使用友好的错误提示
@@ -882,8 +837,8 @@ export default function DeveloperRecharge() {
             await paymentApi.mockPaymentCallback(currentPayment.payment_no)
             clearPaymentFromSession()
             message.success({ content: '支付成功！', key: 'pay' })
-            setPaySuccess(true)
-            setCurrentPayment({ ...currentPayment, status: 'paid' })
+            // 【M2-2】模拟支付走跳转语义（保留弹窗显示成功大界面）
+            flow.settlePaid(undefined, { closeModal: false })
             fetchBalance()  // 获取最新余额
           } catch (error: any) {
             // 使用友好的支付错误提示
@@ -956,11 +911,10 @@ export default function DeveloperRecharge() {
                   status: status.status
                 })
                 message.destroy('checkStatus')
-                setPayModalVisible(false)  // 关闭商户平台弹窗
                 closePayWindow()  // 关闭支付宝窗口
                 clearPaymentFromSession()
-                setPaySuccess(true)
-                setCurrentPayment({ ...currentPayment, status: 'paid' })
+                // 【M2-2】该订单已支付：显式关弹窗（原实现如此），随后自动刷新页面
+                flow.settlePaid(undefined, { closeModal: true })
                 await fetchBalance()
                 message.success({ content: '该订单已支付成功！正在刷新...', key: 'paySuccess' })
                 setTimeout(() => {
@@ -1141,7 +1095,7 @@ export default function DeveloperRecharge() {
     }
     stopQrcodePolling() // 停止扫码轮询
     
-    setPayModalVisible(false)
+    flow.closeModal()
     setPayError(null)
     clearUrlParams()
   }
@@ -1155,7 +1109,8 @@ export default function DeveloperRecharge() {
     if (currentPayment) {
       await paymentApi.cancelPayment(currentPayment.payment_no)
       message.success('订单已取消')
-      setPayModalVisible(false)
+      // 【M2-2】取消 → 状态机进终态 cancelled（弹窗同时关闭；此后任何 STATUS_* 都被忽略）
+      flow.cancelOrder()
     }
   }
 
@@ -1208,11 +1163,8 @@ export default function DeveloperRecharge() {
       const urlOutTradeNo = searchParams.get('out_trade_no')
       if (urlOutTradeNo) {
         console.log('[handleRefreshStatus] currentPayment 为空，使用 URL 中的 out_trade_no:', urlOutTradeNo)
-        setCurrentPayment({
-          payment_no: '',
-          order_no: urlOutTradeNo,
-          status: 'pending'
-        } as Payment)
+        // 【M2-2】只有 order_no 时先落一张占位订单
+        flow.restored({ payment_no: '', order_no: urlOutTradeNo, status: 'pending' } as Payment)
       } else {
         paymentLogger.warn('handleRefreshStatus 被调用但没有 currentPayment')
         // 【优化】只有明确需要显示错误时才提示
@@ -1260,7 +1212,8 @@ export default function DeveloperRecharge() {
         payment_no: status.payment_no || currentPayment.payment_no,
         status: status.status as any
       }
-      setCurrentPayment(updatedPayment)
+      // 【M2-2】订单补丁（更新 payment_no / status，不推进探测节奏）
+      flow.patchOrder(updatedPayment)
       // 同时检查 'paid' 和 'completed' 状态
       if (status.status === 'paid' || status.status === 'completed') {
         paymentLogger.info('handleRefreshStatus 检测到支付成功', {
@@ -1276,7 +1229,8 @@ export default function DeveloperRecharge() {
         // 【跳转支付专用逻辑】显示大界面，不关闭弹窗
         if (!currentPayment?.qr_code) {
           console.log('[handleRefreshStatus] 跳转支付成功，显示大界面')
-          setPaySuccess(true)  // 显示大界面
+          // 【M2-2】结算走唯一入口（跳转语义：保留弹窗显示大界面）
+          flow.settlePaid(undefined, { closeModal: false })
           message.success('支付成功！正在刷新页面...')
           // 5秒后自动刷新
           setTimeout(() => {
@@ -1288,8 +1242,8 @@ export default function DeveloperRecharge() {
           // 二维码支付走独立逻辑，这里不应该被调用
           // 但以防万一，还是关闭弹窗刷新
           console.log('[handleRefreshStatus] 二维码支付被意外调用，关闭弹窗')
-          setPayModalVisible(false)
-          setPaySuccess(true)
+          // 【M2-2】意外路径：显式关弹窗
+          flow.settlePaid(undefined, { closeModal: true })
           message.success('支付成功！正在刷新页面...')
           setTimeout(() => {
             window.location.reload()

@@ -124,6 +124,31 @@ recharge/payment/
 4. **结算只有一个入口**：`STATUS_PAID`。7 处来源全部改为"派发事件"，
    不再各自 `setCurrentPayment + clearSession + fetchBalance`。
 
+### 2.5 与主流支付架构经验的对照
+
+参照主流系统设计资料（Stripe 类支付系统设计 / webhook 可靠性 / 幂等与对账）的共识要点逐条自查：
+
+| 主流共识 | 本实现 | 结论 |
+|---|---|---|
+| 支付生命周期用**显式状态机**表达，禁止自由组合的布尔量 | 8 阶段机器 + 派生值全部不落库（M1/M2） | ✅ |
+| **幂等**：同一事件重复到达不得重复生效 | 终态不可逆 + 单结算入口 + `confirming` 去重 | ✅（`TC-FE-PAYMACH-008/009`） |
+| **绝不以客户端信号判定支付成功**，必须服务端确认 | ⚠️ `handleStorageChange` / `checkPaymentResult` / `handleMessage` 三条路径**直接结算**，未再向后端求证 | ❌ **见 M5** |
+| 轮询要**渐进退避 + 有终止条件** | 扫码 8 段递进 `[2,2,2,3,3,5,5,10]s`、跳转 3s；跑满给人工刷新指引（`nextProbeDelay` / `isProbeExhausted` 均单测） | ✅ |
+| 服务端回调（webhook）才是入账真相，前端只做**呈现** | 余额一律 `fetchBalance()` 取自服务端，前端从不自行加减 | ✅ |
+| 前端要能**对账**：展示与服务端不一致时以服务端为准 | 结算后强制刷新余额；「刷新状态」可随时向后端求证 | ✅ |
+| 副作用与状态迁移分离，便于测试 | 纯函数 machine（21 条零 jsdom 用例）；M3 再把 I/O 收进 `usePaymentProbe` | ✅ |
+
+**唯一缺口 → M5（新增步骤）**：
+
+- **问题**：上面三条路径把**客户端可写的数据**（`localStorage` / `postMessage` 都同源可写）
+  直接当成支付成功。
+- **影响面（说清楚，不夸大）**：**不会造成真实资损** —— 余额来自服务端 `fetchBalance()`，
+  订单在后端也仍是 pending；但会让**界面说谎**（显示"充值成功"而实际未到账），
+  可能诱导用户以为已到账而不去核查。
+- **修法（M3 的自然产物）**：这三条路径改为"**只作为触发探测的信号**" —— 先进入 `confirming`
+  并立即 `getPaymentStatus` 求证，由**服务端回答**决定是否 `STATUS_PAID`。
+  即把 `confirming` 从"去重层"升级为"**验证层**"（这正是机器当初预留它的原因）。
+
 ---
 
 ## 3. 迁移步骤（每步独立绿灯 + 独立提交）
@@ -134,6 +159,7 @@ recharge/payment/
 | **M2** | `usePaymentFlow` 接管生命周期状态：`paySuccess` / `isProcessingCallback` / `qrcodePolling` / `currentPayment` 由 machine 提供；**保留**旧的两套轮询实现（只换数据来源） | 无 | 18 条 Recharge 用例 |
 | **M3** | 用 `usePaymentProbe` **替换** 4 类监听 + 2 个轮询，删除 `paymentStateRef`；7 处结算收敛为 `dispatch({type:'STATUS_PAID'})` | 无（对外行为等价） | 18 条 + **变异规则 FIX-2 / FIX-3 必须随实现更新并复验** |
 | **M4** | 收编 `useCountdown` / `usePaymentWindow`；页面成为纯组合层；补 hook 级单测 | 无 | 全量 + 预算 + 变异 7/7 |
+| **M5** | ⚠️ **安全加固**：`storage` / 挂载读 `localStorage` / `postMessage` 三条路径改为"只触发探测"——进 `confirming` 并向后端求证后才结算（见 §2.5 唯一缺口） | **有**（这几条路径会多一次 `getPaymentStatus`；界面不再抢先说"成功"） | 新增针对性用例（伪造 localStorage 不得直接显示成功）+ 全量 + 预算 |
 
 ### 3.1 风险与对策
 
@@ -196,6 +222,7 @@ recharge/payment/
 | 步 | 状态 | 提交 |
 |---|---|---|
 | M1 状态机 + 单测 | ✅ 已完成（231 行 machine + 18 条纯函数用例，全量 310 passed） | 见 `docs/test-log-2026-09-17.md`「轮次 M1」 |
-| M2 flow 接管状态 | 🔄 **M2-1 已完成**（`usePaymentFlow.ts` + 状态机两处细化 + 35 处接线映射表），**M2-2 接线待做** | M2-1 提交见 test-log「轮次 M2-1」 |
+| M2 flow 接管状态 | ✅ **已完成**（M2-1 编排层 + M2-2 全量接线：35 处写入改 action，`Recharge.tsx` 1571 → 1525 行，act 警告 102 → 88） | 见 test-log「轮次 M2-1 / M2-2」 |
 | M3 探测统一 + 删 ref | ⏳ 待做 | — |
 | M4 收编剩余 hook | ⏳ 待做 | — |
+| M5 安全加固（客户端信号不得直接结算） | ⏳ 待做（缺口见 §2.5） | — |

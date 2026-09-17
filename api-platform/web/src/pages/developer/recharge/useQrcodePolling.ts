@@ -29,9 +29,14 @@ export interface PaymentStateSnapshot {
 export interface UseQrcodePollingOptions {
   /** 当前订单：成功回写时兜底 payment_no / amount */
   currentPayment: Payment | null
-  setCurrentPayment: (payment: Payment) => void
-  /** 成功后切到「支付成功」大界面 */
-  setPaySuccess: (paySuccess: boolean) => void
+  /**
+   * 结算回调（**唯一结算入口**，来自 `usePaymentFlow.settlePaid`）。
+   *
+   * ⚠️ M2-2 之前这里直接收 `setCurrentPayment` / `setPaySuccess` 两个 setState ——
+   *    那正是"同一业务事实多处实现"的载体；改为语义回调后，弹窗去留由状态机
+   *    按支付方式推导（扫码 → 关弹窗），hook 不再关心"成功之后 UI 怎么变"。
+   */
+  onPaid: (payment?: Partial<Payment>) => void
   /** 成功后刷新余额（来自 useRechargeData） */
   fetchBalance: () => Promise<void> | void
   /** 成功后关闭支付宝支付窗口 */
@@ -41,8 +46,7 @@ export interface UseQrcodePollingOptions {
 
 export function useQrcodePolling({
   currentPayment,
-  setCurrentPayment,
-  setPaySuccess,
+  onPaid,
   fetchBalance,
   closePayWindow,
   paymentStateRef,
@@ -98,18 +102,16 @@ export function useQrcodePolling({
     setQrcodePolling(false)
     closePayWindow() // 关闭支付宝支付窗口（如果有）
 
-    // 更新订单信息
-    setCurrentPayment({
+    // 【M2-2】结算走状态机唯一入口（扫码 → 状态机会关闭弹窗，由页面给提示）
+    onPaid({
       ...status,
       payment_no: status.payment_no || currentPayment?.payment_no,
       amount: status.amount || currentPayment?.amount,
-    } as Payment)
-
+    } as Partial<Payment>)
+    
     // 刷新余额
     await fetchBalance()
-
-    // 显示成功界面（不关闭弹窗）
-    setPaySuccess(true)
+    
     clearPaymentFromSession()
 
     // 5秒后自动刷新（使用 ref 确保正确检测状态）

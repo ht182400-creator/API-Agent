@@ -253,6 +253,22 @@ describe('支付流程状态机', () => {
     expect(paymentReducer(redirect, { type: 'STATUS_PAID', closeModal: true }).modalOpen).toBe(false)
   })
 
+  it('TC-FE-PAYMACH-021: ORDER_PATCH 只更新订单字段，不动阶段与探测计数', () => {
+    const before = run(awaitingQr, { type: 'STATUS_PENDING' }) // probeCount=1
+    const patched = paymentReducer(before, {
+      type: 'ORDER_PATCH',
+      payment: { qr_code: 'data:image/png;base64,REFRESHED' },
+    })
+    expect(patched.payment?.qr_code).toBe('data:image/png;base64,REFRESHED')
+    expect(patched.payment?.payment_no).toBe('PAY-QR') // 其余字段保留
+    expect(patched.phase).toBe('awaiting')
+    expect(patched.probeCount).toBe(1) // ⚠️ 不推进
+    // 没有订单时忽略（避免造出"无订单的补丁"）
+    expect(paymentReducer(initialPaymentState, { type: 'ORDER_PATCH', payment: {} })).toBe(
+      initialPaymentState
+    )
+  })
+
   it('TC-FE-PAYMACH-020: STATUS_PENDING 可带订单补丁（刷新后才拿到的 payment_no 要并进去）', () => {
     const noPaymentNo = run(initialPaymentState, {
       type: 'RESTORE_FOUND',
