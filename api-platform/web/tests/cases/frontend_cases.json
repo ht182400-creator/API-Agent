@@ -16,9 +16,9 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 59,
-      "specFiles": 29,
-      "cases": 285,
+      "sourceFiles": 60,
+      "specFiles": 30,
+      "cases": 303,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -41,12 +41,13 @@
         "src/pages/developer/recharge/useQrcodePolling.ts",
         "src/pages/developer/recharge/usePaymentPolling.ts",
         "src/pages/developer/recharge/components/PaymentModal.tsx",
+        "src/pages/developer/recharge/payment/paymentMachine.ts",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 292 tests − 7 条用例库自检 = **285 条组件用例**；specFiles=29 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 30 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md，M2~M4 待做）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 310 tests − 7 条用例库自检 = **303 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -211,6 +212,35 @@
         { "id": "TC-FE-RECHARGE-016", "name": "日志接口返回非 Promise（undefined）时也不得中断下单（原缺陷真实形态）", "status": "done" },
         { "id": "TC-FE-RECHARGE-017", "name": "测试环境显示「测试支付通道」，不得出现「真实支付通道」", "status": "done" },
         { "id": "TC-FE-RECHARGE-018", "name": "生产环境显示「真实支付通道」", "status": "done" }
+      ]
+    },
+    {
+      "id": "FE-DEV-PAY-MACHINE",
+      "level": "P1",
+      "file": "src/pages/developer/recharge/payment/paymentMachine.ts",
+      "lines": 231,
+      "why": "支付流程行为重构（M1）抽出的**纯函数状态机**：把原先散在 7 个来源（同步回调 / storage / focus / visibility / postMessage×3 / 轮询）里的『支付成功』结算收敛为唯一入口 STATUS_PAID，并把 paySuccess / isProcessingCallback / qrcodePolling 等**派生值从 state 里去掉**（消灭『两份状态同时为真』的非法组合）。核心不变式：**终态不可逆**（已取消/已过期订单收到 STATUS_PAID 原样返回 —— 页面级 TC-FE-RECHARGE-013 锁的是同一缺陷）、**非 awaiting/confirming 不探测**、扫码 8 段间隔表可单测。方案见 docs/payment-flow-refactor.md（M2~M4 待做）",
+      "status": "covered",
+      "specFile": "src/pages/developer/recharge/payment/paymentMachine.spec.ts",
+      "cases": [
+        { "id": "TC-FE-PAYMACH-001", "name": "初始为 idle；RESET 回到初始态", "status": "done" },
+        { "id": "TC-FE-PAYMACH-002", "name": "CREATE_START 清掉上一单残留（payment/error/弹窗）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-003", "name": "扫码下单 → awaiting/qrcode/开弹窗，过期时间由 expires_in 推算", "status": "done" },
+        { "id": "TC-FE-PAYMACH-004", "name": "跳转下单 mode=redirect；无 expires_in 时 expiresAt 为 null", "status": "done" },
+        { "id": "TC-FE-PAYMACH-005", "name": "创建失败 → failed（带原因、关弹窗）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-006", "name": "RESTORE_FOUND 与下单成功同落地（不丢单链路）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-007", "name": "STATUS_PAID 是唯一结算入口：合并订单并置 status=paid", "status": "done" },
+        { "id": "TC-FE-PAYMACH-008", "name": "⭐终态不可逆：已取消订单收到 STATUS_PAID / STATUS_PENDING / EXPIRE 均原样返回", "status": "done" },
+        { "id": "TC-FE-PAYMACH-009", "name": "已成功的重复结算幂等；成功不可取消", "status": "done" },
+        { "id": "TC-FE-PAYMACH-010", "name": "CONFIRM_START 仅在『有订单且未终态』时生效（重复信号的去重层）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-011", "name": "STATUS_PENDING 推进 probeCount 并回到 awaiting；非探测态忽略", "status": "done" },
+        { "id": "TC-FE-PAYMACH-012", "name": "确认中收到 STATUS_PAID 仍能落成功", "status": "done" },
+        { "id": "TC-FE-PAYMACH-013", "name": "CANCEL 关弹窗、探测归零，但保留 payment（异常弹窗仍要显示单号）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-014", "name": "CLOSE/OPEN 只动弹窗，不动订单与阶段（关弹窗 ≠ 放弃订单）", "status": "done" },
+        { "id": "TC-FE-PAYMACH-015", "name": "派生选择器 isProbing / isPaid / isConfirming / canDismiss / isTerminal", "status": "done" },
+        { "id": "TC-FE-PAYMACH-016", "name": "isScanning 仅『扫码+等待中+未跑满』；跑满即 isProbeExhausted", "status": "done" },
+        { "id": "TC-FE-PAYMACH-017", "name": "nextProbeDelay：扫码 8 段递进、跑满沿用最后一段；跳转固定 3 秒", "status": "done" },
+        { "id": "TC-FE-PAYMACH-018", "name": "modeOf 只认非空二维码字符串为扫码", "status": "done" }
       ]
     },
     {
