@@ -53,6 +53,19 @@ npm run dev
 npm run build
 ```
 
+## 测试与质量闸门
+
+```bash
+npm run test:unit        # 单元测试（vitest + Testing Library）
+npm run test:budget      # 单元测试 + 警告预算（React/antd 警告回潮即失败）
+npm run typecheck        # 类型检查
+npm run verify:fixes     # 变异检验：把历史修复改回缺陷形态，用例必须变红
+```
+
+- 用例清单与登记：`tests/cases/frontend_cases.json`（自检 spec 会校验登记与磁盘一致）
+- 测试流水与经验教训：`../docs/test-log-2026-09-17.md`
+- 支付流程架构与不变式：`../docs/payment-flow-architecture.md`
+
 ## 访问地址
 
 - 开发服务器: http://localhost:3000
