@@ -1,0 +1,8 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs tests/cases/frontend_cases.spec.ts
+
+[vitest] Test Files  1 passed (1)
+[vitest] Tests  7 passed (7)
+[vitest] Duration  1.61s (transform 51ms, setup 179ms, collect 20ms, tests 14ms, environment 874ms, prepare 154ms)
+[warn-budget] ✅ 警告在预算内

@@ -168,6 +168,16 @@ const MUTATIONS = [
       "      const status = { status: 'paid', amount: undefined } as { status: string; amount?: number; expires_in?: number }",
     note: '去掉那次 getPaymentStatus 往返（直接假定成功）→ 022 的"必须调用过后端"断言变红',
   },
+  {
+    id: 'FIX-12',
+    title: '客户端信号不得关闭用户当前窗口（closePayWindow 不再自关）',
+    caseId: 'TC-FE-RECHARGE-022',
+    spec: 'src/pages/developer/Recharge.spec.tsx',
+    file: 'src/pages/developer/Recharge.tsx',
+    find: "      paymentLogger.info('closePayWindow 没有支付窗口引用 → 只清理定时器，不关闭当前窗口')",
+    replace: "      try { window.close() } catch { /* 忽略 */ }",
+    note: '把"关闭当前窗口"加回来 → 022 的 window.close 反断言变红（即回到"别家窗口写一条 localStorage 就能关掉用户充值页签"的缺陷形态）',
+  },
 ]
 
 const argv = process.argv.slice(2)

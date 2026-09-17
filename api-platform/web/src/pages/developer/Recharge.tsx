@@ -801,14 +801,19 @@ export default function DeveloperRecharge() {
       }
       payWindowRef.current = null
     } else {
-      paymentLogger.info('closePayWindow 没有支付窗口引用（可能是return_url跳转模式）')
-      
-      // 对于 return_url 跳转模式，尝试关闭当前窗口
-      try {
-        window.close()
-      } catch (e) {
-        // 忽略
-      }
+      // 【缺陷修复 · FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF】这里**不再调用 `window.close()`**。
+      //
+      //   原实现的注释是"对于 return_url 跳转模式，尝试关闭当前窗口"，但这个函数会被
+      //   **storage / postMessage 等跨窗口通知路径**调用 —— 于是任何人都能在别的窗口里写一条
+      //   `localStorage.setItem('payment_success_result', …)`，让用户的**充值页签自己被关掉**
+      //   （真实浏览器里 `window.close()` 对非脚本打开的窗口会被拒绝、只刷控制台告警；
+      //   但如果本页恰是脚本打开的窗口，就真的会关 —— 现状是"取决于用户怎么进来的"，
+      //   这种不确定性本身就是缺陷）。
+      //
+      //   职责划分：**关闭窗口只属于"支付返回页"自己**，且它应先判断有没有 opener。
+      //   正确样板见 `src/pages/PaymentSuccess.tsx`（`window.opener` 存在才关窗，否则走路由跳转）。
+      //   充值页（本组件）永远是被关闭的**客体**，不应该替别人关自己的窗口。
+      paymentLogger.info('closePayWindow 没有支付窗口引用 → 只清理定时器，不关闭当前窗口')
     }
   }
 

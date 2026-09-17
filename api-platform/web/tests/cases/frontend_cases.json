@@ -734,9 +734,11 @@
       "evidence": "写 M5 用例（伪造 localStorage 支付成功信号）时，测试环境在处理器执行到一半被整个销毁：React 抛 \"The `document` global was defined when React was initialized, but is not defined anymore\"，随后 `localStorage` 抛 `Cannot read properties of null (reading '_origin')`，同一文件的后续用例集体失败。根因即 `closePayWindow()` 的 else 分支（注释写着\"对于 return_url 跳转模式，尝试关闭当前窗口\"）执行了 `window.close()` —— jsdom 会真的销毁 window。",
       "impact": "真实浏览器里：① 任何**其它窗口/脚本**往 localStorage 写一条 `payment_success_result`，就可能让充值页签自己关掉；② 用户从支付页返回后（同一 tab 跳转模式）弹窗一关就把页面关了。属\"把'我是支付返回页、可以自关'的假设套用到主窗口\"的逻辑错位。",
       "suggestion": "① 只有在\"本窗口就是支付返回页\"时才允许自关（显式标记，如 URL 上带 return_url 参数或 sessionStorage 标记）；② 更稳的做法：直接去掉这个自关（关闭标签页不是充值页的职责，交给用户）；③ 无论如何，storage/postMessage 这类**跨窗口通知**路径不应该触发关窗。",
-      "status": "open",
+      "status": "fixed",
       "foundAt": "2026-09-17",
-      "note": "M5 用例里用 `vi.spyOn(window, 'close')` 隔离了它（否则测试环境被销毁）；未改产品行为 —— 这涉及\"谁有权关闭用户窗口\"的交互决策，需产品确认后再动"
+      "fixedAt": "2026-09-17",
+      "fix": "专家判断：**关闭窗口只属于「支付返回页」自己的职责**，而 closePayWindow 会被 storage / postMessage 等**跨窗口通知路径**调用 —— 它没有资格关用户的充值页签。故删掉 else 分支里的 `window.close()`（只保留清理定时器），注释里指向正确样板 `src/pages/PaymentSuccess.tsx`（先判断 window.opener，存在才关窗、否则走路由跳转）。回归锁：TC-FE-RECHARGE-022 增加 `expect(window.close).not.toHaveBeenCalled()`；变异规则 FIX-12 把 window.close() 加回去 → 022 变红（实测有效，12/12）。",
+      "note": "M5 用例里仍保留 `vi.spyOn(window, 'close')`，但**用途已反转**：以前是防止该缺陷销毁测试环境，现在是回归锁（既防 jsdom 被销毁，又断言它没被调用）"
     }
   ]
 }

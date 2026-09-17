@@ -1,0 +1,210 @@
+{
+  "generatedAt": "2026-09-17T07:55:38.262Z",
+  "root": "D:\\Work_Area\\AI\\API-Agent\\api-platform\\web",
+  "results": [
+    {
+      "id": "FIX-1",
+      "title": "支付日志异常不再中断下单（sendPaymentLog）",
+      "caseId": "TC-FE-RECHARGE-009|TC-FE-RECHARGE-016",
+      "file": "src\\pages\\developer\\recharge\\rechargeLogger.ts",
+      "note": "同时去掉 try/catch 与 Promise.resolve → 回到原始缺陷形态（返回 undefined 时 .catch 抛错并中断下单）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  2 failed | 19 skipped (21)",
+        "firstError": "Error: Failed to parse URL from /health"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  2 passed | 19 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-2",
+      "title": "取消订单后扫码轮询真正停止（qrcodePollingRef）",
+      "caseId": "TC-FE-RECHARGE-013",
+      "file": "src\\pages\\developer\\recharge\\useQrcodePolling.ts",
+      "note": "stopQrcodePolling 不再置 ref → 循环条件恒为 true（回到缺陷形态）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "Error: Failed to parse URL from /health"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-3",
+      "title": "组件卸载时统一清理轮询定时器",
+      "caseId": "TC-FE-RECHARGE-014",
+      "file": "src\\pages\\developer\\Recharge.tsx",
+      "note": "cleanup 不再置 ref → 卸载后轮询继续请求后端",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "Error: Failed to parse URL from /health"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-4",
+      "title": "自定义模式赠送比例按百分比显示",
+      "caseId": "TC-FE-RECHARGE-015",
+      "file": "src\\pages\\developer\\recharge\\components\\PaymentSummary.tsx",
+      "note": "回到\"拿金额冒充百分比\"的缺陷形态",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "Error: Failed to parse URL from /health"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-5",
+      "title": "账单首屏不再重复请求（fetchBills 只由一个 effect 驱动）",
+      "caseId": "TC-FE-BILLING-001",
+      "file": "src\\pages\\developer\\Billing.tsx",
+      "note": "把 fetchBills() 放回 fetchData → 回到\"挂载时 fetchData 与 effect 各拉一次账单\"的缺陷形态（实测首屏 2 次）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 7 skipped (8)",
+        "firstError": "AssertionError: expected \"spy\" to be called 1 times, but got 2 times"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 7 skipped (8)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-6",
+      "title": "负数金额的符号在货币符号之前（-¥12.50 而不是 ¥-12.50）",
+      "caseId": "TC-FE-BILLING-001",
+      "file": "src\\pages\\developer\\Billing.tsx",
+      "note": "回到\"符号夹在货币符号之后\"的缺陷形态（负数渲染成 ¥-12.50）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 7 skipped (8)",
+        "firstError": "TestingLibraryElementError: Unable to find an element with the text: -¥12.50. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 7 skipped (8)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-7",
+      "title": "一次性明文密钥关闭后真正从 DOM 移除（destroyOnHidden）",
+      "caseId": "TC-FE-KEYS-002",
+      "file": "src\\pages\\developer\\Keys.tsx",
+      "note": "回到\"关闭只做隐藏挂载\"的缺陷形态 → 点「我已保存」后明文仍留在 DOM 里，与\"仅显示一次\"冲突",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 4 skipped (5)",
+        "firstError": "AssertionError: expected 'API Keys管理创建API KeyKey名称Key前缀认证方式RPM限…' not to contain 'FULL-SECRET-ONE-TIME'"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 4 skipped (5)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-8",
+      "title": "倒计时「关弹窗即停表」（active 闸门）",
+      "caseId": "TC-FE-RECHARGE-019",
+      "file": "src\\pages\\developer\\recharge\\useCountdown.ts",
+      "note": "去掉 active 闸门 → 回到\"关弹窗后定时器仍每秒写 state\"的缺陷形态（生产上空耗、测试里刷 act 警告）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 2 skipped (3)",
+        "firstError": "AssertionError: expected 1 to be +0 // Object.is equality"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 2 skipped (3)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-9",
+      "title": "倒计时由 expiresAt 派生（而非逐秒自减）",
+      "caseId": "TC-FE-RECHARGE-021",
+      "file": "src\\pages\\developer\\recharge\\useCountdown.ts",
+      "note": "把\"每次重算真实时间\"改成\"每次只加 1 秒\" → 回到自减实现的漂移形态（tick 被节流丢掉 120 秒，显示仍只少 1 秒）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 2 skipped (3)",
+        "firstError": "AssertionError: expected 599 to be 479 // Object.is equality"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 2 skipped (3)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-10",
+      "title": "客户端信号必须经后端求证（不能只信本地 JSON 里的 status）",
+      "caseId": "TC-FE-RECHARGE-022",
+      "file": "src\\pages\\developer\\Recharge.tsx",
+      "note": "回到\"只信客户端信号\"的缺陷形态：伪造一条 localStorage 记录（后端其实说未支付）也会结算 → 022 必须变红",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "Error: expect(element).not.toBeInTheDocument()"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-11",
+      "title": "客户端信号必须真的去问后端（不能跳过求证）",
+      "caseId": "TC-FE-RECHARGE-022",
+      "file": "src\\pages\\developer\\Recharge.tsx",
+      "note": "去掉那次 getPaymentStatus 往返（直接假定成功）→ 022 的\"必须调用过后端\"断言变红",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "AssertionError: expected \"spy\" to be called with arguments: [ 'ORD-FAKE' ]"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FIX-12",
+      "title": "客户端信号不得关闭用户当前窗口（closePayWindow 不再自关）",
+      "caseId": "TC-FE-RECHARGE-022",
+      "file": "src\\pages\\developer\\Recharge.tsx",
+      "note": "把\"关闭当前窗口\"加回来 → 022 的 window.close 反断言变红（即回到\"别家窗口写一条 localStorage 就能关掉用户充值页签\"的缺陷形态）",
+      "mutatedRun": {
+        "passed": false,
+        "summary": "Tests  1 failed | 20 skipped (21)",
+        "firstError": "AssertionError: expected \"bound \" to not be called at all, but actually been called 1 times"
+      },
+      "restoredRun": {
+        "passed": true,
+        "summary": "Tests  1 passed | 20 skipped (21)"
+      },
+      "verdict": "PASS"
+    }
+  ]
+}

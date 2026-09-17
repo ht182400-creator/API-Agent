@@ -627,11 +627,11 @@ describe('客户端信号不得直接结算（M5）', () => {
     //    （首跑正是这样连挂 3 条的：失败点看着是 waitFor，真凶在这条未 stub 的请求。）
     stubHealth('simulation', false)
 
-    // ⚠️⚠️ 必须 stub `window.close`：这几条路径都会先调 `closePayWindow()`，而它**在没有支付窗口
-    //    引用时（return_url 跳转模式）会执行 `window.close()` 关闭当前窗口** —— jsdom 会真的把
-    //    window 销毁（`document` 变 undefined、`localStorage` 抛 `_origin` 为 null），
-    //    于是不仅本用例失败，**后续所有用例都会跟着挂**（首跑 3 条全挂的真凶）。
-    //    真实浏览器里的对应风险已登记为缺陷：FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF。
+    // ⚠️⚠️ 仍然 stub `window.close`，但**用途已经反转**：以前是为了防止缺陷把测试环境销毁，
+    //    现在是**回归锁** —— 若有人把"关当前窗口"加回来，jsdom 会真的销毁 window（document 变
+    //    undefined、localStorage 抛 `_origin` 为 null，**同文件后续用例集体挂**），
+    //    而 022 会直接断言"没有被调用"。
+    //    对应缺陷 FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF（已于 2026-09-17 修复）+ 变异规则 FIX-12。
     vi.spyOn(window, 'close').mockImplementation(() => {})
   })
 
@@ -669,6 +669,9 @@ describe('客户端信号不得直接结算（M5）', () => {
     expect(screen.queryByText('已支付')).not.toBeInTheDocument()
     // ③ 给用户的提示是"尚未确认"，而不是"充值成功"
     expect(await screen.findByText('支付结果尚未确认，请稍后点「刷新状态」')).toBeInTheDocument()
+    // ④ 回归锁：**不得顺手把用户的充值页签关掉**（缺陷 FE-BUG-CLOSE-PAY-WINDOW-CLOSE-SELF）
+    //    原实现走到这里会 `window.close()` —— 即"别家窗口写一条 localStorage 就能关掉用户页签"
+    expect(window.close).not.toHaveBeenCalled()
   })
 
   it('TC-FE-RECHARGE-023: 同一信号 + 后端确认 paid → 才结算（成功界面出现）', async () => {
