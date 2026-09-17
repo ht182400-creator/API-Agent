@@ -1,0 +1,29 @@
+﻿
+ RUN  v2.1.9 D:/Work_Area/AI/API-Agent/api-platform/web
+
+
+node.exe : ⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+所在位置 行:1 字符: 1
++ & "D:\Program Files\nodejs/node.exe" "D:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ FAIL  tests/cases/frontend_cases.spec.ts [ tests/cases/frontend_cases.spec.ts ]
+SyntaxError: Expected ',' or '}' after property value in JSON at position 3539 (line 51 column 1266)
+ ❯ tests/cases/frontend_cases.spec.ts:18:18
+     16| const webRoot = join(here, '..', '..')
+     17| const raw = readFileSync(join(here, 'frontend_cases.json'), 'utf8')
+     18| const doc = JSON.parse(raw)
+       |                  ^
+     19| 
+     20| interface CaseEntry {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  10:47:32
+   Duration  1.58s (transform 49ms, setup 179ms, collect 0ms, tests 0ms, environment 828ms, prepare 139ms)
+

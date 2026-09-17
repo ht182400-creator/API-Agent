@@ -17,9 +17,14 @@
     "累计已消除：182 条",
     "",
     "剩余两类（已论证接受，不作为回归信号）：",
-    "  - act: update not wrapped in act —— 100% 集中在 Recharge 组件（下单链路多个异步 setState",
-    "    + 扫码轮询 + 倒计时），是该组件重异步特性所致，非测试写法问题；",
-    "    且变异检验已证明这些用例的行为断言全部有效。",
+    "  - act: update not wrapped in act —— 88 条（2026-09-17 重新取证，此前写的“100% 集中在",
+    "    Recharge”已不准确）：按 spec = Recharge 82 / Analytics 6；按触发组件 = 业务状态 47",
+    "    （DeveloperRecharge 41 + AdminAnalytics 6）、antd/React 内部 41（EllipsisMeasure 18 /",
+    "    ForwardRef 12 / Button 8 / Portal 2 / Root 1）。集中在「下单」类用例：创建订单后组件",
+    "    启动倒计时（每秒 tick）与轮询（2~10 秒/次），测试断言完即结束 → 定时器回调落在 act 之外。",
+    "    ⚠️ 根因是**测试的 act 边界未覆盖定时器推进**，不是 setState 数量；102 → 88 是 M2-2 收敛",
+    "    状态写入（更新源减少）的副产品，非根治。三层解法（应用层把倒计时改为派生 + 测试层",
+    "    fake timers + antd 内部只能靠测试层覆盖）见 docs/payment-flow-architecture.md §7。",
     "  - jsdom: getComputedStyle pseudo-elements —— jsdom 未实现伪元素，属环境限制，无法根治。",
     "",
     "⚠️ 这两类的数量会随**新增 spec** 自然增长（每多渲染一个 antd 组件就多几条 jsdom 警告）：",
@@ -33,7 +38,8 @@
     "  - 2026-09-17：act 102 / jsdom 121（224 passed / 25 spec；新增 Quota spec）",
     "  - 2026-09-17：act 102 / jsdom 133（238 passed / 28 spec；新增 Logs / CreateRepo / RepoDetail spec）",
     "  - 2026-09-17：act 102 / jsdom 147（243 passed / 29 spec；新增 AdminLogs spec）",
-    "  - 2026-09-17：act 102 / jsdom 168（283 passed / 30 spec；新增 MiscPagesSuccess 聚合 spec，21 页成功渲染）"
+    "  - 2026-09-17：act 102 / jsdom 168（283 passed / 30 spec；新增 MiscPagesSuccess 聚合 spec，21 页成功渲染）",
+    "  - 2026-09-17：act 88 / jsdom 177（313 passed / 31 spec；M2-2 支付状态收敛 —— act 首次下降）"
   ],
   "updatedAt": "2026-09-17T02:34:33.426Z",
   "counts": {
