@@ -16,9 +16,9 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 60,
+      "sourceFiles": 61,
       "specFiles": 30,
-      "cases": 303,
+      "cases": 305,
       "covered": [
         "src/config/permissions.ts",
         "src/api/client.ts",
@@ -42,12 +42,13 @@
         "src/pages/developer/recharge/usePaymentPolling.ts",
         "src/pages/developer/recharge/components/PaymentModal.tsx",
         "src/pages/developer/recharge/payment/paymentMachine.ts",
+        "src/pages/developer/recharge/payment/usePaymentFlow.ts",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
         "src/pages/admin/analytics/chartData.ts"
       ],
-      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md，M2~M4 待做）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 310 tests − 7 条用例库自检 = **303 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
+      "note": "统计随用例增补更新（2026-09-15：35→56→76；2026-09-16：P0/P1 全覆盖；P2 推进：FE-AUTH-REGISTER 4 条、FE-ADMIN-PRICING 4 条、FE-ADMIN-RECON 4 条、FE-DEV-KEYS 5 条、FE-DEV-BILLING 4 条、FE-DEV-QUOTA 5 条、FE-DEV-LOGS 4 条、FE-DEV-CREATEREPO 5 条、FE-DEV-REPODETAIL 5 条、FE-ADMIN-ADMINLOGS 5 条；FE-ADMIN-MISC / FE-DEV-MISC 的成功渲染 40 条；C 轮：FE-LAYOUT 4 条（响应式骨架 + 通知中心）、FE-DEV-BILLING 2 条（普通用户升级引导 + 消费分布空态/非空）、FE-ADMIN-ANALYTICS 3 条（周期/分页/弹窗天数带参重查）；B 轮：FE-ADMIN-ANALYTICS **拆分收尾**（964→309 行，新增 TrendTab / RepoDetailsTab / TrendControls 三个源文件，该套件转 covered，sourceFiles 51→54）；B2 轮：`owner/Repos.tsx` **拆分收尾**（1059→704 行，新增 EndpointsTab / endpointColumns，sourceFiles 54→56）；B3 轮：`Recharge.tsx` 拆分起步（2001→1697，抽扫码轮询为 recharge/useQrcodePolling，sourceFiles 56→57，变异规则 FIX-2 随代码改指新文件）；B4 轮：`Recharge.tsx` 继续拆（1697→1667，抽支付结果轮询为 recharge/usePaymentPolling，sourceFiles 57→58）；B5 轮：`Recharge.tsx` 继续拆（1667→1571，支付弹窗抽为 recharge/components/PaymentModal，sourceFiles 58→59）；**M1 轮：支付流程行为重构立项 + 状态机落地**（新增 payment/paymentMachine.ts + 18 条纯函数用例，sourceFiles 59→60、specFiles 29→30；方案见 docs/payment-flow-refactor.md）；**M2-1：编排 hook 落地 + 状态机细化**（usePaymentFlow.ts + 2 条细化用例，35 处接线的映射表已写入方案 §3.2；sourceFiles 60→61、cases 303→305）。⚠️ cases 取**实测口径**：`npm run test:unit` 报 312 tests − 7 条用例库自检 = **305 条组件用例**；specFiles=30 为 src 下口径（自检 spec 在 tests/ 不计入，故 vitest 报 31 个文件）。**用例库已无 planned 项**"
     },
     "priorityLegend": {
       "P0": "入口/骨架/全局机制：坏了全站不可用",
@@ -240,7 +241,9 @@
         { "id": "TC-FE-PAYMACH-015", "name": "派生选择器 isProbing / isPaid / isConfirming / canDismiss / isTerminal", "status": "done" },
         { "id": "TC-FE-PAYMACH-016", "name": "isScanning 仅『扫码+等待中+未跑满』；跑满即 isProbeExhausted", "status": "done" },
         { "id": "TC-FE-PAYMACH-017", "name": "nextProbeDelay：扫码 8 段递进、跑满沿用最后一段；跳转固定 3 秒", "status": "done" },
-        { "id": "TC-FE-PAYMACH-018", "name": "modeOf 只认非空二维码字符串为扫码", "status": "done" }
+        { "id": "TC-FE-PAYMACH-018", "name": "modeOf 只认非空二维码字符串为扫码", "status": "done" },
+        { "id": "TC-FE-PAYMACH-019", "name": "STATUS_PAID 弹窗去留按支付方式推导（扫码关、跳转留），可被 closeModal 覆盖", "status": "done" },
+        { "id": "TC-FE-PAYMACH-020", "name": "STATUS_PENDING 可带订单补丁（刷新后才拿到的 payment_no 要并进去）", "status": "done" }
       ]
     },
     {

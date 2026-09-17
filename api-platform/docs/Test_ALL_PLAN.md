@@ -198,8 +198,8 @@ npm run test:unit:watch    # 监听模式（本地开发）
 | TC-FE-API-012 | 请求配置错误 | adapter 抛 `ERR_CONFIG`（无 response/request） | `message='请求配置错误'` |
 | TC-FE-API-013 | 各方法均解包 | `api.post/put/delete/patch` 各一次 | 均返回解包后的 `{done:true}` |
 
-**当前结果**：`npm run test:unit` → **310 passed**（31 个测试文件 = 30 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条），
-即 **303 条组件用例**（= 310 − 7），全部登记在 `tests/cases/frontend_cases.json` 的 `meta.stats.cases`，**库中已无 `planned` 项**。
+**当前结果**：`npm run test:unit` → **312 passed**（31 个测试文件 = 30 个组件 spec + `tests/cases/frontend_cases.spec.ts` 用例库自检 7 条），
+即 **305 条组件用例**（= 312 − 7），全部登记在 `tests/cases/frontend_cases.json` 的 `meta.stats.cases`，**库中已无 `planned` 项**。
 > 上表对应的最初 14 个 spec 口径为：permissions 13 + client 22 + Layout 6 + ErrorContext 13 + useDevice 5 + Login 8 + Analytics 7 + chartData 5 + paymentErrors 16 + ApiTester 8 + ConsumptionDetails 8 + admin/Repos 8 + owner/Repos 9 + Recharge 16 = 144（其中 TC-FE-API-008 参数化展开为 10 条）；此后按用例库清单持续增补至 **285** 条（截至 2026-09-17）。
 
 > ⚠️ **用例有效性由变异检验保障**：`npm run verify:fixes` 会把每个已修复的缺陷**改回缺陷形态**，
@@ -314,7 +314,7 @@ npx playwright test e2e/api-contract.spec.ts --project=chromium --reporter=list
 **运行**：
 ```bash
 cd d:/Work_Area/AI/API-Agent/api-platform/web
-npm run test:unit        # 单次运行（当前 310 passed / 31 个测试文件 = 30 组件 spec + 用例库自检）
+npm run test:unit        # 单次运行（当前 312 passed / 31 个测试文件 = 30 组件 spec + 用例库自检）
 npm run typecheck        # 新增 spec 位于 src/ 下，自动纳入 tsc --noEmit
 ```
 

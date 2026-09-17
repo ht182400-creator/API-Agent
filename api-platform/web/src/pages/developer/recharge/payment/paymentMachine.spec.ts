@@ -234,4 +234,39 @@ describe('支付流程状态机', () => {
     expect(modeOf({ qr_code: '' } as Payment)).toBe('redirect')
     expect(modeOf({} as Payment)).toBe('redirect')
   })
+
+  it('TC-FE-PAYMACH-019: STATUS_PAID 的弹窗去留按支付方式推导（扫码关、跳转留），可被 closeModal 覆盖', () => {
+    // 扫码成功 → 关弹窗（由页面给 message 提示）
+    const qrPaid = run(awaitingQr, { type: 'STATUS_PAID' })
+    expect(qrPaid.phase).toBe('succeeded')
+    expect(qrPaid.modalOpen).toBe(false)
+
+    // 跳转成功 → 保留弹窗（显示成功大界面）
+    const redirect = run(initialPaymentState, {
+      type: 'CREATE_SUCCESS',
+      payment: redirectPayment,
+      now: NOW,
+    })
+    expect(paymentReducer(redirect, { type: 'STATUS_PAID' }).modalOpen).toBe(true)
+
+    // 例外路径（"订单已支付"分支）显式关掉
+    expect(paymentReducer(redirect, { type: 'STATUS_PAID', closeModal: true }).modalOpen).toBe(false)
+  })
+
+  it('TC-FE-PAYMACH-020: STATUS_PENDING 可带订单补丁（刷新后才拿到的 payment_no 要并进去）', () => {
+    const noPaymentNo = run(initialPaymentState, {
+      type: 'RESTORE_FOUND',
+      payment: { order_no: 'ORD-ONLY', status: 'pending' } as Payment,
+      now: NOW,
+    })
+    expect(noPaymentNo.payment?.payment_no).toBeUndefined()
+
+    const patched = paymentReducer(noPaymentNo, {
+      type: 'STATUS_PENDING',
+      payment: { payment_no: 'PAY-FROM-BE' } as Partial<Payment>,
+    })
+    expect(patched.payment?.payment_no).toBe('PAY-FROM-BE')
+    expect(patched.payment?.order_no).toBe('ORD-ONLY') // 原有字段保留
+    expect(patched.probeCount).toBe(1)
+  })
 })

@@ -53,10 +53,10 @@ export type PaymentEvent =
   | { type: 'CREATE_FAILURE'; error: string }
   /** 挂载时从 sessionStorage 恢复未完成订单（"不丢单"） */
   | { type: 'RESTORE_FOUND'; payment: Payment; now?: number }
-  /** ⚠️ 唯一的结算入口 */
-  | { type: 'STATUS_PAID'; payment?: Partial<Payment> }
-  /** 探测完成但后端仍是未支付 → 推进 probeCount */
-  | { type: 'STATUS_PENDING' }
+  /** ⚠️ 唯一的结算入口。`closeModal` 缺省时按 mode 推导（扫码→关弹窗并提示；跳转→保留弹窗显示大界面） */
+  | { type: 'STATUS_PAID'; payment?: Partial<Payment>; closeModal?: boolean }
+  /** 探测完成但后端仍是未支付 → 推进 probeCount；可带订单补丁（如刷新后 payment_no 才拿到） */
+  | { type: 'STATUS_PENDING'; payment?: Partial<Payment> }
   | { type: 'STATUS_FAILED'; error?: string }
   | { type: 'CONFIRM_START' }
   | { type: 'CANCEL' }
@@ -196,12 +196,24 @@ export function paymentReducer(state: PaymentState, event: PaymentEvent): Paymen
         ...(event.payment ?? {}),
         status: 'paid',
       } as Payment
-      return { ...state, phase: 'succeeded', payment: merged, error: null }
+      // ⚠️ 弹窗去留按**支付方式**推导（原实现把这条规则抄在 7 处，极易张冠李戴）：
+      //    扫码 → 关弹窗 + 页面提示；跳转 → 保留弹窗显示成功大界面。
+      //    个别路径有例外（如"订单已支付"分支要显式关掉）→ 用 closeModal 覆盖。
+      const closeModal = event.closeModal ?? state.mode === 'qrcode'
+      return { ...state, phase: 'succeeded', payment: merged, modalOpen: !closeModal, error: null }
     }
 
     case 'STATUS_PENDING':
       if (state.phase !== 'awaiting' && state.phase !== 'confirming') return state
-      return { ...state, phase: 'awaiting', probeCount: state.probeCount + 1 }
+      return {
+        ...state,
+        phase: 'awaiting',
+        probeCount: state.probeCount + 1,
+        // 订单补丁：刷新状态时后端可能才回传 payment_no / status
+        payment: event.payment
+          ? ({ ...(state.payment ?? {}), ...event.payment } as Payment)
+          : state.payment,
+      }
 
     case 'STATUS_FAILED':
       if (isTerminal(state.phase)) return state

@@ -146,6 +146,40 @@ recharge/payment/
 
 ---
 
+### 3.2 M2 接线映射表（已逐处核对，执行时照做即可）
+
+> 现状共 **35 处**写生命周期状态（`setCurrentPayment` / `setPaySuccess` / `setPayModalVisible` /
+> `setIsProcessingCallback`）。下表的"动作"就是目标写法。
+
+| 现位置（旧调用） | 语义 | M2 动作 |
+|---|---|---|
+| 4 个 `useState`（payment / paySuccess / payModalVisible / isProcessingCallback） | — | **删除**，改由 `usePaymentFlow` 只读派生 |
+| 下单成功 ×2（套餐 / 自定义） | 订单落地 | `flow.created(payment)` |
+| 挂载恢复 sessionStorage（成功 / 查询失败两分支） | 恢复订单 | `flow.restored(order)`（原先随后那句 `setPayModalVisible(true)` 由 action 内含） |
+| 同步回调入口（`setIsProcessingCallback(true)` + 开弹窗） | 进入确认中 | `flow.restored(占位单)` + `flow.startConfirming()`（占位单是原实现就有的形态，用于"只有 order_no"的场景） |
+| 同步回调 `handlePaymentSuccess`（`setPaySuccess(true)`） | **跳转**成功（保留弹窗） | `flow.settlePaid(patch, { closeModal: false })` |
+| 同步回调超时 `showTimeoutDialog` | 仍是未支付 + 订单补丁 | `flow.settlePending({ payment_no })` |
+| 同步回调超时弹窗「返回充值中心」 | 关弹窗 | `flow.closeModal()` |
+| 同步回调 catch（占位单 + 开弹窗） | 占位订单 | `flow.restored({ payment_no:'', order_no, status:'pending' })` |
+| 同步回调 finally（`setIsProcessingCallback(false)`） | 退出确认中 | `flow.settlePending()`（终态下该事件被机器忽略） |
+| storage 事件 ×2 / postMessage ×2（每处各含扫码 / 跳转两分支） | **成功** | `flow.settlePaid(patch)`（弹窗去留**按 mode 自动**：扫码关、跳转留）＋ 扫码分支补 `message.success('充值成功！')` |
+| `checkPaymentResult`（挂载读 localStorage） | 成功（关弹窗） | `flow.settlePaid(patch, { closeModal: true })` |
+| 刷新二维码（`setCurrentPayment({...currentPayment, qr_code})`） | 订单补丁 | `flow.settlePending({ qr_code })` |
+| 模拟支付成功（`setPaySuccess(true)`，不动弹窗） | 跳转语义成功 | `flow.settlePaid(undefined, { closeModal: false })` |
+| `handleOpenPay`「该订单已支付」 | 成功（显式关弹窗） | `flow.settlePaid(undefined, { closeModal: true })` |
+| `handleRefreshStatus`：无订单但有 `out_trade_no` | 占位订单 | `flow.restored({ payment_no:'', order_no, status:'pending' })` |
+| `handleRefreshStatus`：拿到新状态（`setCurrentPayment(updatedPayment)`） | 订单补丁 | `flow.settlePending(updatedPayment)` |
+| `handleRefreshStatus`：paid（跳转 / 意外扫码两分支） | 成功 | `flow.settlePaid(undefined, { closeModal: false \| true })` |
+| `handlePayModalClose`（`setPayModalVisible(false)`） | 关弹窗 | `flow.closeModal()`（**保留**它原有的"停两路轮询"职责） |
+| `handleCancelOrder` | 取消 | `flow.cancelOrder()` |
+| `useQrcodePolling({ setCurrentPayment, setPaySuccess })` | 扫码成功 / 补丁 | 接口改为 `{ onPaid, onOrderPatch }`，传 `flow.settlePaid` / `flow.settlePending` |
+
+⚠️ **M2 必须整体完成，不能只改一半**：只要机器与旧 `useState` 同时存在，同一事实就有两个真相
+（正是本次要消灭的缺陷）。若中途必须停下，用 `git checkout -- src/pages/developer/Recharge.tsx`
+回到接线前状态，不要留下半接线的文件。
+
+---
+
 ## 4. 完成定义（DoD）
 
 1. 页面内**不再有任何** `setCurrentPayment` / `setPaySuccess` / `setQrcodePolling` 之类生命周期 setState；
@@ -162,6 +196,6 @@ recharge/payment/
 | 步 | 状态 | 提交 |
 |---|---|---|
 | M1 状态机 + 单测 | ✅ 已完成（231 行 machine + 18 条纯函数用例，全量 310 passed） | 见 `docs/test-log-2026-09-17.md`「轮次 M1」 |
-| M2 flow 接管状态 | ⏳ 待做 | — |
+| M2 flow 接管状态 | 🔄 **M2-1 已完成**（`usePaymentFlow.ts` + 状态机两处细化 + 35 处接线映射表），**M2-2 接线待做** | M2-1 提交见 test-log「轮次 M2-1」 |
 | M3 探测统一 + 删 ref | ⏳ 待做 | — |
 | M4 收编剩余 hook | ⏳ 待做 | — |
