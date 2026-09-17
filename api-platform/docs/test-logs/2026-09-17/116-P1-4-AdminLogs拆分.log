@@ -1,0 +1,9 @@
+﻿
+> api-platform-web@1.0.0 test:budget
+> node scripts/dev/check-test-warnings.mjs src/pages/admin/AdminLogs.spec.tsx
+
+[vitest] Test Files  1 passed (1)
+[vitest] Tests  5 passed (5)
+[vitest] Duration  8.16s (transform 218ms, setup 167ms, collect 3.13s, tests 3.52s, environment 805ms, prepare 119ms)
+[warn-budget] ✅ 警告在预算内
+     14  jsdom: getComputedStyle pseudo-elements

@@ -16,7 +16,7 @@
       "外部接口一律 vi.mock（不启动后端）；断言优先用真实 zustand store，而不是 mock 掉 store"
     ],
     "stats": {
-      "sourceFiles": 64,
+      "sourceFiles": 66,
       "specFiles": 33,
       "cases": 318,
       "covered": [
@@ -44,6 +44,8 @@
         "src/pages/developer/recharge/payment/paymentMachine.ts",
         "src/pages/developer/recharge/payment/usePaymentFlow.ts",
         "src/pages/developer/recharge/useCountdown.ts",
+        "src/pages/admin/adminlogs/columns.tsx",
+        "src/pages/admin/adminlogs/BackupConfigModal.tsx",
         "src/pages/admin/PricingConfig.tsx",
         "src/pages/admin/Reconciliation.tsx",
         "src/pages/developer/Keys.tsx",
@@ -503,8 +505,8 @@
       "id": "FE-ADMIN-ADMINLOGS",
       "level": "P2",
       "file": "src/pages/admin/AdminLogs.tsx",
-      "lines": 904,
-      "why": "日志管理（列表/备份配置/文件列表）。🔑 日志内容按 startLine = 当前页×500 分页拉取并带 level/keyword（参数错会「看起来没有这条日志」而误判）；备份配置是回显+就地改 state 的模式，保存时整体提交；删除备份不可恢复、清理是批量删除，两者都必须二次确认。⚠️ 该模块是**具名函数导出**（不是对象），mock 时要逐个替换；断言日志行需等待内容加载完成（弹窗先渲染「加载中...」）",
+      "lines": 694,
+      "why": "日志管理（列表/备份配置/文件列表）。🔑 日志内容按 startLine = 当前页×500 分页拉取并带 level/keyword（参数错会「看起来没有这条日志」而误判）；备份配置是回显+就地改 state 的模式，保存时整体提交；删除备份不可恢复、清理是批量删除，两者都必须二次确认。⚠️ 该模块是**具名函数导出**（不是对象），mock 时要逐个替换；断言日志行需等待内容加载完成（弹窗先渲染「加载中...」）。**P1-4 拆分（2026-09-17）：904 → 694 行**（两组列定义抽出为 adminlogs/columns.tsx 的工厂函数；备份设置弹窗抽出为 adminlogs/BackupConfigModal.tsx 受控组件；纯搬运零行为改变，全量 325 passed 复验。两种日志行 LogLine / BackupContentLine 字段契约不同 —— 刻意**不**合并渲染器，避免假统一）",
       "status": "covered",
       "specFile": "src/pages/admin/AdminLogs.spec.tsx",
       "cases": [

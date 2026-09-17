@@ -13,18 +13,12 @@ import {
   Input,
   Select,
   Modal,
-  Form,
-  Slider,
-  Switch,
   message,
   Popconfirm,
   Typography,
   Row,
   Col,
   Statistic,
-  Alert,
-  Tooltip,
-  Divider,
   Badge,
 } from 'antd'
 import {
@@ -37,9 +31,7 @@ import {
   CloudUploadOutlined,
   ClearOutlined,
   FolderOutlined,
-  SaveOutlined,
 } from '@ant-design/icons'
-import type { ColumnsType } from 'antd/es/table'
 import styles from './AdminLogs.module.css'
 import {
   getLogFiles,
@@ -65,6 +57,9 @@ import {
   getLevelColor,
 } from '../../api/adminLogs'
 import { useDevice } from '../../hooks/useDevice'
+// 【P1-4 拆分】列定义与备份设置弹窗已抽出（adminlogs/）
+import BackupConfigModal from './adminlogs/BackupConfigModal'
+import { buildBackupColumns, buildFileColumns } from './adminlogs/columns'
 
 const { Title, Text } = Typography
 const { Option } = Select
@@ -323,130 +318,10 @@ export default function AdminLogs() {
     }
   }
   
-  // 日志文件表格列
-  const fileColumns: ColumnsType<LogFileInfo> = [
-    {
-      title: '文件名',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text, record) => (
-        <Space>
-          <FileTextOutlined />
-          <Text strong>{text}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: '模块',
-      dataIndex: 'module',
-      key: 'module',
-      render: (text) => <Tag color="blue">{text}</Tag>,
-    },
-    {
-      title: '大小',
-      dataIndex: 'size_formatted',
-      key: 'size',
-    },
-    {
-      title: '修改时间',
-      dataIndex: 'modified_at',
-      key: 'modified_at',
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 250,
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="link"
-            size="small"
-            icon={<DownloadOutlined />}
-            href={exportLog(record.name)}
-            target="_blank"
-          >
-            导出
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => handleViewLog(record)}
-          >
-            查看
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<CloudUploadOutlined />}
-            onClick={() => handleManualBackup(record.module)}
-          >
-            备份
-          </Button>
-        </Space>
-      ),
-    },
-  ]
-  
-  // 备份表格列
-  const backupColumns: ColumnsType<BackupFileInfo> = [
-    {
-      title: '文件名',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <Text copyable={{ text }}>{text}</Text>,
-    },
-    {
-      title: '大小',
-      dataIndex: 'size_formatted',
-      key: 'size',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 200,
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="link"
-            size="small"
-            icon={<FileTextOutlined />}
-            onClick={() => handleViewBackup(record.name)}
-          >
-            查看
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<DownloadOutlined />}
-            href={downloadBackup(record.name)}
-            target="_blank"
-          >
-            下载
-          </Button>
-          <Popconfirm
-            title="确认删除此备份?"
-            onConfirm={() => handleDeleteBackup(record.name)}
-            okText="确认"
-            cancelText="取消"
-          >
-            <Button
-              type="link"
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-            >
-              删除
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
+  // 【P1-4 拆分】两组列定义已抽出（adminlogs/columns.tsx）：工厂函数传入**当前闭包**的动作回调，
+  //   避免"定义时捕获旧 handler"的陈旧闭包问题
+  const fileColumns = buildFileColumns({ onViewLog: handleViewLog, onManualBackup: handleManualBackup })
+  const backupColumns = buildBackupColumns({ onViewBackup: handleViewBackup, onDeleteBackup: handleDeleteBackup })
   
   // 加载更多日志
   const loadMoreLogs = () => {
@@ -707,100 +582,15 @@ export default function AdminLogs() {
         </div>
       </Modal>
       
-      {/* 配置弹窗 */}
-      <Modal
-        title="备份设置"
+      {/* 【P1-4 拆分】配置弹窗已抽出（adminlogs/BackupConfigModal.tsx）：受控组件，页面持有状态与持久化 */}
+      <BackupConfigModal
         open={configVisible}
-        onCancel={() => setConfigVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setConfigVisible(false)}>
-            取消
-          </Button>,
-          <Button
-            key="save"
-            type="primary"
-            icon={<SaveOutlined />}
-            onClick={handleSaveConfig}
-            loading={configLoading}
-          >
-            保存
-          </Button>,
-        ]}
-      >
-        {config && (
-          <Form layout="vertical">
-            <Form.Item label="启用自动备份">
-              <Switch
-                checked={config.enabled}
-                onChange={(checked) => handleConfigChange('enabled', checked)}
-              />
-            </Form.Item>
-
-            <Form.Item label={`文件大小限制: ${config.max_file_size_mb} MB`}>
-              <Slider
-                min={1}
-                max={100}
-                value={config.max_file_size_mb}
-                onChange={(value) => handleConfigChange('max_file_size_mb', value)}
-                disabled={!config.enabled}
-                marks={{
-                  10: '10MB',
-                  50: '50MB',
-                  100: '100MB',
-                }}
-              />
-              <Text type="secondary">
-                单个日志文件超过此大小后将自动备份并创建新文件
-              </Text>
-            </Form.Item>
-
-            <Form.Item label={`最大备份数量: ${config.max_backup_files}`}>
-              <Slider
-                min={10}
-                max={500}
-                value={config.max_backup_files}
-                onChange={(value) => handleConfigChange('max_backup_files', value)}
-                disabled={!config.enabled}
-                marks={{
-                  50: '50',
-                  100: '100',
-                  200: '200',
-                  500: '500',
-                }}
-              />
-              <Text type="secondary">
-                超过此数量的备份文件将被自动清理
-              </Text>
-            </Form.Item>
-
-            <Form.Item label={`自动清理: ${config.auto_cleanup ? '启用' : '禁用'}`}>
-              <Switch
-                checked={config.auto_cleanup}
-                onChange={(checked) => handleConfigChange('auto_cleanup', checked)}
-                disabled={!config.enabled}
-              />
-            </Form.Item>
-
-            <Form.Item label={`清理阈值: ${config.cleanup_threshold}%`}>
-              <Slider
-                min={50}
-                max={100}
-                value={config.cleanup_threshold}
-                onChange={(value) => handleConfigChange('cleanup_threshold', value)}
-                disabled={!config.enabled || !config.auto_cleanup}
-                marks={{
-                  50: '50%',
-                  75: '75%',
-                  90: '90%',
-                }}
-              />
-              <Text type="secondary">
-                当备份文件达到最大数量的此百分比时自动清理
-              </Text>
-            </Form.Item>
-          </Form>
-        )}
-      </Modal>
+        config={config}
+        configLoading={configLoading}
+        onChange={handleConfigChange}
+        onSave={handleSaveConfig}
+        onClose={() => setConfigVisible(false)}
+      />
 
       {/* 备份查看弹窗 */}
       <Modal
